@@ -1,0 +1,53 @@
+{
+  "author": "iiFir3z <iifir3z@protonmail.com>",
+  "homepage": "https://github.com/iiFir3z/Apple-Music-Electron",
+  "name": "apple-music-wrapper",
+  "productName": "Apple Music",
+  "version": "1.1.0",
+  "description": "Electron wrapper for Apple Music",
+  "license": "MIT",
+  "buildResources": "assets",
+  "scripts": {
+    "init": "install",
+    "start": "electron --disable-gpu .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "source-map-support": "^0.5.16"
+  },
+  "devDependencies": {
+    "electron": "https://github.com/castlabs/electron-releases.git",
+    "electron-builder": "^22.7.0",
+    "electron-webpack": "^2.8.2",
+    "webpack": "~4.42.1"
+  },
+  "build": {
+    "electronDownload": {
+      "mirror": "https://github.com/castlabs/electron-releases/releases/download/v"
+    },
+    "appId": "apple-music",
+    "extends": null,
+    "files": [
+      "**/*",
+      "assets/icon.*"
+    ],
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "snap",
+        "rpm"
+      ],
+      "category": "AudioVideo",
+      "icon": "./assets/icon.icns"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "./assets/icon.ico" 
+    }
+  }
+}
