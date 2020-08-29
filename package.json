@@ -3,13 +3,13 @@
   "homepage": "https://github.com/iiFir3z/Apple-Music-Electron",
   "name": "apple-music-wrapper",
   "productName": "Apple Music",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Electron wrapper for Apple Music",
   "license": "MIT",
   "buildResources": "assets",
   "scripts": {
     "init": "install",
-    "start": "electron --disable-gpu .",
+    "start": "electron .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps"
