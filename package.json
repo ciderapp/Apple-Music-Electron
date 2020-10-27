@@ -1,9 +1,9 @@
 {
   "author": "iiFir3z <iifir3z@protonmail.com>",
   "homepage": "https://github.com/iiFir3z/Apple-Music-Electron",
-  "name": "apple-music-wrapper",
+  "name": "apple-music-electron",
   "productName": "Apple Music",
-  "version": "1.2.0",
+  "version": "1.3.1",
   "description": "Unofficial Electron wrapper for Apple Music created by @cryptofyre",
   "license": "MIT",
   "buildResources": "assets",

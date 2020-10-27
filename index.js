@@ -1,5 +1,7 @@
 const { app, BrowserWindow, globalShortcut } = require('electron')
+const electron = require('electron');
 var path = require('path')
+const nativeTheme = electron.nativeTheme;
 const client = require('discord-rich-presence')('749317071145533440');
 var sgname
 var sgartist
@@ -11,6 +13,7 @@ function createWindow () {
     height: 600,
     minWidth: 300,
     minHeight: 300,
+    frame: true,
   // Enables DRM
     webPreferences: {
       plugins: true
@@ -33,15 +36,20 @@ function createWindow () {
     win.webContents.executeJavaScript("while (elements.length > 0) elements[0].remove();");
   });
 
+  // Fix those ugly scrollbars.
+  win.webContents.on('did-stop-loading', () => {
+    win.webContents.insertCSS('::-webkit-scrollbar { display: none; }')
+  })
+
   // update rich presence when audio is playing.
   win.webContents.on('media-started-playing', function() {
     client.updatePresence({
-      state: "(Solo Listening)",
-      details: "Listening to Music!",
+      state: "Playing",
+      details: "Music is playing.",
       startTimestamp: Date.now(),
-      endTimestamp: Date.now() + 1337,
+      endTimestamp: 260,
       largeImageKey: 'apple',
-      smallImageKey: 'credit',
+      smallImageKey: 'play',
       instance: true,
     });
   });
@@ -49,12 +57,12 @@ function createWindow () {
   // Update rich presence when audio is paused or turned off.
   win.webContents.on('media-paused', function() {
     client.updatePresence({
-      state: "(Idling)",
-      details: "Music is paused.",
+      state: "(Paused)",
+      details: "Music Idling",
       startTimestamp: Date.now(),
-      endTimestamp: Date.now() + 1337,
+      endTimestamp: 1337,
       largeImageKey: 'apple',
-      smallImageKey: 'credit',
+      smallImageKey: 'pause',
       instance: true,
     });
   });
@@ -62,14 +70,16 @@ function createWindow () {
 }
 // Start rich presence service into idle mode.
 client.updatePresence({
-  state: 'Choosing music.',
-  details: '(Idle)',
+  state: '(Nothing has played)',
+  details: 'Music Stopped',
   startTimestamp: Date.now(),
-  endTimestamp: Date.now() + 1337,
+  endTimestamp: 1337,
   largeImageKey: 'apple',
-  smallImageKey: 'credit',
+  smallImageKey: 'stop',
   instance: true,
 });
+
+nativeTheme.themeSource = 'dark';
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
