@@ -20,11 +20,14 @@ function createWindow () {
     }
   })
 
+  // Apply Sandbox patch for Debian/Ubuntu devices and systems.
+  app.commandLine.appendSwitch('--no-sandbox')
+
   // hide toolbar tooltips / bar
   win.setMenuBarVisibility(false);
 
   // load Apple Music site
-  win.loadURL("https://beta.music.apple.com");
+  win.loadURL("https://music.apple.com");
 
   // hide iTunes prompt and other random bullshittery by Apple.
   win.webContents.on('did-frame-finish-load', function() {
