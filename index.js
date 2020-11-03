@@ -23,18 +23,18 @@ function createWindow () {
   // Apply Sandbox patch for Debian/Ubuntu devices and systems.
   app.commandLine.appendSwitch('--no-sandbox')
 
-  // hide toolbar tooltips / bar
+  // Hide toolbar tooltips / bar
   win.setMenuBarVisibility(false);
 
-  // load Apple Music site
+  // Load Apple Music site
   win.loadURL("https://music.apple.com");
 
-  // hide iTunes prompt and other random bullshittery by Apple.
+  // Hide iTunes prompt and other random bullshittery by Apple.
   win.webContents.on('did-frame-finish-load', function() {
     win.webContents.executeJavaScript("const elements = document.getElementsByClassName('web-navigation__native-upsell'); while (elements.length > 0) elements[0].remove();");
   });
 
-  // hide iTunes prompt and other random bullshittery by Apple again.
+  // Hide iTunes prompt and other random bullshittery by Apple again.
   win.webContents.on('did-stop-loading', function() {
     win.webContents.executeJavaScript("while (elements.length > 0) elements[0].remove();");
   });
@@ -44,7 +44,10 @@ function createWindow () {
     win.webContents.insertCSS('::-webkit-scrollbar { display: none; }')
   })
 
-  // update rich presence when audio is playing.
+  // Add transparency mode
+  
+
+  // Update rich presence when audio is playing.
   win.webContents.on('media-started-playing', function() {
     client.updatePresence({
       state: "Playing",
