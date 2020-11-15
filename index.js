@@ -3,8 +3,6 @@ const electron = require('electron');
 var path = require('path')
 const nativeTheme = electron.nativeTheme;
 const client = require('discord-rich-presence')('749317071145533440');
-var sgname
-var sgartist
 function createWindow () {
   // Create the browser window.
   const win = new BrowserWindow({
@@ -20,8 +18,8 @@ function createWindow () {
     }
   })
 
-  // Apply Sandbox patch for Debian/Ubuntu devices and systems.
-  app.commandLine.appendSwitch('--no-sandbox')
+  // Apply dangerous sandbox patch for Debian/Ubuntu devices and systems. Disabled by default.
+  // app.commandLine.appendSwitch('--no-sandbox')
 
   // Hide toolbar tooltips / bar
   win.setMenuBarVisibility(false);
@@ -29,12 +27,12 @@ function createWindow () {
   // Load Apple Music site
   win.loadURL("https://music.apple.com");
 
-  // Hide iTunes prompt and other random bullshittery by Apple.
+  // Hide iTunes prompt and other external buttons by Apple.
   win.webContents.on('did-frame-finish-load', function() {
     win.webContents.executeJavaScript("const elements = document.getElementsByClassName('web-navigation__native-upsell'); while (elements.length > 0) elements[0].remove();");
   });
 
-  // Hide iTunes prompt and other random bullshittery by Apple again.
+  // Hide iTunes prompt and other external buttons by Apple. Ensure deletion.
   win.webContents.on('did-stop-loading', function() {
     win.webContents.executeJavaScript("while (elements.length > 0) elements[0].remove();");
   });
@@ -43,9 +41,6 @@ function createWindow () {
   win.webContents.on('did-stop-loading', () => {
     win.webContents.insertCSS('::-webkit-scrollbar { display: none; }')
   })
-
-  // Add transparency mode
-  
 
   // Update rich presence when audio is playing.
   win.webContents.on('media-started-playing', function() {
@@ -85,7 +80,8 @@ client.updatePresence({
   instance: true,
 });
 
-nativeTheme.themeSource = 'dark';
+// This argument is for Linux operating systems that dont support the CSS theme preference.
+// nativeTheme.themeSource = 'dark';
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
