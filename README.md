@@ -6,7 +6,7 @@ Preview Image as of v1.9.1
 
 ![alt text](https://i.imgur.com/ChgilDN.png "Preview Image of WIP Discord RPC support")
 
-Discord RPC is currently a Work In Progress and will be completed by V2.0.0
+Discord RPC is currently done and now included as of v1.5.0
 
 If you enjoy this application and want to see more from me follow me on [Twitter.](https://www.twitter.com/cryptofyre)
 ## Have an issue? Report it!
