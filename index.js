@@ -65,49 +65,6 @@ function createWindow () {
         updateMetaData(a)
     })
 
-    electron.ipcMain.on('playbackStateDidChange', (item, a) => {
-        // updateMetaData(a)
-        switch (a) {
-            case 0:
-                console.log("NONE")
-                setPlaybackIfNeeded(playbackStatusPause);
-                break;
-            case 1:
-                console.log("loading")
-                setPlaybackIfNeeded(playbackStatusPause);
-                break;
-            case 2:
-                console.log("playing")
-                setPlaybackIfNeeded(playbackStatusPlay);
-                break;
-            case 3:
-                console.log("paused")
-                setPlaybackIfNeeded(playbackStatusPause);
-                break;
-            case 4:
-                console.log("stopped")
-                setPlaybackIfNeeded(playbackStatusStop);
-                break;
-            case 5:
-                console.log("ended")
-                break;
-            case 6:
-                console.log("seeking")
-                break;
-            case 7:
-                console.log("waiting")
-                break;
-            case 8:
-                console.log("stalled")
-                break;
-            case 9:
-                console.log("completed")
-                break;
-
-        }
-
-    })
-
     async function getMusicKitAttributes() {
           return await win.webContents.executeJavaScript(`MusicKitInterop.getAttributes()`);
       }
