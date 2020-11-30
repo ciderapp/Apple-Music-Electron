@@ -120,7 +120,7 @@ function createWindow () {
               state: `${attributes.albumName}`,
               details: `${attributes.name}`,
               startTimestamp: Date.now(),
-              endTimestamp: epocfriendly,
+              endTimestamp: 1337,
               largeImageKey: 'apple',
               smallImageKey: 'play',
               instance: true,
