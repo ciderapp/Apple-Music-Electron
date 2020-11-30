@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "discord-rich-presence": "^0.0.8",
-    "mpris-service": "^2.1.0",
     "source-map-support": "^0.5.16",
     "v8-compile-cache": "^2.1.1"
   },

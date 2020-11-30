@@ -4,41 +4,14 @@ const path = require('path')
 const fs = require('fs')
 const nativeTheme = electron.nativeTheme;
 const client = require('discord-rich-presence')('749317071145533440');
-const Mpris = require('mpris-service');
 const { session } = require('electron')
 let pos_atr = {durationInMillis: 0};
 let currentPlayBackProgress
-const mpris = Mpris({
-    name: 'AppleMusic',
-    identity: 'Apple Music Electron',
-    supportedUriSchemes: [],
-    supportedMimeTypes: [],
-    supportedInterfaces: ['player']
-});
-mpris.getPosition = function () {
-    const durationInMicro = pos_atr.durationInMillis * 1000;
-    const percentage = parseFloat(currentPlayBackProgress) || 0;
-    return durationInMicro * percentage;
-}
-mpris.canQuit = true;
-mpris.canControl = true;
-mpris.canPause = true;
-mpris.canPlay = true;
-mpris.canGoNext = true;
-mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
-mpris.playbackStatus = 'Stopped'
 
 const playbackStatusPlay = 'Playing';
 const playbackStatusPause = 'Paused';
 const playbackStatusStop = 'Stopped';
 
-
-function setPlaybackIfNeeded(status) {
-    if (mpris.playbackStatus === status) {
-        return
-    }
-    mpris.playbackStatus = status;
-}
 const filter = {
     urls: ['https://music.apple.com/','https://music.apple.com/us/browse']
 }
@@ -86,37 +59,7 @@ function createWindow () {
   })
 
 
-  // Insert Jarek Toros amazing work with MusicKit and Mpris (https://github.com/JarekToro/Apple-Music-Mpris/)!
-
-  mpris.on('playpause', async () => {
-        if (mpris.playbackStatus === 'Playing') {
-            await win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
-        } else {
-            await win.webContents.executeJavaScript('MusicKit.getInstance().play()')
-        }
-        const attributes = await getMusicKitAttributes()
-        await updateMetaData(attributes);
-    });
-    mpris.on('play', async () => {
-        await win.webContents.executeJavaScript('MusicKit.getInstance().play()')
-        const attributes = await getMusicKitAttributes()
-        await updateMetaData(attributes);
-    });
-    mpris.on('pause', async () => {
-        await win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
-        const attributes = await getMusicKitAttributes()
-        await updateMetaData(attributes);
-    });
-    mpris.on('next', async () => {
-        await win.webContents.executeJavaScript('MusicKit.getInstance().skipToNextItem()')
-        const attributes = await getMusicKitAttributes()
-        await updateMetaData(attributes);
-    });
-    mpris.on('previous', async () => {
-        await win.webContents.executeJavaScript('MusicKit.getInstance().skipToPreviousItem()')
-        const attributes = await getMusicKitAttributes()
-        await updateMetaData(attributes);
-    });
+  // Insert Jarek Toros amazing work with MusicKit and Mpris (https://github.com/JarekToro/Apple-Music-Mpris/) (NOTE: Mpris is not enabled in this branch. See mpris-enabled)!
 
     electron.ipcMain.on('mediaItemStateDidChange', (item, a) => {
         updateMetaData(a)
@@ -171,33 +114,13 @@ function createWindow () {
 
     async function updateMetaData(attributes) {
 
-          let m = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
-          if (attributes == null) {
-              return
-          } else if (attributes.playParams.id === 'no-id-found') {
-
-          } else {
-              m = {
-                  'mpris:trackid': mpris.objectPath(`track/${attributes.playParams.id.replace(/[\.]+/g, "")}`),
-                  'mpris:length': attributes.durationInMillis * 1000, // In microseconds
-                  'mpris:artUrl': `${attributes.artwork.url.replace('/{w}x{h}bb', '/100x100bb')}`,
-                  'xesam:title': `${attributes.name}`,
-                  'xesam:album': `${attributes.albumName}`,
-                  'xesam:artist': [`${attributes.artistName}`,],
-                  'xesam:genre': attributes.genreNames
-              }
-          }
-          if (mpris.metadata["mpris:trackid"] === m["mpris:trackid"]) {
-              return
-          }
-
           // Update rich presence when audio is playing.
           win.webContents.on('media-started-playing', function() {
             client.updatePresence({
               state: `${attributes.albumName}`,
               details: `${attributes.name}`,
               startTimestamp: Date.now(),
-              endTimestamp: attributes.durationInMillis,
+              endTimestamp: 1337,
               largeImageKey: 'apple',
               smallImageKey: 'play',
               instance: true,
@@ -228,7 +151,6 @@ function createWindow () {
           instance: true,
         });
 
-        mpris.metadata = m
       }
 
 }
@@ -242,7 +164,5 @@ nativeTheme.themeSource = 'dark';
 app.whenReady().then(createWindow)
 
 app.on('window-all-closed', () => {
-    mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
-    mpris.playbackStatus = 'Stopped'
     app.quit()
 })
