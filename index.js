@@ -42,13 +42,9 @@ function createWindow () {
   // Load Apple Music site
   win.loadURL("https://music.apple.com");
 
-  // Hide iTunes prompt and other external buttons by Apple.
-  win.webContents.on('did-frame-finish-load', function() {
-    win.webContents.executeJavaScript("const elements = document.getElementsByClassName('web-navigation__native-upsell'); while (elements.length > 0) elements[0].remove();");
-  });
-
   // Hide iTunes prompt and other external buttons by Apple. Ensure deletion.
   win.webContents.on('did-stop-loading', function() {
+    win.webContents.executeJavaScript("const elements = document.getElementsByClassName('web-navigation__native-upsell'); while (elements.length > 0) elements[0].remove();");
     win.webContents.executeJavaScript("while (elements.length > 0) elements[0].remove();");
   });
 
@@ -71,13 +67,15 @@ function createWindow () {
 
     async function updateMetaData(attributes) {
 
+          var songlengthstring = Math.round(attributes.durationInMillis + Date.now())
+          var songlength = Number(songlengthstring)
           // Update rich presence when audio is playing.
           win.webContents.on('media-started-playing', function() {
             client.updatePresence({
               state: `${attributes.albumName}`,
               details: `${attributes.name}`,
               startTimestamp: Date.now(),
-              endTimestamp: 1337,
+              endTimestamp: songlength,
               largeImageKey: 'apple',
               smallImageKey: 'play',
               instance: true,
@@ -90,7 +88,7 @@ function createWindow () {
               state: "(Paused)",
               details: `${attributes.name}`,
               startTimestamp: Date.now(),
-              endTimestamp: 1337,
+              endTimestamp: Date.now(),
               largeImageKey: 'apple',
               smallImageKey: 'pause',
               instance: true,
@@ -102,7 +100,7 @@ function createWindow () {
           state: '(Nothing has played)',
           details: 'Music Stopped',
           startTimestamp: Date.now(),
-          endTimestamp: 1337,
+          endTimestamp: Date.now(),
           largeImageKey: 'apple',
           smallImageKey: 'stop',
           instance: true,
