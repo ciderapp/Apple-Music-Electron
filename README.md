@@ -1,10 +1,10 @@
 # Apple-Music-Electron
 Unofficial Apple Music application for Windows, Linux, and macOS without having to install iTunes or use the incredibly bloated web application through a browser.
 
-![alt text](https://i.imgur.com/I8xkFiM.png "Preview Image as of v1.9.1")
+![alt text](https://i.imgur.com/liNf6WL.png "Preview Image as of v1.5.1")
 Preview Image as of v1.9.1
 
-![alt text](https://i.imgur.com/ChgilDN.png "Preview Image of WIP Discord RPC support")
+![alt text](https://i.imgur.com/9BMDgI0.png "Discord RPC 1.5.1")
 
 Discord RPC is currently done and now included as of v1.5.0
 
