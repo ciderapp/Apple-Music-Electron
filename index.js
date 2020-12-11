@@ -72,7 +72,7 @@ function createWindow () {
           // Update rich presence when audio is playing.
           win.webContents.on('media-started-playing', function() {
             client.updatePresence({
-              state: `${attributes.albumName}`,
+              state: `${attributes.albumName} -- ${attributes.artistName}`,
               details: `${attributes.name}`,
               startTimestamp: Date.now(),
               endTimestamp: songlength,
