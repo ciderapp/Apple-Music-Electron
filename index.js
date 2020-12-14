@@ -14,7 +14,7 @@ const playbackStatusPause = 'Paused';
 const playbackStatusStop = 'Stopped';
 
 const filter = {
-    urls: ['https://music.apple.com/','https://music.apple.com/us/browse']
+    urls: ['https://beta.music.apple.com/','https://beta.music.apple.com/us/browse']
 }
 
 function createWindow () {
@@ -42,7 +42,7 @@ function createWindow () {
   win.setMenuBarVisibility(false);
 
   // Load Apple Music site
-  win.loadURL("https://music.apple.com");
+  win.loadURL("https://beta.music.apple.com");
 
   win.on('page-title-updated', function(e) {
     e.preventDefault()
