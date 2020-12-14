@@ -5,6 +5,7 @@ const fs = require('fs')
 const nativeTheme = electron.nativeTheme;
 const client = require('discord-rich-presence')('749317071145533440');
 const { session } = require('electron')
+require('v8-compile-cache');
 let pos_atr = {durationInMillis: 0};
 let currentPlayBackProgress
 
@@ -25,6 +26,7 @@ function createWindow () {
     minWidth: 300,
     minHeight: 300,
     frame: true,
+    title: "Apple Music",
   // Enables DRM
     webPreferences: {
       plugins: true,
@@ -41,6 +43,10 @@ function createWindow () {
 
   // Load Apple Music site
   win.loadURL("https://music.apple.com");
+
+  win.on('page-title-updated', function(e) {
+    e.preventDefault()
+  });
 
   // Hide iTunes prompt and other external buttons by Apple. Ensure deletion.
   win.webContents.on('did-stop-loading', function() {
@@ -72,7 +78,7 @@ function createWindow () {
           // Update rich presence when audio is playing.
           win.webContents.on('media-started-playing', function() {
             client.updatePresence({
-              state: `${attributes.albumName} -- ${attributes.artistName}`,
+              state: `${attributes.albumName} - ${attributes.artistName}`,
               details: `${attributes.name}`,
               startTimestamp: Date.now(),
               endTimestamp: songlength,
