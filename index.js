@@ -1,4 +1,4 @@
-const { app, BrowserWindow, globalShortcut } = require('electron')
+const { app, BrowserWindow, globalShortcut, Tray, Menu} = require('electron')
 const electron = require('electron');
 const path = require('path')
 const fs = require('fs')
@@ -8,6 +8,7 @@ const { session } = require('electron')
 require('v8-compile-cache');
 let pos_atr = {durationInMillis: 0};
 let currentPlayBackProgress
+let isQuiting
 
 const playbackStatusPlay = 'Playing';
 const playbackStatusPause = 'Paused';
@@ -48,6 +49,16 @@ function createWindow () {
     e.preventDefault()
   });
 
+  // hide app instead of quitting 
+  win.on('close', function (event) {
+    if (!isQuiting) {
+      event.preventDefault();
+      win.hide();
+      event.returnValue = false;
+    }
+  });
+
+
   // Hide iTunes prompt and other external buttons by Apple. Ensure deletion.
   win.webContents.on('did-stop-loading', function() {
     win.webContents.executeJavaScript("const elements = document.getElementsByClassName('web-navigation__native-upsell'); while (elements.length > 0) elements[0].remove();");
@@ -60,12 +71,52 @@ function createWindow () {
     await win.webContents.executeJavaScript('MusicKitInterop.init()')
   })
 
+  // create system tray icon
+  if(process.platform == 'win32') trayIcon = new Tray(path.join(__dirname, './assets/icon.ico'))
+  else trayIcon = new Tray(path.join(__dirname, './assets/icon.png'))
+
+  // right click menu to quit and show app
+  var contextMenu = Menu.buildFromTemplate([
+    { label: 'Show Window', click:  function(){
+        mainWindow.show();
+    } },
+    { label: 'Quit Apple Music', click:  function(){
+        app.isQuiting = true;
+        app.quit();
+    } }
+  ]);
+  trayIcon.setContextMenu(contextMenu);
+
+  // restore app on normal click
+  trayIcon.on('click', ()=>{
+    win.show()
+  })
 
   // Insert Jarek Toros amazing work with MusicKit and Mpris (https://github.com/JarekToro/Apple-Music-Mpris/) (NOTE: Mpris is not enabled in this branch. See mpris-enabled)!
 
     electron.ipcMain.on('mediaItemStateDidChange', (item, a) => {
         updateMetaData(a)
+        updateTooltip(a)
     })
+
+    async function updateTooltip(attributes){
+    
+        // Update tooltip when audio is playing.
+        win.webContents.on('media-started-playing',()=> {
+          var tooltip = `Playing ${attributes.name} - ${attributes.albumName} by ${attributes.artistName}`
+          trayIcon.setToolTip(tooltip);
+        })
+        
+        // Update tooltip when audio is paused
+        win.webContents.on('media-paused', () => {
+          var tooltip = `Paused ${attributes.name} on ${attributes.albumName} by ${attributes.artistName}`
+          trayIcon.setToolTip(tooltip)
+        })
+
+        // Start tooltip with idle name
+        var tooltip = `Nothing's playing right now`
+        trayIcon.setToolTip(tooltip);
+    }
 
     async function getMusicKitAttributes() {
           return await win.webContents.executeJavaScript(`MusicKitInterop.getAttributes()`);
@@ -127,3 +178,7 @@ app.whenReady().then(createWindow)
 app.on('window-all-closed', () => {
     app.quit()
 })
+
+app.on('before-quit', function () {
+  isQuiting = true;
+});
