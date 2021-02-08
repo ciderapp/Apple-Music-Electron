@@ -72,8 +72,8 @@ function createWindow () {
   })
 
   // create system tray icon
-  if(process.platform == 'win32') trayIcon = new Tray('./assets/icon.ico')
-  else trayIcon = new Tray('./assets/icon.png')
+  if(process.platform == 'win32') trayIcon = new Tray(path.join(__dirname, './assets/icon.ico'))
+  else trayIcon = new Tray(path.join(__dirname, './assets/icon.png'))
 
   // right click menu to quit and show app
   var contextMenu = Menu.buildFromTemplate([
