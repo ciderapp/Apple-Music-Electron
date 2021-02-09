@@ -1,3 +1,4 @@
+
 const { app, BrowserWindow, globalShortcut, Tray, Menu} = require('electron')
 const electron = require('electron');
 const path = require('path')
@@ -46,23 +47,20 @@ function createWindow () {
   // Check for Apple Music Sites
   var appleMusicUrl = "https://beta.music.apple.com"
   
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ///// commented out because this causes an issue on startup, Image is not defined when using node.js //////////
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /*
-  var img = new Image();
-  img.src = "https://beta.music.apple.com/assets/product/MissingArtworkMusic_dark.svg";
-  img.onload = function() {
-    //Up
-	var appleMusicUrl = "https://beta.music.apple.com"
-  }
-    img.onerror = function() {
-    //Down
-	alert("The Apple Music beta Server is down, switching to official Server.");
-	var appleMusicUrl = "https://music.apple.com"
-  }
-  // Load Apple Music site
-  */
+  function checkServerStatus()
+   {
+    var img = document.body.appendChild(document.createElement("img"));
+    img.onload = function()
+    {
+        var appleMusicUrl = "https://beta.music.apple.com"
+    };
+    img.onerror = function()
+    {
+        var appleMusicUrl = "https://music.apple.com"
+    };
+    img.src = "https://beta.music.apple.com/assets/product/MissingArtworkMusic_dark.svg";
+   }
+	
   win.loadURL(appleMusicUrl);
 
   win.on('page-title-updated', function(e) {
