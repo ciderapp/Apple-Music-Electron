@@ -46,20 +46,16 @@ function createWindow () {
     
   // Check for Apple Music Sites
   var appleMusicUrl = "https://beta.music.apple.com"
-  
-  function checkServerStatus()
-   {
-    var img = document.body.appendChild(document.createElement("img"));
-    img.onload = function()
-    {
-        var appleMusicUrl = "https://beta.music.apple.com"
-    };
-    img.onerror = function()
-    {
-        var appleMusicUrl = "https://music.apple.com"
-    };
-    img.src = "https://beta.music.apple.com/assets/product/MissingArtworkMusic_dark.svg";
-   }
+  var img = document.body.appendChild(document.createElement("img"));
+  img.onload = function()
+  {
+      var appleMusicUrl = "https://beta.music.apple.com"
+  };
+  img.onerror = function()
+  {
+      var appleMusicUrl = "https://music.apple.com"
+  };
+  img.src = "https://beta.music.apple.com/assets/product/MissingArtworkMusic_dark.svg";
 	
   win.loadURL(appleMusicUrl);
 
