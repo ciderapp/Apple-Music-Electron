@@ -9,6 +9,7 @@ require('v8-compile-cache');
 let pos_atr = {durationInMillis: 0};
 let currentPlayBackProgress
 let isQuiting
+let isMaximized
 
 const playbackStatusPlay = 'Playing';
 const playbackStatusPause = 'Paused';
@@ -26,7 +27,7 @@ function createWindow () {
     height: 600,
     minWidth: 300,
     minHeight: 300,
-    frame: true,
+    frame: false,
     title: "Apple Music",
   // Enables DRM
     webPreferences: {
@@ -59,10 +60,13 @@ function createWindow () {
   });
 
 
-  // Hide iTunes prompt and other external buttons by Apple. Ensure deletion.
+  // Hide iTunes prompt and other external buttons by Apple. Ensure deletion. Create Draggable div to act as title bar. Create close, min, and max buttons. (OSX style since this is *Apple* Music)
   win.webContents.on('did-stop-loading', function() {
     win.webContents.executeJavaScript("const elements = document.getElementsByClassName('web-navigation__native-upsell'); while (elements.length > 0) elements[0].remove();");
     win.webContents.executeJavaScript("while (elements.length > 0) elements[0].remove();");
+    win.webContents.executeJavaScript("let dragDiv = document.createElement('div'); dragDiv.style.width = '100%'; dragDiv.style.height = '32px'; dragDiv.style.position = 'absolute'; dragDiv.style.top = dragDiv.style.left = 0; dragDiv.style.webkitAppRegion = 'drag'; document.body.appendChild(dragDiv);")
+    win.webContents.executeJavaScript("var closeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; document.getElementsByClassName('web-navigation')[0].style.bottom = 0; document.getElementsByClassName('web-navigation')[0].style.position = 'absolute'; document.getElementsByClassName('web-chrome')[0].style.top = '32px'; var minimizeButton = document.createElement('span'); var maximizeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; closeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag; '; minimizeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; maximizeButton.style = 'height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; closeButton.onclick= window.close; minimizeButton.onclick = ()=>{ipcRenderer.send('minimize')}; maximizeButton.onclick = ()=>{ipcRenderer.send('maximize')}; dragDiv.appendChild(closeButton); dragDiv.appendChild(minimizeButton); dragDiv.appendChild(maximizeButton);")
+
   });
 
   // Fix those ugly scrollbars and also execute MusicKitInterop.
@@ -90,6 +94,23 @@ function createWindow () {
   // restore app on normal click
   trayIcon.on('click', ()=>{
     win.show()
+  })
+
+  // listen for minimize event
+  electron.ipcMain.on('minimize', ()=>{
+    win.minimize()
+  })
+
+  // listen for maximize event and perform restore/maximize depending on window state
+  electron.ipcMain.on('maximize', ()=>{
+    if(isMaximized){
+      win.restore()
+      isMaximized = false
+    }
+    else{
+    win.maximize()
+    isMaximized = true
+    }
   })
 
   // Insert Jarek Toros amazing work with MusicKit and Mpris (https://github.com/JarekToro/Apple-Music-Mpris/) (NOTE: Mpris is not enabled in this branch. See mpris-enabled)!
