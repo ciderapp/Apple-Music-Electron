@@ -6,6 +6,7 @@ const fs = require('fs')
 const nativeTheme = electron.nativeTheme;
 const client = require('discord-rich-presence')('749317071145533440');
 const { session } = require('electron')
+const isReachable = require('is-reachable');
 require('v8-compile-cache');
 let pos_atr = {durationInMillis: 0};
 let currentPlayBackProgress
@@ -45,18 +46,17 @@ function createWindow () {
   win.setMenuBarVisibility(false);
     
   // Check for Apple Music Sites
-  var appleMusicUrl = "https://beta.music.apple.com"
-  var img = document.body.appendChild(document.createElement("img"));
-  img.onload = function()
-  {
+  async function betaOnline() {
+      return isReachable('https://beta.music.apple.com');
+  }
+
+  var appleMusicUrl = "https://music.apple.com"
+
+  if (betaOnline().catch == true)
+    {
       var appleMusicUrl = "https://beta.music.apple.com"
-  };
-  img.onerror = function()
-  {
-      var appleMusicUrl = "https://music.apple.com"
-  };
-  img.src = "https://beta.music.apple.com/assets/product/MissingArtworkMusic_dark.svg";
-	
+    }
+
   win.loadURL(appleMusicUrl);
 
   win.on('page-title-updated', function(e) {
