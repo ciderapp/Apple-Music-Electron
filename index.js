@@ -100,7 +100,7 @@ function createWindow () {
   // right click menu to quit and show app
   var contextMenu = Menu.buildFromTemplate([
     { label: 'Show Window', click:  function(){
-        mainWindow.show();
+        win.show();
     } },
     { label: 'Quit Apple Music', click:  function(){
         app.isQuiting = true;
