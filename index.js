@@ -8,21 +8,15 @@ const client = require('discord-rich-presence')('749317071145533440');
 const { session } = require('electron')
 const isReachable = require('is-reachable');
 require('v8-compile-cache');
-let pos_atr = {durationInMillis: 0};
 let currentPlayBackProgress
 let isQuiting
 let isMaximized
 
-const playbackStatusPlay = 'Playing';
-const playbackStatusPause = 'Paused';
-const playbackStatusStop = 'Stopped';
-
 const filter = {
-    urls: ['https://beta.music.apple.com/','https://beta.music.apple.com/us/browse']
+    urls: ['https://beta.music.apple.com/','https://beta.music.apple.com/us/browse','https://music.apple.com/','https://music.apple.com/us/browse']
 }
 
 function createWindow () {
-  // Create the browser window.
   const win = new BrowserWindow({
     icon: path.join(__dirname, './assets/icon.png'),
     width: 1024,
@@ -39,12 +33,9 @@ function createWindow () {
     }
   })
 
-  // Apply dangerous sandbox patch for Debian/Ubuntu devices and systems. Disabled by default.
-  // app.commandLine.appendSwitch('--no-sandbox')
-
   // Hide toolbar tooltips / bar
   win.setMenuBarVisibility(false);
-    
+
   // Check for Apple Music Sites
   async function betaOnline() {
       return isReachable('https://beta.music.apple.com');
@@ -63,7 +54,7 @@ function createWindow () {
     e.preventDefault()
   });
 
-  // hide app instead of quitting 
+  // hide app instead of quitting
   win.on('close', function (event) {
     if (!isQuiting) {
       event.preventDefault();
@@ -71,7 +62,6 @@ function createWindow () {
       event.returnValue = false;
     }
   });
-
 
   // Hide iTunes prompt and other external buttons by Apple. Ensure deletion. Create Draggable div to act as title bar. Create close, min, and max buttons. (OSX style since this is *Apple* Music)
   win.webContents.on('did-stop-loading', function() {
@@ -126,20 +116,19 @@ function createWindow () {
   })
 
   // Insert Jarek Toros amazing work with MusicKit and Mpris (https://github.com/JarekToro/Apple-Music-Mpris/) (NOTE: Mpris is not enabled in this branch. See mpris-enabled)!
-
     electron.ipcMain.on('mediaItemStateDidChange', (item, a) => {
         updateMetaData(a)
         updateTooltip(a)
     })
 
     async function updateTooltip(attributes){
-    
+
         // Update tooltip when audio is playing.
         win.webContents.on('media-started-playing',()=> {
           var tooltip = `Playing ${attributes.name} - ${attributes.albumName} by ${attributes.artistName}`
           trayIcon.setToolTip(tooltip);
         })
-        
+
         // Update tooltip when audio is paused
         win.webContents.on('media-paused', () => {
           var tooltip = `Paused ${attributes.name} on ${attributes.albumName} by ${attributes.artistName}`
@@ -197,7 +186,6 @@ function createWindow () {
         });
 
       }
-
 }
 
 // This argument is for Linux operating systems that dont support the CSS theme preference.
