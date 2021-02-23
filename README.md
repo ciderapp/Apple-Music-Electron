@@ -4,7 +4,7 @@ Unofficial Apple Music application for Windows, Linux, and macOS without having 
 ![alt text](https://i.imgur.com/liNf6WL.png "Preview Image as of v1.5.1")
 Preview Image as of v1.5.1
 
-![alt text](https://i.imgur.com/9BMDgI0.png "Discord RPC 1.5.1")
+![alt text](https://i.imgur.com/zpVi3d6.png "Discord RPC 1.5.5")
 
 Discord RPC is currently done and now included as of v1.5.0
 
