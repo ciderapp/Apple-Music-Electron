@@ -23,7 +23,7 @@ function createWindow () {
     height: 600,
     minWidth: 300,
     minHeight: 300,
-    frame: true,
+    frame: false,
     title: "Apple Music",
   // Enables DRM
     webPreferences: {
