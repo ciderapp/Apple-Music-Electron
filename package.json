@@ -3,7 +3,7 @@
   "homepage": "https://github.com/iiFir3z/Apple-Music-Electron",
   "name": "apple-music-electron",
   "productName": "Apple Music",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "description": "Unofficial Electron wrapper for Apple Music created by @cryptofyre",
   "license": "MIT",
   "buildResources": "assets",
@@ -18,20 +18,21 @@
     "discord-rich-presence": "^0.0.8",
     "discord-rpc": "^3.1.4",
     "electron-updater": "^4.3.5",
+    "is-reachable": "^5.0.0",
+    "node-fetch": "^2.6.1",
     "source-map-support": "^0.5.16",
-    "v8-compile-cache": "^2.1.1",
-    "is-reachable": "^5.0.0"
+    "v8-compile-cache": "^2.1.1"
   },
   "devDependencies": {
-    "electron": "https://github.com/castlabs/electron-releases.git",
+    "electron": "https://github.com/cryptofyre/castlabs-electron12.git",
     "electron-builder": "^22.7.0",
-    "electron-webpack": "^2.8.2",
+    "electron-webpack": "^2.7.4",
     "musickit-typescript": "^1.2.4",
     "webpack": "~4.42.1"
   },
   "build": {
     "electronDownload": {
-      "mirror": "https://github.com/castlabs/electron-releases/releases/download/v"
+      "mirror": "https://github.com/cryptofyre/castlabs-electron12/releases/download/v"
     },
     "appId": "apple-music",
     "extends": null,

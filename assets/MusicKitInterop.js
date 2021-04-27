@@ -16,11 +16,13 @@ const MusicKitInterop = {
 
     getAttributes: function() {
         const nowPlayingItem =  MusicKit.getInstance().nowPlayingItem;
+        const isplaying = MusicKit.getInstance().isPlaying;
         let attributes  = {};
 
         if (nowPlayingItem != null){
            attributes = nowPlayingItem.attributes;
         }
+        attributes.status = isplaying ? isplaying : false;
         attributes.name = attributes.name ? attributes.name : 'No Title Found';
         attributes.durationInMillis = attributes.durationInMillis ? attributes.durationInMillis : 0;
         attributes.artwork = attributes.artwork ? attributes.artwork : {url: ''};
