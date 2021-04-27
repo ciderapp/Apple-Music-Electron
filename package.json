@@ -3,7 +3,7 @@
   "homepage": "https://github.com/iiFir3z/Apple-Music-Electron",
   "name": "apple-music-electron",
   "productName": "Apple Music",
-  "version": "1.5.6",
+  "version": "1.5.7",
   "description": "Unofficial Electron wrapper for Apple Music created by @cryptofyre",
   "license": "MIT",
   "buildResources": "assets",
