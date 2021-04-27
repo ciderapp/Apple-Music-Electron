@@ -17,7 +17,7 @@ Report issues with the application here so I can make things better for you and 
 
 ## Compiling from source.
 ```
-git clone https://github.com/iiFir3z/Apple-Music-Electron.git
+git clone https://github.com/cryptofyre/Apple-Music-Electron.git
 
 yarn install
 
