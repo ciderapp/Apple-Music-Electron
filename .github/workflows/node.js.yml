@@ -27,12 +27,12 @@ jobs:
     - run: npm install
     
     - name: Build Artifacts
-    - uses: CultureHQ/actions-yarn@v1.0.1 actions/setup-node@v1
+      uses: CultureHQ/actions-yarn@v1.0.1 actions/setup-node@v1
     - run: yarn dist
     
     - name: Upload Artifacts
-    - uses: actions/upload-artifact@v2
-    - with:
+      uses: actions/upload-artifact@v2
+      with:
        name: Apple-Music-Electron-Artifacts
        path: dist
     
