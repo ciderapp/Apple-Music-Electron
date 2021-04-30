@@ -1,8 +1,8 @@
 <p align="center">
   <a href="https://github.com/cryptofyre/Apple-Music-Electron">
-    <img src="https://i.imgur.com/r0kNmgV.png" alt="Logo" width="800" height="122">
+    <img src="https://i.imgur.com/r0kNmgV.png" alt="Logo" width="800" height="122">    
   </a>
-<p align="center">
+<p align="center"> 
     A free, lightweight, open source alternative to iTunes and other Apple Music applications based on Electron 12.0.0
     <br />
     <a href="https://github.com/cryptofyre/Apple-Music-Electron/releases"><strong>View the releases! »</strong></a>
@@ -13,6 +13,14 @@
     <a href="https://github.com/cryptofyre/Apple-Music-Electron/issues">Report Bug</a>
     ·
     <a href="https://github.com/cryptofyre/Apple-Music-Electron/issues">Request Feature</a>
+  </p>
+  <p align="center"> 
+  <img src="https://img.shields.io/github/stars/cryptofyre/Apple-Music-Electron" alt="Stars">
+  <img src="https://img.shields.io/github/forks/cryptofyre/Apple-Music-Electron" alt="Forks">
+  <img src="https://img.shields.io/github/license/cryptofyre/Apple-Music-Electron" alt="MIT">
+  <img src="https://img.shields.io/github/downloads/cryptofyre/Apple-Music-Electron/total.svg?style=flat" alt="Downloads">
+  <img src="https://img.shields.io/github/release/cryptofyre/Apple-Music-Electron.svg?style=flat" alt="Release">
+  
   </p>
 
 ## Features:
