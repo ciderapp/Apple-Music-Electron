@@ -11,10 +11,10 @@ let isMaximized
 // Optional Features
 const customtitlebar = true // NOTE: Enables a custom macOS-isk titlebar instead of your respected platforms titlebars. Enable frame manually if disabled. (true by default)
 const discordrpc = true // NOTE: Removes all Discord RPC when disabled. (true by default)
-const showalbum = false // NOTE: Removes Album Name from Discord RPC when disabled (true by default)
+const showalbum = true // NOTE: Removes Album Name from Discord RPC when disabled (true by default)
 const sitedetection = false // NOTE: Checks sites on startup if online when enabled. (false by default. can slow down start up performance)
-const showscrollbars = true // NOTE: Shows scrollbars on page when enabled. (false by default)
-const removeapplelogo = true // NOTE: Removes Apple Logo when enabled. (true by default)
+const showscrollbars = false // NOTE: Shows scrollbars on page when enabled. (false by default)
+const removeapplelogo = false // NOTE: Removes Apple Logo when enabled. (true by default)
 const forcedarkmode = false // NOTE: Really only useful for Linux machines that don't support css dark mode. (false by default)
 // For those not familiar with javascript in anyway shape or form just change things from false to true or vice versa. Compile accordingly.
 
