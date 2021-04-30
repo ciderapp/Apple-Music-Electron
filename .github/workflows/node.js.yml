@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     strategy:
       matrix:
@@ -25,5 +25,14 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm run build --if-present
-    - run: npm test
+    
+    - name: Build Artifacts
+      uses: CultureHQ/actions-yarn@v1.0.1
+    - run: yarn dist -w
+    
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+       name: Apple-Music-Electron-Artifacts
+       path: dist
     
