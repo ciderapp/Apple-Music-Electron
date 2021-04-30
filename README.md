@@ -20,6 +20,8 @@
   <img src="https://img.shields.io/github/license/cryptofyre/Apple-Music-Electron" alt="MIT">
   <img src="https://img.shields.io/github/downloads/cryptofyre/Apple-Music-Electron/total.svg?style=flat" alt="Downloads">
   <img src="https://img.shields.io/github/release/cryptofyre/Apple-Music-Electron.svg?style=flat" alt="Release">
+  <img src="https://github.com/cryptofyre/Apple-Music-Electron/actions/workflows/node.js.yml/badge.svg?branch=master" alt="Build">
+  
   
   </p>
 
