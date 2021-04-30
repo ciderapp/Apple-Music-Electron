@@ -2,8 +2,8 @@
 Unofficial Apple Music application for Windows, Linux, and macOS without having to install iTunes or use the incredibly bloated web application through a browser.
   [![Node.js CI](https://github.com/cryptofyre/Apple-Music-Electron/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/cryptofyre/Apple-Music-Electron/actions/workflows/node.js.yml)
 
-![alt text](https://i.imgur.com/bzM8ifK.png "Preview Image as of v1.5.7")
-Preview Image as of v1.5.7
+![alt text](https://i.imgur.com/bzM8ifK.png "Preview Image as of v1.5.8")
+Preview Image as of v1.5.8
 
 ![alt text](https://i.imgur.com/zpVi3d6.png "Discord RPC 1.5.5")
 
