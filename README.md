@@ -5,14 +5,14 @@
 <p align="center">
     A free, lightweight, open source alternative to iTunes and other Apple Music applications based on Electron 12.0.0
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>View the releases! »</strong></a>
+    <a href="https://github.com/cryptofyre/Apple-Music-Electron/releases"><strong>View the releases! »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">Follow Me</a>
+    <a href="https://twitter.com/cryptofyre">Follow Me</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
+    <a href="https://github.com/cryptofyre/Apple-Music-Electron/issues">Report Bug</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+    <a href="https://github.com/cryptofyre/Apple-Music-Electron/issues">Request Feature</a>
   </p>
 
 ## Features:
