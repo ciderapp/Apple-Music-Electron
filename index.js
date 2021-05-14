@@ -1,5 +1,6 @@
 require('v8-compile-cache');
 const {app, BrowserWindow, Tray, Menu} = require('electron')
+const glasstron = require('glasstron');
 const electron = require('electron');
 const path = require('path')
 const isReachable = require("is-reachable");
@@ -7,6 +8,7 @@ const nativeTheme = electron.nativeTheme;
 const client = require('discord-rich-presence')('749317071145533440');
 let isQuiting
 let isMaximized
+electron.app.commandLine.appendSwitch("enable-transparent-visuals");
 
 // Optional Features
 const customtitlebar = true // NOTE: Enables a custom macOS-isk titlebar instead of your respected platforms titlebars. Enable frame manually if disabled. (true by default)
@@ -16,9 +18,12 @@ const sitedetection = false // NOTE: Checks sites on startup if online when enab
 const showscrollbars = false // NOTE: Shows scrollbars on page when enabled. (false by default)
 const removeapplelogo = true // NOTE: Removes Apple Logo when enabled. (true by default)
 const forcedarkmode = false // NOTE: Really only useful for Linux machines that don't support css dark mode. (false by default)
+const sexytransparencymode = false // NOTE: kind of a CSS experiment that uses Glasstron as its blur renderer.
 // For those not familiar with javascript in anyway shape or form just change things from false to true or vice versa. Compile accordingly.
 
 function createWindow () {
+  // Uncomment below if using sexytransparencymode and remove the old one.
+  // const win = new glasstron.BrowserWindow({
   const win = new BrowserWindow({
     icon: path.join(__dirname, './assets/icon.png'),
     width: 1024,
@@ -31,12 +36,19 @@ function createWindow () {
     webPreferences: {
       plugins: true,
       preload: path.join(__dirname, './assets/MusicKitInterop.js'),
-      allowRunningInsecureContent: true
+      allowRunningInsecureContent: true,
+      contextIsolation: false,
+      sandbox: true
     }
   })
 
+  win.blurType = "blurbehind";
+  win.setBlur(true);
+
+
   // Hide toolbar tooltips / bar
   win.setMenuBarVisibility(false);
+
 
   if (sitedetection === true) {
     async function betaOnline() {
@@ -70,6 +82,10 @@ function createWindow () {
     win.webContents.executeJavaScript("const openitunes = document.getElementsByClassName('web-navigation__native-upsell'); while (openitunes.length > 0) openitunes[0].remove();");
     win.webContents.executeJavaScript("while (openitunes.length > 0) openitunes[0].remove();");
     win.webContents.executeJavaScript("console.log(\"Removed upsell.\")")
+    if (sexytransparencymode === true) {
+      win.webContents.executeJavaScript("document.getElementsByTagName('body')[0].style = 'background-color: rgb(25 24 24 / 84%) !important;';")
+      win.webContents.executeJavaScript("document.getElementsByClassName('web-chrome')[0].style = 'top: 32px; background-color: #2d2d2d40; backdrop-filter: saturate(0%) blur(25px);';")
+    }
     if (removeapplelogo === true) {
       win.webContents.executeJavaScript("const applelogo = document.getElementsByClassName('web-navigation__header web-navigation__header--logo'); while (applelogo.length > 0) applelogo[0].remove();");
       win.webContents.executeJavaScript("while (applelogo.length > 0) applelogo[0].remove();");
