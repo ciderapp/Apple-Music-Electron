@@ -21,6 +21,10 @@ const forcedarkmode = false // NOTE: Really only useful for Linux machines that 
 const sexytransparencymode = false // NOTE: kind of a CSS experiment that uses Glasstron as its blur renderer.
 // For those not familiar with javascript in anyway shape or form just change things from false to true or vice versa. Compile accordingly.
 
+if (sexytransparencymode === true) {
+  electron.app.commandLine.appendSwitch("enable-transparent-visuals");
+}
+
 function createWindow () {
   // Uncomment below if using sexytransparencymode and remove the old one.
   // const win = new glasstron.BrowserWindow({
@@ -41,9 +45,10 @@ function createWindow () {
       sandbox: true
     }
   })
-
-  win.blurType = "blurbehind";
-  win.setBlur(true);
+  if (sexytransparencymode === true) {
+    win.blurType = "blurbehind";
+    win.setBlur(true);
+  }
 
 
   // Hide toolbar tooltips / bar
