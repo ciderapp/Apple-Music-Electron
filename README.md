@@ -32,6 +32,7 @@
 
 ## Features:
 
+* Actively Maintained
 * Customizable CSS
 * Discord RPC Support
 * Lightweight
