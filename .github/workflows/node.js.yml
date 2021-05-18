@@ -24,17 +24,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: |
-        npm install -g yarn
-        yarn install
-        yarn dist -p never
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v2.2.3
-      with:
-        # Artifact name
-        name: Artifacts
-        # A file, directory or wildcard pattern that describes what to upload
-        path: dist/
-        # The desired behavior if no files are found using the provided path.
+    - run: npm run build --if-present
+    - run: npm test
       
     
