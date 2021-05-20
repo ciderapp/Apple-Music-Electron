@@ -10,6 +10,9 @@ let isQuiting
 let isMaximized
 electron.app.commandLine.appendSwitch("enable-transparent-visuals");
 
+// Set proper cache folder
+app.setPath("userData", path.join(app.getPath("cache"), app.name))
+
 // Optional Features
 const customtitlebar = true // NOTE: Enables a custom macOS-isk titlebar instead of your respected platforms titlebars. Enable frame manually if disabled. (true by default)
 const discordrpc = true // NOTE: Removes all Discord RPC when disabled. (true by default)
