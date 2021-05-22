@@ -2,7 +2,7 @@
     "dark_mode":false,
     "discord_rpc":true,
     "transparent_mode":false,
-    "beta":true,
+    "beta":false,
     "custom_titlebar": true,
     "show_album": true,
     "remove_apple_logo": true,
