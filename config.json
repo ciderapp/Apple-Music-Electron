@@ -1,0 +1,11 @@
+{
+    "dark_mode":false,
+    "discord_rpc":false,
+    "transparent_mode":false,
+    "beta":true,
+    "custom_titlebar": true,
+    "show_album": true,
+    "remove_apple_logo": true,
+    "show_scrollbars": false,
+    "site_detection": false
+}
