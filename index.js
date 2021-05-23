@@ -16,7 +16,7 @@ let win;
 app.setPath("userData", path.join(app.getPath("cache"), app.name))
 
 // Optional Features
-const customtitlebar = config.customtitlebar // NOTE: Enables a custom macOS-isk titlebar instead of your respected platforms titlebars. Enable frame manually if disabled. (true by default)
+const customtitlebar = config.custom_titlebar // NOTE: Enables a custom macOS-isk titlebar instead of your respected platforms titlebars. Enable frame manually if disabled. (true by default)
 const discordrpc = config.discord_rpc // NOTE: Removes all Discord RPC when disabled. (true by default)
 const showalbum = config.show_album // NOTE: Removes Album Name from Discord RPC when disabled (true by default)
 const sitedetection = config.site_detection // NOTE: Checks sites on startup if online when enabled. (false by default. can slow down start up performance)

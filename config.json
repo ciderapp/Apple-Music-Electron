@@ -1,6 +1,6 @@
 {
     "dark_mode":false,
-    "discord_rpc":true,
+    "discord_rpc":false,
     "transparent_mode":false,
     "beta":false,
     "custom_titlebar": true,
