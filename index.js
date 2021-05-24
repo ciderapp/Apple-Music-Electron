@@ -8,6 +8,7 @@ const nativeTheme = electron.nativeTheme;
 const client = require('discord-rich-presence')('749317071145533440');
 let isQuiting
 let isMaximized
+var win
 electron.app.commandLine.appendSwitch("enable-transparent-visuals");
 
 // Set proper cache folder
@@ -30,26 +31,42 @@ if (sexytransparencymode === true) {
 }
 
 function createWindow () {
-  // Uncomment below if using sexytransparencymode and remove the old one.
-  // const win = new glasstron.BrowserWindow({
-  const win = new BrowserWindow({
-    icon: path.join(__dirname, './assets/icon.png'),
-    width: 1024,
-    height: 600,
-    minWidth: 300,
-    minHeight: 300,
-    frame: !customtitlebar,
-    title: "Apple Music",
-    // Enables DRM
-    webPreferences: {
-      plugins: true,
-      preload: path.join(__dirname, './assets/MusicKitInterop.js'),
-      allowRunningInsecureContent: true,
-      contextIsolation: false,
-      sandbox: true
-    }
-  })
   if (sexytransparencymode === true) {
+    win = new BrowserWindow({
+      icon: path.join(__dirname, './assets/icon.png'),
+      width: 1024,
+      height: 600,
+      minWidth: 300,
+      minHeight: 300,
+      frame: !customtitlebar,
+      title: "Apple Music",
+      // Enables DRM
+      webPreferences: {
+        plugins: true,
+        preload: path.join(__dirname, './assets/MusicKitInterop.js'),
+        allowRunningInsecureContent: true,
+        contextIsolation: false,
+        sandbox: true
+      }
+    })
+  } else {
+    win = new glasstron.BrowserWindow({
+      icon: path.join(__dirname, './assets/icon.png'),
+      width: 1024,
+      height: 600,
+      minWidth: 300,
+      minHeight: 300,
+      frame: !customtitlebar,
+      title: "Apple Music",
+      // Enables DRM
+      webPreferences: {
+        plugins: true,
+        preload: path.join(__dirname, './assets/MusicKitInterop.js'),
+        allowRunningInsecureContent: true,
+        contextIsolation: false,
+        sandbox: true
+      }
+    })
     win.blurType = "blurbehind";
     win.setBlur(true);
   }
