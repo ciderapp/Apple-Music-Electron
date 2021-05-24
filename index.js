@@ -22,6 +22,7 @@ const showscrollbars = false // NOTE: Shows scrollbars on page when enabled. (fa
 const removeapplelogo = true // NOTE: Removes Apple Logo when enabled. (true by default)
 const forcedarkmode = false // NOTE: Really only useful for Linux machines that don't support css dark mode. (false by default)
 const sexytransparencymode = false // NOTE: kind of a CSS experiment that uses Glasstron as its blur renderer.
+const closebuttonminimize = false // NOTE: means when you press the close button it minimizes the app instead of quiting.
 // For those not familiar with javascript in anyway shape or form just change things from false to true or vice versa. Compile accordingly.
 
 if (sexytransparencymode === true) {
@@ -37,7 +38,7 @@ function createWindow () {
     height: 600,
     minWidth: 300,
     minHeight: 300,
-    frame: false,
+    frame: !customtitlebar,
     title: "Apple Music",
     // Enables DRM
     webPreferences: {
@@ -58,16 +59,21 @@ function createWindow () {
   win.setMenuBarVisibility(false);
 
 
-  if (sitedetection === true) {
-    async function betaOnline() {
-      return isReachable('https://beta.music.apple.com');
+  // Function to Load the Website if its reachable.
+  async function BetaAvailable() {
+    const web = await isReachable('https://beta.music.apple.com')
+    if (web) {
+      appleMusicUrl = 'https://beta.music.apple.com';
+    } else {
+      appleMusicUrl = 'https://music.apple.com';
     }
-    var appleMusicUrl = 'https://music.apple.com';
-    if (betaOnline().catch === true) {
-     appleMusicUrl = 'https://beta.music.apple.com';
-    }
+  }
+
+  // Skips the check if sitedetection is turned off.
+  if (sitedetection) {
+      BetaAvailable()
   } else {
-    appleMusicUrl = 'https://beta.music.apple.com';
+      appleMusicUrl = 'https://music.apple.com';
   }
 
   win.loadURL(appleMusicUrl);
@@ -78,11 +84,14 @@ function createWindow () {
 
   // hide app instead of quitting
   win.on('close', function (event) {
-    if (!isQuiting) {
-      event.preventDefault();
-      win.hide();
-      event.returnValue = false;
+    event.preventDefault();
+    if (!isQuiting && closebuttonminimize) {
+        win.hide();
+    } else if (!isQuiting && !closebuttonminimize) {
+        app.isQuiting = true;
+        app.quit();
     }
+    event.returnValue = false;
   });
 
   // Hide iTunes prompt and other external buttons by Apple. Ensure deletion.  OPTIONAL: Create Draggable div to act as title bar. Create close, min, and max buttons. (OSX style since this is *Apple* Music)
@@ -119,24 +128,46 @@ function createWindow () {
   else trayIcon = new Tray(path.join(__dirname, './assets/icon.png'))
 
   // right click menu to quit and show app
-  const contextMenu = Menu.buildFromTemplate([
+  const ClosedContextMenu = Menu.buildFromTemplate([
     {
-      label: 'Show Window', click: function () {
-        win.show();
-      }
+        label: 'Show Apple Music', click: function () {
+            win.show();
+        }
     },
     {
-      label: 'Quit Apple Music', click: function () {
-        app.isQuiting = true;
-        app.quit();
-      }
+        label: 'Quit', click: function () {
+            app.isQuiting = true;
+            app.quit();
+        }
     }
   ]);
-  trayIcon.setContextMenu(contextMenu);
+
+  const OpenContextMenu = Menu.buildFromTemplate([
+      {
+          label: 'Minimize to Tray', click: function () {
+              win.hide();
+          }
+      },
+      {
+          label: 'Quit', click: function () {
+              app.isQuiting = true;
+              app.quit();
+          }
+      }
+  ]);
+  trayIcon.setContextMenu(OpenContextMenu);
 
   // restore app on normal click
   trayIcon.on('click', () => {
     win.show()
+  })
+
+  win.on('hide', function (e) {
+    trayIcon.setContextMenu(ClosedContextMenu);
+  })
+
+  win.on('show', function (e) {
+      trayIcon.setContextMenu(OpenContextMenu);
   })
 
   // listen for minimize event
