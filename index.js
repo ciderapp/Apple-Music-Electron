@@ -77,24 +77,19 @@ function createWindow () {
   // Hide toolbar tooltips / bar
   win.setMenuBarVisibility(false);
 
-
-  if (usebeta) {
-    if (sitedetection) {
-      // Function to Load the Website if its reachable.
-      async function LoadBeta() {
-        const web = await isReachable('https://beta.music.apple.com')
-        if (web) {
-          win.loadURL('https://beta.music.apple.com');
-        } else {
-          win.loadURL('https://music.apple.com');
-        }
+  if (sitedetection) {
+    // Function to Load the Website if its reachable.
+    async function LoadBeta() {
+      const web = await isReachable('https://beta.music.apple.com')
+      if (web) {
+        win.loadURL('https://beta.music.apple.com');
+      } else {
+        win.loadURL('https://music.apple.com');
       }
-      LoadBeta()
-    } else {    // Skips the check if sitedetection is turned off.
-      win.loadURL('https://beta.music.apple.com');
     }
-  } else {
-    win.loadURL('https://music.apple.com');
+    LoadBeta()
+  } else {    // Skips the check if sitedetection is turned off.
+    win.loadURL('https://beta.music.apple.com');
   }
 
   win.on('page-title-updated', function (e) {
