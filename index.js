@@ -15,7 +15,7 @@ electron.app.commandLine.appendSwitch("enable-transparent-visuals");
 app.setPath("userData", path.join(app.getPath("cache"), app.name))
 
 // Optional Features
-const customtitlebar = true // NOTE: Enables a custom macOS-isk titlebar instead of your respected platforms titlebars. Enable frame manually if disabled. (true by default)
+const customtitlebar = false // NOTE: Enables a custom macOS-isk titlebar instead of your respected platforms titlebars. (true by default)
 const discordrpc = true // NOTE: Removes all Discord RPC when disabled. (true by default)
 const showalbum = true // NOTE: Removes Album Name from Discord RPC when disabled (true by default)
 const sitedetection = false // NOTE: Checks sites on startup if online when enabled. (false by default. can slow down start up performance)
@@ -34,24 +34,6 @@ isQuiting = !closebuttonminimize
 
 function createWindow () {
   if (sexytransparencymode === true) {
-    win = new BrowserWindow({
-      icon: path.join(__dirname, './assets/icon.png'),
-      width: 1024,
-      height: 600,
-      minWidth: 300,
-      minHeight: 300,
-      frame: !customtitlebar,
-      title: "Apple Music",
-      // Enables DRM
-      webPreferences: {
-        plugins: true,
-        preload: path.join(__dirname, './assets/MusicKitInterop.js'),
-        allowRunningInsecureContent: true,
-        contextIsolation: false,
-        sandbox: true
-      }
-    })
-  } else {
     win = new glasstron.BrowserWindow({
       icon: path.join(__dirname, './assets/icon.png'),
       width: 1024,
@@ -71,8 +53,25 @@ function createWindow () {
     })
     win.blurType = "blurbehind";
     win.setBlur(true);
+  } else {
+    win = new BrowserWindow({
+      icon: path.join(__dirname, './assets/icon.png'),
+      width: 1024,
+      height: 600,
+      minWidth: 300,
+      minHeight: 300,
+      frame: !customtitlebar,
+      title: "Apple Music",
+      // Enables DRM
+      webPreferences: {
+        plugins: true,
+        preload: path.join(__dirname, './assets/MusicKitInterop.js'),
+        allowRunningInsecureContent: true,
+        contextIsolation: false,
+        sandbox: true
+      }
+    })
   }
-
 
   // Hide toolbar tooltips / bar
   win.setMenuBarVisibility(false);
