@@ -30,6 +30,8 @@ if (sexytransparencymode === true) {
   electron.app.commandLine.appendSwitch("enable-transparent-visuals");
 }
 
+isQuiting = !closebuttonminimize
+
 function createWindow () {
   if (sexytransparencymode === true) {
     win = new BrowserWindow({
@@ -76,39 +78,36 @@ function createWindow () {
   win.setMenuBarVisibility(false);
 
 
-  // Function to Load the Website if its reachable.
-  async function BetaAvailable() {
-    const web = await isReachable('https://beta.music.apple.com')
-    if (web) {
-      appleMusicUrl = 'https://beta.music.apple.com';
-    } else {
-      appleMusicUrl = 'https://music.apple.com';
+  if (usebeta) {
+    if (sitedetection) {
+      // Function to Load the Website if its reachable.
+      async function LoadBeta() {
+        const web = await isReachable('https://beta.music.apple.com')
+        if (web) {
+          win.loadURL('https://beta.music.apple.com');
+        } else {
+          win.loadURL('https://music.apple.com');
+        }
+      }
+      LoadBeta()
+    } else {    // Skips the check if sitedetection is turned off.
+      win.loadURL('https://beta.music.apple.com');
     }
-  }
-
-  // Skips the check if sitedetection is turned off.
-  if (sitedetection) {
-      BetaAvailable()
   } else {
-      appleMusicUrl = 'https://music.apple.com';
+    win.loadURL('https://music.apple.com');
   }
-
-  win.loadURL(appleMusicUrl);
 
   win.on('page-title-updated', function (e) {
     e.preventDefault()
   });
 
-  // hide app instead of quitting
+  // Hide the App if isQuitting is not true
   win.on('close', function (event) {
-    event.preventDefault();
-    if (!isQuiting && closebuttonminimize) {
-        win.hide();
-    } else if (!isQuiting && !closebuttonminimize) {
-        app.isQuiting = true;
-        app.quit();
+    if (!isQuiting) {
+      event.preventDefault();
+      win.hide();
+      event.returnValue = false;
     }
-    event.returnValue = false;
   });
 
   // Hide iTunes prompt and other external buttons by Apple. Ensure deletion.  OPTIONAL: Create Draggable div to act as title bar. Create close, min, and max buttons. (OSX style since this is *Apple* Music)
