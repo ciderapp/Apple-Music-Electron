@@ -100,7 +100,6 @@ function createWindow () {
     if (!isQuiting) {
       event.preventDefault();
       win.hide();
-      event.returnValue = false;
     }
   });
 
