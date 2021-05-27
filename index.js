@@ -10,30 +10,32 @@ let isQuiting
 let isMaximized
 var win
 electron.app.commandLine.appendSwitch("enable-transparent-visuals");
+const config = require("./config.json");
+let win;
 
 // Set proper cache folder
 app.setPath("userData", path.join(app.getPath("cache"), app.name))
 
 // Optional Features
-const customtitlebar = false // NOTE: Enables a custom macOS-isk titlebar instead of your respected platforms titlebars. (true by default)
-const discordrpc = true // NOTE: Removes all Discord RPC when disabled. (true by default)
-const showalbum = true // NOTE: Removes Album Name from Discord RPC when disabled (true by default)
-const sitedetection = false // NOTE: Checks sites on startup if online when enabled. (false by default. can slow down start up performance)
-const showscrollbars = false // NOTE: Shows scrollbars on page when enabled. (false by default)
-const removeapplelogo = true // NOTE: Removes Apple Logo when enabled. (true by default)
-const forcedarkmode = false // NOTE: Really only useful for Linux machines that don't support css dark mode. (false by default)
-const sexytransparencymode = false // NOTE: kind of a CSS experiment that uses Glasstron as its blur renderer.
-const closebuttonminimize = false // NOTE: means when you press the close button it minimizes the app instead of quiting.
+const customtitlebar = config.custom_titlebar // NOTE: Enables a custom macOS-isk titlebar instead of your respected platforms titlebars. Enable frame manually if disabled. (true by default)
+const discordrpc = config.discord_rpc // NOTE: Removes all Discord RPC when disabled. (true by default)
+const showalbum = config.show_album // NOTE: Removes Album Name from Discord RPC when disabled (true by default)
+const sitedetection = config.site_detection // NOTE: Checks sites on startup if online when enabled. (false by default. can slow down start up performance)
+const showscrollbars = config.show_scrollbars // NOTE: Shows scrollbars on page when enabled. (false by default)
+const removeapplelogo = config.remove_apple_logo // NOTE: Removes Apple Logo when enabled. (true by default)
+const forcedarkmode = config.dark_mode // NOTE: Really only useful for Linux machines that don't support css dark mode. (false by default)
+const sexytransparencymode = config.transparent_mode // NOTE: kind of a CSS experiment that uses Glasstron as its blur renderer.
+const closebuttonminimize = config.closebuttonminimize // NOTE: means when you press the close button it minimizes the app instead of quiting.
 // For those not familiar with javascript in anyway shape or form just change things from false to true or vice versa. Compile accordingly.
 
-if (sexytransparencymode === true) {
+if (sexytransparencymode) {
   electron.app.commandLine.appendSwitch("enable-transparent-visuals");
 }
 
 isQuiting = !closebuttonminimize
 
 function createWindow () {
-  if (sexytransparencymode === true) {
+  if (sexytransparencymode) {
     win = new glasstron.BrowserWindow({
       icon: path.join(__dirname, './assets/icon.png'),
       width: 1024,
@@ -76,19 +78,23 @@ function createWindow () {
   // Hide toolbar tooltips / bar
   win.setMenuBarVisibility(false);
 
-  if (sitedetection) {
-    // Function to Load the Website if its reachable.
-    async function LoadBeta() {
-      const web = await isReachable('https://beta.music.apple.com')
-      if (web) {
-        win.loadURL('https://beta.music.apple.com');
-      } else {
-        win.loadURL('https://music.apple.com');
+  if (config.beta) {
+    if (sitedetection) {
+      // Function to Load the Website if its reachable.
+      async function LoadBeta() {
+        const web = await isReachable('https://beta.music.apple.com')
+        if (web) {
+          win.loadURL('https://beta.music.apple.com');
+        } else {
+          win.loadURL('https://music.apple.com');
+        }
       }
+      LoadBeta()
+    } else {    // Skips the check if sitedetection is turned off.
+      win.loadURL('https://beta.music.apple.com');
     }
-    LoadBeta()
-  } else {    // Skips the check if sitedetection is turned off.
-    win.loadURL('https://beta.music.apple.com');
+  } else {
+    win.loadURL('https://music.apple.com');
   }
 
   win.on('page-title-updated', function (e) {
