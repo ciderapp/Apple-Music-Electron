@@ -9,19 +9,21 @@ const client = require('discord-rich-presence')('749317071145533440');
 let isQuiting
 let isMaximized
 electron.app.commandLine.appendSwitch("enable-transparent-visuals");
+const config = require("./config.json");
+let win;
 
 // Set proper cache folder
 app.setPath("userData", path.join(app.getPath("cache"), app.name))
 
 // Optional Features
-const customtitlebar = true // NOTE: Enables a custom macOS-isk titlebar instead of your respected platforms titlebars. Enable frame manually if disabled. (true by default)
-const discordrpc = true // NOTE: Removes all Discord RPC when disabled. (true by default)
-const showalbum = true // NOTE: Removes Album Name from Discord RPC when disabled (true by default)
-const sitedetection = false // NOTE: Checks sites on startup if online when enabled. (false by default. can slow down start up performance)
-const showscrollbars = false // NOTE: Shows scrollbars on page when enabled. (false by default)
-const removeapplelogo = true // NOTE: Removes Apple Logo when enabled. (true by default)
-const forcedarkmode = false // NOTE: Really only useful for Linux machines that don't support css dark mode. (false by default)
-const sexytransparencymode = false // NOTE: kind of a CSS experiment that uses Glasstron as its blur renderer.
+const customtitlebar = config.custom_titlebar // NOTE: Enables a custom macOS-isk titlebar instead of your respected platforms titlebars. Enable frame manually if disabled. (true by default)
+const discordrpc = config.discord_rpc // NOTE: Removes all Discord RPC when disabled. (true by default)
+const showalbum = config.show_album // NOTE: Removes Album Name from Discord RPC when disabled (true by default)
+const sitedetection = config.site_detection // NOTE: Checks sites on startup if online when enabled. (false by default. can slow down start up performance)
+const showscrollbars = config.show_scrollbars // NOTE: Shows scrollbars on page when enabled. (false by default)
+const removeapplelogo = config.remove_apple_logo // NOTE: Removes Apple Logo when enabled. (true by default)
+const forcedarkmode = config.dark_mode // NOTE: Really only useful for Linux machines that don't support css dark mode. (false by default)
+const sexytransparencymode = config.transparent_mode // NOTE: kind of a CSS experiment that uses Glasstron as its blur renderer.
 // For those not familiar with javascript in anyway shape or form just change things from false to true or vice versa. Compile accordingly.
 
 if (sexytransparencymode === true) {
@@ -29,25 +31,44 @@ if (sexytransparencymode === true) {
 }
 
 function createWindow () {
-  // Uncomment below if using sexytransparencymode and remove the old one.
-  // const win = new glasstron.BrowserWindow({
-  const win = new BrowserWindow({
-    icon: path.join(__dirname, './assets/icon.png'),
-    width: 1024,
-    height: 600,
-    minWidth: 300,
-    minHeight: 300,
-    frame: false,
-    title: "Apple Music",
-    // Enables DRM
-    webPreferences: {
-      plugins: true,
-      preload: path.join(__dirname, './assets/MusicKitInterop.js'),
-      allowRunningInsecureContent: true,
-      contextIsolation: false,
-      sandbox: true
-    }
-  })
+  if (sexytransparencymode === true){
+    win = new glasstron.BrowserWindow({
+      icon: path.join(__dirname, './assets/icon.png'),
+      width: 1024,
+      height: 600,
+      minWidth: 300,
+      minHeight: 300,
+      frame: false,
+      title: "Apple Music",
+      // Enables DRM
+      webPreferences: {
+        plugins: true,
+        preload: path.join(__dirname, './assets/MusicKitInterop.js'),
+        allowRunningInsecureContent: true,
+        contextIsolation: false,
+        sandbox: true
+      }
+    })
+  } else {
+      win = new BrowserWindow({
+        icon: path.join(__dirname, './assets/icon.png'),
+        width: 1024,
+        height: 600,
+        minWidth: 300,
+        minHeight: 300,
+        frame: false,
+        title: "Apple Music",
+        // Enables DRM
+        webPreferences: {
+          plugins: true,
+          preload: path.join(__dirname, './assets/MusicKitInterop.js'),
+          allowRunningInsecureContent: true,
+          contextIsolation: false,
+          sandbox: true
+        }
+    })
+  }
+
   if (sexytransparencymode === true) {
     win.blurType = "blurbehind";
     win.setBlur(true);
@@ -62,12 +83,18 @@ function createWindow () {
     async function betaOnline() {
       return isReachable('https://beta.music.apple.com');
     }
-    var appleMusicUrl = 'https://music.apple.com';
+    let appleMusicUrl = 'https://music.apple.com';
+    
     if (betaOnline().catch === true) {
-     appleMusicUrl = 'https://beta.music.apple.com';
+      appleMusicUrl = 'https://beta.music.apple.com';
     }
-  } else {
-    appleMusicUrl = 'https://beta.music.apple.com';
+    else {
+      appleMusicUrl = 'https://beta.music.apple.com';
+    }
+  }
+  let appleMusicUrl = "https://music.apple.com"
+  if (config.beta === true){
+    appleMusicUrl = "https://beta.music.apple.com"
   }
 
   win.loadURL(appleMusicUrl);
