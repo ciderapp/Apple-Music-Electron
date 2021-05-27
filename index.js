@@ -6,12 +6,10 @@ const path = require('path')
 const isReachable = require("is-reachable");
 const nativeTheme = electron.nativeTheme;
 const client = require('discord-rich-presence')('749317071145533440');
+const config = require("./config.json");
 let isQuiting
 let isMaximized
 var win
-electron.app.commandLine.appendSwitch("enable-transparent-visuals");
-const config = require("./config.json");
-let win;
 
 // Set proper cache folder
 app.setPath("userData", path.join(app.getPath("cache"), app.name))
