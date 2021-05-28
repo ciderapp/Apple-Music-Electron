@@ -6,6 +6,7 @@ const path = require('path')
 const isReachable = require("is-reachable");
 const nativeTheme = electron.nativeTheme;
 const client = require('discord-rich-presence')('749317071145533440');
+const gotTheLock = app.requestSingleInstanceLock();
 let isQuiting
 let isMaximized
 electron.app.commandLine.appendSwitch("enable-transparent-visuals");
@@ -33,6 +34,16 @@ if (sexytransparencymode === true) {
 }
 
 function createWindow () {
+  // Prevent multiple instances
+  if (!gotTheLock) {
+    app.quit()
+  } else {
+    app.on('second-instance', () => {
+      if (win) {
+        win.show()
+      }
+    })
+  }
   if (sexytransparencymode === true){
     win = new glasstron.BrowserWindow({
       icon: path.join(__dirname, './assets/icon.png'),
