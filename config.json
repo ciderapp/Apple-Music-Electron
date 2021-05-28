@@ -1,4 +1,5 @@
 {
+    "see index.js for details on each config option": "pls",
     "dark_mode":false,
     "discord_rpc":true,
     "transparent_mode":false,
@@ -7,5 +8,6 @@
     "show_album": false,
     "remove_apple_logo": true,
     "show_scrollbars": false,
-    "site_detection": false
+    "site_detection": false,
+    "langdetector": true
 }

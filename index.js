@@ -25,6 +25,7 @@ const showscrollbars = config.show_scrollbars // NOTE: Shows scrollbars on page 
 const removeapplelogo = config.remove_apple_logo // NOTE: Removes Apple Logo when enabled. (true by default)
 const forcedarkmode = config.dark_mode // NOTE: Really only useful for Linux machines that don't support css dark mode. (false by default)
 const sexytransparencymode = config.transparent_mode // NOTE: kind of a CSS experiment that uses Glasstron as its blur renderer.
+const langdetector = config.langdetector // NOTE: Adds language detection (disable this if your operating system doesn't support it)
 // For those not familiar with javascript in anyway shape or form just change things from false to true or vice versa. Compile accordingly.
 
 if (sexytransparencymode === true) {
@@ -98,12 +99,14 @@ function createWindow () {
   }
 
   // Find and set system location/language by locale.
-  const languages = require('./locale.json')
-  const SystemLang = app.getLocale().toLowerCase().split("-")
-  for (var key in languages) {
-    key = key.toLowerCase()
-    if (SystemLang.includes(key)) {
-      appleMusicUrl = `${appleMusicUrl}/${key}?l=${key}`
+  if (langdetector == true) {
+    const languages = require('./assets/locale.json')
+    const SystemLang = app.getLocale().toLowerCase().split("-")
+    for (var key in languages) {
+      key = key.toLowerCase()
+      if (SystemLang.includes(key)) {
+        appleMusicUrl = `${appleMusicUrl}/${key}?l=${key}`
+      }
     }
   }
 
