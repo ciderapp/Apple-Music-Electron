@@ -12,6 +12,7 @@ electron.app.commandLine.appendSwitch("enable-transparent-visuals");
 const config = require("./config.json");
 let win;
 
+
 // Set proper cache folder
 app.setPath("userData", path.join(app.getPath("cache"), app.name))
 
@@ -78,7 +79,6 @@ function createWindow () {
   // Hide toolbar tooltips / bar
   win.setMenuBarVisibility(false);
 
-
   if (sitedetection === true) {
     async function betaOnline() {
       return isReachable('https://beta.music.apple.com');
@@ -92,12 +92,23 @@ function createWindow () {
       appleMusicUrl = 'https://beta.music.apple.com';
     }
   }
-  let appleMusicUrl = "https://music.apple.com"
+  let appleMusicUrl = "https://music.apple.com";
   if (config.beta === true){
-    appleMusicUrl = "https://beta.music.apple.com"
+    appleMusicUrl = "https://beta.music.apple.com";
+  }
+
+  // Find and set system location/language by locale.
+  const languages = require('./locale.json')
+  const SystemLang = app.getLocale().toLowerCase().split("-")
+  for (var key in languages) {
+    key = key.toLowerCase()
+    if (SystemLang.includes(key)) {
+      appleMusicUrl = `${appleMusicUrl}/${key}?l=${key}`
+    }
   }
 
   win.loadURL(appleMusicUrl);
+  console.log("Loaded URL: "+appleMusicUrl)
 
   win.on('page-title-updated', function (e) {
     e.preventDefault()
@@ -111,6 +122,11 @@ function createWindow () {
       event.returnValue = false;
     }
   });
+
+  // listen for close event
+  electron.ipcMain.on('close', () => {
+    win.close()
+  })
 
   // Hide iTunes prompt and other external buttons by Apple. Ensure deletion.  OPTIONAL: Create Draggable div to act as title bar. Create close, min, and max buttons. (OSX style since this is *Apple* Music)
   win.webContents.on('did-stop-loading', function () {
@@ -128,9 +144,18 @@ function createWindow () {
       win.webContents.executeJavaScript("console.log(\"Removed Apple Logo successfully.\")")
     }
     if (customtitlebar === true) {
-      win.webContents.executeJavaScript("if(document.getElementsByClassName('web-navigation')[0] && !(document.getElementsByClassName('web-navigation')[0].style.height == 'calc(100vh - 32px)')){ let dragDiv = document.createElement('div'); dragDiv.style.width = '100%'; dragDiv.style.height = '32px'; dragDiv.style.position = 'absolute'; dragDiv.style.top = dragDiv.style.left = 0; dragDiv.style.webkitAppRegion = 'drag'; document.body.appendChild(dragDiv); var closeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; document.getElementsByClassName('web-navigation')[0].style.bottom = 0; document.getElementsByClassName('web-navigation')[0].style.position = 'absolute'; document.getElementsByClassName('web-chrome')[0].style.top = '32px'; var minimizeButton = document.createElement('span'); var maximizeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; closeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag; '; minimizeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; maximizeButton.style = 'height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; closeButton.onclick= window.close; minimizeButton.onclick = ()=>{ipcRenderer.send('minimize')}; maximizeButton.onclick = ()=>{ipcRenderer.send('maximize')}; dragDiv.appendChild(closeButton); dragDiv.appendChild(minimizeButton); dragDiv.appendChild(maximizeButton); closeButton.onmouseenter = ()=>{closeButton.style.filter = 'brightness(50%)'}; minimizeButton.onmouseenter = ()=>{minimizeButton.style.filter = 'brightness(50%)'}; maximizeButton.onmouseenter = ()=>{maximizeButton.style.filter = 'brightness(50%)'}; closeButton.onmouseleave = ()=>{closeButton.style.filter = 'brightness(100%)'}; minimizeButton.onmouseleave = ()=>{minimizeButton.style.filter = 'brightness(100%)'}; maximizeButton.onmouseleave = ()=>{maximizeButton.style.filter = 'brightness(100%)'};}")
+      win.webContents.executeJavaScript("if(document.getElementsByClassName('web-navigation')[0] && !(document.getElementsByClassName('web-navigation')[0].style.height == 'calc(100vh - 32px)')){ let dragDiv = document.createElement('div'); dragDiv.style.width = '100%'; dragDiv.style.height = '32px'; dragDiv.style.position = 'absolute'; dragDiv.style.top = dragDiv.style.left = 0; dragDiv.style.webkitAppRegion = 'drag'; document.body.appendChild(dragDiv); var closeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; document.getElementsByClassName('web-navigation')[0].style.bottom = 0; document.getElementsByClassName('web-navigation')[0].style.position = 'absolute'; document.getElementsByClassName('web-chrome')[0].style.top = '32px'; var minimizeButton = document.createElement('span'); var maximizeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; closeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag; '; minimizeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; maximizeButton.style = 'height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; closeButton.onclick = ()=>{ipcRenderer.send('close')}; minimizeButton.onclick = ()=>{ipcRenderer.send('minimize')}; maximizeButton.onclick = ()=>{ipcRenderer.send('maximize')}; dragDiv.appendChild(closeButton); dragDiv.appendChild(minimizeButton); dragDiv.appendChild(maximizeButton); closeButton.onmouseenter = ()=>{closeButton.style.filter = 'brightness(50%)'}; minimizeButton.onmouseenter = ()=>{minimizeButton.style.filter = 'brightness(50%)'}; maximizeButton.onmouseenter = ()=>{maximizeButton.style.filter = 'brightness(50%)'}; closeButton.onmouseleave = ()=>{closeButton.style.filter = 'brightness(100%)'}; minimizeButton.onmouseleave = ()=>{minimizeButton.style.filter = 'brightness(100%)'}; maximizeButton.onmouseleave = ()=>{maximizeButton.style.filter = 'brightness(100%)'};}")
       win.webContents.executeJavaScript("console.log(\"Enabled custom titlebar.\")")
     }
+  });
+
+  // Start Discord RPC plug.
+  client.updatePresence({
+    state: "https://github.com/cryptofyre/Apple-Music-Electron",
+    details: "Apple Music Electron by cryptofyre",
+    largeImageKey: 'apple',
+    smallImageKey: 'me',
+    instance: true,
   });
 
   // Fix those ugly scrollbars and also execute MusicKitInterop.
@@ -209,8 +234,7 @@ function createWindow () {
 
   async function updateMetaData(attributes) {
     var discordrpcdetails
-    var songlengthstring = Math.round(attributes.durationInMillis + Date.now());
-    var songlength = Number(songlengthstring);
+    var songlength = Number(Math.round(attributes.durationInMillis + Date.now()));
     if (showalbum === true) {
       discordrpcdetails = `${attributes.albumName} - ${attributes.artistName}`;
     } else {
@@ -222,7 +246,6 @@ function createWindow () {
         client.updatePresence({
           state: discordrpcdetails,
           details: `${attributes.name}`,
-          startTimestamp: Date.now(),
           endTimestamp: songlength,
           largeImageKey: 'apple',
           smallImageKey: 'play',
@@ -233,15 +256,13 @@ function createWindow () {
         if (attributes.status === false) {
           client.updatePresence({
             state: "(Paused)",
-            details: `${attributes.name}`,
-            startTimestamp: Date.now(),
-            endTimestamp: Date.now(),
+            details: `${attributes.name} - ${attributes.artistName}`,
             largeImageKey: 'apple',
             smallImageKey: 'pause',
-            instance: true,
+            instance: false,
           });
         }
-      });
+      })
     }
   }
 }

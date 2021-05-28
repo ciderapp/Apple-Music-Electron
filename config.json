@@ -1,10 +1,10 @@
 {
     "dark_mode":false,
-    "discord_rpc":false,
+    "discord_rpc":true,
     "transparent_mode":false,
-    "beta":false,
+    "beta":true,
     "custom_titlebar": true,
-    "show_album": true,
+    "show_album": false,
     "remove_apple_logo": true,
     "show_scrollbars": false,
     "site_detection": false
