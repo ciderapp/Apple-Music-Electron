@@ -2,6 +2,7 @@ require('v8-compile-cache');
 const {app, BrowserWindow, Tray, Menu} = require('electron')
 const glasstron = require('glasstron');
 const electron = require('electron');
+const { Notification } = require('electron')
 const path = require('path')
 const isReachable = require("is-reachable");
 const nativeTheme = electron.nativeTheme;
@@ -10,7 +11,7 @@ const config = require("./config.json");
 const gotTheLock = app.requestSingleInstanceLock();
 let isQuiting
 let isMaximized
-var win
+let win
 
 
 // Set proper cache folder
@@ -27,6 +28,7 @@ const forcedarkmode = config.dark_mode // NOTE: Really only useful for Linux mac
 const sexytransparencymode = config.transparent_mode // NOTE: kind of a CSS experiment that uses Glasstron as its blur renderer.
 const closebuttonminimize = config.closebuttonminimize // NOTE: means when you press the close button it minimizes the app instead of quiting.
 const langdetector = config.langdetector // NOTE: Adds language detection (disable this if your operating system doesn't support it)
+const playbacknotification = config.playbacknotification //  NOTE: Enables notifications on song playback or new song change. (Can get annoying at times so its disabled by default.)
 // For those not familiar with javascript in anyway shape or form just change things from false to true or vice versa. Compile accordingly.
 
 if (sexytransparencymode) {
@@ -218,11 +220,11 @@ function createWindow () {
     win.show()
   })
 
-  win.on('hide', function (e) {
+  win.on('hide', function () {
     trayIcon.setContextMenu(ClosedContextMenu);
   })
 
-  win.on('show', function (e) {
+  win.on('show', function () {
       trayIcon.setContextMenu(OpenContextMenu);
   })
 
@@ -243,9 +245,15 @@ function createWindow () {
   })
 
   // Insert Jarek Toros amazing work with MusicKit and Mpris (https://github.com/JarekToro/Apple-Music-Mpris/) (NOTE: Mpris is not enabled in this branch. See mpris-enabled)!
+
   electron.ipcMain.on('mediaItemStateDidChange', (item, a) => {
     updateMetaData(a)
     updateTooltip(a)
+    win.webContents.on('media-started-playing', function () {
+      if (playbacknotification === true) {
+        notification(a)
+      }
+    })
   })
 
   async function updateTooltip(attributes) {
@@ -265,6 +273,13 @@ function createWindow () {
     // Start tooltip with idle name
     const tooltip = `Nothing's playing right now`;
     trayIcon.setToolTip(tooltip);
+  }
+
+  async function notification(attributes) {
+    // Send notification on new or current song playback.
+    let NOTIFICATION_TITLE = "Apple Music";
+    let NOTIFICATION_BODY = `Playing ${attributes.name} - ${attributes.albumName} by ${attributes.artistName}`;
+    new Notification({title: NOTIFICATION_TITLE, body: NOTIFICATION_BODY, silent: true, icon: path.join(__dirname, './assets/icon.png')}).show()
   }
 
   async function updateMetaData(attributes) {

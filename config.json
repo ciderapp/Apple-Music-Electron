@@ -10,5 +10,6 @@
     "show_scrollbars": false,
     "site_detection": false,
     "closebuttonminimize": true,
-    "langdetector": true
+    "langdetector": true,
+    "playbacknotification": true
 }
