@@ -252,13 +252,14 @@ function createWindow () {
     updateMetaData(a)
     updateTooltip(a)
     win.webContents.on('media-started-playing', function () {
-      hasRan = false;
       if (playbacknotification === true) {
         var i;
-        for(i = 1; i <= 5; i++){
+        for(i = 1; i <= 6; i++){
           if(i == 5 && !hasRan){
             hasRan = true;
             notification(a);
+          } else if (i == 6){
+            hasRan = false;
           }
         }
       }
