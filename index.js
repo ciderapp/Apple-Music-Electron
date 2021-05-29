@@ -249,21 +249,21 @@ function createWindow () {
   let hasRan = false;
   
   electron.ipcMain.on('mediaItemStateDidChange', (item, a) => {
-    updateMetaData(a)
-    updateTooltip(a)
-    win.webContents.on('media-started-playing', function () {
-      if (playbacknotification === true) {
-        var i;
-        for(i = 1; i <= 6; i++){
-          if(i == 5 && !hasRan){
-            hasRan = true;
-            notification(a);
-          } else if (i == 6){
-            hasRan = false;
+    if(!hasRan){
+      updateMetaData(a)
+      updateTooltip(a)
+      win.webContents.on('media-started-playing', function () {
+        if (playbacknotification === true) {
+          var i;
+          for(i = 1; i <= 6; i++){
+            if(i == 5 && !hasRan){
+              hasRan = true;
+              notification(a);
+            }
           }
         }
-      }
-    })
+      })
+    }
   })
 
   async function updateTooltip(attributes) {
