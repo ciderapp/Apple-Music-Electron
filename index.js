@@ -246,15 +246,19 @@ function createWindow () {
 
   // Insert Jarek Toros amazing work with MusicKit and Mpris (https://github.com/JarekToro/Apple-Music-Mpris/) (NOTE: Mpris is not enabled in this branch. See mpris-enabled)!
 
+  let hasRan = false;
+  
   electron.ipcMain.on('mediaItemStateDidChange', (item, a) => {
     updateMetaData(a)
     updateTooltip(a)
     win.webContents.on('media-started-playing', function () {
+      hasRan = false;
       if (playbacknotification === true) {
         var i;
         for(i = 1; i <= 5; i++){
-          if(i == 5){
-          notification(a);
+          if(i == 5 && !hasRan){
+            hasRan = true;
+            notification(a);
           }
         }
       }
