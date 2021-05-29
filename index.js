@@ -251,7 +251,12 @@ function createWindow () {
     updateTooltip(a)
     win.webContents.on('media-started-playing', function () {
       if (playbacknotification === true) {
-        notification(a)
+        var i;
+        for(i = 1; i <= 5, i++){
+          if(i == 5){
+          notification(a);
+          }
+        }
       }
     })
   })
