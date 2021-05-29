@@ -252,7 +252,7 @@ function createWindow () {
     win.webContents.on('media-started-playing', function () {
       if (playbacknotification === true) {
         var i;
-        for(i = 1; i <= 5, i++){
+        for(i = 1; i <= 5; i++){
           if(i == 5){
           notification(a);
           }
