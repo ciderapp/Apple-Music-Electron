@@ -6,12 +6,11 @@ const path = require('path')
 const isReachable = require("is-reachable");
 const nativeTheme = electron.nativeTheme;
 const client = require('discord-rich-presence')('749317071145533440');
+const config = require("./config.json");
 const gotTheLock = app.requestSingleInstanceLock();
 let isQuiting
 let isMaximized
-electron.app.commandLine.appendSwitch("enable-transparent-visuals");
-const config = require("./config.json");
-let win;
+var win
 
 
 // Set proper cache folder
@@ -26,17 +25,21 @@ const showscrollbars = config.show_scrollbars // NOTE: Shows scrollbars on page 
 const removeapplelogo = config.remove_apple_logo // NOTE: Removes Apple Logo when enabled. (true by default)
 const forcedarkmode = config.dark_mode // NOTE: Really only useful for Linux machines that don't support css dark mode. (false by default)
 const sexytransparencymode = config.transparent_mode // NOTE: kind of a CSS experiment that uses Glasstron as its blur renderer.
+const closebuttonminimize = config.closebuttonminimize // NOTE: means when you press the close button it minimizes the app instead of quiting.
 const langdetector = config.langdetector // NOTE: Adds language detection (disable this if your operating system doesn't support it)
 // For those not familiar with javascript in anyway shape or form just change things from false to true or vice versa. Compile accordingly.
 
-if (sexytransparencymode === true) {
+if (sexytransparencymode) {
   electron.app.commandLine.appendSwitch("enable-transparent-visuals");
 }
+
+isQuiting = !closebuttonminimize
 
 function createWindow () {
   // Prevent multiple instances
   if (!gotTheLock) {
     app.quit()
+    return
   } else {
     app.on('second-instance', () => {
       if (win) {
@@ -44,14 +47,14 @@ function createWindow () {
       }
     })
   }
-  if (sexytransparencymode === true){
+  if (sexytransparencymode) {
     win = new glasstron.BrowserWindow({
       icon: path.join(__dirname, './assets/icon.png'),
       width: 1024,
       height: 600,
       minWidth: 300,
       minHeight: 300,
-      frame: false,
+      frame: !customtitlebar,
       title: "Apple Music",
       // Enables DRM
       webPreferences: {
@@ -62,51 +65,48 @@ function createWindow () {
         sandbox: true
       }
     })
-  } else {
-      win = new BrowserWindow({
-        icon: path.join(__dirname, './assets/icon.png'),
-        width: 1024,
-        height: 600,
-        minWidth: 300,
-        minHeight: 300,
-        frame: false,
-        title: "Apple Music",
-        // Enables DRM
-        webPreferences: {
-          plugins: true,
-          preload: path.join(__dirname, './assets/MusicKitInterop.js'),
-          allowRunningInsecureContent: true,
-          contextIsolation: false,
-          sandbox: true
-        }
-    })
-  }
-
-  if (sexytransparencymode === true) {
     win.blurType = "blurbehind";
     win.setBlur(true);
+  } else {
+    win = new BrowserWindow({
+      icon: path.join(__dirname, './assets/icon.png'),
+      width: 1024,
+      height: 600,
+      minWidth: 300,
+      minHeight: 300,
+      frame: !customtitlebar,
+      title: "Apple Music",
+      // Enables DRM
+      webPreferences: {
+        plugins: true,
+        preload: path.join(__dirname, './assets/MusicKitInterop.js'),
+        allowRunningInsecureContent: true,
+        contextIsolation: false,
+        sandbox: true
+      }
+    })
   }
-
 
   // Hide toolbar tooltips / bar
   win.setMenuBarVisibility(false);
 
-  if (sitedetection === true) {
-    async function betaOnline() {
-      return isReachable('https://beta.music.apple.com');
-    }
-    let appleMusicUrl = 'https://music.apple.com';
-    
-    if (betaOnline().catch === true) {
+  if (config.beta) {
+    if (sitedetection) {
+      // Function to Load the Website if its reachable.
+      async function LoadBeta() {
+        const web = await isReachable('https://beta.music.apple.com')
+        if (web) {
+          appleMusicUrl = 'https://beta.music.apple.com';
+        } else {
+          appleMusicUrl = 'https://music.apple.com';
+        }
+      }
+      LoadBeta()
+    } else {    // Skips the check if sitedetection is turned off.
       appleMusicUrl = 'https://beta.music.apple.com';
     }
-    else {
-      appleMusicUrl = 'https://beta.music.apple.com';
-    }
-  }
-  let appleMusicUrl = "https://music.apple.com";
-  if (config.beta === true){
-    appleMusicUrl = "https://beta.music.apple.com";
+  } else {
+    appleMusicUrl = 'https://music.apple.com';
   }
 
   // Find and set system location/language by locale.
@@ -128,12 +128,11 @@ function createWindow () {
     e.preventDefault()
   });
 
-  // hide app instead of quitting
+  // Hide the App if isQuitting is not true
   win.on('close', function (event) {
     if (!isQuiting) {
       event.preventDefault();
       win.hide();
-      event.returnValue = false;
     }
   });
 
@@ -185,24 +184,46 @@ function createWindow () {
   else trayIcon = new Tray(path.join(__dirname, './assets/icon.png'))
 
   // right click menu to quit and show app
-  const contextMenu = Menu.buildFromTemplate([
+  const ClosedContextMenu = Menu.buildFromTemplate([
     {
-      label: 'Show Window', click: function () {
-        win.show();
-      }
+        label: 'Show Apple Music', click: function () {
+            win.show();
+        }
     },
     {
-      label: 'Quit Apple Music', click: function () {
-        app.isQuiting = true;
-        app.quit();
-      }
+        label: 'Quit', click: function () {
+            app.isQuiting = true;
+            app.quit();
+        }
     }
   ]);
-  trayIcon.setContextMenu(contextMenu);
+
+  const OpenContextMenu = Menu.buildFromTemplate([
+      {
+          label: 'Minimize to Tray', click: function () {
+              win.hide();
+          }
+      },
+      {
+          label: 'Quit', click: function () {
+              app.isQuiting = true;
+              app.quit();
+          }
+      }
+  ]);
+  trayIcon.setContextMenu(OpenContextMenu);
 
   // restore app on normal click
   trayIcon.on('click', () => {
     win.show()
+  })
+
+  win.on('hide', function (e) {
+    trayIcon.setContextMenu(ClosedContextMenu);
+  })
+
+  win.on('show', function (e) {
+      trayIcon.setContextMenu(OpenContextMenu);
   })
 
   // listen for minimize event
