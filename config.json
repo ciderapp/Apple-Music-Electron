@@ -9,6 +9,6 @@
     "remove_apple_logo": true,
     "show_scrollbars": false,
     "site_detection": false,
-    "closebuttonminimize": false
+    "closebuttonminimize": false,
     "langdetector": true
 }
