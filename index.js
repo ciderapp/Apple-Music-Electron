@@ -10,7 +10,7 @@ const isSingleInstance = app.requestSingleInstanceLock();
 const { readFile } = require('fs');
 const client = require('discord-rich-presence')('749317071145533440')
 const log = require('electron-log');
-const {autoUpdater} = require("electron-updater");
+const { autoUpdater } = require("electron-updater");
 var win = '',
   AppleMusicWebsite,
   trayIcon = null,
@@ -181,31 +181,26 @@ function createWindow() {
   //----------------------------------------------------------------------------------------------------
   if (preferences.defaultTheme) electron.nativeTheme.themeSource = preferences.defaultTheme;
 
-  win.webContents.on('did-stop-loading', async () => {
-    // moving the old stuff back because its broken atm.
-    await win.webContents.executeJavaScript('MusicKitInterop.init()');
-    if (advanced.RemoveScrollbars) {
-      await win.webContents.insertCSS('::-webkit-scrollbar { display: none; }')
-    }
-    if (css.removeupsell) {
-      win.webContents.executeJavaScript("const openitunes = document.getElementsByClassName('web-navigation__native-upsell'); while (openitunes.length > 0) openitunes[0].remove();");
-      win.webContents.executeJavaScript("while (openitunes.length > 0) openitunes[0].remove();");
-      win.webContents.executeJavaScript("console.log(\"Removed upsell.\")")
-      console.log("[CSS] Removed upsell.")
-    }
+  win.webContents.on('did-stop-loading', () => {
     if (css.removeappleLogo) {
-      win.webContents.executeJavaScript("const applelogo = document.getElementsByClassName('web-navigation__header web-navigation__header--logo'); while (applelogo.length > 0) applelogo[0].remove();");
-      win.webContents.executeJavaScript("while (applelogo.length > 0) applelogo[0].remove();");
-      win.webContents.executeJavaScript("document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.gridArea = \"auto\";")
-      win.webContents.executeJavaScript("console.log(\"Removed Apple Logo successfully.\")")
+      win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__header web-navigation__header--logo').length > 0) document.getElementsByClassName('web-navigation__header web-navigation__header--logo')[0].remove();");
       console.log("[CSS] Removed Apple Logo successfully.")
     }
+    if (css.removeupsell) {
+      win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__native-upsell').length > 0) document.getElementsByClassName('web-navigation__native-upsell')[0].remove();");
+      console.log("[CSS] Removed upsell.")
+    }
     if (css.macosWindow) {
-      win.webContents.executeJavaScript("if(document.getElementsByClassName('web-navigation')[0] && !(document.getElementsByClassName('web-navigation')[0].style.height == 'calc(100vh - 32px)')){ let dragDiv = document.createElement('div'); dragDiv.style.width = '100%'; dragDiv.style.height = '32px'; dragDiv.style.position = 'absolute'; dragDiv.style.top = dragDiv.style.left = 0; dragDiv.style.webkitAppRegion = 'drag'; document.body.appendChild(dragDiv); var closeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; document.getElementsByClassName('web-navigation')[0].style.bottom = 0; document.getElementsByClassName('web-navigation')[0].style.position = 'absolute'; document.getElementsByClassName('web-chrome')[0].style.top = '32px'; var minimizeButton = document.createElement('span'); var maximizeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; closeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag; '; minimizeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; maximizeButton.style = 'height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; closeButton.onclick = ()=>{ipcRenderer.send('close')}; minimizeButton.onclick = ()=>{ipcRenderer.send('minimize')}; maximizeButton.onclick = ()=>{ipcRenderer.send('maximize')}; dragDiv.appendChild(closeButton); dragDiv.appendChild(minimizeButton); dragDiv.appendChild(maximizeButton); closeButton.onmouseenter = ()=>{closeButton.style.filter = 'brightness(50%)'}; minimizeButton.onmouseenter = ()=>{minimizeButton.style.filter = 'brightness(50%)'}; maximizeButton.onmouseenter = ()=>{maximizeButton.style.filter = 'brightness(50%)'}; closeButton.onmouseleave = ()=>{closeButton.style.filter = 'brightness(100%)'}; minimizeButton.onmouseleave = ()=>{minimizeButton.style.filter = 'brightness(100%)'}; maximizeButton.onmouseleave = ()=>{maximizeButton.style.filter = 'brightness(100%)'};}")
-      win.webContents.executeJavaScript("console.log(\"Enabled custom titlebar.\")")
+      win.webContents.executeJavaScript("if(document.getElementsByClassName('web-navigation')[0] && !(document.getElementsByClassName('web-navigation')[0].style.height == 'calc(100vh - 32px)')){ let dragDiv = document.createElement('div'); dragDiv.style.width = '100%'; dragDiv.style.height = '32px'; dragDiv.style.position = 'absolute'; dragDiv.style.top = dragDiv.style.left = 0; dragDiv.style.webkitAppRegion = 'drag'; document.body.appendChild(dragDiv); var closeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; document.getElementsByClassName('web-navigation')[0].style.bottom = 0; document.getElementsByClassName('web-navigation')[0].style.position = 'absolute'; document.getElementsByClassName('web-chrome')[0].style.top = '32px'; var minimizeButton = document.createElement('span'); var maximizeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; closeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag; '; minimizeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; maximizeButton.style = 'height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; closeButton.onclick= ()=>{ipcRenderer.send('close')}; minimizeButton.onclick = ()=>{ipcRenderer.send('minimize')}; maximizeButton.onclick = ()=>{ipcRenderer.send('maximize')}; dragDiv.appendChild(closeButton); dragDiv.appendChild(minimizeButton); dragDiv.appendChild(maximizeButton); closeButton.onmouseenter = ()=>{closeButton.style.filter = 'brightness(50%)'}; minimizeButton.onmouseenter = ()=>{minimizeButton.style.filter = 'brightness(50%)'}; maximizeButton.onmouseenter = ()=>{maximizeButton.style.filter = 'brightness(50%)'}; closeButton.onmouseleave = ()=>{closeButton.style.filter = 'brightness(100%)'}; minimizeButton.onmouseleave = ()=>{minimizeButton.style.filter = 'brightness(100%)'}; maximizeButton.onmouseleave = ()=>{maximizeButton.style.filter = 'brightness(100%)'};}");
       console.log("[CSS] Enabled custom titlebar")
     }
   });
+
+  win.webContents.on('did-stop-loading', async () => {
+    if (advanced.RemoveScrollbars) await win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
+    await win.webContents.executeJavaScript('MusicKitInterop.init()');
+  });
+
 
   win.webContents.on('did-finish-load', function () {
     if (preferences.cssTheme) {
@@ -318,12 +313,15 @@ function createWindow() {
   });
 
   async function UpdatePausedPresence(a) {
+    console.log(`[DiscordRPC] Updating Pause Presence for ${a.name}`)
     client.updatePresence({
       details: `Playing ${a.name}`,
       state: `By ${a.artistName}`,
+      startTimestamp: Date.now(),
+      endTimestamp: Date.now(),
       largeImageKey: 'apple',
-      smallImageKey: 'pause',
       largeImageText: a.albumName,
+      smallImageKey: 'pause',
       smallImageText: 'Paused',
       instance: false,
     });
@@ -331,20 +329,23 @@ function createWindow() {
   }
 
   async function UpdatePlayPresence(a) {
-    var endTime = Number(Math.round(Date.now() + a.durationInMillis));
+    console.log(`[DiscordRPC] Updating Play Presence for ${a.name}`)
+    console.log(`[DiscordRPC] Current startTime: ${a.startTime}`)
+    console.log(`[DiscordRPC] Current endTime: ${a.endTime}`)
     client.updatePresence({
       details: `Playing ${a.name}`,
       state: `By ${a.artistName}`,
-      startTimestamp: Date.now(),
-      endTimestamp: endTime,
+      startTimestamp: a.startTime,
+      endTimestamp: a.endTime,
       largeImageKey: 'apple',
-      smallImageKey: 'play',
       largeImageText: a.albumName,
-      smallImageText: 'Playing',
-      instance: true,
+      smallImageKey: 'pause',
+      smallImageText: 'Paused',
+      instance: false,
     });
     return true
   }
+
 
   //----------------------------------------------------------------------------------------------------
   //  Song Notifications
@@ -352,8 +353,8 @@ function createWindow() {
 
   if (isWin) app.setAppUserModelId("Apple Music");
 
-  function PlaybackNotification(a) {
-    console.log(`Function Params: SongName: ${a.name} | Artist: ${a.artistName} | Album: ${a.albumName}`)
+  function CreatePlaybackNotification(a) {
+    console.log(`[CreatePlaybackNotification] Notification Generating | Function Parameters: SongName: ${a.name} | Artist: ${a.artistName} | Album: ${a.albumName}`)
     let NOTIFICATION_TITLE = a.name;
     let NOTIFICATION_BODY = `by ${a.artistName} on ${a.albumName}`;
     new Notification({ title: NOTIFICATION_TITLE, body: NOTIFICATION_BODY, silent: true, icon: path.join(__dirname, './assets/icon.png') }).show()
@@ -363,43 +364,61 @@ function createWindow() {
   //----------------------------------------------------------------------------------------------------
   //  Run Functions on Media State Change
   //----------------------------------------------------------------------------------------------------
-  let NOTIFICATION,
-    Update,
-    cache;
+  let cache,
+    notif,
+    rpcUpdate;
 
   electron.ipcMain.on('mediaItemStateDidChange', (item, a) => {
-    if (a === null || a.playParams.id === 'no-id-found' || cache === a) return;
-    cache = a
+    if (a === null || a.playParams.id === 'no-id-found') return;
 
-    // When Media is Playing Update RPC and Notify User
+    while (!cache) {
+      cache = a;
+    }
+
+    // When a new song is playing or a song is continued
     win.webContents.on('media-started-playing', function () {
-      if (preferences.notifications && Notification.isSupported()) {
-        while (!NOTIFICATION) {
-          console.log(`Running Function for Notification | Song Name: ${cache.name}`)
-          console.log(`Running Function with Params: SongName: ${cache.name} | Artist: ${cache.artistName} | Album: ${cache.albumName}`)
-          NOTIFICATION = PlaybackNotification(cache);
+
+      // System Notification on Song Change
+      if (preferences.notifications && Notification.isSupported() && a.playParams.id !== cache.playParams.id) { // Checks if it is a new song
+        while (!notif) {
+          console.log(`[Notification] A ID: ${a.playParams.id} | Cache ID: ${cache.playParams.id}`)
+          notif = CreatePlaybackNotification(cache)
         }
-        setTimeout(function () { NOTIFICATION = false; }, 500);
+        setTimeout(function () { notif = false; }, 500);
       }
-      if (!preferences.discordRPC || DiscordRPCError) return;
-      while (!Update) {
-        console.log("Updating Rich Presence to Play State")
-        Update = UpdatePlayPresence(cache)
+
+      // DiscordRPC Update on Song Change / Play
+      if (preferences.discordRPC && !DiscordRPCError) {
+        while (!rpcUpdate) {
+          if (a.playParams.id !== cache.playParams.id) { // If it is a new song
+            a.startTime = Date.now()
+            a.endTime = Number(Math.round(a.startTime + a.durationInMillis));
+          } else { // If its continuing from the same song
+            a.startTime = Date.now()
+            a.endTime = Number(Math.round(Date.now() + a.currentDurationInMillis)); // Calculate the new end time by adding the CurrentDuration when paused to current time
+          }
+          rpcUpdate = UpdatePlayPresence(a)
+        }
+        setTimeout(function () { rpcUpdate = false; }, 500);
       }
-      setTimeout(function () { Update = false; }, 500);
+    });
+
+    // When a song is paused
+    win.webContents.on('media-paused', function () {
+      if (preferences.discordRPC && !DiscordRPCError && !a.status) { // Verifies that its paused and does usual checks
+        while (!rpcUpdate) {
+          a.currentDurationInMillis = Number(Math.round(Date.now() - a.startTime)) // Sets the duration to the difference between the song startTime and Paused Time
+          rpcUpdate = UpdatePausedPresence(a)
+        }
+      };
+      setTimeout(function () { rpcUpdate = false; }, 500);
     })
 
-    // When Music is Paused Update RPC
-    win.webContents.on('media-paused', function () {
-      console.log("media-paused initiated")
-      console.log(`DiscordRPC: ${preferences.discordRPC} | DiscordRPC Error: ${DiscordRPCError} | cache.status: ${cache.status}`)
-      if (!preferences.discordRPC || DiscordRPCError || cache.status) return;
-      while (!Update) {
-        console.log("Updating Rich Presence to Paused State")
-        Update = UpdatePausedPresence(cache)
-      }
-      setTimeout(function () { Update = false; }, 500);
-    })
+    // Update the Cache
+    while (a.playParams.id !== cache.playParams.id) {
+      console.log('[mediaItemStateDidChange] Cache is not the same as arributes, updating cache.')
+      cache = a
+    }
   })
 }
 
