@@ -28,12 +28,12 @@
     "discordRPC": true,
 
     "_notifications_comment": "Enabling this means you will get notifications when you change song.",
-    "notifications": true
+    "notifications": false
   },
 
   "advanced": {
-    "bleedingedge": true,
-    "allowSetMenu": true,
+    "bleedingedge": false,
+    "allowSetMenu": false,
     "allowMultipleInstances": false,
     "allowRunningInsecureContent": true,
     "MenuBarVisible": false,
