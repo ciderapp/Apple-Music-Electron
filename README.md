@@ -16,6 +16,7 @@
     ·
     <a href="https://discord.gg/CezHYdXHEM">Discord</a>
   <br />
+  <br />
   Major thanks to <a href="https://github.com/coredev-uk">CoreDev-UK</a> for huge contributions and work efforts.
   </p>
   <p align="center"> 
