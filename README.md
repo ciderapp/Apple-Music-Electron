@@ -8,7 +8,7 @@
     <br />
   </a>
 <p align="center"> 
-    A free, lightweight, open source alternative to iTunes and other Apple Music applications based on Electron 13.0.0
+    A free, lightweight, open source alternative to iTunes and other Apple Music applications based on Electron 14.0.0
     <br />
     <a href="https://github.com/cryptofyre/Apple-Music-Electron/releases"><strong>View the releases! »</strong></a>
     <br />
@@ -71,6 +71,9 @@ You can now customize your AME to your liking with the new options placed at the
 
 ![alt text](https://i.imgur.com/dbj2uXe.png "Logo")
 
+
+### Credits
+cryptofyre, CoreDev-UK, devilAPI, Apple, castlabs (for electron), and more!
 
 ### Disclaimer
 I do not intend to compete in any way to Apple. Apple owns the right to the Apple logo, Apple Music, Apple Music Logo, and MusicKit. If anyone has any issues with the legal reasoning behind this application you can contact me at <a href="mailto:cryptofyre@protonmail.com">cryptofyre@protonmail.com</a>
