@@ -1,5 +1,5 @@
 require('v8-compile-cache');
-const { app, BrowserWindow, Tray, Menu, Notification } = require('electron')
+const { app, BrowserWindow, Tray, Menu, Notification, protocol, ipcMain, dialog } = require('electron')
 const { preferences, css, advanced } = require('./config.json');
 const languages = require('./assets/languages.json')
 const glasstron = require('glasstron');
@@ -9,6 +9,8 @@ const isReachable = require("is-reachable");
 const isSingleInstance = app.requestSingleInstanceLock();
 const { readFile } = require('fs');
 const client = require('discord-rich-presence')('749317071145533440')
+const log = require('electron-log');
+const {autoUpdater} = require("electron-updater");
 var win = '',
   AppleMusicWebsite,
   trayIcon = null,
@@ -92,6 +94,20 @@ function createWindow() {
   win.setMenuBarVisibility(advanced.MenuBarVisible);
   // Prevent users from being able to do shortcuts
   if (!advanced.allowSetMenu) win.setMenu(null);
+
+  //----------------------------------------------------------------------------------------------------
+  //  Check for updates and prompt user
+  //----------------------------------------------------------------------------------------------------
+
+  autoUpdater.logger = require("electron-log")
+  if (advanced.bleedingedge) {
+    autoUpdater.allowPrerelease = true
+    autoUpdater.allowDowngrade = false
+  }
+
+  console.log("Checking for updates...")
+  autoUpdater.checkForUpdatesAndNotify()
+  console.log("Finished checking for updates.")
 
   //----------------------------------------------------------------------------------------------------
   //  Check if the Beta is Available and Load it

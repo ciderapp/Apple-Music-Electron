@@ -32,6 +32,7 @@
   },
 
   "advanced": {
+    "bleedingedge": true,
     "allowSetMenu": false,
     "allowMultipleInstances": false,
     "allowRunningInsecureContent": true,

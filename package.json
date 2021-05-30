@@ -1,6 +1,6 @@
 {
-  "author": "cryptofyre <iifir3z@protonmail.com>",
-  "homepage": "https://github.com/iiFir3z/Apple-Music-Electron",
+  "author": "cryptofyre <cryptofyre@protonmail.com>",
+  "homepage": "https://github.com/cryptofyre/Apple-Music-Electron",
   "name": "apple-music-electron",
   "productName": "Apple Music",
   "version": "2.0.0",
@@ -18,7 +18,7 @@
     "discord-rich-presence": "^0.0.8",
     "discord-rpc": "^3.1.4",
     "electron-log": "^4.3.5",
-    "electron-updater": "^4.3.5",
+    "electron-updater": "^4.3.9",
     "glasstron": "^0.0.7",
     "is-reachable": "^5.0.0",
     "node-fetch": "^2.6.1",
@@ -35,7 +35,7 @@
   "build": {
     "electronVersion": "12.0.0",
     "electronDownload": {
-      "version": "13.0.0-wvvmp-beta.26",
+      "version": "14.0.0-wvvmp-beta.1",
       "mirror": "https://github.com/cryptofyre/castlabs-electron12/releases/download/v"
     },
     "appId": "apple-music",
