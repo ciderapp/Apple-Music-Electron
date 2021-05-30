@@ -409,15 +409,17 @@ function createWindow() {
           a.currentDurationInMillis = Number(Math.round(Date.now() - a.startTime)) // Sets the duration to the difference between the song startTime and Paused Time
           rpcUpdate = UpdatePausedPresence(a)
         }
-      };
+      }
       setTimeout(function () { rpcUpdate = false; }, 500);
+    } // End of if else
+
+    // Update the Cache
+    while (a.playParams.id !== cache.playParams.id) {
+      console.log('[mediaItemStateDidChange] Cache is not the same as arributes, updating cache.')
+      cache = a
     }
+    
   });
-  // Update the Cache
-  while (a.playParams.id !== cache.playParams.id) {
-    console.log('[mediaItemStateDidChange] Cache is not the same as arributes, updating cache.')
-    cache = a
-  }
 }
 
 //----------------------------------------------------------------------------------------------------
