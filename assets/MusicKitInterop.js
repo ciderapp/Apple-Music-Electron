@@ -5,7 +5,7 @@ const MusicKitInterop = {
 
     init: function (){
         MusicKit.getInstance().addEventListener( MusicKit.Events.playbackStateDidChange, (a) => {
-            global.ipcRenderer.send('playbackStateDidChange', a.state)
+            global.ipcRenderer.send('playbackStateDidChange', MusicKitInterop.getAttributes())
 
         });
         MusicKit.getInstance().addEventListener( MusicKit.Events.mediaItemStateDidChange, () => {
@@ -34,6 +34,8 @@ const MusicKitInterop = {
         attributes.albumName = attributes.albumName ? attributes.albumName : '';
         attributes.artistName = attributes.artistName ? attributes.artistName : '';
         attributes.genreNames = attributes.genreNames ? attributes.genreNames : [];
+
+        attributes.remainingTime = attributes.remainingTime * 1000
         return attributes
     }
 
