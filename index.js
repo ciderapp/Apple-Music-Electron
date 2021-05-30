@@ -362,12 +362,27 @@ function createWindow() {
   };
 
   //----------------------------------------------------------------------------------------------------
-  //  Run Functions on Media State Change
+  //  Do stuff
   //----------------------------------------------------------------------------------------------------
   let cache,
     notif,
     rpcUpdate;
 
+  //----------------------------------------------------------------------------------------------------
+  //  When the Song is Paused/Played
+  //----------------------------------------------------------------------------------------------------
+  electron.ipcMain.on('playbackStateDidChange', (item, state, a) => {
+    if (a.status) {
+      console.log("song is playing")
+    } else {
+      console.log("song is paused")
+    }
+    console.log(a.currentPlaybackTimeRemaining)
+  });
+
+  //----------------------------------------------------------------------------------------------------
+  //  When a new Song is Playing
+  //----------------------------------------------------------------------------------------------------
   electron.ipcMain.on('mediaItemStateDidChange', (item, a) => {
     if (a === null || a.playParams.id === 'no-id-found') return;
 
@@ -375,7 +390,9 @@ function createWindow() {
       cache = a;
     }
 
-    if (a.status) { // If status is true
+    console.log(a.status)
+
+    if (cache.status === true) { // If status is true
       // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       // System Notification on Song Play / Change
       // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -403,7 +420,11 @@ function createWindow() {
         }
         setTimeout(function () { rpcUpdate = false; }, 500);
       }
-    } else { // If the status is false and the music is paused
+      
+    } else { // THIS IS THE ELSE FOR THE STATUS CHECK
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      // DiscordRPC on Pause
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       if (preferences.discordRPC && !DiscordRPCError) { // Verifies that its paused and does usual checks
         while (!rpcUpdate) {
           a.currentDurationInMillis = Number(Math.round(Date.now() - a.startTime)) // Sets the duration to the difference between the song startTime and Paused Time
@@ -411,14 +432,14 @@ function createWindow() {
         }
       }
       setTimeout(function () { rpcUpdate = false; }, 500);
-    } // End of if else
+    } // THIS IS THE END OF THE STATUS IF ELSE THING AS THIS CODE IS HARD TO READ AND I CANT TELL THE END OF IT
 
     // Update the Cache
     while (a.playParams.id !== cache.playParams.id) {
       console.log('[mediaItemStateDidChange] Cache is not the same as arributes, updating cache.')
       cache = a
     }
-    
+
   });
 }
 
