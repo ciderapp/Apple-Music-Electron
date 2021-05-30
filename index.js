@@ -329,7 +329,7 @@ function createWindow() {
   function PlaybackNotification(a) {
     console.log(`Function Params: SongName: ${a.name} | Artist: ${a.artistName} | Album: ${a.albumName}`)
     let NOTIFICATION_TITLE = a.name;
-    let NOTIFICATION_BODY = `${a.artistName} - ${a.albumName}`;
+    let NOTIFICATION_BODY = `by ${a.artistName} on ${a.albumName}`;
     new Notification({ title: NOTIFICATION_TITLE, body: NOTIFICATION_BODY, silent: true, icon: path.join(__dirname, './assets/icon.png') }).show()
     return true
   };

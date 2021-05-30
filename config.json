@@ -28,7 +28,7 @@
     "discordRPC": true,
 
     "_notifications_comment": "Enabling this means you will get notifications when you change song.",
-    "notifications": false
+    "notifications": true
   },
 
   "advanced": {
