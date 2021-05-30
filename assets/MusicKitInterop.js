@@ -15,13 +15,15 @@ const MusicKitInterop = {
     },
 
     getAttributes: function() {
-        const nowPlayingItem =  MusicKit.getInstance().nowPlayingItem;
-        const isplaying = MusicKit.getInstance().isPlaying;
+        let nowPlayingItem =  MusicKit.getInstance().nowPlayingItem;
+        let isplaying = MusicKit.getInstance().isPlaying;
+        let remainingTimeexport = MusicKit.getInstance().currentPlaybackTimeRemaining
         let attributes  = {};
 
         if (nowPlayingItem != null){
            attributes = nowPlayingItem.attributes;
         }
+        attributes.remainingTime = remainingTimeexport ? remainingTimeexport : 0;
         attributes.status = isplaying ? isplaying : false;
         attributes.name = attributes.name ? attributes.name : 'No Title Found';
         attributes.durationInMillis = attributes.durationInMillis ? attributes.durationInMillis : 0;
