@@ -33,7 +33,7 @@
 
   "advanced": {
     "bleedingedge": true,
-    "allowSetMenu": false,
+    "allowSetMenu": true,
     "allowMultipleInstances": false,
     "allowRunningInsecureContent": true,
     "MenuBarVisible": false,

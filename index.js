@@ -313,11 +313,11 @@ function createWindow() {
     client.updatePresence({
       details: `Playing ${a.name}`,
       state: `By ${a.artistName}`,
-      startTimestamp: Date.now(),
-      endTimestamp: Date.now(),
       largeImageKey: 'apple',
+      smallImageKey: 'pause',
       largeImageText: a.albumName,
-      instance: true,
+      smallImageText: 'Paused',
+      instance: false,
     });
     return true
   }
@@ -330,7 +330,9 @@ function createWindow() {
       startTimestamp: Date.now(),
       endTimestamp: endTime,
       largeImageKey: 'apple',
+      smallImageKey: 'play',
       largeImageText: a.albumName,
+      smallImageText: 'Playing',
       instance: true,
     });
     return true
