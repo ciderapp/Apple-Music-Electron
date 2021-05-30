@@ -38,6 +38,12 @@
   
   </p>
 
+## Install Methods
+You can install Apple Music Electron in multiple ways, one being through the <a href="https://github.com/cryptofyre/Apple-Music-Electron/releases"><strong>releases</strong></a> page.
+
+Or if your a more advanced operating system user you can use WinGet by running:
+`winget install AppleMusicElectron`
+
 ## Features:
 
 * Actively Maintained
