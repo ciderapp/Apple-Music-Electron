@@ -3,7 +3,7 @@
   "homepage": "https://github.com/iiFir3z/Apple-Music-Electron",
   "name": "apple-music-electron",
   "productName": "Apple Music",
-  "version": "1.6.0",
+  "version": "2.0.0",
   "description": "Unofficial Electron wrapper for Apple Music created by @cryptofyre",
   "license": "MIT",
   "buildResources": "assets",
@@ -17,6 +17,7 @@
   "dependencies": {
     "discord-rich-presence": "^0.0.8",
     "discord-rpc": "^3.1.4",
+    "electron-log": "^4.3.5",
     "electron-updater": "^4.3.5",
     "glasstron": "^0.0.7",
     "is-reachable": "^5.0.0",

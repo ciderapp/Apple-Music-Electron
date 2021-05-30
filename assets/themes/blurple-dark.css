@@ -1,0 +1,19 @@
+:root {
+  --primaryColor: #5865f2 !important;
+  --primaryColor-rgb: 88, 101, 242 !important;
+  --sidebar: #131519 !important;
+  --footerBG: #131519 !important;
+  --pageBG: #171a1f !important;
+  --pageBG-rgb: rgba(62, 71, 87, 0.1) !important;
+  --playerBackground: #131519 !important;
+  --playerLCDBGFill: #131519 !important;
+
+  --modalBGColor: var(--pageBG) !important;
+  --systemHeaderMaterialSover: var(--pageBG) !important;
+  --systemQuaternary: var(--pageBG-rgb) !important;
+  --selectionColor: var(--primaryColor) !important;
+}
+
+body > div {
+  background-color: var(--pageBG) !important;
+}

@@ -59,6 +59,8 @@ yarn install
 yarn dist
 ```
 
+For debugging or if you are having an issue, you can find the log file for the application at `%APPDATA%\Apple Music\logs\main.log`
+
 ### Compiling from source (extended)
 You can now customize your AME to your liking with the new options placed at the top of the index.js file!
 
