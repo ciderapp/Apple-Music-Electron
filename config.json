@@ -3,13 +3,13 @@
     "_notice_": "This section is for manually disabling/enabling features.",
 
     "_appleLogo_comment": "Removes Apple Logo when enabled. (true by default)",
-    "appleLogo": true,
+    "removeappleLogo": true,
 
     "_openiniTunes_comment": "Removes the open iTunes button if enabled (true by default)",
-    "openiniTunes": true,
+    "removeupsell": true,
 
     "_macosWindow_comment": "This enables the MacOS window frame. (false by default)",
-    "macosWindow": false
+    "macosWindow": true
   },
 
   "preferences": {
@@ -38,7 +38,7 @@
     "MenuBarVisible": false,
     "forceApplicationLanguage": "",
     "UseBeta": true,
-    "ShowScrollbars": false,
+    "RemoveScrollbars": true,
     "SiteDetection": false,
     "EnableLogging": true
   }
