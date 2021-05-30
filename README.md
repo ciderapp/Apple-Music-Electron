@@ -1,6 +1,11 @@
 <p align="center">
   <a href="https://github.com/cryptofyre/Apple-Music-Electron">
-    <img src="https://i.imgur.com/r0kNmgV.png" alt="Logo" width="800" height="122">    
+    <img src="https://i.imgur.com/r0kNmgV.png" alt="Logo" width="800" height="122">  
+    <br />
+    <br />
+    <img src="https://i.imgur.com/l6ZXv99.png" alt="preview" width="500" height="300">
+    <br />
+    <br />
   </a>
 <p align="center"> 
     A free, lightweight, open source alternative to iTunes and other Apple Music applications based on Electron 13.0.0
