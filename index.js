@@ -24,7 +24,9 @@ app.setPath("userData", path.join(app.getPath("cache"), app.name))
 
 if (advanced.EnableLogging) {
   const log = require("electron-log");
-  log.info('Apple-Music-Electron application has started.');
+  console.log('---------------------------------------------------------------------')
+  console.log('Apple-Music-Electron application has started.');
+  console.log("---------------------------------------------------------------------")
   console.log = log.log; // Overwrite the function because i cba to change all the console.logs
 }
 
@@ -37,6 +39,7 @@ function createWindow() {
   // Prevent Multiple Instances
   //---------------------------------------------------------------------
   if (!isSingleInstance && !advanced.allowMultipleInstances) {
+    console.log("[Apple-Music-Electron] Preventing second instance.")
     app.quit();
     return
   } else {
@@ -105,9 +108,9 @@ function createWindow() {
     autoUpdater.allowDowngrade = false
   }
 
-  console.log("Checking for updates...")
+  console.log("[AutoUpdater] Checking for updates...")
   autoUpdater.checkForUpdatesAndNotify()
-  console.log("Finished checking for updates.")
+  console.log("[AutoUpdater] Finished checking for updates.")
 
   //----------------------------------------------------------------------------------------------------
   //  Check if the Beta is Available and Load it
@@ -138,7 +141,7 @@ function createWindow() {
   for (var key in languages) {
     key = key.toLowerCase()
     if (SystemLang === key) {
-      console.log(`Found: ${key} | System Language: ${SystemLang}`)
+      console.log(`[Language] Found: ${key} | System Language: ${SystemLang}`)
       if (advanced.forceApplicationLanguage) {
         key = advanced.forceApplicationLanguage
       } else {
@@ -150,7 +153,7 @@ function createWindow() {
   //----------------------------------------------------------------------------------------------------
   //  Load the Webpage
   //----------------------------------------------------------------------------------------------------
-  console.log(`The chosen website is ${AppleMusicWebsite}`)
+  console.log(`[Apple-Music-Electron] The chosen website is ${AppleMusicWebsite}`)
   win.loadURL(AppleMusicWebsite)
 
   //----------------------------------------------------------------------------------------------------
@@ -188,16 +191,19 @@ function createWindow() {
       win.webContents.executeJavaScript("const openitunes = document.getElementsByClassName('web-navigation__native-upsell'); while (openitunes.length > 0) openitunes[0].remove();");
       win.webContents.executeJavaScript("while (openitunes.length > 0) openitunes[0].remove();");
       win.webContents.executeJavaScript("console.log(\"Removed upsell.\")")
+      console.log("[CSS] Removed upsell.")
     }
     if (css.removeappleLogo) {
       win.webContents.executeJavaScript("const applelogo = document.getElementsByClassName('web-navigation__header web-navigation__header--logo'); while (applelogo.length > 0) applelogo[0].remove();");
       win.webContents.executeJavaScript("while (applelogo.length > 0) applelogo[0].remove();");
       win.webContents.executeJavaScript("document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.gridArea = \"auto\";")
       win.webContents.executeJavaScript("console.log(\"Removed Apple Logo successfully.\")")
+      console.log("[CSS] Removed Apple Logo successfully.")
     }
     if (css.macosWindow) {
       win.webContents.executeJavaScript("if(document.getElementsByClassName('web-navigation')[0] && !(document.getElementsByClassName('web-navigation')[0].style.height == 'calc(100vh - 32px)')){ let dragDiv = document.createElement('div'); dragDiv.style.width = '100%'; dragDiv.style.height = '32px'; dragDiv.style.position = 'absolute'; dragDiv.style.top = dragDiv.style.left = 0; dragDiv.style.webkitAppRegion = 'drag'; document.body.appendChild(dragDiv); var closeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; document.getElementsByClassName('web-navigation')[0].style.bottom = 0; document.getElementsByClassName('web-navigation')[0].style.position = 'absolute'; document.getElementsByClassName('web-chrome')[0].style.top = '32px'; var minimizeButton = document.createElement('span'); var maximizeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; closeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag; '; minimizeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; maximizeButton.style = 'height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; closeButton.onclick = ()=>{ipcRenderer.send('close')}; minimizeButton.onclick = ()=>{ipcRenderer.send('minimize')}; maximizeButton.onclick = ()=>{ipcRenderer.send('maximize')}; dragDiv.appendChild(closeButton); dragDiv.appendChild(minimizeButton); dragDiv.appendChild(maximizeButton); closeButton.onmouseenter = ()=>{closeButton.style.filter = 'brightness(50%)'}; minimizeButton.onmouseenter = ()=>{minimizeButton.style.filter = 'brightness(50%)'}; maximizeButton.onmouseenter = ()=>{maximizeButton.style.filter = 'brightness(50%)'}; closeButton.onmouseleave = ()=>{closeButton.style.filter = 'brightness(100%)'}; minimizeButton.onmouseleave = ()=>{minimizeButton.style.filter = 'brightness(100%)'}; maximizeButton.onmouseleave = ()=>{maximizeButton.style.filter = 'brightness(100%)'};}")
       win.webContents.executeJavaScript("console.log(\"Enabled custom titlebar.\")")
+      console.log("[CSS] Enabled custom titlebar")
     }
   });
 
@@ -213,6 +219,7 @@ function createWindow() {
   });
 
   win.webContents.on('crash', function () {
+    console.log("[Apple-Music-Electron] Application has crashed.")
     app.exit();
   });
 
@@ -299,14 +306,15 @@ function createWindow() {
 
   // Connected to Discord
   client.on("connected", () => {
-    console.log("Successfully Connected to Discord!");
+    console.log("[DiscordRPC] Successfully Connected to Discord!");
     if (DiscordRPCError) DiscordRPCError = false;
   });
 
   // Error Handler
   client.on('error', err => {
-    console.log(`Error: ${err}`);
+    console.log(`[DiscordRPC] Error: ${err}`);
     if (!DiscordRPCError) DiscordRPCError = true;
+    console.log(`[DiscordRPC] Disconnecting from Discord.`)
   });
 
   async function UpdatePausedPresence(a) {
@@ -409,6 +417,8 @@ app.on('window-all-closed', () => {
 })
 
 app.on('before-quit', function () {
+  console.log("---------------------------------------------------------------------")
   console.log("Application Closing...")
+  console.log("---------------------------------------------------------------------")
   isQuiting = true;
 });
