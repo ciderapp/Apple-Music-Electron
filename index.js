@@ -375,10 +375,10 @@ function createWindow() {
       cache = a;
     }
 
-    // When a new song is playing or a song is continued
-    win.webContents.on('media-started-playing', function () {
-
-      // System Notification on Song Change
+    if (a.status) { // If status is true
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      // System Notification on Song Play / Change
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       if (preferences.notifications && Notification.isSupported() && a.playParams.id !== cache.playParams.id) { // Checks if it is a new song
         while (!notif) {
           console.log(`[Notification] A ID: ${a.playParams.id} | Cache ID: ${cache.playParams.id}`)
@@ -387,7 +387,9 @@ function createWindow() {
         setTimeout(function () { notif = false; }, 500);
       }
 
-      // DiscordRPC Update on Song Change / Play
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      // DiscordRPC on Play / Change
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       if (preferences.discordRPC && !DiscordRPCError) {
         while (!rpcUpdate) {
           if (a.playParams.id !== cache.playParams.id) { // If it is a new song
@@ -401,25 +403,21 @@ function createWindow() {
         }
         setTimeout(function () { rpcUpdate = false; }, 500);
       }
-    });
-
-    // When a song is paused
-    win.webContents.on('media-paused', function () {
-      if (preferences.discordRPC && !DiscordRPCError && !a.status) { // Verifies that its paused and does usual checks
+    } else { // If the status is false and the music is paused
+      if (preferences.discordRPC && !DiscordRPCError) { // Verifies that its paused and does usual checks
         while (!rpcUpdate) {
           a.currentDurationInMillis = Number(Math.round(Date.now() - a.startTime)) // Sets the duration to the difference between the song startTime and Paused Time
           rpcUpdate = UpdatePausedPresence(a)
         }
       };
       setTimeout(function () { rpcUpdate = false; }, 500);
-    })
-
-    // Update the Cache
-    while (a.playParams.id !== cache.playParams.id) {
-      console.log('[mediaItemStateDidChange] Cache is not the same as arributes, updating cache.')
-      cache = a
     }
-  })
+  });
+  // Update the Cache
+  while (a.playParams.id !== cache.playParams.id) {
+    console.log('[mediaItemStateDidChange] Cache is not the same as arributes, updating cache.')
+    cache = a
+  }
 }
 
 //----------------------------------------------------------------------------------------------------
