@@ -1,15 +1,14 @@
 require('v8-compile-cache');
-const {app, BrowserWindow, Tray, Menu, Notification, protocol, ipcMain, dialog} = require('electron')
+const {app, BrowserWindow, Tray, Menu, Notification} = require('electron')
 const {preferences, css, advanced} = require('./config.json');
 const languages = require('./assets/languages.json')
-const glasstron = require('glasstron');
+
 const electron = require('electron');
 const path = require('path')
 const isReachable = require("is-reachable");
 const isSingleInstance = app.requestSingleInstanceLock();
-const {readFile} = require('fs');
-const client = require('discord-rich-presence')('749317071145533440')
-const log = require('electron-log');
+
+
 const {autoUpdater} = require("electron-updater");
 let win = '',
     AppleMusicWebsite,
@@ -17,7 +16,9 @@ let win = '',
     iconPath = path.join(__dirname, `./assets/icon.ico`),
     isQuiting = !preferences.closebuttonminimize,
     isWin = process.platform === "win32",
-    isMaximized;
+    isMaximized,
+    glasstron,
+    client;
 
 // Set proper cache folder
 app.setPath("userData", path.join(app.getPath("cache"), app.name))
@@ -47,13 +48,14 @@ function createWindow() {
             if (win) {
                 win.show()
             }
-            ;
         })
     }
     //---------------------------------------------------------------------
     // Create the Window
     //---------------------------------------------------------------------
     if (preferences.cssTheme.toLowerCase() === "glasstron") { // Glasstron Theme Window Creation
+        glasstron = require('glasstron');
+
         app.commandLine.appendSwitch("enable-transparent-visuals");
         win = new glasstron.BrowserWindow({
             icon: iconPath,
@@ -127,7 +129,6 @@ function createWindow() {
                     AppleMusicWebsite = 'https://music.apple.com';
                 }
             }
-
             LoadBeta()
         } else {    // Skips the check if sitedetection is turned off.
             AppleMusicWebsite = 'https://beta.music.apple.com';
@@ -206,6 +207,7 @@ function createWindow() {
 
     win.webContents.on('did-finish-load', function () {
         if (preferences.cssTheme) {
+            const {readFile} = require('fs');
             readFile(path.join(__dirname, `./assets/themes/${preferences.cssTheme.toLowerCase()}.css`), "utf-8", function (error, data) {
                 if (!error) {
                     var formatedData = data.replace(/\s{2,10}/g, ' ').trim();
@@ -213,7 +215,6 @@ function createWindow() {
                 }
             });
         }
-        ;
     });
 
     win.webContents.on('crash', function () {
@@ -300,20 +301,23 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
     //  Discord Rich Presence Setup
     //----------------------------------------------------------------------------------------------------
-    var DiscordRPCError = false;
+    if (preferences.DiscordRPC) {
+        var DiscordRPCError = false;
 
-    // Connected to Discord
-    client.on("connected", () => {
-        console.log("[DiscordRPC] Successfully Connected to Discord!");
-        if (DiscordRPCError) DiscordRPCError = false;
-    });
+        client = require('discord-rich-presence')('749317071145533440')
+        // Connected to Discord
+        client.on("connected", () => {
+            console.log("[DiscordRPC] Successfully Connected to Discord!");
+            if (DiscordRPCError) DiscordRPCError = false;
+        });
 
-    // Error Handler
-    client.on('error', err => {
-        console.log(`[DiscordRPC] Error: ${err}`);
-        if (!DiscordRPCError) DiscordRPCError = true;
-        console.log(`[DiscordRPC] Disconnecting from Discord.`)
-    });
+        // Error Handler
+        client.on('error', err => {
+            console.log(`[DiscordRPC] Error: ${err}`);
+            if (!DiscordRPCError) DiscordRPCError = true;
+            console.log(`[DiscordRPC] Disconnecting from Discord.`)
+        });
+    }
 
     function UpdatePausedPresence(a) {
         console.log(`[DiscordRPC] Updating Pause Presence for ${a.name}`)
@@ -347,7 +351,6 @@ function createWindow() {
         });
     }
 
-
     //----------------------------------------------------------------------------------------------------
     //  Song Notifications
     //----------------------------------------------------------------------------------------------------
@@ -365,7 +368,7 @@ function createWindow() {
             icon: path.join(__dirname, './assets/icon.png')
         }).show()
         return true
-    };
+    }
 
     //----------------------------------------------------------------------------------------------------
     //  Do stuff
@@ -378,9 +381,9 @@ function createWindow() {
     //  When the Song is Paused/Played (DiscordRPC)
     //----------------------------------------------------------------------------------------------------
     electron.ipcMain.on('playbackStateDidChange', (item, a) => {
-        if (a === null || a.playParams.id === 'no-id-found' || !cache) return;
+        if (a === null || a.playParams.id === 'no-id-found' || !cache || !preferences.DiscordRPC) return;
 
-        if (cache && a.playParams.id !== cache.playParams.id) { // If it is a new song
+        if (a.playParams.id !== cache.playParams.id) { // If it is a new song
             a.startTime = Date.now()
             a.endTime = Number(Math.round(a.startTime + a.durationInMillis));
         } else { // If its continuing from the same song
@@ -407,7 +410,6 @@ function createWindow() {
             cache = a;
         }
 
-        console.log(``)
         if (preferences.notifications && Notification.isSupported() && (a.playParams.id !== cache.playParams.id || firstSong)) { // Checks if it is a new song
             while (!notify) {
                 console.log(`[Notification] A ID: ${a.playParams.id} | Cache ID: ${cache.playParams.id}`)
@@ -415,6 +417,7 @@ function createWindow() {
             }
             setTimeout(function () {
                 notify = false;
+                firstSong = false;
             }, 500);
         }
 
@@ -435,10 +438,6 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
     createWindow()
-    // const parsedJSON = JSON.parse(advanced);
-    // for( let prop in parsedJSON ){
-    //     console.log( advanced[parsedJSON] );
-    // }
 });
 
 app.on('window-all-closed', () => {

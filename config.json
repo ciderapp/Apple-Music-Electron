@@ -25,10 +25,10 @@
     "closebuttonminimize": true,
 
     "_discord_rpc_comment": "Enable/Disable Discord Rich Presence. (true by default)",
-    "discordRPC": true,
+    "discordRPC": false,
 
     "_notifications_comment": "Enabling this means you will get notifications when you change song.",
-    "notifications": true
+    "notifications": false
   },
 
   "advanced": {
@@ -38,7 +38,7 @@
     "allowRunningInsecureContent": true,
     "MenuBarVisible": false,
     "forceApplicationLanguage": "",
-    "UseBeta": true,
+    "UseBeta": false,
     "RemoveScrollbars": true,
     "SiteDetection": false,
     "EnableLogging": true
