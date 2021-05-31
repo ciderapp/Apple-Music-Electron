@@ -1,16 +1,18 @@
 :root {
-  --sidebar: rgba(25, 24, 24, 0.84) !important;
-  --footerBG: #191818bd !important;
-  --pageBG: rgb(25, 24, 24, 0.84) !important;
-  --pageBG-rgb: rgba(25, 24, 24, 0.1) !important;
+  /*--sidebar: rgba(25, 24, 24, 0.84) !important;*/
+  /*--footerBG: #191818bd !important;*/
+  /*--pageBG: rgb(25, 24, 24, 0.84) !important;*/
+  /*--pageBG-rgb: rgba(25, 24, 24, 0.1) !important;*/
 
-  --modalBGColor: var(--pageBG) !important;
-  --playerBackground: var(--sidebar) !important;
-  --playerLCDBGFill: var(--sidebar) !important;
-  --systemHeaderMaterialSover: var(--pageBG) !important;
-  --systemQuaternary: var(--pageBG-rgb) !important;
+  /*--modalBGColor: var(--pageBG) !important;*/
+  /*--playerBackground: var(--sidebar) !important;*/
+  /*--playerLCDBGFill: var(--sidebar) !important;*/
+  /*--systemHeaderMaterialSover: var(--pageBG) !important;*/
+  /*--systemQuaternary: var(--pageBG-rgb) !important;*/
 }
 
 body > div {
-  background-color: var(--pageBG) !important;
+  /*background-color: var(--pageBG) !important;*/
 }
+
+/* Currently not working - feel free to uncomment or add accents but dont change anything affecting body and web-chrome class */
