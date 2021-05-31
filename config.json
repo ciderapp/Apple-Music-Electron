@@ -2,10 +2,10 @@
   "css": {
     "_notice_": "This section is for manually disabling/enabling features.",
 
-    "_appleLogo_comment": "Removes Apple Logo when enabled. (true by default)",
+    "_removeappleLogo_comment": "Removes Apple Logo when enabled. (true by default)",
     "removeappleLogo": true,
 
-    "_openiniTunes_comment": "Removes the open iTunes button if enabled (true by default)",
+    "_removeupsell_comment": "Removes the open iTunes button if enabled (true by default)",
     "removeupsell": true,
 
     "_macosWindow_comment": "This enables the MacOS window frame. (false by default)",
@@ -21,14 +21,14 @@
     "_cssTheme_comment": "If you are using a custom CSS theme, set it below, otherwise leave empty.",
     "cssTheme": "",
 
-    "_closebuttonminimize_comment": "Should the close button minimize your apple music (true) or should it quit the app (false). (true by default)",
-    "closebuttonminimize": true,
+    "_closeButtonMinimize_comment": "Should the close button minimize your apple music (true) or should it quit the app (false). (true by default)",
+    "closeButtonMinimize": true,
 
-    "_discord_rpc_comment": "Enable/Disable Discord Rich Presence. (true by default)",
-    "discordRPC": false,
+    "_discordRPC_comment": "Enable/Disable Discord Rich Presence. (true by default)",
+    "discordRPC": true,
 
     "_notifications_comment": "Enabling this means you will get notifications when you change song.",
-    "notifications": false
+    "notifications": true
   },
 
   "advanced": {
@@ -38,7 +38,7 @@
     "allowRunningInsecureContent": true,
     "MenuBarVisible": false,
     "forceApplicationLanguage": "",
-    "UseBeta": false,
+    "UseBeta": true,
     "RemoveScrollbars": true,
     "SiteDetection": false,
     "EnableLogging": true

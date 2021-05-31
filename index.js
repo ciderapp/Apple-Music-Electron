@@ -1,24 +1,24 @@
 require('v8-compile-cache');
 const {app, BrowserWindow, Tray, Menu, Notification} = require('electron')
 const {preferences, css, advanced} = require('./config.json');
+const config = require('./config.json');
 const languages = require('./assets/languages.json')
-
 const electron = require('electron');
 const path = require('path')
-const isReachable = require("is-reachable");
 const isSingleInstance = app.requestSingleInstanceLock();
-
-
 const {autoUpdater} = require("electron-updater");
+if (preferences.discordRPC) {
+  var client = require('discord-rich-presence')('749317071145533440');
+  console.log("[DiscordRPC] Initializing Client.")
+}
 let win = '',
     AppleMusicWebsite,
     trayIcon = null,
     iconPath = path.join(__dirname, `./assets/icon.ico`),
-    isQuiting = !preferences.closebuttonminimize,
+    isQuiting = !preferences.closeButtonMinimize,
     isWin = process.platform === "win32",
     isMaximized,
-    glasstron,
-    client;
+    glasstron;
 
 // Set proper cache folder
 app.setPath("userData", path.join(app.getPath("cache"), app.name))
@@ -120,6 +120,7 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
     if (advanced.UseBeta) {
         if (advanced.SiteDetection) {
+            const isReachable = require("is-reachable");
             // Function to Load the Website if its reachable.
             async function LoadBeta() {
                 const web = await isReachable('https://beta.music.apple.com')
@@ -141,7 +142,7 @@ function createWindow() {
     //  Get the System Language and Change URL Appropriately
     //----------------------------------------------------------------------------------------------------
     const SystemLang = app.getLocaleCountryCode().toLowerCase()
-    for (var key in languages) {
+    for (let key in languages) {
         key = key.toLowerCase()
         if (SystemLang === key) {
             console.log(`[Language] Found: ${key} | System Language: ${SystemLang}`)
@@ -195,7 +196,7 @@ function createWindow() {
         }
         if (css.macosWindow) {
             win.webContents.executeJavaScript("if(document.getElementsByClassName('web-navigation')[0] && !(document.getElementsByClassName('web-navigation')[0].style.height == 'calc(100vh - 32px)')){ let dragDiv = document.createElement('div'); dragDiv.style.width = '100%'; dragDiv.style.height = '32px'; dragDiv.style.position = 'absolute'; dragDiv.style.top = dragDiv.style.left = 0; dragDiv.style.webkitAppRegion = 'drag'; document.body.appendChild(dragDiv); var closeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; document.getElementsByClassName('web-navigation')[0].style.bottom = 0; document.getElementsByClassName('web-navigation')[0].style.position = 'absolute'; document.getElementsByClassName('web-chrome')[0].style.top = '32px'; var minimizeButton = document.createElement('span'); var maximizeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; closeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag; '; minimizeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; maximizeButton.style = 'height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; closeButton.onclick= ()=>{ipcRenderer.send('close')}; minimizeButton.onclick = ()=>{ipcRenderer.send('minimize')}; maximizeButton.onclick = ()=>{ipcRenderer.send('maximize')}; dragDiv.appendChild(closeButton); dragDiv.appendChild(minimizeButton); dragDiv.appendChild(maximizeButton); closeButton.onmouseenter = ()=>{closeButton.style.filter = 'brightness(50%)'}; minimizeButton.onmouseenter = ()=>{minimizeButton.style.filter = 'brightness(50%)'}; maximizeButton.onmouseenter = ()=>{maximizeButton.style.filter = 'brightness(50%)'}; closeButton.onmouseleave = ()=>{closeButton.style.filter = 'brightness(100%)'}; minimizeButton.onmouseleave = ()=>{minimizeButton.style.filter = 'brightness(100%)'}; maximizeButton.onmouseleave = ()=>{maximizeButton.style.filter = 'brightness(100%)'};}");
-            console.log("[CSS] Enabled custom titlebar")
+            console.log("[CSS] Enabled custom MacOS Window Frame")
         }
     });
 
@@ -209,9 +210,9 @@ function createWindow() {
         if (preferences.cssTheme) {
             const {readFile} = require('fs');
             readFile(path.join(__dirname, `./assets/themes/${preferences.cssTheme.toLowerCase()}.css`), "utf-8", function (error, data) {
-                if (!error) {
-                    var formatedData = data.replace(/\s{2,10}/g, ' ').trim();
-                    win.webContents.insertCSS(formatedData);
+                if (!error) {yar
+                    var formattedData = data.replace(/\s{2,10}/g, ' ').trim();
+                    win.webContents.insertCSS(formattedData);
                 }
             });
         }
@@ -301,10 +302,9 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
     //  Discord Rich Presence Setup
     //----------------------------------------------------------------------------------------------------
-    if (preferences.DiscordRPC) {
-        var DiscordRPCError = false;
+    let DiscordRPCError = false;
 
-        client = require('discord-rich-presence')('749317071145533440')
+    if (client) {
         // Connected to Discord
         client.on("connected", () => {
             console.log("[DiscordRPC] Successfully Connected to Discord!");
@@ -381,7 +381,7 @@ function createWindow() {
     //  When the Song is Paused/Played (DiscordRPC)
     //----------------------------------------------------------------------------------------------------
     electron.ipcMain.on('playbackStateDidChange', (item, a) => {
-        if (a === null || a.playParams.id === 'no-id-found' || !cache || !preferences.DiscordRPC) return;
+        if (a === null || a.playParams.id === 'no-id-found' || !cache || !preferences.discordRPC) return;
 
         if (a.playParams.id !== cache.playParams.id) { // If it is a new song
             a.startTime = Date.now()
@@ -437,6 +437,9 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+    console.log("[Apple-Music-Electron] Application is Ready.")
+    console.log(`[Apple-Music-Electron] Configuration File: `)
+    console.log(config)
     createWindow()
 });
 
