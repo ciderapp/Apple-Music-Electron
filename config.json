@@ -2,10 +2,10 @@
   "css": {
     "_notice_": "This section is for manually disabling/enabling features.",
 
-    "_appleLogo_comment": "Removes Apple Logo when enabled. (true by default)",
+    "_removeappleLogo_comment": "Removes Apple Logo when enabled. (true by default)",
     "removeappleLogo": true,
 
-    "_openiniTunes_comment": "Removes the open iTunes button if enabled (true by default)",
+    "_removeupsell_comment": "Removes the open iTunes button if enabled (true by default)",
     "removeupsell": true,
 
     "_macosWindow_comment": "This enables the MacOS window frame. (false by default)",
@@ -13,7 +13,7 @@
   },
 
   "preferences": {
-    "_notice_": "This is the basic user prefences. Modify to your liking below.",
+    "_notice_": "This is the basic user preferences. Modify to your liking below.",
 
     "_defaultTheme_comment": "Default UI theme (Light/Dark) or leave empty to detect from system.",
     "defaultTheme": "",
@@ -21,14 +21,17 @@
     "_cssTheme_comment": "If you are using a custom CSS theme, set it below, otherwise leave empty.",
     "cssTheme": "",
 
-    "_closebuttonminimize_comment": "Should the close button minimize your apple music (true) or should it quit the app (false). (true by default)",
-    "closebuttonminimize": true,
+    "_closeButtonMinimize_comment": "Should the close button minimize your apple music (true) or should it quit the app (false). (true by default)",
+    "closeButtonMinimize": true,
 
-    "_discord_rpc_comment": "Enable/Disable Discord Rich Presence. (true by default)",
+    "_discordRPC_comment": "Enable/Disable Discord Rich Presence. (true by default)",
     "discordRPC": true,
 
     "_notifications_comment": "Enabling this means you will get notifications when you change song.",
-    "notifications": false
+    "notifications": true,
+
+    "_tooltipsongname_comment": "Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.",
+    "tooltipsongname": true
   },
 
   "advanced": {

@@ -5,7 +5,7 @@ const MusicKitInterop = {
 
     init: function (){
         MusicKit.getInstance().addEventListener( MusicKit.Events.playbackStateDidChange, (a) => {
-            global.ipcRenderer.send('playbackStateDidChange', a.state)
+            global.ipcRenderer.send('playbackStateDidChange', MusicKitInterop.getAttributes())
 
         });
         MusicKit.getInstance().addEventListener( MusicKit.Events.mediaItemStateDidChange, () => {
@@ -15,13 +15,15 @@ const MusicKitInterop = {
     },
 
     getAttributes: function() {
-        const nowPlayingItem =  MusicKit.getInstance().nowPlayingItem;
-        const isplaying = MusicKit.getInstance().isPlaying;
+        let nowPlayingItem =  MusicKit.getInstance().nowPlayingItem;
+        let isplaying = MusicKit.getInstance().isPlaying;
+        let remainingTimeexport = MusicKit.getInstance().currentPlaybackTimeRemaining
         let attributes  = {};
 
         if (nowPlayingItem != null){
            attributes = nowPlayingItem.attributes;
         }
+        attributes.remainingTime = remainingTimeexport ? remainingTimeexport : 0;
         attributes.status = isplaying ? isplaying : false;
         attributes.name = attributes.name ? attributes.name : 'No Title Found';
         attributes.durationInMillis = attributes.durationInMillis ? attributes.durationInMillis : 0;
@@ -32,6 +34,8 @@ const MusicKitInterop = {
         attributes.albumName = attributes.albumName ? attributes.albumName : '';
         attributes.artistName = attributes.artistName ? attributes.artistName : '';
         attributes.genreNames = attributes.genreNames ? attributes.genreNames : [];
+
+        attributes.remainingTime = attributes.remainingTime * 1000
         return attributes
     }
 
