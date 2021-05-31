@@ -7,10 +7,6 @@ const electron = require('electron');
 const path = require('path')
 const isSingleInstance = app.requestSingleInstanceLock();
 const {autoUpdater} = require("electron-updater");
-if (preferences.discordRPC) {
-  var client = require('discord-rich-presence')('749317071145533440');
-  console.log("[DiscordRPC] Initializing Client.")
-}
 let win = '',
     AppleMusicWebsite,
     trayIcon = null,
@@ -18,7 +14,13 @@ let win = '',
     isQuiting = !preferences.closeButtonMinimize,
     isWin = process.platform === "win32",
     isMaximized,
-    glasstron;
+    glasstron,
+    client;
+
+if (preferences.discordRPC) {
+    client = require('discord-rich-presence')('749317071145533440');
+    console.log("[DiscordRPC] Initializing Client.")
+}
 
 // Set proper cache folder
 app.setPath("userData", path.join(app.getPath("cache"), app.name))
@@ -157,6 +159,7 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
     //  Load the Webpage
     //----------------------------------------------------------------------------------------------------
+
     console.log(`[Apple-Music-Electron] The chosen website is ${AppleMusicWebsite}`)
     win.loadURL(AppleMusicWebsite)
 
@@ -188,6 +191,7 @@ function createWindow() {
     win.webContents.on('did-stop-loading', () => {
         if (css.removeappleLogo) {
             win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__header web-navigation__header--logo').length > 0) document.getElementsByClassName('web-navigation__header web-navigation__header--logo')[0].remove();");
+            win.webContents.executeJavaScript("document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.gridArea = \"auto\";")
             console.log("[CSS] Removed Apple Logo successfully.")
         }
         if (css.removeupsell) {
@@ -210,8 +214,8 @@ function createWindow() {
         if (preferences.cssTheme) {
             const {readFile} = require('fs');
             readFile(path.join(__dirname, `./assets/themes/${preferences.cssTheme.toLowerCase()}.css`), "utf-8", function (error, data) {
-                if (!error) {yar
-                    var formattedData = data.replace(/\s{2,10}/g, ' ').trim();
+                if (!error) {
+                    let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
                     win.webContents.insertCSS(formattedData);
                 }
             });
@@ -284,7 +288,7 @@ function createWindow() {
         }
     ]);
 
-    trayIcon.setToolTip('Apple Music');
+    trayIcon.setToolTip('Apple Music Electron');
     trayIcon.setContextMenu(OpenContextMenu);
 
     trayIcon.on('double-click', () => {
@@ -300,7 +304,7 @@ function createWindow() {
     })
 
     //----------------------------------------------------------------------------------------------------
-    //  Discord Rich Presence Setup
+    //  Discord Rich Presence / Tooltip Setup
     //----------------------------------------------------------------------------------------------------
     let DiscordRPCError = false;
 
@@ -321,11 +325,12 @@ function createWindow() {
 
     function UpdatePausedPresence(a) {
         console.log(`[DiscordRPC] Updating Pause Presence for ${a.name}`)
+        if (preferences.tooltipsongname) {
+            trayIcon.setToolTip(`Paused ${a.name} by ${a.artistName} on ${a.albumName}`);
+        }
         client.updatePresence({
             details: `Playing ${a.name}`,
             state: `By ${a.artistName}`,
-            startTimestamp: Date.now(),
-            endTimestamp: Date.now(),
             largeImageKey: 'apple',
             largeImageText: a.albumName,
             smallImageKey: 'pause',
@@ -338,6 +343,9 @@ function createWindow() {
         console.log(`[DiscordRPC] Updating Play Presence for ${a.name}`)
         console.log(`[DiscordRPC] Current startTime: ${a.startTime}`)
         console.log(`[DiscordRPC] Current endTime: ${a.endTime}`)
+        if (preferences.tooltipsongname) {
+            trayIcon.setToolTip(`Playing ${a.name} by ${a.artistName} on ${a.albumName}`);
+        }
         client.updatePresence({
             details: `Playing ${a.name}`,
             state: `By ${a.artistName}`,
@@ -347,7 +355,7 @@ function createWindow() {
             largeImageText: a.albumName,
             smallImageKey: 'play',
             smallImageText: 'Playing',
-            instance: false,
+            instance: true,
         });
     }
 
@@ -355,12 +363,12 @@ function createWindow() {
     //  Song Notifications
     //----------------------------------------------------------------------------------------------------
 
-    if (isWin) app.setAppUserModelId("Apple Music");
+    if (isWin) app.setAppUserModelId("Apple Music Electron");
 
     function CreatePlaybackNotification(a) {
         console.log(`[CreatePlaybackNotification] Notification Generating | Function Parameters: SongName: ${a.name} | Artist: ${a.artistName} | Album: ${a.albumName}`)
         let NOTIFICATION_TITLE = a.name;
-        let NOTIFICATION_BODY = `by ${a.artistName} on ${a.albumName}`;
+        let NOTIFICATION_BODY = `${a.artistName} - ${a.albumName}`;
         new Notification({
             title: NOTIFICATION_TITLE,
             body: NOTIFICATION_BODY,
@@ -373,6 +381,7 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
     //  Do stuff
     //----------------------------------------------------------------------------------------------------
+
     let cache,
         notify,
         firstSong;
@@ -380,6 +389,7 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
     //  When the Song is Paused/Played (DiscordRPC)
     //----------------------------------------------------------------------------------------------------
+
     electron.ipcMain.on('playbackStateDidChange', (item, a) => {
         if (a === null || a.playParams.id === 'no-id-found' || !cache || !preferences.discordRPC) return;
 
@@ -401,6 +411,7 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
     //  When a new Song is Playing
     //----------------------------------------------------------------------------------------------------
+
     electron.ipcMain.on('mediaItemStateDidChange', (item, a) => {
         if (a === null || a.playParams.id === 'no-id-found') return;
 
