@@ -210,7 +210,7 @@ function createWindow() {
         if (preferences.cssTheme) {
             const {readFile} = require('fs');
             readFile(path.join(__dirname, `./assets/themes/${preferences.cssTheme.toLowerCase()}.css`), "utf-8", function (error, data) {
-                if (!error) {yar
+                if (!error) {
                     var formattedData = data.replace(/\s{2,10}/g, ' ').trim();
                     win.webContents.insertCSS(formattedData);
                 }
