@@ -245,6 +245,12 @@ function createWindow() {
         app.exit();
     });
 
+    win.webContents.on("new-window", function(event, url) {
+      event.preventDefault();
+      console.log("[Apple-Music-Electron] User has opened ${url} which has been redirected to browser.")
+      electron.shell.openExternal(url);
+    });
+
     //----------------------------------------------------------------------------------------------------
     // Checks for Window Actions (when using MacOS theme)
     //----------------------------------------------------------------------------------------------------
