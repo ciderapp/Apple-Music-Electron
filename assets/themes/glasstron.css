@@ -11,8 +11,10 @@
   /*--systemQuaternary: var(--pageBG-rgb) !important;*/
 }
 
-body > div {
-  /*background-color: var(--pageBG) !important;*/
+.web-chrome {
+    background-color: #2d2d2d40 !important;
+    backdrop-filter: saturate(0%) blur(25px) !important;
 }
 
-/* Currently not working - feel free to uncomment or add accents but dont change anything affecting body and web-chrome class */
+/* Don't do anything that affects body attributes as this will cause glasstron to break. */
+/* Currently not working - feel free to uncomment and mess around */
