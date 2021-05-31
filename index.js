@@ -14,6 +14,8 @@ let win = '',
     isQuiting = !preferences.closeButtonMinimize,
     isWin = process.platform === "win32",
     isMaximized,
+    isHidden,
+    isMinimized,
     glasstron,
     client;
 
@@ -297,10 +299,20 @@ function createWindow() {
 
     win.on('hide', function () {
         trayIcon.setContextMenu(ClosedContextMenu);
+        isHidden = true;
     })
 
     win.on('show', function () {
         trayIcon.setContextMenu(OpenContextMenu);
+        isHidden = false;
+    })
+
+    win.on('minimize', function () {
+        isMinimized = true;
+    })
+
+    win.on('restore', function () {
+        isMinimized = false;
     })
 
     //----------------------------------------------------------------------------------------------------
@@ -421,7 +433,8 @@ function createWindow() {
             cache = a;
         }
 
-        if (preferences.notifications && Notification.isSupported() && (a.playParams.id !== cache.playParams.id || firstSong)) { // Checks if it is a new song
+        if (preferences.playbackNotifications && Notification.isSupported() && (a.playParams.id !== cache.playParams.id || firstSong)) { // Checks if it is a new song
+            if (preferences.notificationsMinimized && (!isMinimized && !isHidden)) return;
             while (!notify) {
                 console.log(`[Notification] A ID: ${a.playParams.id} | Cache ID: ${cache.playParams.id}`)
                 notify = CreatePlaybackNotification(a)
