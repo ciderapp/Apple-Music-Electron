@@ -2,11 +2,11 @@
   "css": {
     "_notice_": "This section is for manually disabling/enabling features.",
 
-    "_removeappleLogo_comment": "Removes Apple Logo when enabled. (true by default)",
-    "removeappleLogo": true,
+    "_removeAppleLogo_comment": "Removes Apple Logo when enabled. (true by default)",
+    "removeAppleLogo": true,
 
-    "_removeupsell_comment": "Removes the open iTunes button if enabled (true by default)",
-    "removeupsell": true,
+    "_removeUpsell_comment": "Removes the open iTunes button if enabled (true by default)",
+    "removeUpsell": true,
 
     "_macosWindow_comment": "This enables the MacOS window frame. (false by default)",
     "macosWindow": true
@@ -31,12 +31,12 @@
     "playbackNotifications": true,
     "notificationsMinimized": true,
 
-    "_tooltipsongname_comment": "Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.",
-    "tooltipsongname": true
+    "_trayTooltipSongName_comment": "Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.",
+    "trayTooltipSongName": true
   },
 
   "advanced": {
-    "bleedingedge": false,
+    "bleedingEdge": false,
     "allowSetMenu": false,
     "allowMultipleInstances": false,
     "allowRunningInsecureContent": true,

@@ -100,6 +100,22 @@ function createWindow() {
         })
     }
 
+    // Generate the ThumbarButtons that are inactive
+    win.setThumbarButtons([
+        {
+            tooltip: 'Previous',
+            icon: path.join(__dirname, './assets/media/previous-inactive.png')
+        },
+        {
+            tooltip: 'Play',
+            icon: path.join(__dirname, './assets/media/play-inactive.png')
+        },
+        {
+            tooltip: 'Next',
+            icon: path.join(__dirname, './assets/media/next-inactive.png')
+        }
+    ])
+
     // Hide toolbar tooltips / bar
     win.setMenuBarVisibility(advanced.MenuBarVisible);
     // Prevent users from being able to do shortcuts
@@ -110,7 +126,7 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
 
     autoUpdater.logger = require("electron-log")
-    if (advanced.bleedingedge) {
+    if (advanced.bleedingEdge) {
         autoUpdater.allowPrerelease = true
         autoUpdater.allowDowngrade = false
     }
@@ -191,12 +207,12 @@ function createWindow() {
     if (preferences.defaultTheme) electron.nativeTheme.themeSource = preferences.defaultTheme;
 
     win.webContents.on('did-stop-loading', () => {
-        if (css.removeappleLogo) {
+        if (css.removeAppleLogo) {
             win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__header web-navigation__header--logo').length > 0) document.getElementsByClassName('web-navigation__header web-navigation__header--logo')[0].remove();");
             win.webContents.executeJavaScript("document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.gridArea = \"auto\";")
             console.log("[CSS] Removed Apple Logo successfully.")
         }
-        if (css.removeupsell) {
+        if (css.removeUpsell) {
             win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__native-upsell').length > 0) document.getElementsByClassName('web-navigation__native-upsell')[0].remove();");
             console.log("[CSS] Removed upsell.")
         }
@@ -224,7 +240,7 @@ function createWindow() {
         await win.webContents.executeJavaScript('MusicKitInterop.init()');
     });
 
-    win.webContents.on('crash', function () {
+    win.webContents.on('crashed', function () {
         console.log("[Apple-Music-Electron] Application has crashed.")
         app.exit();
     });
@@ -337,7 +353,7 @@ function createWindow() {
 
     function UpdatePausedPresence(a) {
         console.log(`[DiscordRPC] Updating Pause Presence for ${a.name}`)
-        if (preferences.tooltipsongname) {
+        if (preferences.trayTooltipSongName) {
             trayIcon.setToolTip(`Paused ${a.name} by ${a.artistName} on ${a.albumName}`);
         }
         client.updatePresence({
@@ -355,7 +371,7 @@ function createWindow() {
         console.log(`[DiscordRPC] Updating Play Presence for ${a.name}`)
         console.log(`[DiscordRPC] Current startTime: ${a.startTime}`)
         console.log(`[DiscordRPC] Current endTime: ${a.endTime}`)
-        if (preferences.tooltipsongname) {
+        if (preferences.trayTooltipSongName) {
             trayIcon.setToolTip(`Playing ${a.name} by ${a.artistName} on ${a.albumName}`);
         }
         client.updatePresence({
@@ -403,7 +419,67 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
 
     electron.ipcMain.on('playbackStateDidChange', (item, a) => {
-        if (a === null || a.playParams.id === 'no-id-found' || !cache || !preferences.discordRPC) return;
+        if (a === null || a.playParams.id === 'no-id-found') return;
+
+        if (a.status) { // If the song is Playing
+            // Update the Thumbar Buttons
+            win.setThumbarButtons([
+                {
+                    tooltip: 'Previous',
+                    icon: path.join(__dirname, './assets/media/previous.png'),
+                    click() {
+                        console.log('[setThumbarButtons] Previous song button clicked.')
+                        // a.back()
+                    }
+                },
+                {
+                    tooltip: 'Pause',
+                    icon: path.join(__dirname, './assets/media/pause.png'),
+                    click() {
+                        console.log('[setThumbarButtons] Play song button clicked.')
+                        // a.pause()
+                    }
+                },
+                {
+                    tooltip: 'Next',
+                    icon: path.join(__dirname, './assets/media/next.png'),
+                    click() {
+                        console.log('[setThumbarButtons] Pause song button clicked.')
+                        // a.next()
+                    }
+                }
+            ])
+        } else {
+            // Update the Thumbar Buttons
+            win.setThumbarButtons([
+                {
+                    tooltip: 'Previous',
+                    icon: path.join(__dirname, './assets/media/previous.png'),
+                    click() {
+                        console.log('[setThumbarButtons] Previous song button clicked.')
+                        // a.back()
+                    }
+                },
+                {
+                    tooltip: 'Play',
+                    icon: path.join(__dirname, './assets/media/play.png'),
+                    click() {
+                        console.log('[setThumbarButtons] Play song button clicked.')
+                        // a.play()
+                    }
+                },
+                {
+                    tooltip: 'Next',
+                    icon: path.join(__dirname, './assets/media/next.png'),
+                    click() {
+                        console.log('[setThumbarButtons] Pause song button clicked.')
+                        // a.next()
+                    }
+                }
+            ])
+        }
+
+        if (!cache || !preferences.discordRPC) return;
 
         if (a.playParams.id !== cache.playParams.id) { // If it is a new song
             a.startTime = Date.now()
