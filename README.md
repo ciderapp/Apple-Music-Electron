@@ -8,7 +8,7 @@
     <br />
   </a>
 <p align="center"> 
-    A free, lightweight, open source alternative to iTunes and other Apple Music applications based on Electron 14.0.0
+    A free, lightweight, open source alternative to iTunes and other Apple Music applications based on Electron 13.0.0
     <br />
     <a href="https://github.com/cryptofyre/Apple-Music-Electron/releases"><strong>View the releases! »</strong></a>
     <br />
