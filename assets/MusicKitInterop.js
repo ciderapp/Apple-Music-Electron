@@ -17,20 +17,12 @@ const MusicKitInterop = {
     getAttributes: function() {
         let nowPlayingItem =  MusicKit.getInstance().nowPlayingItem;
         let isplaying = MusicKit.getInstance().isPlaying;
-        let remainingTimeexport = MusicKit.getInstance().currentPlaybackTimeRemaining
-        let playfunction = MusicKit.getInstance().player.play()
-        let pausefunction = MusicKit.getInstance().player.pause()
-        let skiptonextfunction = MusicKit.getInstance().player.skipToNextItem()
-        let skiptoprevfunction = MusicKit.getInstance().player.skipToPreviousItem()
+        let remainingTimeexport = MusicKit.getInstance().currentPlaybackTimeRemaining;
         let attributes  = {};
 
         if (nowPlayingItem != null){
            attributes = nowPlayingItem.attributes;
         }
-        attributes.skiptoprev = skiptoprevfunction
-        attributes.skiptonext = skiptonextfunction
-        attributes.pause = pausefunction
-        attributes.play = playfunction
         attributes.remainingTime = remainingTimeexport ? remainingTimeexport : 0;
         attributes.status = isplaying ? isplaying : false;
         attributes.name = attributes.name ? attributes.name : 'No Title Found';
