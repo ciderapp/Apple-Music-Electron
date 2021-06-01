@@ -34,7 +34,7 @@
   </p>
 
 <p align="center"> 
-<img src="https://i.imgur.com/yQyATIE.png" alt="preview" width="1500" height="1500">
+<img src="https://i.imgur.com/yQyATIE.png" alt="preview" width="1500" height="1200">
 
 
 ## Compiling From Source
