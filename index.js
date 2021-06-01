@@ -158,7 +158,7 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
 
     autoUpdater.logger = require("electron-log")
-    if (advanced.autoUpdater) {
+    if (advanced.autoUpdaterBetaBuilds) {
         autoUpdater.allowPrerelease = true
         autoUpdater.allowDowngrade = false
     }

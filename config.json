@@ -39,7 +39,7 @@
     "allowMultipleInstances": false,
     "allowRunningInsecureContent": true,
     "allowSetMenu": false,
-    "autoUpdater": false,
+    "autoUpdaterBetaBuilds": false,
     "enableLogging": true,
     "forceApplicationLanguage": "",
     "menuBarVisible": false,
