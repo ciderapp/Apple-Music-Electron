@@ -7,8 +7,18 @@ const electron = require('electron');
 const path = require('path')
 const isSingleInstance = app.requestSingleInstanceLock();
 const {autoUpdater} = require("electron-updater");
+const TaskList = [
+    {
+        program: process.execPath,
+        arguments: '--force-quit',
+        iconPath: process.execPath,
+        iconIndex: 0,
+        title: 'Quit Apple Music'
+    }
+]
 let win = '',
     AppleMusicWebsite,
+    AppleMusicListenNow,
     trayIcon = null,
     iconPath = path.join(__dirname, `./assets/icon.ico`),
     isQuiting = !preferences.closeButtonMinimize,
@@ -24,10 +34,17 @@ if (preferences.discordRPC) {
     console.log("[DiscordRPC] Initializing Client.")
 }
 
+// Set a user tasks list
+if (isWin) app.setUserTasks(TaskList);
+
 // Set proper cache folder
 app.setPath("userData", path.join(app.getPath("cache"), app.name))
 
-if (advanced.EnableLogging) {
+// Disable Cors because Cryptofyre gets angry
+app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+
+// Enable Logging
+if (advanced.enableLogging) {
     const log = require("electron-log");
     console.log('---------------------------------------------------------------------')
     console.log('Apple-Music-Electron application has started.');
@@ -48,11 +65,20 @@ function createWindow() {
         app.quit();
         return
     } else {
-        app.on('second-instance', () => {
-            if (win) {
-                win.show()
+        app.on('second-instance', (event, argv) => {
+            app.setUserTasks(TaskList)
+            if (argv.indexOf("--force-quit") > -1) {
+                app.quit()
+            } else {
+                if (win) {
+                    win.show()
+                }
             }
         })
+    }
+    if (app.commandLine.hasSwitch('force-quit')) {
+        app.quit()
+        return;
     }
     //---------------------------------------------------------------------
     // Create the Window
@@ -75,6 +101,7 @@ function createWindow() {
                 preload: path.join(__dirname, './assets/MusicKitInterop.js'),
                 allowRunningInsecureContent: advanced.allowRunningInsecureContent,
                 contextIsolation: false,
+                webSecurity : false,
                 sandbox: true
             }
         })
@@ -95,13 +122,16 @@ function createWindow() {
                 preload: path.join(__dirname, './assets/MusicKitInterop.js'),
                 allowRunningInsecureContent: advanced.allowRunningInsecureContent,
                 contextIsolation: false,
+                webSecurity : false,
                 sandbox: true
             }
         })
     }
 
-    // Generate the ThumbarButtons that are inactive
-    win.setThumbarButtons([
+    //----------------------------------------------------------------------------------------------------
+    //  Thumbar Presets
+    //----------------------------------------------------------------------------------------------------
+    let ThumbarInactive = [
         {
             tooltip: 'Previous',
             icon: path.join(__dirname, './assets/media/previous-inactive.png')
@@ -114,10 +144,12 @@ function createWindow() {
             tooltip: 'Next',
             icon: path.join(__dirname, './assets/media/next-inactive.png')
         }
-    ])
+    ]
 
+    // Generate the ThumbarButtons that are inactive
+    if (isWin) win.setThumbarButtons(ThumbarInactive);
     // Hide toolbar tooltips / bar
-    win.setMenuBarVisibility(advanced.MenuBarVisible);
+    win.setMenuBarVisibility(advanced.menuBarVisible);
     // Prevent users from being able to do shortcuts
     if (!advanced.allowSetMenu) win.setMenu(null);
 
@@ -126,21 +158,21 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
 
     autoUpdater.logger = require("electron-log")
-    if (advanced.bleedingEdge) {
+    if (advanced.autoUpdater) {
         autoUpdater.allowPrerelease = true
         autoUpdater.allowDowngrade = false
     }
 
     console.log("[AutoUpdater] Checking for updates...")
-    autoUpdater.checkForUpdatesAndNotify()
-    console.log("[AutoUpdater] Finished checking for updates.")
+    autoUpdater.checkForUpdatesAndNotify().then(() => console.log("[AutoUpdater] Finished checking for updates."))
 
     //----------------------------------------------------------------------------------------------------
     //  Check if the Beta is Available and Load it
     //----------------------------------------------------------------------------------------------------
-    if (advanced.UseBeta) {
-        if (advanced.SiteDetection) {
+    if (advanced.useBeta) {
+        if (advanced.siteDetection) {
             const isReachable = require("is-reachable");
+
             // Function to Load the Website if its reachable.
             async function LoadBeta() {
                 const web = await isReachable('https://beta.music.apple.com')
@@ -150,7 +182,8 @@ function createWindow() {
                     AppleMusicWebsite = 'https://music.apple.com';
                 }
             }
-            LoadBeta()
+
+            LoadBeta().then(() => console.log(`[Apple-Music-Electron] LoadBeta has chosen ${AppleMusicWebsite}`))
         } else {    // Skips the check if sitedetection is turned off.
             AppleMusicWebsite = 'https://beta.music.apple.com';
         }
@@ -170,6 +203,7 @@ function createWindow() {
                 key = advanced.forceApplicationLanguage
             } else {
                 AppleMusicWebsite = `${AppleMusicWebsite}/${key}?l=${key}`
+                AppleMusicListenNow = `${AppleMusicWebsite}/${key}/listen-now?l=${key}`
             }
         }
     }
@@ -179,7 +213,7 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
 
     console.log(`[Apple-Music-Electron] The chosen website is ${AppleMusicWebsite}`)
-    win.loadURL(AppleMusicWebsite)
+    win.loadURL(AppleMusicWebsite).then(() => console.log(`[Apple-Music-Electron] Website has been loaded!`))
 
     //----------------------------------------------------------------------------------------------------
     //  Prevents the Window Being Updated and Changes how close works to hide the window
@@ -208,20 +242,17 @@ function createWindow() {
 
     win.webContents.on('did-stop-loading', () => {
         if (css.removeAppleLogo) {
-            win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__header web-navigation__header--logo').length > 0) document.getElementsByClassName('web-navigation__header web-navigation__header--logo')[0].remove();");
-            win.webContents.executeJavaScript("document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.gridArea = \"auto\";")
-            console.log("[CSS] Removed Apple Logo successfully.")
+            win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__header web-navigation__header--logo').length > 0) document.getElementsByClassName('web-navigation__header web-navigation__header--logo')[0].remove();").then(() => console.log("[CSS] Apple Logo Removed."));
+            win.webContents.executeJavaScript("document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.gridArea = \"auto\";document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.marginTop = '7px';").then(() => console.log("[CSS] Apple Logo Space Displaced."));
         }
         if (css.removeUpsell) {
-            win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__native-upsell').length > 0) document.getElementsByClassName('web-navigation__native-upsell')[0].remove();");
-            console.log("[CSS] Removed upsell.")
+            win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__native-upsell').length > 0) document.getElementsByClassName('web-navigation__native-upsell')[0].remove();").then(() => console.log("[CSS] Removed upsell."));
         }
         if (css.macosWindow) {
-            win.webContents.executeJavaScript("if(document.getElementsByClassName('web-navigation')[0] && !(document.getElementsByClassName('web-navigation')[0].style.height == 'calc(100vh - 32px)')){ let dragDiv = document.createElement('div'); dragDiv.style.width = '100%'; dragDiv.style.height = '32px'; dragDiv.style.position = 'absolute'; dragDiv.style.top = dragDiv.style.left = 0; dragDiv.style.webkitAppRegion = 'drag'; document.body.appendChild(dragDiv); var closeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; document.getElementsByClassName('web-navigation')[0].style.bottom = 0; document.getElementsByClassName('web-navigation')[0].style.position = 'absolute'; document.getElementsByClassName('web-chrome')[0].style.top = '32px'; var minimizeButton = document.createElement('span'); var maximizeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; closeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag; '; minimizeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; maximizeButton.style = 'height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; closeButton.onclick= ()=>{ipcRenderer.send('close')}; minimizeButton.onclick = ()=>{ipcRenderer.send('minimize')}; maximizeButton.onclick = ()=>{ipcRenderer.send('maximize')}; dragDiv.appendChild(closeButton); dragDiv.appendChild(minimizeButton); dragDiv.appendChild(maximizeButton); closeButton.onmouseenter = ()=>{closeButton.style.filter = 'brightness(50%)'}; minimizeButton.onmouseenter = ()=>{minimizeButton.style.filter = 'brightness(50%)'}; maximizeButton.onmouseenter = ()=>{maximizeButton.style.filter = 'brightness(50%)'}; closeButton.onmouseleave = ()=>{closeButton.style.filter = 'brightness(100%)'}; minimizeButton.onmouseleave = ()=>{minimizeButton.style.filter = 'brightness(100%)'}; maximizeButton.onmouseleave = ()=>{maximizeButton.style.filter = 'brightness(100%)'};}");
-            console.log("[CSS] Enabled custom MacOS Window Frame")
+            win.webContents.executeJavaScript("if(document.getElementsByClassName('web-navigation')[0] && !(document.getElementsByClassName('web-navigation')[0].style.height == 'calc(100vh - 32px)')){ let dragDiv = document.createElement('div'); dragDiv.style.width = '100%'; dragDiv.style.height = '32px'; dragDiv.style.position = 'absolute'; dragDiv.style.top = dragDiv.style.left = 0; dragDiv.style.webkitAppRegion = 'drag'; document.body.appendChild(dragDiv); var closeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; document.getElementsByClassName('web-navigation')[0].style.bottom = 0; document.getElementsByClassName('web-navigation')[0].style.position = 'absolute'; document.getElementsByClassName('web-chrome')[0].style.top = '32px'; var minimizeButton = document.createElement('span'); var maximizeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; closeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag; '; minimizeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; maximizeButton.style = 'height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; closeButton.onclick= ()=>{ipcRenderer.send('close')}; minimizeButton.onclick = ()=>{ipcRenderer.send('minimize')}; maximizeButton.onclick = ()=>{ipcRenderer.send('maximize')}; dragDiv.appendChild(closeButton); dragDiv.appendChild(minimizeButton); dragDiv.appendChild(maximizeButton); closeButton.onmouseenter = ()=>{closeButton.style.filter = 'brightness(50%)'}; minimizeButton.onmouseenter = ()=>{minimizeButton.style.filter = 'brightness(50%)'}; maximizeButton.onmouseenter = ()=>{maximizeButton.style.filter = 'brightness(50%)'}; closeButton.onmouseleave = ()=>{closeButton.style.filter = 'brightness(100%)'}; minimizeButton.onmouseleave = ()=>{minimizeButton.style.filter = 'brightness(100%)'}; maximizeButton.onmouseleave = ()=>{maximizeButton.style.filter = 'brightness(100%)'};}").then(() => console.log("[CSS] Enabled custom MacOS Window Frame"));
         }
         if (glasstron) {
-            win.webContents.executeJavaScript("document.getElementsByTagName('body')[0].style = 'background-color: rgb(25 24 24 / 84%) !important;';")
+            win.webContents.executeJavaScript("document.getElementsByTagName('body')[0].style = 'background-color: rgb(25 24 24 / 84%) !important;';").then("[CSS] Glasstron background initialized.")
         }
         if (preferences.cssTheme) {
             console.log(`[Themes] Activating theme: ${preferences.cssTheme.toLowerCase()}`)
@@ -229,27 +260,33 @@ function createWindow() {
             readFile(path.join(__dirname, `./assets/themes/${preferences.cssTheme.toLowerCase()}.css`), "utf-8", function (error, data) {
                 if (!error) {
                     let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
-                    win.webContents.insertCSS(formattedData);
+                    win.webContents.insertCSS(formattedData).then(() => console.log(`[Theme] ${preferences.cssTheme.toLowerCase()} successfully injected.`));
                 }
             });
         }
     });
 
+    // Executes the Interop and Scrollbar Remover
     win.webContents.on('did-stop-loading', async () => {
-        if (advanced.RemoveScrollbars) await win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
+        if (advanced.removeScrollbars) await win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
         await win.webContents.executeJavaScript('MusicKitInterop.init()');
     });
 
-    win.webContents.on('crashed', function () {
-        console.log("[Apple-Music-Electron] Application has crashed.")
+    // Handles Unresponsive Window
+    win.webContents.on('unresponsive', function () {
+        console.log("[Apple-Music-Electron] Application has become unresponsive and has been closed..")
         app.exit();
     });
 
-    win.webContents.on("new-window", function(event, url) {
-      event.preventDefault();
-      console.log("[Apple-Music-Electron] User has opened ${url} which has been redirected to browser.")
-      electron.shell.openExternal(url);
-    });
+    // Prevent a new window from being created for hrefs, redirect to open in browser.
+    win.webContents.setWindowOpenHandler(({url}) => {
+        if (url.startsWith('https://apple.com/') || url.startsWith('https://www.apple.com/') || url.startsWith('https://support.apple.com/')) { // for security (pretty pointless ik)
+            electron.shell.openExternal(url).then(() => console.log(`[Apple-Music-Electron] User has opened ${url} which has been redirected to browser.`));
+            return {action: 'deny'}
+        }
+        console.log(`[Apple-Music-Electron] User has attempted to open ${url} which was blocked.`)
+        return {action: 'deny'}
+    })
 
     //----------------------------------------------------------------------------------------------------
     // Checks for Window Actions (when using MacOS theme)
@@ -397,7 +434,7 @@ function createWindow() {
     //  Song Notifications
     //----------------------------------------------------------------------------------------------------
 
-    if (isWin) app.setAppUserModelId("Apple Music Electron");
+    if (isWin) app.setAppUserModelId("Apple Music");
 
     function CreatePlaybackNotification(a) {
         console.log(`[CreatePlaybackNotification] Notification Generating | Function Parameters: SongName: ${a.name} | Artist: ${a.artistName} | Album: ${a.albumName}`)
@@ -425,17 +462,20 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
 
     electron.ipcMain.on('playbackStateDidChange', (item, a) => {
-        if (a === null || a.playParams.id === 'no-id-found') return;
+        if (a === null || !a || a.playParams.id === 'no-id-found') {
+            if (isWin) win.setThumbarButtons(ThumbarInactive);
+            return
+        }
 
         if (a.status) { // If the song is Playing
             // Update the Thumbar Buttons
-            win.setThumbarButtons([
+            if (isWin) win.setThumbarButtons([
                 {
                     tooltip: 'Previous',
                     icon: path.join(__dirname, './assets/media/previous.png'),
                     click() {
                         console.log('[setThumbarButtons] Previous song button clicked.')
-                        // a.back()
+                        win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPaused] skipToPreviousItem"))
                     }
                 },
                 {
@@ -443,7 +483,7 @@ function createWindow() {
                     icon: path.join(__dirname, './assets/media/pause.png'),
                     click() {
                         console.log('[setThumbarButtons] Play song button clicked.')
-                        // a.pause()
+                        win.webContents.executeJavaScript("MusicKit.getInstance().pause()").then(() => console.log("[ThumbarPaused] pause"))
                     }
                 },
                 {
@@ -451,19 +491,19 @@ function createWindow() {
                     icon: path.join(__dirname, './assets/media/next.png'),
                     click() {
                         console.log('[setThumbarButtons] Pause song button clicked.')
-                        // a.next()
+                        win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPaused] skipToNextItem"))
                     }
                 }
-            ])
+            ]);
         } else {
             // Update the Thumbar Buttons
-            win.setThumbarButtons([
+            if (isWin) win.setThumbarButtons([
                 {
                     tooltip: 'Previous',
                     icon: path.join(__dirname, './assets/media/previous.png'),
                     click() {
                         console.log('[setThumbarButtons] Previous song button clicked.')
-                        // a.back()
+                        win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPlaying] skipToPreviousItem"))
                     }
                 },
                 {
@@ -471,7 +511,7 @@ function createWindow() {
                     icon: path.join(__dirname, './assets/media/play.png'),
                     click() {
                         console.log('[setThumbarButtons] Play song button clicked.')
-                        // a.play()
+                        win.webContents.executeJavaScript("MusicKit.getInstance().play()").then(() => console.log("[ThumbarPlaying] play"))
                     }
                 },
                 {
@@ -479,10 +519,10 @@ function createWindow() {
                     icon: path.join(__dirname, './assets/media/next.png'),
                     click() {
                         console.log('[setThumbarButtons] Pause song button clicked.')
-                        // a.next()
+                        win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPlaying] skipToNextItem"))
                     }
                 }
-            ])
+            ]);
         }
 
         if (!cache || !preferences.discordRPC) return;
@@ -507,7 +547,10 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
 
     electron.ipcMain.on('mediaItemStateDidChange', (item, a) => {
-        if (a === null || a.playParams.id === 'no-id-found') return;
+        if (a === null || !a || a.playParams.id === 'no-id-found') {
+            win.setThumbarButtons(ThumbarInactive)
+            return
+        }
 
         while (!cache) {
             firstSong = true
@@ -539,8 +582,7 @@ function createWindow() {
 // Done
 //----------------------------------------------------------------------------------------------------
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
+// This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
     console.log("[Apple-Music-Electron] Application is Ready.")

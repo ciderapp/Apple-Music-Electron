@@ -36,15 +36,15 @@
   },
 
   "advanced": {
-    "bleedingEdge": false,
-    "allowSetMenu": false,
     "allowMultipleInstances": false,
     "allowRunningInsecureContent": true,
-    "MenuBarVisible": false,
+    "allowSetMenu": false,
+    "autoUpdater": false,
+    "enableLogging": true,
     "forceApplicationLanguage": "",
-    "UseBeta": true,
-    "RemoveScrollbars": true,
-    "SiteDetection": false,
-    "EnableLogging": true
+    "menuBarVisible": false,
+    "removeScrollbars": true,
+    "siteDetection": false,
+    "useBeta": true
   }
 }
