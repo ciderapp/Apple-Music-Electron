@@ -18,11 +18,17 @@ const MusicKitInterop = {
         let nowPlayingItem =  MusicKit.getInstance().nowPlayingItem;
         let isplaying = MusicKit.getInstance().isPlaying;
         let remainingTimeexport = MusicKit.getInstance().currentPlaybackTimeRemaining
+        let onplayfunction = MusicKit.getInstance().player.play()
+        let skiptonextfunction = MusicKit.getInstance().player.skipToNextItem()
+        let skiptoprevfunction = MusicKit.getInstance().player.skipToPreviousItem()
         let attributes  = {};
 
         if (nowPlayingItem != null){
            attributes = nowPlayingItem.attributes;
         }
+        attributes.skiptoprev = skiptoprevfunction ? skiptoprevfunction : 0;
+        attributes.skiptonext = skiptonextfunction ? skiptonextfunction : 0;
+        attributes.onplay = onplayfunction ? onplayfunction : 0;
         attributes.remainingTime = remainingTimeexport ? remainingTimeexport : 0;
         attributes.status = isplaying ? isplaying : false;
         attributes.name = attributes.name ? attributes.name : 'No Title Found';
