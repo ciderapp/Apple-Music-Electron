@@ -26,9 +26,9 @@ const MusicKitInterop = {
         if (nowPlayingItem != null){
            attributes = nowPlayingItem.attributes;
         }
-        attributes.skiptoprev = skiptoprevfunction ? skiptoprevfunction : 0;
-        attributes.skiptonext = skiptonextfunction ? skiptonextfunction : 0;
-        attributes.onplay = onplayfunction ? onplayfunction : 0;
+        attributes.skiptoprev = skiptoprevfunction
+        attributes.skiptonext = skiptonextfunction
+        attributes.onplay = onplayfunction
         attributes.remainingTime = remainingTimeexport ? remainingTimeexport : 0;
         attributes.status = isplaying ? isplaying : false;
         attributes.name = attributes.name ? attributes.name : 'No Title Found';
