@@ -2,7 +2,7 @@
   <a href="https://github.com/cryptofyre/Apple-Music-Electron">
     <br />
     <br />
-    <img src="https://i.imgur.com/DgBrgVu.png" alt="Banner" width="900" height="450">
+    <img src="https://i.imgur.com/sdrsYdb.png" alt="Banner" width="1200" height="800">
     <br />
     <br />
   </a>
@@ -34,7 +34,7 @@
   </p>
 
 <p align="center"> 
-<img src="https://i.imgur.com/yQyATIE.png" alt="preview" width="1500" height="1350">
+<img src="https://i.imgur.com/DEDl7HL.png" alt="preview" width="1200" height="3000">
 
 
 ## Compiling From Source
