@@ -17,7 +17,7 @@ const MusicKitInterop = {
     getAttributes: function() {
         let nowPlayingItem =  MusicKit.getInstance().nowPlayingItem;
         let isplaying = MusicKit.getInstance().isPlaying;
-        let remainingTimeexport = MusicKit.getInstance().currentPlaybackTimeRemaining
+        let remainingTimeexport = MusicKit.getInstance().currentPlaybackTimeRemaining;
         let attributes  = {};
 
         if (nowPlayingItem != null){

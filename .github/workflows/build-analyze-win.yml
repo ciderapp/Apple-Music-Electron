@@ -9,7 +9,7 @@
 # the `language` matrix defined below to confirm you have the correct set of
 # supported CodeQL languages.
 #
-name: "CodeQL"
+name: "CodeQL Windows"
 
 on:
   push:
@@ -23,7 +23,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     permissions:
       actions: read
       contents: read
@@ -60,7 +60,7 @@ jobs:
 
     - run: |
        yarn install
-       yarn dist -p never
+       yarn dist -w -p never --x64
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1

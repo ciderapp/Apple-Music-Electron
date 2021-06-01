@@ -14,6 +14,8 @@ let win = '',
     isQuiting = !preferences.closeButtonMinimize,
     isWin = process.platform === "win32",
     isMaximized,
+    isHidden,
+    isMinimized,
     glasstron,
     client;
 
@@ -55,7 +57,7 @@ function createWindow() {
     //---------------------------------------------------------------------
     // Create the Window
     //---------------------------------------------------------------------
-    if (preferences.cssTheme.toLowerCase() === "glasstron") { // Glasstron Theme Window Creation
+    if (preferences.cssTheme.toLowerCase().split('-').includes('glasstron')) { // Glasstron Theme Window Creation
         glasstron = require('glasstron');
 
         app.commandLine.appendSwitch("enable-transparent-visuals");
@@ -98,6 +100,22 @@ function createWindow() {
         })
     }
 
+    // Generate the ThumbarButtons that are inactive
+    win.setThumbarButtons([
+        {
+            tooltip: 'Previous',
+            icon: path.join(__dirname, './assets/media/previous-inactive.png')
+        },
+        {
+            tooltip: 'Play',
+            icon: path.join(__dirname, './assets/media/play-inactive.png')
+        },
+        {
+            tooltip: 'Next',
+            icon: path.join(__dirname, './assets/media/next-inactive.png')
+        }
+    ])
+
     // Hide toolbar tooltips / bar
     win.setMenuBarVisibility(advanced.MenuBarVisible);
     // Prevent users from being able to do shortcuts
@@ -108,7 +126,7 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
 
     autoUpdater.logger = require("electron-log")
-    if (advanced.bleedingedge) {
+    if (advanced.bleedingEdge) {
         autoUpdater.allowPrerelease = true
         autoUpdater.allowDowngrade = false
     }
@@ -189,12 +207,12 @@ function createWindow() {
     if (preferences.defaultTheme) electron.nativeTheme.themeSource = preferences.defaultTheme;
 
     win.webContents.on('did-stop-loading', () => {
-        if (css.removeappleLogo) {
+        if (css.removeAppleLogo) {
             win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__header web-navigation__header--logo').length > 0) document.getElementsByClassName('web-navigation__header web-navigation__header--logo')[0].remove();");
             win.webContents.executeJavaScript("document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.gridArea = \"auto\";")
             console.log("[CSS] Removed Apple Logo successfully.")
         }
-        if (css.removeupsell) {
+        if (css.removeUpsell) {
             win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__native-upsell').length > 0) document.getElementsByClassName('web-navigation__native-upsell')[0].remove();");
             console.log("[CSS] Removed upsell.")
         }
@@ -202,16 +220,11 @@ function createWindow() {
             win.webContents.executeJavaScript("if(document.getElementsByClassName('web-navigation')[0] && !(document.getElementsByClassName('web-navigation')[0].style.height == 'calc(100vh - 32px)')){ let dragDiv = document.createElement('div'); dragDiv.style.width = '100%'; dragDiv.style.height = '32px'; dragDiv.style.position = 'absolute'; dragDiv.style.top = dragDiv.style.left = 0; dragDiv.style.webkitAppRegion = 'drag'; document.body.appendChild(dragDiv); var closeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; document.getElementsByClassName('web-navigation')[0].style.bottom = 0; document.getElementsByClassName('web-navigation')[0].style.position = 'absolute'; document.getElementsByClassName('web-chrome')[0].style.top = '32px'; var minimizeButton = document.createElement('span'); var maximizeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; closeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag; '; minimizeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; maximizeButton.style = 'height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; closeButton.onclick= ()=>{ipcRenderer.send('close')}; minimizeButton.onclick = ()=>{ipcRenderer.send('minimize')}; maximizeButton.onclick = ()=>{ipcRenderer.send('maximize')}; dragDiv.appendChild(closeButton); dragDiv.appendChild(minimizeButton); dragDiv.appendChild(maximizeButton); closeButton.onmouseenter = ()=>{closeButton.style.filter = 'brightness(50%)'}; minimizeButton.onmouseenter = ()=>{minimizeButton.style.filter = 'brightness(50%)'}; maximizeButton.onmouseenter = ()=>{maximizeButton.style.filter = 'brightness(50%)'}; closeButton.onmouseleave = ()=>{closeButton.style.filter = 'brightness(100%)'}; minimizeButton.onmouseleave = ()=>{minimizeButton.style.filter = 'brightness(100%)'}; maximizeButton.onmouseleave = ()=>{maximizeButton.style.filter = 'brightness(100%)'};}");
             console.log("[CSS] Enabled custom MacOS Window Frame")
         }
-    });
-
-    win.webContents.on('did-stop-loading', async () => {
-        if (advanced.RemoveScrollbars) await win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
-        await win.webContents.executeJavaScript('MusicKitInterop.init()');
-    });
-
-
-    win.webContents.on('did-finish-load', function () {
+        if (glasstron) {
+            win.webContents.executeJavaScript("document.getElementsByTagName('body')[0].style = 'background-color: rgb(25 24 24 / 84%) !important;';")
+        }
         if (preferences.cssTheme) {
+            console.log(`[Themes] Activating theme: ${preferences.cssTheme.toLowerCase()}`)
             const {readFile} = require('fs');
             readFile(path.join(__dirname, `./assets/themes/${preferences.cssTheme.toLowerCase()}.css`), "utf-8", function (error, data) {
                 if (!error) {
@@ -222,9 +235,20 @@ function createWindow() {
         }
     });
 
-    win.webContents.on('crash', function () {
+    win.webContents.on('did-stop-loading', async () => {
+        if (advanced.RemoveScrollbars) await win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
+        await win.webContents.executeJavaScript('MusicKitInterop.init()');
+    });
+
+    win.webContents.on('crashed', function () {
         console.log("[Apple-Music-Electron] Application has crashed.")
         app.exit();
+    });
+
+    win.webContents.on("new-window", function(event, url) {
+      event.preventDefault();
+      console.log("[Apple-Music-Electron] User has opened ${url} which has been redirected to browser.")
+      electron.shell.openExternal(url);
     });
 
     //----------------------------------------------------------------------------------------------------
@@ -297,10 +321,20 @@ function createWindow() {
 
     win.on('hide', function () {
         trayIcon.setContextMenu(ClosedContextMenu);
+        isHidden = true;
     })
 
     win.on('show', function () {
         trayIcon.setContextMenu(OpenContextMenu);
+        isHidden = false;
+    })
+
+    win.on('minimize', function () {
+        isMinimized = true;
+    })
+
+    win.on('restore', function () {
+        isMinimized = false;
     })
 
     //----------------------------------------------------------------------------------------------------
@@ -325,7 +359,7 @@ function createWindow() {
 
     function UpdatePausedPresence(a) {
         console.log(`[DiscordRPC] Updating Pause Presence for ${a.name}`)
-        if (preferences.tooltipsongname) {
+        if (preferences.trayTooltipSongName) {
             trayIcon.setToolTip(`Paused ${a.name} by ${a.artistName} on ${a.albumName}`);
         }
         client.updatePresence({
@@ -343,7 +377,7 @@ function createWindow() {
         console.log(`[DiscordRPC] Updating Play Presence for ${a.name}`)
         console.log(`[DiscordRPC] Current startTime: ${a.startTime}`)
         console.log(`[DiscordRPC] Current endTime: ${a.endTime}`)
-        if (preferences.tooltipsongname) {
+        if (preferences.trayTooltipSongName) {
             trayIcon.setToolTip(`Playing ${a.name} by ${a.artistName} on ${a.albumName}`);
         }
         client.updatePresence({
@@ -391,7 +425,67 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
 
     electron.ipcMain.on('playbackStateDidChange', (item, a) => {
-        if (a === null || a.playParams.id === 'no-id-found' || !cache || !preferences.discordRPC) return;
+        if (a === null || a.playParams.id === 'no-id-found') return;
+
+        if (a.status) { // If the song is Playing
+            // Update the Thumbar Buttons
+            win.setThumbarButtons([
+                {
+                    tooltip: 'Previous',
+                    icon: path.join(__dirname, './assets/media/previous.png'),
+                    click() {
+                        console.log('[setThumbarButtons] Previous song button clicked.')
+                        // a.back()
+                    }
+                },
+                {
+                    tooltip: 'Pause',
+                    icon: path.join(__dirname, './assets/media/pause.png'),
+                    click() {
+                        console.log('[setThumbarButtons] Play song button clicked.')
+                        // a.pause()
+                    }
+                },
+                {
+                    tooltip: 'Next',
+                    icon: path.join(__dirname, './assets/media/next.png'),
+                    click() {
+                        console.log('[setThumbarButtons] Pause song button clicked.')
+                        // a.next()
+                    }
+                }
+            ])
+        } else {
+            // Update the Thumbar Buttons
+            win.setThumbarButtons([
+                {
+                    tooltip: 'Previous',
+                    icon: path.join(__dirname, './assets/media/previous.png'),
+                    click() {
+                        console.log('[setThumbarButtons] Previous song button clicked.')
+                        // a.back()
+                    }
+                },
+                {
+                    tooltip: 'Play',
+                    icon: path.join(__dirname, './assets/media/play.png'),
+                    click() {
+                        console.log('[setThumbarButtons] Play song button clicked.')
+                        // a.play()
+                    }
+                },
+                {
+                    tooltip: 'Next',
+                    icon: path.join(__dirname, './assets/media/next.png'),
+                    click() {
+                        console.log('[setThumbarButtons] Pause song button clicked.')
+                        // a.next()
+                    }
+                }
+            ])
+        }
+
+        if (!cache || !preferences.discordRPC) return;
 
         if (a.playParams.id !== cache.playParams.id) { // If it is a new song
             a.startTime = Date.now()
@@ -421,7 +515,8 @@ function createWindow() {
             cache = a;
         }
 
-        if (preferences.notifications && Notification.isSupported() && (a.playParams.id !== cache.playParams.id || firstSong)) { // Checks if it is a new song
+        if (preferences.playbackNotifications && Notification.isSupported() && (a.playParams.id !== cache.playParams.id || firstSong)) { // Checks if it is a new song
+            if (preferences.notificationsMinimized && (!isMinimized && !isHidden)) return;
             while (!notify) {
                 console.log(`[Notification] A ID: ${a.playParams.id} | Cache ID: ${cache.playParams.id}`)
                 notify = CreatePlaybackNotification(a)

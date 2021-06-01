@@ -1,0 +1,21 @@
+:root {
+    --primaryColor: #5865f2 !important;
+    --primaryColor-rgb: 88, 101, 242 !important;
+    --sidebar: rgba(19, 21, 25, 0.6) !important;
+    --footerBG: var(--sidebar) !important;
+    --pageBG: #171a1f !important; /* dont think this affects anything */
+    --pageBG-rgb: rgba(62, 71, 87, 0.1) !important;
+    --playerBackground: var(--sidebar) !important;
+    --playerLCDBGFill: rgba(19, 21, 25, 0.35) !important;
+
+    --modalBGColor: var(--pageBG) !important;
+    --systemHeaderMaterialSover: var(--pageBG) !important;
+    --systemQuaternary: var(--pageBG-rgb) !important;
+    --selectionColor: var(--primaryColor) !important;
+}
+
+.web-chrome > div {
+    background-color: var(--playerBackground) !important;
+    backdrop-filter: saturate(0%) blur(25px) !important;
+}
+/* Don't do anything that affects body attributes as this will cause glasstron to break. */

@@ -1,0 +1,20 @@
+/* made by devilAPI */
+:root {
+  --primaryColor: #1DB954 !important;
+  --primaryColor-rgb: 30, 215, 96 !important;
+  --sidebar: #191414 !important;
+  --footerBG: #191414 !important;
+  --pageBG: #191414 !important;
+  --pageBG-rgb: rgba(25, 20, 20, 0.1) !important;
+  --playerBackground: #191414 !important;
+  --playerLCDBGFill: #191414 !important;
+
+  --modalBGColor: var(--pageBG) !important;
+  --systemHeaderMaterialSover: var(--pageBG) !important;
+  --systemQuaternary: var(--pageBG-rgb) !important;
+  --selectionColor: var(--primaryColor) !important;
+}
+
+body > div {
+  background-color: var(--pageBG) !important;
+}
