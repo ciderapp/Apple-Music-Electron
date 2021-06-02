@@ -524,6 +524,7 @@ function createWindow() {
             if (isWin) win.setThumbarButtons(ThumbarInactive);
             return
         }
+
         isPlaying = a.status;
 
         if (a.status) { // If the song is Playing
