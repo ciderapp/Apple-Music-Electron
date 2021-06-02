@@ -248,18 +248,20 @@ function createWindow() {
     //  Get the System Language and Change URL Appropriately
     //----------------------------------------------------------------------------------------------------
     const SystemLang = app.getLocaleCountryCode().toLowerCase()
-    for (let key in languages) {
-        key = key.toLowerCase()
-        if (SystemLang === key) {
-            console.log(`[Language] Found: ${key} | System Language: ${SystemLang}`)
-            if (advanced.forceApplicationLanguage) {
-                key = advanced.forceApplicationLanguage
-            } else {
-                AppleMusicWebsite = `${AppleMusicWebsite}/${key}?l=${key}`
-                AppleMusicListenNow = `${AppleMusicWebsite}/${key}/listen-now?l=${key}`
+    let localeAs = SystemLang;
+    if (advanced.forceApplicationLanguage) {
+        const targetLocaleAs = advanced.forceApplicationLanguage;
+        for (let key in languages) {
+            key = key.toLowerCase()
+            if (targetLocaleAs === key) {
+                console.log(`[Language] Found: ${key} | System Language: ${SystemLang}`)
+                localeAs = key;
             }
         }
     }
+
+    AppleMusicWebsite = `${AppleMusicWebsite}/${localeAs}?l=${localeAs}`
+    AppleMusicListenNow = `${AppleMusicWebsite}/${localeAs}/listen-now?l=${localeAs}`
 
     //----------------------------------------------------------------------------------------------------
     //  Load the Webpage
