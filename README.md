@@ -2,7 +2,7 @@
   <a href="https://github.com/cryptofyre/Apple-Music-Electron">
     <br />
     <br />
-    <img src="https://i.imgur.com/sdrsYdb.png" alt="Banner" width="1200" height="500">
+    <img src="https://i.imgur.com/SHl1m0d.png" alt="Banner" width="1200" height="800">
     <br />
     <br />
   </a>
