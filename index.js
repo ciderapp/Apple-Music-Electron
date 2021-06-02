@@ -250,15 +250,11 @@ function createWindow() {
     const SystemLang = app.getLocaleCountryCode().toLowerCase()
     let localeAs = SystemLang;
     if (advanced.forceApplicationLanguage) {
-        localeAs = advanced.forceApplicationLanguage;
-    }
-    for (let key in languages) {
-        key = key.toLowerCase()
-        if (localeAs === key) {
-            console.log(`[Language] Found: ${key} | System Language: ${SystemLang}`)
-            if (advanced.forceApplicationLanguage) {
-                localeAs = advanced.forceApplicationLanguage;
-            } else {
+        const targetLocaleAs = advanced.forceApplicationLanguage;
+        for (let key in languages) {
+            key = key.toLowerCase()
+            if (targetLocaleAs === key) {
+                console.log(`[Language] Found: ${key} | System Language: ${SystemLang}`)
                 localeAs = key;
             }
         }
