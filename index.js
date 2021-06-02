@@ -238,7 +238,7 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
     // Load all the JS and CSS for the webpage
     //----------------------------------------------------------------------------------------------------
-    if (preferences.defaultTheme) electron.nativeTheme.themeSource = preferences.defaultTheme.toLowerCase();
+    if (preferences.defaultTheme) electron.nativeTheme.themeSource = preferences.defaultTheme;
 
     win.webContents.on('did-stop-loading', () => {
         if (css.removeAppleLogo) {
