@@ -26,6 +26,7 @@ let win = '',
     isMaximized,
     isHidden,
     isMinimized,
+    isPlaying = false,
     glasstron,
     client;
 
@@ -43,20 +44,90 @@ app.setPath("userData", path.join(app.getPath("cache"), app.name))
 // Disable Cors because Cryptofyre gets angry
 app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 
-// Enable Logging
-if (advanced.enableLogging) {
-    const log = require("electron-log");
-    console.log('---------------------------------------------------------------------')
-    console.log('Apple-Music-Electron application has started.');
-    console.log("---------------------------------------------------------------------")
-    console.log = log.log; // Overwrite the function because i cba to change all the console.logs
-}
-
 //---------------------------------------------------------------------
 //  Start the Creation of the Window
 //---------------------------------------------------------------------
 
 function createWindow() {
+    //---------------------------------------------------------------------
+    // Thumbar Presets
+    //---------------------------------------------------------------------
+    let ThumbarInactive = [
+            {
+                tooltip: 'Previous',
+                icon: path.join(__dirname, './assets/media/previous-inactive.png')
+            },
+            {
+                tooltip: 'Play',
+                icon: path.join(__dirname, './assets/media/play-inactive.png')
+            },
+            {
+                tooltip: 'Next',
+                icon: path.join(__dirname, './assets/media/next-inactive.png')
+            }
+        ],
+        ThumbarMediaPlaying = [
+            {
+                tooltip: 'Previous',
+                icon: path.join(__dirname, './assets/media/previous.png'),
+                click() {
+                    console.log('[setThumbarButtons] Previous song button clicked.')
+                    win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPaused] skipToPreviousItem"))
+                }
+            },
+            {
+                tooltip: 'Pause',
+                icon: path.join(__dirname, './assets/media/pause.png'),
+                click() {
+                    console.log('[setThumbarButtons] Play song button clicked.')
+                    win.webContents.executeJavaScript("MusicKit.getInstance().pause()").then(() => console.log("[ThumbarPaused] pause"))
+                }
+            },
+            {
+                tooltip: 'Next',
+                icon: path.join(__dirname, './assets/media/next.png'),
+                click() {
+                    console.log('[setThumbarButtons] Pause song button clicked.')
+                    win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPaused] skipToNextItem"))
+                }
+            }
+        ],
+        ThumbarMediaPaused = [
+            {
+                tooltip: 'Previous',
+                icon: path.join(__dirname, './assets/media/previous.png'),
+                click() {
+                    console.log('[setThumbarButtons] Previous song button clicked.')
+                    win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPlaying] skipToPreviousItem"))
+                }
+            },
+            {
+                tooltip: 'Play',
+                icon: path.join(__dirname, './assets/media/play.png'),
+                click() {
+                    console.log('[setThumbarButtons] Play song button clicked.')
+                    win.webContents.executeJavaScript("MusicKit.getInstance().play()").then(() => console.log("[ThumbarPlaying] play"))
+                }
+            },
+            {
+                tooltip: 'Next',
+                icon: path.join(__dirname, './assets/media/next.png'),
+                click() {
+                    console.log('[setThumbarButtons] Pause song button clicked.')
+                    win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPlaying] skipToNextItem"))
+                }
+            }
+        ];
+    //---------------------------------------------------------------------
+    // Enable Logging
+    //---------------------------------------------------------------------
+    if (advanced.enableLogging) {
+        const log = require("electron-log");
+        console.log('---------------------------------------------------------------------')
+        console.log('Apple-Music-Electron application has started.');
+        console.log("---------------------------------------------------------------------")
+        console.log = log.log; // Overwrite the function because i cba to change all the console.logs
+    }
     //---------------------------------------------------------------------
     // Prevent Multiple Instances
     //---------------------------------------------------------------------
@@ -101,7 +172,7 @@ function createWindow() {
                 preload: path.join(__dirname, './assets/MusicKitInterop.js'),
                 allowRunningInsecureContent: advanced.allowRunningInsecureContent,
                 contextIsolation: false,
-                webSecurity : false,
+                webSecurity: false,
                 sandbox: true
             }
         })
@@ -122,29 +193,11 @@ function createWindow() {
                 preload: path.join(__dirname, './assets/MusicKitInterop.js'),
                 allowRunningInsecureContent: advanced.allowRunningInsecureContent,
                 contextIsolation: false,
-                webSecurity : false,
+                webSecurity: false,
                 sandbox: true
             }
         })
     }
-
-    //----------------------------------------------------------------------------------------------------
-    //  Thumbar Presets
-    //----------------------------------------------------------------------------------------------------
-    let ThumbarInactive = [
-        {
-            tooltip: 'Previous',
-            icon: path.join(__dirname, './assets/media/previous-inactive.png')
-        },
-        {
-            tooltip: 'Play',
-            icon: path.join(__dirname, './assets/media/play-inactive.png')
-        },
-        {
-            tooltip: 'Next',
-            icon: path.join(__dirname, './assets/media/next-inactive.png')
-        }
-    ]
 
     // Generate the ThumbarButtons that are inactive
     if (isWin) win.setThumbarButtons(ThumbarInactive);
@@ -364,6 +417,11 @@ function createWindow() {
     win.on('show', function () {
         trayIcon.setContextMenu(OpenContextMenu);
         isHidden = false;
+        if (isPlaying) {
+            if (isWin) win.setThumbarButtons(ThumbarMediaPlaying);
+        } else {
+            if (isWin) win.setThumbarButtons(ThumbarMediaPaused);
+        }
     })
 
     win.on('minimize', function () {
@@ -466,63 +524,14 @@ function createWindow() {
             if (isWin) win.setThumbarButtons(ThumbarInactive);
             return
         }
+        isPlaying = a.status;
 
         if (a.status) { // If the song is Playing
             // Update the Thumbar Buttons
-            if (isWin) win.setThumbarButtons([
-                {
-                    tooltip: 'Previous',
-                    icon: path.join(__dirname, './assets/media/previous.png'),
-                    click() {
-                        console.log('[setThumbarButtons] Previous song button clicked.')
-                        win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPaused] skipToPreviousItem"))
-                    }
-                },
-                {
-                    tooltip: 'Pause',
-                    icon: path.join(__dirname, './assets/media/pause.png'),
-                    click() {
-                        console.log('[setThumbarButtons] Play song button clicked.')
-                        win.webContents.executeJavaScript("MusicKit.getInstance().pause()").then(() => console.log("[ThumbarPaused] pause"))
-                    }
-                },
-                {
-                    tooltip: 'Next',
-                    icon: path.join(__dirname, './assets/media/next.png'),
-                    click() {
-                        console.log('[setThumbarButtons] Pause song button clicked.')
-                        win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPaused] skipToNextItem"))
-                    }
-                }
-            ]);
+            if (isWin) win.setThumbarButtons(ThumbarMediaPlaying);
         } else {
             // Update the Thumbar Buttons
-            if (isWin) win.setThumbarButtons([
-                {
-                    tooltip: 'Previous',
-                    icon: path.join(__dirname, './assets/media/previous.png'),
-                    click() {
-                        console.log('[setThumbarButtons] Previous song button clicked.')
-                        win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPlaying] skipToPreviousItem"))
-                    }
-                },
-                {
-                    tooltip: 'Play',
-                    icon: path.join(__dirname, './assets/media/play.png'),
-                    click() {
-                        console.log('[setThumbarButtons] Play song button clicked.')
-                        win.webContents.executeJavaScript("MusicKit.getInstance().play()").then(() => console.log("[ThumbarPlaying] play"))
-                    }
-                },
-                {
-                    tooltip: 'Next',
-                    icon: path.join(__dirname, './assets/media/next.png'),
-                    click() {
-                        console.log('[setThumbarButtons] Pause song button clicked.')
-                        win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPlaying] skipToNextItem"))
-                    }
-                }
-            ]);
+            if (isWin) win.setThumbarButtons(ThumbarMediaPaused);
         }
 
         if (!cache || !preferences.discordRPC) return;
