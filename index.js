@@ -1,12 +1,18 @@
 require('v8-compile-cache');
-const {app, BrowserWindow, Tray, Menu, Notification} = require('electron')
-const {preferences, css, advanced} = require('./config.json');
-const config = require('./config.json');
-const languages = require('./assets/languages.json')
+// Electron
 const electron = require('electron');
-const path = require('path')
-const isSingleInstance = app.requestSingleInstanceLock();
+const {app, BrowserWindow, Tray, Menu, Notification} = require('electron')
 const {autoUpdater} = require("electron-updater");
+// Configuration
+const {preferences, css, advanced} = require('./config.json');
+// Languages / Localisation
+const languages = require('./assets/languages.json')
+// Code Resources
+const path = require('path')
+const isSingleInstance = app.requestSingleInstanceLock(); // Instance
+const {readFile} = require('fs');
+
+// Other
 const TaskList = [
     {
         program: process.execPath,
@@ -43,6 +49,24 @@ app.setPath("userData", path.join(app.getPath("cache"), app.name))
 
 // Disable Cors because Cryptofyre gets angry
 app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+
+function LoadCSSFile(cssPath) {
+    readFile(path.join(__dirname, cssPath), "utf-8", function (error, data) {
+        if (!error) {
+            let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
+            win.webContents.insertCSS(formattedData).then(() => console.log(`[CSS] '${cssPath}' successfully injected.`));
+        }
+    });
+}
+
+function LoadJSFile(jsPath) {
+    readFile(path.join(__dirname, jsPath), "utf-8", function (error, data) {
+        if (!error) {
+            let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
+            win.webContents.executeJavaScript(formattedData).then(() => console.log(`[JS] '${jsPath}' successfully injected.`));
+        }
+    });
+}
 
 //---------------------------------------------------------------------
 //  Start the Creation of the Window
@@ -297,27 +321,20 @@ function createWindow() {
 
     win.webContents.on('did-stop-loading', () => {
         if (css.removeAppleLogo) {
-            win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__header web-navigation__header--logo').length > 0) document.getElementsByClassName('web-navigation__header web-navigation__header--logo')[0].remove();").then(() => console.log("[CSS] Apple Logo Removed."));
-            win.webContents.executeJavaScript("document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.gridArea = \"auto\";document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.marginTop = '7px';").then(() => console.log("[CSS] Apple Logo Space Displaced."));
+            LoadJSFile('./assets/js/removeAppleLogo.js')
         }
         if (css.removeUpsell) {
-            win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__native-upsell').length > 0) document.getElementsByClassName('web-navigation__native-upsell')[0].remove();").then(() => console.log("[CSS] Removed upsell."));
+            LoadJSFile('./assets/js/removeUpsell.js')
         }
         if (css.macosWindow) {
-            win.webContents.executeJavaScript(` try { if (!webChromeMacFrame) { var webChromeMacFrame = document.getElementsByClassName('web-chrome')[0]; } if (!webNavigationMacFrame) { var webNavigationMacFrame = document.getElementsByClassName('web-navigation')[0]; } if(webNavigationMacFrame && !(webNavigationMacFrame.style.height == 'calc(100vh - 32px)')){ const dragDiv = document.createElement('div'); dragDiv.style.width = '100%'; dragDiv.style.height = '32px'; dragDiv.style.position = 'absolute'; dragDiv.style.top = dragDiv.style.left = 0; dragDiv.style.webkitAppRegion = 'drag'; document.body.appendChild(dragDiv); const closeButton = document.createElement('span'); webNavigationMacFrame.style.height = 'calc(100vh - 32px)'; webNavigationMacFrame.style.bottom = 0; webNavigationMacFrame.style.position = 'absolute';  document.head.insertAdjacentHTML("beforeend", "<style>.web-chrome { top: 32px !important; } .no-song-loaded.not-authenticated .web-navigation { height: calc(100vh - 32px); margin-top: 32px; }</style>"); const minimizeButton = document.createElement('span'); const maximizeButton = document.createElement('span'); webNavigationMacFrame.style.height = 'calc(100vh - 32px)'; closeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag; '; minimizeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; maximizeButton.style = 'height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; closeButton.onclick= ()=>{ipcRenderer.send('close')}; minimizeButton.onclick = ()=>{ipcRenderer.send('minimize')}; maximizeButton.onclick = ()=>{ipcRenderer.send('maximize')}; dragDiv.appendChild(closeButton); dragDiv.appendChild(minimizeButton); dragDiv.appendChild(maximizeButton); closeButton.onmouseenter = ()=>{closeButton.style.filter = 'brightness(50%)'}; minimizeButton.onmouseenter = ()=>{minimizeButton.style.filter = 'brightness(50%)'}; maximizeButton.onmouseenter = ()=>{maximizeButton.style.filter = 'brightness(50%)'}; closeButton.onmouseleave = ()=>{closeButton.style.filter = 'brightness(100%)'}; minimizeButton.onmouseleave = ()=>{minimizeButton.style.filter = 'brightness(100%)'}; maximizeButton.onmouseleave = ()=>{maximizeButton.style.filter = 'brightness(100%)'};} } catch (e) { console.error('caught exception applying custom MacOs Window Frame', e); }`).then(() => console.log("[CSS] Enabled custom MacOS Window Frame"));
+            LoadJSFile('./assets/js/macosWindowFrame.js')
         }
         if (glasstron) {
-            win.webContents.executeJavaScript("document.getElementsByTagName('body')[0].style = 'background-color: rgb(25 24 24 / 84%) !important;';").then("[CSS] Glasstron background initialized.")
+            LoadJSFile('./assets/js/glasstron.js')
         }
         if (preferences.cssTheme) {
             console.log(`[Themes] Activating theme: ${preferences.cssTheme.toLowerCase()}`)
-            const {readFile} = require('fs');
-            readFile(path.join(__dirname, `./assets/themes/${preferences.cssTheme.toLowerCase()}.css`), "utf-8", function (error, data) {
-                if (!error) {
-                    let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
-                    win.webContents.insertCSS(formattedData).then(() => console.log(`[Theme] ${preferences.cssTheme.toLowerCase()} successfully injected.`));
-                }
-            });
+            LoadCSSFile(`./assets/themes/${preferences.cssTheme.toLowerCase()}.css`)
         }
     });
 
@@ -599,7 +616,8 @@ function createWindow() {
 app.on('ready', () => {
     console.log("[Apple-Music-Electron] Application is Ready.")
     console.log(`[Apple-Music-Electron] Configuration File: `)
-    console.log(config)
+    const configurationFile = require('./config.json');
+    console.log(configurationFile)
     createWindow()
 });
 
