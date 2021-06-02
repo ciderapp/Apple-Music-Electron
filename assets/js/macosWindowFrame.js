@@ -13,6 +13,7 @@ try {
         dragDiv.style.left = "0";
         dragDiv.style.zIndex = "15";
         dragDiv.style.webkitAppRegion = "drag";
+        dragDiv.classList.add('dragDiv');
 
         document.body.appendChild(dragDiv);
 

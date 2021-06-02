@@ -17,3 +17,7 @@
 body > div {
   background-color: var(--pageBG) !important;
 }
+
+.dragDiv {
+  background-color: var(--sidebar) !important;
+}

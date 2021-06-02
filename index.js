@@ -165,7 +165,7 @@ function createWindow() {
             if (argv.indexOf("--force-quit") > -1) {
                 app.quit()
             } else {
-                if (win) {
+                if (win && !advanced.allowMultipleInstances) {
                     win.show()
                 }
             }
