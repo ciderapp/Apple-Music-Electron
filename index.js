@@ -1,12 +1,27 @@
 require('v8-compile-cache');
-const {app, BrowserWindow, Tray, Menu, Notification} = require('electron')
-const {preferences, css, advanced} = require('./config.json');
-const config = require('./config.json');
-const languages = require('./assets/languages.json')
+// Electron
 const electron = require('electron');
-const path = require('path')
-const isSingleInstance = app.requestSingleInstanceLock();
+const {app, BrowserWindow, Tray, Menu, Notification} = require('electron')
 const {autoUpdater} = require("electron-updater");
+// Configuration
+const {preferences, css, advanced} = require('./config.json');
+// Languages / Localisation
+const languages = require('./assets/languages.json')
+// Code Resources
+const path = require('path')
+const isSingleInstance = app.requestSingleInstanceLock(); // Instance
+const {readFile} = require('fs');
+
+// Other
+const TaskList = [
+    {
+        program: process.execPath,
+        arguments: '--force-quit',
+        iconPath: process.execPath,
+        iconIndex: 0,
+        title: 'Quit Apple Music'
+    }
+]
 let win = '',
     AppleMusicWebsite,
     trayIcon = null,
@@ -16,6 +31,7 @@ let win = '',
     isMaximized,
     isHidden,
     isMinimized,
+    isPlaying = false,
     glasstron,
     client;
 
@@ -24,15 +40,131 @@ if (preferences.discordRPC) {
     console.log("[DiscordRPC] Initializing Client.")
 }
 
+// Set a user tasks list
+if (isWin) app.setUserTasks(TaskList);
+
 // Set proper cache folder
 app.setPath("userData", path.join(app.getPath("cache"), app.name))
 
-if (advanced.EnableLogging) {
+// Disable Cors because Cryptofyre gets angry
+app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+
+function LoadCSSFile(cssPath) {
+    readFile(path.join(__dirname, cssPath), "utf-8", function (error, data) {
+        if (!error) {
+            let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
+            win.webContents.insertCSS(formattedData).then(() => console.log(`[CSS] '${cssPath}' successfully injected.`));
+        }
+    });
+}
+
+function LoadJSFile(jsPath) {
+    readFile(path.join(__dirname, jsPath), "utf-8", function (error, data) {
+        if (!error) {
+            let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
+            win.webContents.executeJavaScript(formattedData).then(() => console.log(`[JS] '${jsPath}' successfully injected.`));
+        }
+    });
+}
+
+//---------------------------------------------------------------------
+// Set the Theme for Thumbar Icons
+//---------------------------------------------------------------------
+let ColorScheme;
+if (preferences.defaultTheme) {
+    ColorScheme = preferences.defaultTheme.toLowerCase()
+} else if (electron.nativeTheme.shouldUseDarkColors === true) {
+    ColorScheme = "dark"
+} else if (electron.nativeTheme.shouldUseDarkColors === false) {
+    ColorScheme = "light"
+} else {
+    ColorScheme = "dark"
+}
+
+//---------------------------------------------------------------------
+// Enable Logging
+//---------------------------------------------------------------------
+if (advanced.enableLogging) {
     const log = require("electron-log");
     console.log('---------------------------------------------------------------------')
     console.log('Apple-Music-Electron application has started.');
     console.log("---------------------------------------------------------------------")
     console.log = log.log; // Overwrite the function because i cba to change all the console.logs
+}
+
+//---------------------------------------------------------------------
+// Thumbnail Toolbar Base (Inactive)
+//---------------------------------------------------------------------
+let ThumbnailToolbar = [
+    {
+        tooltip: 'Previous',
+        icon: path.join(__dirname, `./assets/media/${ColorScheme}/previous-inactive.png`)
+    },
+    {
+        tooltip: 'Play',
+        icon: path.join(__dirname, `./assets/media/${ColorScheme}/play-inactive.png`)
+    },
+    {
+        tooltip: 'Next',
+        icon: path.join(__dirname, `./assets/media/${ColorScheme}/next-inactive.png`)
+    }
+];
+
+//---------------------------------------------------------------------
+// Thumbnail Toolbar Media Playing
+//---------------------------------------------------------------------
+let ThumbarMediaPlaying = ThumbnailToolbar;
+
+// Previous
+ThumbarMediaPlaying[0].click = function() {
+    win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[AME] Previous Song Now Playing."))
+};
+ThumbarMediaPlaying[0].icon = path.join(__dirname, `./assets/media/${ColorScheme}/previous.png`);
+
+// Pause
+ThumbarMediaPlaying[1].tooltip = "Pause"
+ThumbarMediaPlaying[1].click = function() {
+    win.webContents.executeJavaScript("MusicKit.getInstance().pause()").then(() => console.log("[AME] Music Paused."))
+};
+ThumbarMediaPlaying[1].icon = path.join(__dirname, `./assets/media/${ColorScheme}/pause.png`);
+
+// Next
+ThumbarMediaPlaying[2].click = function() {
+    win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[AME] Music Skipped."))
+};
+ThumbarMediaPlaying[2].icon = path.join(__dirname, `./assets/media/${ColorScheme}/next.png`);
+
+//---------------------------------------------------------------------
+// Thumbnail Toolbar Media Playing
+//---------------------------------------------------------------------
+let ThumbarMediaPaused = ThumbarMediaPlaying;
+
+// Play
+ThumbarMediaPlaying[1].click = function() {
+    win.webContents.executeJavaScript("MusicKit.getInstance().play()").then(() => console.log("[AME] Music is now Playing."))
+};
+ThumbarMediaPlaying[1].icon = path.join(__dirname, `./assets/media/${ColorScheme}/play.png`);
+
+//---------------------------------------------------------------------
+//  Define the Base Options for the BrowserWindow
+//---------------------------------------------------------------------
+let BrowserWindowOptions = {
+    icon: iconPath,
+    width: 1024,
+    height: 600,
+    minWidth: 300,
+    minHeight: 300,
+    frame: !css.macosWindow,
+    title: "Apple Music",
+    // Enables DRM
+    webPreferences: {
+        plugins: true,
+        preload: path.join(__dirname, './assets/MusicKitInterop.js'),
+        allowRunningInsecureContent: advanced.allowRunningInsecureContent,
+        contextIsolation: false,
+        webSecurity: false,
+        sandbox: true
+    }
 }
 
 //---------------------------------------------------------------------
@@ -48,76 +180,39 @@ function createWindow() {
         app.quit();
         return
     } else {
-        app.on('second-instance', () => {
-            if (win) {
-                win.show()
+        app.on('second-instance', (event, argv) => {
+            app.setUserTasks(TaskList)
+            if (argv.indexOf("--force-quit") > -1) {
+                app.quit()
+            } else {
+                if (win && !advanced.allowMultipleInstances) {
+                    win.show()
+                }
             }
         })
+    }
+    if (app.commandLine.hasSwitch('force-quit')) {
+        app.quit()
+        return;
     }
     //---------------------------------------------------------------------
     // Create the Window
     //---------------------------------------------------------------------
     if (preferences.cssTheme.toLowerCase().split('-').includes('glasstron')) { // Glasstron Theme Window Creation
         glasstron = require('glasstron');
-
-        app.commandLine.appendSwitch("enable-transparent-visuals");
-        win = new glasstron.BrowserWindow({
-            icon: iconPath,
-            width: 1024,
-            height: 600,
-            minWidth: 300,
-            minHeight: 300,
-            frame: !css.macosWindow,
-            title: "Apple Music",
-            // Enables DRM
-            webPreferences: {
-                plugins: true,
-                preload: path.join(__dirname, './assets/MusicKitInterop.js'),
-                allowRunningInsecureContent: advanced.allowRunningInsecureContent,
-                contextIsolation: false,
-                sandbox: true
-            }
-        })
+        BrowserWindowOptions.transparent = true;
+        if (!isWin) app.commandLine.appendSwitch("enable-transparent-visuals");
+        win = new glasstron.BrowserWindow(BrowserWindowOptions)
         win.blurType = "blurbehind";
         win.setBlur(true);
     } else {
-        win = new BrowserWindow({ // Standard Window Creation
-            icon: iconPath,
-            width: 1024,
-            height: 600,
-            minWidth: 300,
-            minHeight: 300,
-            frame: !css.macosWindow,
-            title: "Apple Music",
-            // Enables DRM
-            webPreferences: {
-                plugins: true,
-                preload: path.join(__dirname, './assets/MusicKitInterop.js'),
-                allowRunningInsecureContent: advanced.allowRunningInsecureContent,
-                contextIsolation: false,
-                sandbox: true
-            }
-        })
+        win = new BrowserWindow(BrowserWindowOptions)
     }
 
     // Generate the ThumbarButtons that are inactive
-    win.setThumbarButtons([
-        {
-            tooltip: 'Previous',
-            icon: path.join(__dirname, './assets/media/previous-inactive.png')
-        },
-        {
-            tooltip: 'Play',
-            icon: path.join(__dirname, './assets/media/play-inactive.png')
-        },
-        {
-            tooltip: 'Next',
-            icon: path.join(__dirname, './assets/media/next-inactive.png')
-        }
-    ])
-
+    if (isWin) win.setThumbarButtons(ThumbnailToolbar);
     // Hide toolbar tooltips / bar
-    win.setMenuBarVisibility(advanced.MenuBarVisible);
+    win.setMenuBarVisibility(advanced.menuBarVisible);
     // Prevent users from being able to do shortcuts
     if (!advanced.allowSetMenu) win.setMenu(null);
 
@@ -126,21 +221,21 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
 
     autoUpdater.logger = require("electron-log")
-    if (advanced.bleedingEdge) {
+    if (advanced.autoUpdaterBetaBuilds) {
         autoUpdater.allowPrerelease = true
         autoUpdater.allowDowngrade = false
     }
 
     console.log("[AutoUpdater] Checking for updates...")
-    autoUpdater.checkForUpdatesAndNotify()
-    console.log("[AutoUpdater] Finished checking for updates.")
+    autoUpdater.checkForUpdatesAndNotify().then(() => console.log("[AutoUpdater] Finished checking for updates."))
 
     //----------------------------------------------------------------------------------------------------
     //  Check if the Beta is Available and Load it
     //----------------------------------------------------------------------------------------------------
-    if (advanced.UseBeta) {
-        if (advanced.SiteDetection) {
+    if (advanced.useBeta) {
+        if (advanced.siteDetection) {
             const isReachable = require("is-reachable");
+
             // Function to Load the Website if its reachable.
             async function LoadBeta() {
                 const web = await isReachable('https://beta.music.apple.com')
@@ -150,7 +245,8 @@ function createWindow() {
                     AppleMusicWebsite = 'https://music.apple.com';
                 }
             }
-            LoadBeta()
+
+            LoadBeta().then(() => console.log(`[Apple-Music-Electron] LoadBeta has chosen ${AppleMusicWebsite}`))
         } else {    // Skips the check if sitedetection is turned off.
             AppleMusicWebsite = 'https://beta.music.apple.com';
         }
@@ -162,24 +258,26 @@ function createWindow() {
     //  Get the System Language and Change URL Appropriately
     //----------------------------------------------------------------------------------------------------
     const SystemLang = app.getLocaleCountryCode().toLowerCase()
-    for (let key in languages) {
-        key = key.toLowerCase()
-        if (SystemLang === key) {
-            console.log(`[Language] Found: ${key} | System Language: ${SystemLang}`)
-            if (advanced.forceApplicationLanguage) {
-                key = advanced.forceApplicationLanguage
-            } else {
-                AppleMusicWebsite = `${AppleMusicWebsite}/${key}?l=${key}`
+    let localeAs = SystemLang;
+    if (advanced.forceApplicationLanguage) {
+        const targetLocaleAs = advanced.forceApplicationLanguage;
+        for (let key in languages) {
+            key = key.toLowerCase()
+            if (targetLocaleAs === key) {
+                console.log(`[Language] Found: ${key} | System Language: ${SystemLang}`)
+                localeAs = key;
             }
         }
     }
+
+    AppleMusicWebsite = `${AppleMusicWebsite}/${localeAs}?l=${localeAs}`
 
     //----------------------------------------------------------------------------------------------------
     //  Load the Webpage
     //----------------------------------------------------------------------------------------------------
 
     console.log(`[Apple-Music-Electron] The chosen website is ${AppleMusicWebsite}`)
-    win.loadURL(AppleMusicWebsite)
+    win.loadURL(AppleMusicWebsite).then(() => console.log(`[Apple-Music-Electron] Website has been loaded!`))
 
     //----------------------------------------------------------------------------------------------------
     //  Prevents the Window Being Updated and Changes how close works to hide the window
@@ -204,52 +302,59 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
     // Load all the JS and CSS for the webpage
     //----------------------------------------------------------------------------------------------------
-    if (preferences.defaultTheme) electron.nativeTheme.themeSource = preferences.defaultTheme;
+    if (preferences.defaultTheme) electron.nativeTheme.themeSource = preferences.defaultTheme.toLowerCase();
+
+    // For themes that are specified to certain colors
+    switch(preferences.cssTheme.toLowerCase()) {
+        case "glasstron":
+        case "glasstron-blurple":
+        case "blurple-dark":
+        case "jungle":
+        case "spotify":
+            electron.nativeTheme.themeSource = "dark";
+            break;
+    }
 
     win.webContents.on('did-stop-loading', () => {
         if (css.removeAppleLogo) {
-            win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__header web-navigation__header--logo').length > 0) document.getElementsByClassName('web-navigation__header web-navigation__header--logo')[0].remove();");
-            win.webContents.executeJavaScript("document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.gridArea = \"auto\";")
-            console.log("[CSS] Removed Apple Logo successfully.")
+            LoadJSFile('./assets/js/removeAppleLogo.js')
         }
         if (css.removeUpsell) {
-            win.webContents.executeJavaScript("while (document.getElementsByClassName('web-navigation__native-upsell').length > 0) document.getElementsByClassName('web-navigation__native-upsell')[0].remove();");
-            console.log("[CSS] Removed upsell.")
+            LoadJSFile('./assets/js/removeUpsell.js')
         }
         if (css.macosWindow) {
-            win.webContents.executeJavaScript("if(document.getElementsByClassName('web-navigation')[0] && !(document.getElementsByClassName('web-navigation')[0].style.height == 'calc(100vh - 32px)')){ let dragDiv = document.createElement('div'); dragDiv.style.width = '100%'; dragDiv.style.height = '32px'; dragDiv.style.position = 'absolute'; dragDiv.style.top = dragDiv.style.left = 0; dragDiv.style.webkitAppRegion = 'drag'; document.body.appendChild(dragDiv); var closeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; document.getElementsByClassName('web-navigation')[0].style.bottom = 0; document.getElementsByClassName('web-navigation')[0].style.position = 'absolute'; document.getElementsByClassName('web-chrome')[0].style.top = '32px'; var minimizeButton = document.createElement('span'); var maximizeButton = document.createElement('span'); document.getElementsByClassName('web-navigation')[0].style.height = 'calc(100vh - 32px)'; closeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag; '; minimizeButton.style = 'height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; maximizeButton.style = 'height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;'; closeButton.onclick= ()=>{ipcRenderer.send('close')}; minimizeButton.onclick = ()=>{ipcRenderer.send('minimize')}; maximizeButton.onclick = ()=>{ipcRenderer.send('maximize')}; dragDiv.appendChild(closeButton); dragDiv.appendChild(minimizeButton); dragDiv.appendChild(maximizeButton); closeButton.onmouseenter = ()=>{closeButton.style.filter = 'brightness(50%)'}; minimizeButton.onmouseenter = ()=>{minimizeButton.style.filter = 'brightness(50%)'}; maximizeButton.onmouseenter = ()=>{maximizeButton.style.filter = 'brightness(50%)'}; closeButton.onmouseleave = ()=>{closeButton.style.filter = 'brightness(100%)'}; minimizeButton.onmouseleave = ()=>{minimizeButton.style.filter = 'brightness(100%)'}; maximizeButton.onmouseleave = ()=>{maximizeButton.style.filter = 'brightness(100%)'};}");
-            console.log("[CSS] Enabled custom MacOS Window Frame")
+            LoadJSFile('./assets/js/macosWindowFrame.js')
         }
         if (glasstron) {
-            win.webContents.executeJavaScript("document.getElementsByTagName('body')[0].style = 'background-color: rgb(25 24 24 / 84%) !important;';")
+            LoadJSFile('./assets/js/glasstron.js')
         }
         if (preferences.cssTheme) {
             console.log(`[Themes] Activating theme: ${preferences.cssTheme.toLowerCase()}`)
-            const {readFile} = require('fs');
-            readFile(path.join(__dirname, `./assets/themes/${preferences.cssTheme.toLowerCase()}.css`), "utf-8", function (error, data) {
-                if (!error) {
-                    let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
-                    win.webContents.insertCSS(formattedData);
-                }
-            });
+            LoadCSSFile(`./assets/themes/${preferences.cssTheme.toLowerCase()}.css`)
         }
     });
 
+    // Executes the Interop and Scrollbar Remover
     win.webContents.on('did-stop-loading', async () => {
-        if (advanced.RemoveScrollbars) await win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
+        if (advanced.removeScrollbars) await win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
         await win.webContents.executeJavaScript('MusicKitInterop.init()');
     });
 
-    win.webContents.on('crashed', function () {
-        console.log("[Apple-Music-Electron] Application has crashed.")
+    // Handles Unresponsive Window
+    win.webContents.on('unresponsive', function () {
+        console.log("[Apple-Music-Electron] Application has become unresponsive and has been closed..")
         app.exit();
     });
 
-    win.webContents.on("new-window", function(event, url) {
-      event.preventDefault();
-      console.log("[Apple-Music-Electron] User has opened ${url} which has been redirected to browser.")
-      electron.shell.openExternal(url);
-    });
+    // Prevent a new window from being created for hrefs, redirect to open in browser.
+    win.webContents.setWindowOpenHandler(({url}) => {
+        if (url.startsWith('https://apple.com/') || url.startsWith('https://www.apple.com/') || url.startsWith('https://support.apple.com/')) { // for security (pretty pointless ik)
+            electron.shell.openExternal(url).then(() => console.log(`[Apple-Music-Electron] User has opened ${url} which has been redirected to browser.`));
+            return {action: 'deny'}
+        }
+        console.log(`[Apple-Music-Electron] User has attempted to open ${url} which was blocked.`)
+        return {action: 'deny'}
+    })
 
     //----------------------------------------------------------------------------------------------------
     // Checks for Window Actions (when using MacOS theme)
@@ -282,23 +387,7 @@ function createWindow() {
     }
     trayIcon = new Tray(iconPath)
 
-    // Context Menu for when the App is Hidden
-    const ClosedContextMenu = Menu.buildFromTemplate([
-        {
-            label: 'Show Apple Music', click: function () {
-                win.show();
-            }
-        },
-        {
-            label: 'Quit', click: function () {
-                app.isQuiting = true
-                app.quit();
-            }
-        }
-    ]);
-
-    // Context Menu for when the App is not Hidden
-    const OpenContextMenu = Menu.buildFromTemplate([
+    let ContextMenu = Menu.buildFromTemplate([
         {
             label: 'Minimize to Tray', click: function () {
                 win.hide();
@@ -313,20 +402,28 @@ function createWindow() {
     ]);
 
     trayIcon.setToolTip('Apple Music Electron');
-    trayIcon.setContextMenu(OpenContextMenu);
+    trayIcon.setContextMenu(ContextMenu);
 
     trayIcon.on('double-click', () => {
         win.show()
     })
 
     win.on('hide', function () {
-        trayIcon.setContextMenu(ClosedContextMenu);
+        ContextMenu[0].click = function() {
+            win.show()
+        }
+        trayIcon.setContextMenu(ContextMenu);
         isHidden = true;
     })
 
     win.on('show', function () {
-        trayIcon.setContextMenu(OpenContextMenu);
+        trayIcon.setContextMenu(ContextMenu);
         isHidden = false;
+        if (isPlaying) {
+            if (isWin) win.setThumbarButtons(ThumbarMediaPlaying);
+        } else {
+            if (isWin) win.setThumbarButtons(ThumbarMediaPaused);
+        }
     })
 
     win.on('minimize', function () {
@@ -397,7 +494,7 @@ function createWindow() {
     //  Song Notifications
     //----------------------------------------------------------------------------------------------------
 
-    if (isWin) app.setAppUserModelId("Apple Music Electron");
+    if (isWin) app.setAppUserModelId("Apple Music");
 
     function CreatePlaybackNotification(a) {
         console.log(`[CreatePlaybackNotification] Notification Generating | Function Parameters: SongName: ${a.name} | Artist: ${a.artistName} | Album: ${a.albumName}`)
@@ -425,64 +522,19 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
 
     electron.ipcMain.on('playbackStateDidChange', (item, a) => {
-        if (a === null || a.playParams.id === 'no-id-found') return;
+        if (a === null || !a || a.playParams.id === 'no-id-found') {
+            if (isWin) win.setThumbarButtons(ThumbnailToolbar);
+            return
+        }
+
+        isPlaying = a.status;
 
         if (a.status) { // If the song is Playing
             // Update the Thumbar Buttons
-            win.setThumbarButtons([
-                {
-                    tooltip: 'Previous',
-                    icon: path.join(__dirname, './assets/media/previous.png'),
-                    click() {
-                        console.log('[setThumbarButtons] Previous song button clicked.')
-                        // a.back()
-                    }
-                },
-                {
-                    tooltip: 'Pause',
-                    icon: path.join(__dirname, './assets/media/pause.png'),
-                    click() {
-                        console.log('[setThumbarButtons] Play song button clicked.')
-                        // a.pause()
-                    }
-                },
-                {
-                    tooltip: 'Next',
-                    icon: path.join(__dirname, './assets/media/next.png'),
-                    click() {
-                        console.log('[setThumbarButtons] Pause song button clicked.')
-                        // a.next()
-                    }
-                }
-            ])
+            if (isWin) win.setThumbarButtons(ThumbarMediaPlaying);
         } else {
             // Update the Thumbar Buttons
-            win.setThumbarButtons([
-                {
-                    tooltip: 'Previous',
-                    icon: path.join(__dirname, './assets/media/previous.png'),
-                    click() {
-                        console.log('[setThumbarButtons] Previous song button clicked.')
-                        // a.back()
-                    }
-                },
-                {
-                    tooltip: 'Play',
-                    icon: path.join(__dirname, './assets/media/play.png'),
-                    click() {
-                        console.log('[setThumbarButtons] Play song button clicked.')
-                        // a.play()
-                    }
-                },
-                {
-                    tooltip: 'Next',
-                    icon: path.join(__dirname, './assets/media/next.png'),
-                    click() {
-                        console.log('[setThumbarButtons] Pause song button clicked.')
-                        // a.next()
-                    }
-                }
-            ])
+            if (isWin) win.setThumbarButtons(ThumbarMediaPaused);
         }
 
         if (!cache || !preferences.discordRPC) return;
@@ -507,7 +559,10 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
 
     electron.ipcMain.on('mediaItemStateDidChange', (item, a) => {
-        if (a === null || a.playParams.id === 'no-id-found') return;
+        if (a === null || !a || a.playParams.id === 'no-id-found') {
+            win.setThumbarButtons(ThumbnailToolbar)
+            return
+        }
 
         while (!cache) {
             firstSong = true
@@ -539,13 +594,13 @@ function createWindow() {
 // Done
 //----------------------------------------------------------------------------------------------------
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
+// This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
     console.log("[Apple-Music-Electron] Application is Ready.")
     console.log(`[Apple-Music-Electron] Configuration File: `)
-    console.log(config)
+    const configurationFile = require('./config.json');
+    console.log(configurationFile)
     createWindow()
 });
 
