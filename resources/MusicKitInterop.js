@@ -4,7 +4,7 @@ const electron = require('electron');
 const MusicKitInterop = {
 
     init: function (){
-        MusicKit.getInstance().addEventListener( MusicKit.Events.playbackStateDidChange, (a) => {
+        MusicKit.getInstance().addEventListener( MusicKit.Events.playbackStateDidChange, () => {
             global.ipcRenderer.send('playbackStateDidChange', MusicKitInterop.getAttributes())
 
         });
