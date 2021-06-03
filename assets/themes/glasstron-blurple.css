@@ -18,4 +18,10 @@
     background-color: var(--playerBackground) !important;
     backdrop-filter: saturate(0%) blur(25px) !important;
 }
+
+.dragDiv {
+    background-color: var(--playerBackground) !important;
+    backdrop-filter: saturate(0%) blur(25px) !important;
+}
+
 /* Don't do anything that affects body attributes as this will cause glasstron to break. */
