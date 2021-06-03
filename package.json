@@ -6,7 +6,7 @@
   "version": "2.1.1",
   "description": "Unofficial Electron wrapper for Apple Music created by @cryptofyre",
   "license": "MIT",
-  "buildResources": "assets",
+  "buildResources": "resources",
   "scripts": {
     "init": "install",
     "start": "electron --enable-accelerated-mjpeg-decode --enable-accelerated-video --ignore-gpu-blacklist --enable-native-gpu-memory-buffers --enable-gpu-rasterization .",
@@ -42,7 +42,7 @@
     "extends": null,
     "files": [
       "**/*",
-      "assets/icon.*"
+      "resources/icon.*"
     ],
     "linux": {
       "target": [
@@ -52,13 +52,13 @@
         "rpm"
       ],
       "category": "AudioVideo",
-      "icon": "./assets/icon.icns"
+      "icon": "./resources/icon.icns"
     },
     "win": {
       "target": [
         "nsis"
       ],
-      "icon": "./assets/icon.ico"
+      "icon": "./resources/icon.ico"
     }
   }
 }

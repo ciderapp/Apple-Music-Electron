@@ -6,7 +6,7 @@ const {autoUpdater} = require("electron-updater");
 // Configuration
 const {preferences, css, advanced} = require('./config.json');
 // Languages / Localisation
-const languages = require('./assets/languages.json')
+const languages = require('./resources/languages.json')
 // Code Resources
 const path = require('path')
 const isSingleInstance = app.requestSingleInstanceLock(); // Instance
@@ -25,7 +25,7 @@ const TaskList = [
 let win = '',
     AppleMusicWebsite,
     trayIcon = null,
-    iconPath = path.join(__dirname, `./assets/icon.ico`),
+    iconPath = path.join(__dirname, `./resources/icon.ico`),
     isQuiting = !preferences.closeButtonMinimize,
     isWin = process.platform === "win32",
     isMaximized,
@@ -98,15 +98,15 @@ if (advanced.enableLogging) {
 let ThumbnailToolbar = [
     {
         tooltip: 'Previous',
-        icon: path.join(__dirname, `./assets/media/${ColorScheme}/previous-inactive.png`)
+        icon: path.join(__dirname, `./resources/media/${ColorScheme}/previous-inactive.png`)
     },
     {
         tooltip: 'Play',
-        icon: path.join(__dirname, `./assets/media/${ColorScheme}/play-inactive.png`)
+        icon: path.join(__dirname, `./resources/media/${ColorScheme}/play-inactive.png`)
     },
     {
         tooltip: 'Next',
-        icon: path.join(__dirname, `./assets/media/${ColorScheme}/next-inactive.png`)
+        icon: path.join(__dirname, `./resources/media/${ColorScheme}/next-inactive.png`)
     }
 ];
 
@@ -119,20 +119,20 @@ let ThumbarMediaPlaying = ThumbnailToolbar;
 ThumbarMediaPlaying[0].click = function() {
     win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[AME] Previous Song Now Playing."))
 };
-ThumbarMediaPlaying[0].icon = path.join(__dirname, `./assets/media/${ColorScheme}/previous.png`);
+ThumbarMediaPlaying[0].icon = path.join(__dirname, `./resources/media/${ColorScheme}/previous.png`);
 
 // Pause
 ThumbarMediaPlaying[1].tooltip = "Pause"
 ThumbarMediaPlaying[1].click = function() {
     win.webContents.executeJavaScript("MusicKit.getInstance().pause()").then(() => console.log("[AME] Music Paused."))
 };
-ThumbarMediaPlaying[1].icon = path.join(__dirname, `./assets/media/${ColorScheme}/pause.png`);
+ThumbarMediaPlaying[1].icon = path.join(__dirname, `./resources/media/${ColorScheme}/pause.png`);
 
 // Next
 ThumbarMediaPlaying[2].click = function() {
     win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[AME] Music Skipped."))
 };
-ThumbarMediaPlaying[2].icon = path.join(__dirname, `./assets/media/${ColorScheme}/next.png`);
+ThumbarMediaPlaying[2].icon = path.join(__dirname, `./resources/media/${ColorScheme}/next.png`);
 
 //---------------------------------------------------------------------
 // Thumbnail Toolbar Media Playing
@@ -143,7 +143,7 @@ let ThumbarMediaPaused = ThumbarMediaPlaying;
 ThumbarMediaPlaying[1].click = function() {
     win.webContents.executeJavaScript("MusicKit.getInstance().play()").then(() => console.log("[AME] Music is now Playing."))
 };
-ThumbarMediaPlaying[1].icon = path.join(__dirname, `./assets/media/${ColorScheme}/play.png`);
+ThumbarMediaPlaying[1].icon = path.join(__dirname, `./resources/media/${ColorScheme}/play.png`);
 
 //---------------------------------------------------------------------
 //  Define the Base Options for the BrowserWindow
@@ -159,7 +159,7 @@ let BrowserWindowOptions = {
     // Enables DRM
     webPreferences: {
         plugins: true,
-        preload: path.join(__dirname, './assets/MusicKitInterop.js'),
+        preload: path.join(__dirname, './resources/MusicKitInterop.js'),
         allowRunningInsecureContent: advanced.allowRunningInsecureContent,
         contextIsolation: false,
         webSecurity: false,
@@ -317,20 +317,20 @@ function createWindow() {
 
     win.webContents.on('did-stop-loading', () => {
         if (css.removeAppleLogo) {
-            LoadJSFile('./assets/js/removeAppleLogo.js')
+            LoadJSFile('./resources/js/removeAppleLogo.js')
         }
         if (css.removeUpsell) {
-            LoadJSFile('./assets/js/removeUpsell.js')
+            LoadJSFile('./resources/js/removeUpsell.js')
         }
         if (css.macosWindow) {
-            LoadJSFile('./assets/js/macosWindowFrame.js')
+            LoadJSFile('./resources/js/macosWindowFrame.js')
         }
         if (glasstron) {
-            LoadJSFile('./assets/js/glasstron.js')
+            LoadJSFile('./resources/js/glasstron.js')
         }
         if (preferences.cssTheme) {
             console.log(`[Themes] Activating theme: ${preferences.cssTheme.toLowerCase()}`)
-            LoadCSSFile(`./assets/themes/${preferences.cssTheme.toLowerCase()}.css`)
+            LoadCSSFile(`./resources/themes/${preferences.cssTheme.toLowerCase()}.css`)
         }
     });
 
@@ -383,7 +383,7 @@ function createWindow() {
     //----------------------------------------------------------------------------------------------------
 
     if (!isWin) {
-        iconPath = path.join(__dirname, `./assets/icon.png`)
+        iconPath = path.join(__dirname, `./resources/icon.png`)
     }
     trayIcon = new Tray(iconPath)
 
@@ -504,7 +504,7 @@ function createWindow() {
             title: NOTIFICATION_TITLE,
             body: NOTIFICATION_BODY,
             silent: true,
-            icon: path.join(__dirname, './assets/icon.png')
+            icon: path.join(__dirname, './resources/icon.png')
         }).show()
         return true
     }
