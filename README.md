@@ -60,23 +60,7 @@ Or if your a more advanced operating system user you can use WinGet by running:
 
 ## Compiling from source.
 
-Requirements: NodeJS (any version should work), yarn, a computer, extremely basic text editing knowledge.
-
-```
-git clone https://github.com/cryptofyre/Apple-Music-Electron.git
-
-yarn install
-
-yarn dist
-```
-
-For debugging or if you are having an issue, you can find the log file for the application at `%APPDATA%\Apple Music\logs\main.log`
-
-### Compiling from source (extended)
-You can now customize your AME to your liking with the new options placed at the top of the index.js file!
-
-![alt text](https://i.imgur.com/dbj2uXe.png "Logo")
-
+Please refer to the (https://github.com/cryptofyre/Apple-Music-Electron/wiki/Compiling-on-Platforms)[Documentation].
 
 ### Credits
 cryptofyre, CoreDev-UK, devilAPI, Apple, castlabs (for electron), and more!
