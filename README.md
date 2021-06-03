@@ -60,7 +60,7 @@ Or if your a more advanced operating system user you can use WinGet by running:
 
 ## Compiling from source.
 
-Please refer to the (https://github.com/cryptofyre/Apple-Music-Electron/wiki/Compiling-on-Platforms)[Documentation].
+Please refer to the [Documentation](https://github.com/cryptofyre/Apple-Music-Electron/wiki/Compiling-on-Platforms).
 
 ### Credits
 cryptofyre, CoreDev-UK, devilAPI, Apple, castlabs (for electron), and more!
