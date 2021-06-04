@@ -9,6 +9,7 @@ const electron = require('electron'), {app} = require('electron'), {
     GetLocale,
     GetTheme,
     SetThumbarButtons,
+    SetContextMenu,
     Init,
     InitDevMode,
     InitDiscordRPC,
@@ -19,7 +20,14 @@ const electron = require('electron'), {app} = require('electron'), {
     CreateBrowserWindow,
     WindowHandler
 } = require('./resources/functions');
-let isQuiting = !preferences.closeButtonMinimize
+let client;
+if (preferences.discordRPC) {
+    client = require('discord-rich-presence')('749317071145533440');
+    console.log("[DiscordRPC] Initializing Client.")
+} else {
+    client = false;
+}
+app.isQuiting = !preferences.closeButtonMinimize;
 
 //########################## NO TOUCHY TY ####################################
 let dev = false
@@ -36,8 +44,10 @@ function createWindow() {
         app.quit();
         return
     } else {
-        app.on('second-instance', () => {
-            if (win && !advanced.allowMultipleInstances) {
+        app.on('second-instance', (e, argv) => {
+            if (argv.indexOf("--force-quit") > -1) {
+                app.quit()
+            } else if (win && !advanced.allowMultipleInstances) {
                 win.show()
             }
         })
@@ -93,13 +103,24 @@ function createWindow() {
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     //      Create the Tray Icon and Listen for Window Changes
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-    let trayIcon = InitTray()
-    let winHandle = WindowHandler(win, trayIcon, preferences.defaultTheme, css.macosWindow, isPlaying)
+    let trayIcon = InitTray(win)
+    let winHandle = WindowHandler(win, trayIcon, preferences.defaultTheme, css.macosWindow)
+
+    win.on('show', function () {
+        SetContextMenu(trayIcon, true, win)
+        winHandle.isHidden = false;
+        SetThumbarButtons(win, isPlaying, GetTheme(preferences.defaultTheme))
+    })
+
+    win.on('hide', function () {
+        SetContextMenu(trayIcon, false, win)
+        winHandle.isHidden = true;
+    })
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     //      Initialize DiscordRPC and Handle Media/Playback Changes
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-    InitDiscordRPC(preferences.discordRPC) // Initialize DiscordRPC
+    InitDiscordRPC(client) // Initialize DiscordRPC
     let cache,
         notify,
         firstSong;
@@ -174,5 +195,5 @@ app.on('before-quit', function () {
     console.log("---------------------------------------------------------------------")
     console.log("Application Closing...")
     console.log("---------------------------------------------------------------------")
-    isQuiting = true;
+    app.isQuiting = true;
 });

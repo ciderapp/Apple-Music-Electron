@@ -1,6 +1,7 @@
 const {readFile} = require('fs');
-const { app, BrowserWindow, nativeTheme, Notification, Tray, shell, ipcMain } = require('electron');
+const { app, BrowserWindow, nativeTheme, Notification, Tray, shell, ipcMain, Menu } = require('electron');
 const {join} = require('path');
+const {autoUpdater} = require("electron-updater");  // AutoUpdater Init
 
 let Functions = {
     LoadTheme: function (win, cssPath) {
@@ -17,7 +18,7 @@ let Functions = {
                 nativeTheme.themeSource = "dark"
             }
         }
-        for (let v in themecfg.light) {
+        for (let v in themeConfig.light) {
             if (cssPath === v) {
                 nativeTheme.themeSource = "light"
             }
@@ -41,7 +42,6 @@ let Functions = {
             console.log = log.log;
         }
 
-        const {autoUpdater} = require("electron-updater");  // AutoUpdater Init
         autoUpdater.logger = require("electron-log");
         if (config.advanced.autoUpdaterBetaBuilds) {
             autoUpdater.allowPrerelease = true
@@ -55,11 +55,9 @@ let Functions = {
         app.setPath("userData", join(app.getPath("cache"), app.name)) // Set proper cache folder
         app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors'); // Disable CORS
     },
-    InitDiscordRPC: function(rpcEnabled) {
-        if (!rpcEnabled) return;
-        let client = require('discord-rich-presence')('749317071145533440'),
-            error = false;
-        console.log("[DiscordRPC] Initializing Client.")
+    InitDiscordRPC: function(client) {
+        if (!client) return;
+        let error = false;
 
         // Connected to Discord
         client.on("connected", () => {
@@ -74,12 +72,12 @@ let Functions = {
             console.log(`[DiscordRPC] Disconnecting from Discord.`)
         });
 
-        return [error, client]
+        return error
     },
-    InitTray: function() {
-        let trayIcon = new Tray((process.platform === "win32") ? join(__dirname, `./resources/icons/icon.ico`) : join(__dirname, `./resources/icons/icon.png`))
+    InitTray: function(win) {
+        let trayIcon = new Tray((process.platform === "win32") ? join(__dirname, `./icons/icon.ico`) : join(__dirname, `./icons/icon.png`))
         trayIcon.setToolTip('Apple Music Electron');
-        Functions.SetContextMenu(trayIcon, true);
+        Functions.SetContextMenu(trayIcon, true, win);
 
         trayIcon.on('double-click', () => {
             win.show()
@@ -145,10 +143,12 @@ let Functions = {
         let localeAs = SystemLang;
         if (forceApplicationLanguage) {
             for (let key in languages) {
-                key = key.toLowerCase()
-                if (forceApplicationLanguage === key) {
-                    console.log(`[Language] Found: ${key} | System Language: ${SystemLang}`)
-                    localeAs = key;
+                if (languages.hasOwnProperty(key)) {
+                    key = key.toLowerCase()
+                    if (targetLocaleAs === key) {
+                        console.log(`[Language] Found: ${key} | System Language: ${SystemLang}`)
+                        localeAs = key;
+                    }
                 }
             }
         }
@@ -266,32 +266,48 @@ let Functions = {
             }
         ]);
     },
-    SetContextMenu: function (trayIcon, visibility) {
+    SetContextMenu: function (trayIcon, visibility, win) {
         if (visibility) {
             trayIcon.setContextMenu(Menu.buildFromTemplate([
                 {
-                    label: 'Minimize to Tray', click: function () {
+                    label: 'Minimize to Tray',
+                    click: function () {
                         win.hide();
                     }
                 },
                 {
-                    label: 'Quit', click: function () {
+                    label: 'Quit',
+                    click: function () {
                         app.isQuiting = true
                         app.quit();
+                    }
+                },
+                {
+                    label: 'Check for Updates',
+                    click: function () {
+                        autoUpdater.checkForUpdatesAndNotify()
                     }
                 }
             ]));
         } else {
             trayIcon.setContextMenu(Menu.buildFromTemplate([
                 {
-                    label: 'Show Apple Music', click: function () {
+                    label: 'Show Apple Music',
+                    click: function () {
                         win.show();
                     }
                 },
                 {
-                    label: 'Quit', click: function () {
+                    label: 'Quit',
+                    click: function () {
                         app.isQuiting = true
                         app.quit();
+                    }
+                },
+                {
+                    label: 'Check for Updates',
+                    click: function () {
+                        autoUpdater.checkForUpdatesAndNotify()
                     }
                 }
             ]));
@@ -299,9 +315,8 @@ let Functions = {
 
     },
 
-    WindowHandler: function(win, trayIcon, defaultTheme, macos, isPlaying) {
+    WindowHandler: function(win, trayIcon, defaultTheme, macos) {
         let isMinimized,
-            isHidden,
             isMaximized;
 
         win.on('minimize', function () {
@@ -310,17 +325,6 @@ let Functions = {
 
         win.on('restore', function () {
             isMinimized = false;
-        })
-
-        win.on('show', function () {
-            Functions.SetContextMenu(trayIcon, true)
-            isHidden = false;
-            Functions.SetThumbarButtons(win, isPlaying, Functions.GetTheme(defaultTheme))
-        })
-
-        win.on('hide', function () {
-            Functions.SetContextMenu(trayIcon, false)
-            isHidden = true;
         })
 
         win.webContents.on('unresponsive', function () {
@@ -342,7 +346,7 @@ let Functions = {
         });
 
         win.on('close', function (event) { // Hide the App if isQuitting is not true
-            if (!isQuiting) {
+            if (!app.isQuiting) {
                 event.preventDefault();
                 win.hide();
             } else {
@@ -371,7 +375,7 @@ let Functions = {
             })
         }
 
-        return [isMinimized, isHidden, isMaximized]
+        return [isMinimized, isMaximized]
     },
 
     CreatePlaybackNotification: function (a, enabled) {
@@ -384,14 +388,14 @@ let Functions = {
             title: NOTIFICATION_TITLE,
             body: NOTIFICATION_BODY,
             silent: true,
-            icon: path.join(__dirname, './resources/icons/icon.png')
+            icon: join(__dirname, './icons/icon.png')
         }).show()
         return true
     },
     CreateBrowserWindow: function (frame, usingGlasstron, advanced) {
         let win,
             options = {
-            icon: join(__dirname, `./resources/icons/icon.ico`),
+            icon: join(__dirname, `./icons/icon.ico`),
             width: 1024,
             height: 600,
             minWidth: 300,
