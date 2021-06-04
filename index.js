@@ -399,6 +399,11 @@ function createWindow() {
             }
         },
         {
+            label: 'Check for Updates', click: function () {
+                autoUpdater.checkForUpdatesAndNotify()
+            }
+        },
+        {
             label: 'Quit', click: function () {
                 app.isQuiting = true
                 app.quit();
@@ -411,6 +416,11 @@ function createWindow() {
         {
             label: 'Minimize to Tray', click: function () {
                 win.hide();
+            }
+        },
+        {
+            label: 'Check for Updates', click: function () {
+                autoUpdater.checkForUpdatesAndNotify()
             }
         },
         {
