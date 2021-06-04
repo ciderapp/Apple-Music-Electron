@@ -276,10 +276,12 @@ function createWindow() {
     if (advanced.forceApplicationLanguage) {
         const targetLocaleAs = advanced.forceApplicationLanguage;
         for (let key in languages) {
-            key = key.toLowerCase()
-            if (targetLocaleAs === key) {
-                console.log(`[Language] Found: ${key} | System Language: ${SystemLang}`)
-                localeAs = key;
+            if (languages.hasOwnProperty(key)) {
+                key = key.toLowerCase()
+                if (targetLocaleAs === key) {
+                    console.log(`[Language] Found: ${key} | System Language: ${SystemLang}`)
+                    localeAs = key;
+                }
             }
         }
     }
