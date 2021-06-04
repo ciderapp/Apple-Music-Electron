@@ -52,13 +52,13 @@
         "rpm"
       ],
       "category": "AudioVideo",
-      "icon": "./resources/icon.icns"
+      "icon": "./resources/icons/icon.icns"
     },
     "win": {
       "target": [
         "nsis"
       ],
-      "icon": "./resources/icon.ico"
+      "icon": "./resources/icons/icon.ico"
     }
   }
 }

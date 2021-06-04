@@ -1,543 +1,113 @@
 require('v8-compile-cache');
-// Electron
-const electron = require('electron');
-const {app, BrowserWindow, Tray, Menu, Notification} = require('electron')
-const {autoUpdater} = require("electron-updater");
-// Configuration
-const {preferences, css, advanced} = require('./config.json');
-// Languages / Localisation
-const languages = require('./resources/languages.json')
-// Code Resources
-const path = require('path')
-const isSingleInstance = app.requestSingleInstanceLock(); // Instance
-const {readFile} = require('fs');
+const electron = require('electron'), {app} = require('electron'), {
+    preferences,
+    css,
+    advanced
+} = require('./config.json'), gotTheLock = app.requestSingleInstanceLock(), {
+    LoadJSFile,
+    LoadTheme,
+    GetLocale,
+    GetTheme,
+    SetThumbarButtons,
+    Init,
+    InitDevMode,
+    InitDiscordRPC,
+    InitTray,
+    UpdateDiscordActivity,
+    UpdateTooltip,
+    CreatePlaybackNotification,
+    CreateBrowserWindow,
+    WindowHandler
+} = require('./resources/functions');
+let isQuiting = !preferences.closeButtonMinimize
 
-// Other
-const TaskList = [
-    {
-        program: process.execPath,
-        arguments: '--force-quit',
-        iconPath: process.execPath,
-        iconIndex: 0,
-        title: 'Quit Apple Music'
-    }
-]
-let win = '',
-    AppleMusicWebsite,
-    trayIcon = null,
-    iconPath = path.join(__dirname, `./resources/icon.ico`),
-    isQuiting = !preferences.closeButtonMinimize,
-    isWin = process.platform === "win32",
-    isMaximized,
-    isHidden,
-    isMinimized,
-    isPlaying = false,
-    glasstron,
-    client;
-
-if (preferences.discordRPC) {
-    client = require('discord-rich-presence')('749317071145533440');
-    console.log("[DiscordRPC] Initializing Client.")
-}
-
-// Set a user tasks list
-if (isWin) app.setUserTasks(TaskList);
-
-// Set proper cache folder
-app.setPath("userData", path.join(app.getPath("cache"), app.name))
-
-// Disable Cors because Cryptofyre gets angry
-app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
-
-function LoadCSSFile(cssPath) {
-    readFile(path.join(__dirname, cssPath), "utf-8", function (error, data) {
-        if (!error) {
-            let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
-            win.webContents.insertCSS(formattedData).then(() => console.log(`[CSS] '${cssPath}' successfully injected.`));
-        }
-    });
-}
-
-function LoadJSFile(jsPath) {
-    readFile(path.join(__dirname, jsPath), "utf-8", function (error, data) {
-        if (!error) {
-            let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
-            win.webContents.executeJavaScript(formattedData).then(() => console.log(`[JS] '${jsPath}' successfully injected.`));
-        }
-    });
-}
-
-//---------------------------------------------------------------------
-// Set the Theme for Thumbar Icons
-//---------------------------------------------------------------------
-let ColorScheme;
-if (preferences.defaultTheme) {
-    ColorScheme = preferences.defaultTheme.toLowerCase()
-} else if (electron.nativeTheme.shouldUseDarkColors === true) {
-    ColorScheme = "dark"
-} else if (electron.nativeTheme.shouldUseDarkColors === false) {
-    ColorScheme = "light"
-} else {
-    ColorScheme = "dark"
-}
-
-//---------------------------------------------------------------------
-// Enable Logging
-//---------------------------------------------------------------------
-if (advanced.enableLogging) {
-    const log = require("electron-log");
-    console.log('---------------------------------------------------------------------')
-    console.log('Apple-Music-Electron application has started.');
-    console.log("---------------------------------------------------------------------")
-    console.log = log.log; // Overwrite the function because i cba to change all the console.logs
-}
-
-//---------------------------------------------------------------------
-// Thumbnail Toolbar Base (Inactive)
-//---------------------------------------------------------------------
-let ThumbnailToolbar = [
-    {
-        tooltip: 'Previous',
-        icon: path.join(__dirname, `./resources/media/${ColorScheme}/previous-inactive.png`)
-    },
-    {
-        tooltip: 'Play',
-        icon: path.join(__dirname, `./resources/media/${ColorScheme}/play-inactive.png`)
-    },
-    {
-        tooltip: 'Next',
-        icon: path.join(__dirname, `./resources/media/${ColorScheme}/next-inactive.png`)
-    }
-];
-
-//---------------------------------------------------------------------
-// Thumbnail Toolbar Media Playing
-//---------------------------------------------------------------------
-let ThumbarMediaPlaying = ThumbnailToolbar;
-
-// Previous
-ThumbarMediaPlaying[0].click = function() {
-    win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[AME] Previous Song Now Playing."))
-};
-ThumbarMediaPlaying[0].icon = path.join(__dirname, `./resources/media/${ColorScheme}/previous.png`);
-
-// Pause
-ThumbarMediaPlaying[1].tooltip = "Pause"
-ThumbarMediaPlaying[1].click = function() {
-    win.webContents.executeJavaScript("MusicKit.getInstance().pause()").then(() => console.log("[AME] Music Paused."))
-};
-ThumbarMediaPlaying[1].icon = path.join(__dirname, `./resources/media/${ColorScheme}/pause.png`);
-
-// Next
-ThumbarMediaPlaying[2].click = function() {
-    win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[AME] Music Skipped."))
-};
-ThumbarMediaPlaying[2].icon = path.join(__dirname, `./resources/media/${ColorScheme}/next.png`);
-
-//---------------------------------------------------------------------
-// Thumbnail Toolbar Media Playing
-//---------------------------------------------------------------------
-let ThumbarMediaPaused = ThumbarMediaPlaying;
-
-// Play
-ThumbarMediaPlaying[1].click = function() {
-    win.webContents.executeJavaScript("MusicKit.getInstance().play()").then(() => console.log("[AME] Music is now Playing."))
-};
-ThumbarMediaPlaying[1].icon = path.join(__dirname, `./resources/media/${ColorScheme}/play.png`);
-
-//---------------------------------------------------------------------
-//  Define the Base Options for the BrowserWindow
-//---------------------------------------------------------------------
-let BrowserWindowOptions = {
-    icon: iconPath,
-    width: 1024,
-    height: 600,
-    minWidth: 300,
-    minHeight: 300,
-    frame: !css.macosWindow,
-    title: "Apple Music",
-    // Enables DRM
-    webPreferences: {
-        plugins: true,
-        preload: path.join(__dirname, './resources/MusicKitInterop.js'),
-        allowRunningInsecureContent: advanced.allowRunningInsecureContent,
-        contextIsolation: false,
-        webSecurity: false,
-        sandbox: true
-    }
-}
-
-//---------------------------------------------------------------------
-//  Start the Creation of the Window
-//---------------------------------------------------------------------
+//########################## NO TOUCHY TY ####################################
+let dev = false
+//############################################################################
 
 function createWindow() {
-    //---------------------------------------------------------------------
-    // Prevent Multiple Instances
-    //---------------------------------------------------------------------
-    if (!isSingleInstance && !advanced.allowMultipleInstances) {
-        console.log("[Apple-Music-Electron] Preventing second instance.")
+    let isPlaying = false,
+        glasstron = preferences.cssTheme.toLowerCase().split('-').includes('glasstron');
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    //      Prevent Multiple Instances
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    if (!gotTheLock && !advanced.allowMultipleInstances) {
+        console.log("[Apple-Music-Electron] Existing Instance is Blocking Second Instance.")
         app.quit();
         return
     } else {
-        app.on('second-instance', (event, argv) => {
-            app.setUserTasks(TaskList)
-            if (argv.indexOf("--force-quit") > -1) {
-                app.quit()
-            } else {
-                if (win && !advanced.allowMultipleInstances) {
-                    win.show()
-                }
+        app.on('second-instance', () => {
+            if (win && !advanced.allowMultipleInstances) {
+                win.show()
             }
         })
     }
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    //      Detects if the application has been opened with --force-quit
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     if (app.commandLine.hasSwitch('force-quit')) {
+        console.log("[Apple-Music-Electron] User has closed the application via --force-quit")
         app.quit()
         return;
     }
-    //---------------------------------------------------------------------
-    // Create the Window
-    //---------------------------------------------------------------------
-    if (preferences.cssTheme.toLowerCase().split('-').includes('glasstron')) { // Glasstron Theme Window Creation
-        glasstron = require('glasstron');
-        BrowserWindowOptions.transparent = true;
-        if (!isWin) app.commandLine.appendSwitch("enable-transparent-visuals");
-        win = new glasstron.BrowserWindow(BrowserWindowOptions)
-        win.blurType = "blurbehind";
-        win.setBlur(true);
-    } else {
-        win = new BrowserWindow(BrowserWindowOptions)
-    }
+    let win = CreateBrowserWindow(!css.macosWindow, glasstron, advanced) // Create the Window
+    SetThumbarButtons(win, "inactive", GetTheme(preferences.defaultTheme)) // Set the Inactive Thumbar
 
-    // Generate the ThumbarButtons that are inactive
-    if (isWin) win.setThumbarButtons(ThumbnailToolbar);
-    // Hide toolbar tooltips / bar
-    win.setMenuBarVisibility(advanced.menuBarVisible);
-    // Prevent users from being able to do shortcuts
-    if (!advanced.allowSetMenu) win.setMenu(null);
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    //      Load the Webpage
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    let locale = GetLocale(advanced.forceApplicationLanguage)
+    let url = (advanced.useBeta) ? `https://beta.music.apple.com/${locale}?l=${locale}` : `https://music.apple.com/${locale}?l=${locale}`;
+    let fallback = `https://music.apple.com/${locale}?l=${locale}`
 
-    //----------------------------------------------------------------------------------------------------
-    //  Check for updates and prompt user
-    //----------------------------------------------------------------------------------------------------
+    console.log(`[Apple-Music-Electron] The chosen website is ${url}`)
+    win.loadURL(url).catch(() => {
+        win.loadURL(fallback).then(() => console.log(`[Apple-Music-Electron] ${url} was unavailable, falling back to ${fallback}`))
+    })
 
-    autoUpdater.logger = require("electron-log")
-    if (advanced.autoUpdaterBetaBuilds) {
-        autoUpdater.allowPrerelease = true
-        autoUpdater.allowDowngrade = false
-    }
-
-    console.log("[AutoUpdater] Checking for updates...")
-    autoUpdater.checkForUpdatesAndNotify().then(() => console.log("[AutoUpdater] Finished checking for updates."))
-
-    //----------------------------------------------------------------------------------------------------
-    //  Check if the Beta is Available and Load it
-    //----------------------------------------------------------------------------------------------------
-    if (advanced.useBeta) {
-        if (advanced.siteDetection) {
-            const isReachable = require("is-reachable");
-
-            // Function to Load the Website if its reachable.
-            async function LoadBeta() {
-                const web = await isReachable('https://beta.music.apple.com')
-                if (web) {
-                    AppleMusicWebsite = 'https://beta.music.apple.com';
-                } else {
-                    AppleMusicWebsite = 'https://music.apple.com';
-                }
-            }
-
-            LoadBeta().then(() => console.log(`[Apple-Music-Electron] LoadBeta has chosen ${AppleMusicWebsite}`))
-        } else {    // Skips the check if sitedetection is turned off.
-            AppleMusicWebsite = 'https://beta.music.apple.com';
-        }
-    } else {
-        AppleMusicWebsite = 'https://music.apple.com';
-    }
-
-    //----------------------------------------------------------------------------------------------------
-    //  Get the System Language and Change URL Appropriately
-    //----------------------------------------------------------------------------------------------------
-    const SystemLang = app.getLocaleCountryCode().toLowerCase()
-    let localeAs = SystemLang;
-    if (advanced.forceApplicationLanguage) {
-        const targetLocaleAs = advanced.forceApplicationLanguage;
-        for (let key in languages) {
-            key = key.toLowerCase()
-            if (targetLocaleAs === key) {
-                console.log(`[Language] Found: ${key} | System Language: ${SystemLang}`)
-                localeAs = key;
-            }
-        }
-    }
-
-    AppleMusicWebsite = `${AppleMusicWebsite}/${localeAs}?l=${localeAs}`
-
-    //----------------------------------------------------------------------------------------------------
-    //  Load the Webpage
-    //----------------------------------------------------------------------------------------------------
-
-    console.log(`[Apple-Music-Electron] The chosen website is ${AppleMusicWebsite}`)
-    win.loadURL(AppleMusicWebsite).then(() => console.log(`[Apple-Music-Electron] Website has been loaded!`))
-
-    //----------------------------------------------------------------------------------------------------
-    //  Prevents the Window Being Updated and Changes how close works to hide the window
-    //----------------------------------------------------------------------------------------------------
-
-    // Prevents the Window Title from being Updated
-    win.on('page-title-updated', function (event) {
-        event.preventDefault()
-    });
-
-    // Hide the App if isQuitting is not true
-    win.on('close', function (event) {
-        if (!isQuiting) {
-            event.preventDefault();
-            win.hide();
-        } else {
-            event.preventDefault();
-            win.destroy();
-        }
-    });
-
-    //----------------------------------------------------------------------------------------------------
-    // Load all the JS and CSS for the webpage
-    //----------------------------------------------------------------------------------------------------
-    if (preferences.defaultTheme) electron.nativeTheme.themeSource = preferences.defaultTheme.toLowerCase();
-
-    // For themes that are specified to certain colors
-    switch(preferences.cssTheme.toLowerCase()) {
-        case "glasstron":
-        case "glasstron-blurple":
-        case "blurple-dark":
-        case "jungle":
-        case "spotify":
-            electron.nativeTheme.themeSource = "dark";
-            break;
-    }
-
-    win.webContents.on('did-stop-loading', () => {
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    //      Load all the JS and CSS for the webpage
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    electron.nativeTheme.themeSource = GetTheme(preferences.defaultTheme);
+    win.webContents.on('did-stop-loading', async () => {
         if (css.removeAppleLogo) {
-            LoadJSFile('./resources/js/removeAppleLogo.js')
+            LoadJSFile(win, 'removeAppleLogo.js')
         }
         if (css.removeUpsell) {
-            LoadJSFile('./resources/js/removeUpsell.js')
+            LoadJSFile(win, 'removeUpsell.js')
         }
         if (css.macosWindow) {
-            LoadJSFile('./resources/js/macosWindowFrame.js')
+            LoadJSFile(win, 'macosWindowFrame.js')
         }
         if (glasstron) {
-            LoadJSFile('./resources/js/glasstron.js')
+            LoadJSFile(win, 'glasstron.js')
         }
         if (preferences.cssTheme) {
-            console.log(`[Themes] Activating theme: ${preferences.cssTheme.toLowerCase()}`)
-            LoadCSSFile(`./resources/themes/${preferences.cssTheme.toLowerCase()}.css`)
+            LoadTheme(win, `${preferences.cssTheme.toLowerCase()}.css`)
         }
-    });
-
-    // Executes the Interop and Scrollbar Remover
-    win.webContents.on('did-stop-loading', async () => {
         if (advanced.removeScrollbars) await win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
         await win.webContents.executeJavaScript('MusicKitInterop.init()');
     });
 
-    // Handles Unresponsive Window
-    win.webContents.on('unresponsive', function () {
-        console.log("[Apple-Music-Electron] Application has become unresponsive and has been closed..")
-        app.exit();
-    });
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    //      Create the Tray Icon and Listen for Window Changes
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    let trayIcon = InitTray()
+    let winHandle = WindowHandler(win, trayIcon, preferences.defaultTheme, css.macosWindow, isPlaying)
 
-    // Prevent a new window from being created for hrefs, redirect to open in browser.
-    win.webContents.setWindowOpenHandler(({url}) => {
-        if (url.startsWith('https://apple.com/') || url.startsWith('https://www.apple.com/') || url.startsWith('https://support.apple.com/')) { // for security (pretty pointless ik)
-            electron.shell.openExternal(url).then(() => console.log(`[Apple-Music-Electron] User has opened ${url} which has been redirected to browser.`));
-            return {action: 'deny'}
-        }
-        console.log(`[Apple-Music-Electron] User has attempted to open ${url} which was blocked.`)
-        return {action: 'deny'}
-    })
-
-    //----------------------------------------------------------------------------------------------------
-    // Checks for Window Actions (when using MacOS theme)
-    //----------------------------------------------------------------------------------------------------
-
-    electron.ipcMain.on('minimize', () => { // listen for minimize event
-        win.minimize()
-    })
-
-    electron.ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
-        if (isMaximized) {
-            win.restore()
-            isMaximized = false
-        } else {
-            win.maximize()
-            isMaximized = true
-        }
-    })
-
-    electron.ipcMain.on('close', () => { // listen for close event
-        win.close();
-    })
-
-    //----------------------------------------------------------------------------------------------------
-    //  Create the Tray Icon
-    //----------------------------------------------------------------------------------------------------
-
-    if (!isWin) {
-        iconPath = path.join(__dirname, `./resources/icon.png`)
-    }
-    trayIcon = new Tray(iconPath)
-
-    let ContextMenu = Menu.buildFromTemplate([
-        {
-            label: 'Minimize to Tray', click: function () {
-                win.hide();
-            }
-        },
-        {
-            label: 'Quit', click: function () {
-                app.isQuiting = true
-                app.quit();
-            }
-        }
-    ]);
-
-    trayIcon.setToolTip('Apple Music Electron');
-    trayIcon.setContextMenu(ContextMenu);
-
-    trayIcon.on('double-click', () => {
-        win.show()
-    })
-
-    win.on('hide', function () {
-        ContextMenu[0].click = function() {
-            win.show()
-        }
-        trayIcon.setContextMenu(ContextMenu);
-        isHidden = true;
-    })
-
-    win.on('show', function () {
-        trayIcon.setContextMenu(ContextMenu);
-        isHidden = false;
-        if (isPlaying) {
-            if (isWin) win.setThumbarButtons(ThumbarMediaPlaying);
-        } else {
-            if (isWin) win.setThumbarButtons(ThumbarMediaPaused);
-        }
-    })
-
-    win.on('minimize', function () {
-        isMinimized = true;
-    })
-
-    win.on('restore', function () {
-        isMinimized = false;
-    })
-
-    //----------------------------------------------------------------------------------------------------
-    //  Discord Rich Presence / Tooltip Setup
-    //----------------------------------------------------------------------------------------------------
-    let DiscordRPCError = false;
-
-    if (client) {
-        // Connected to Discord
-        client.on("connected", () => {
-            console.log("[DiscordRPC] Successfully Connected to Discord!");
-            if (DiscordRPCError) DiscordRPCError = false;
-        });
-
-        // Error Handler
-        client.on('error', err => {
-            console.log(`[DiscordRPC] Error: ${err}`);
-            if (!DiscordRPCError) DiscordRPCError = true;
-            console.log(`[DiscordRPC] Disconnecting from Discord.`)
-        });
-    }
-
-    function UpdatePausedPresence(a) {
-        console.log(`[DiscordRPC] Updating Pause Presence for ${a.name}`)
-        if (preferences.trayTooltipSongName) {
-            trayIcon.setToolTip(`Paused ${a.name} by ${a.artistName} on ${a.albumName}`);
-        }
-        client.updatePresence({
-            details: `Playing ${a.name}`,
-            state: `By ${a.artistName}`,
-            largeImageKey: 'apple',
-            largeImageText: a.albumName,
-            smallImageKey: 'pause',
-            smallImageText: 'Paused',
-            instance: false,
-        });
-    }
-
-    function UpdatePlayPresence(a) {
-        console.log(`[DiscordRPC] Updating Play Presence for ${a.name}`)
-        console.log(`[DiscordRPC] Current startTime: ${a.startTime}`)
-        console.log(`[DiscordRPC] Current endTime: ${a.endTime}`)
-        if (preferences.trayTooltipSongName) {
-            trayIcon.setToolTip(`Playing ${a.name} by ${a.artistName} on ${a.albumName}`);
-        }
-        client.updatePresence({
-            details: `Playing ${a.name}`,
-            state: `By ${a.artistName}`,
-            startTimestamp: a.startTime,
-            endTimestamp: a.endTime,
-            largeImageKey: 'apple',
-            largeImageText: a.albumName,
-            smallImageKey: 'play',
-            smallImageText: 'Playing',
-            instance: true,
-        });
-    }
-
-    //----------------------------------------------------------------------------------------------------
-    //  Song Notifications
-    //----------------------------------------------------------------------------------------------------
-
-    if (isWin) app.setAppUserModelId("Apple Music");
-
-    function CreatePlaybackNotification(a) {
-        console.log(`[CreatePlaybackNotification] Notification Generating | Function Parameters: SongName: ${a.name} | Artist: ${a.artistName} | Album: ${a.albumName}`)
-        let NOTIFICATION_TITLE = a.name;
-        let NOTIFICATION_BODY = `${a.artistName} - ${a.albumName}`;
-        new Notification({
-            title: NOTIFICATION_TITLE,
-            body: NOTIFICATION_BODY,
-            silent: true,
-            icon: path.join(__dirname, './resources/icon.png')
-        }).show()
-        return true
-    }
-
-    //----------------------------------------------------------------------------------------------------
-    //  Do stuff
-    //----------------------------------------------------------------------------------------------------
-
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    //      Initialize DiscordRPC and Handle Media/Playback Changes
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    InitDiscordRPC(preferences.discordRPC) // Initialize DiscordRPC
     let cache,
         notify,
         firstSong;
 
-    //----------------------------------------------------------------------------------------------------
-    //  When the Song is Paused/Played (DiscordRPC)
-    //----------------------------------------------------------------------------------------------------
-
     electron.ipcMain.on('playbackStateDidChange', (item, a) => {
-        if (a === null || !a || a.playParams.id === 'no-id-found') {
-            if (isWin) win.setThumbarButtons(ThumbnailToolbar);
-            return
-        }
-
         isPlaying = a.status;
-
-        if (a.status) { // If the song is Playing
-            // Update the Thumbar Buttons
-            if (isWin) win.setThumbarButtons(ThumbarMediaPlaying);
-        } else {
-            // Update the Thumbar Buttons
-            if (isWin) win.setThumbarButtons(ThumbarMediaPaused);
-        }
-
-        if (!cache || !preferences.discordRPC) return;
+        SetThumbarButtons(win, "inactive", GetTheme(preferences.defaultTheme));
+        if (!a || a.playParams.id === 'no-id-found' || !cache) return;
 
         if (a.playParams.id !== cache.playParams.id) { // If it is a new song
             a.startTime = Date.now()
@@ -547,22 +117,13 @@ function createWindow() {
             a.endTime = Number(Math.round(Date.now() + a.remainingTime));
         }
 
-        if (a.status) { // If the Song is Playing
-            UpdatePlayPresence(a)
-        } else { // If the Song is Paused
-            UpdatePausedPresence(a)
-        }
-    });
-
-    //----------------------------------------------------------------------------------------------------
-    //  When a new Song is Playing
-    //----------------------------------------------------------------------------------------------------
-
+        SetThumbarButtons(win, a.status, GetTheme(preferences.defaultTheme))
+        UpdateDiscordActivity(client, a)
+        UpdateTooltip(a, trayIcon, preferences.trayTooltipSongName)
+    }); // DiscordRPC and Tooltip Update
     electron.ipcMain.on('mediaItemStateDidChange', (item, a) => {
-        if (a === null || !a || a.playParams.id === 'no-id-found') {
-            win.setThumbarButtons(ThumbnailToolbar)
-            return
-        }
+        SetThumbarButtons(win, "inactive", GetTheme(preferences.defaultTheme));
+        if (!a || a.playParams.id === 'no-id-found') return;
 
         while (!cache) {
             firstSong = true
@@ -570,11 +131,10 @@ function createWindow() {
             cache = a;
         }
 
-        if (preferences.playbackNotifications && Notification.isSupported() && (a.playParams.id !== cache.playParams.id || firstSong)) { // Checks if it is a new song
-            if (preferences.notificationsMinimized && (!isMinimized && !isHidden)) return;
+        if (a.playParams.id !== cache.playParams.id || firstSong) { // Checks if it is a new song
+            if (preferences.notificationsMinimized && (!winHandle.isMinimized && !winHandle.isHidden)) return;
             while (!notify) {
-                console.log(`[Notification] A ID: ${a.playParams.id} | Cache ID: ${cache.playParams.id}`)
-                notify = CreatePlaybackNotification(a)
+                notify = CreatePlaybackNotification(a, preferences.playbackNotifications)
             }
             setTimeout(function () {
                 notify = false;
@@ -587,7 +147,7 @@ function createWindow() {
             console.log('[mediaItemStateDidChange] Cache is not the same as attributes, updating cache.')
             cache = a
         }
-    });
+    }); // Playback Notifications
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -597,9 +157,11 @@ function createWindow() {
 // This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+    let configurationFile = require('./config.json');
+    if (dev) InitDevMode(configurationFile);
+    Init(configurationFile)
     console.log("[Apple-Music-Electron] Application is Ready.")
     console.log(`[Apple-Music-Electron] Configuration File: `)
-    const configurationFile = require('./config.json');
     console.log(configurationFile)
     createWindow()
 });
