@@ -36,7 +36,7 @@
   },
 
   "advanced": {
-    "allowMultipleInstances": true,
+    "allowMultipleInstances": false,
     "allowRunningInsecureContent": true,
     "allowSetMenu": false,
     "autoUpdaterBetaBuilds": false,
