@@ -35,6 +35,7 @@ let dev = false
 
 function createWindow() {
     let isPlaying = false,
+        isHidden = false,
         glasstron = preferences.cssTheme.toLowerCase().split('-').includes('glasstron');
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     //      Prevent Multiple Instances
@@ -104,17 +105,17 @@ function createWindow() {
     //      Create the Tray Icon and Listen for Window Changes
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     let trayIcon = InitTray(win)
-    let winHandle = WindowHandler(win, trayIcon, preferences.defaultTheme, css.macosWindow)
+    let winHandle = WindowHandler(win)
 
     win.on('show', function () {
         SetContextMenu(trayIcon, true, win)
-        winHandle.isHidden = false;
+        isHidden = false;
         SetThumbarButtons(win, isPlaying, GetTheme(preferences.defaultTheme))
     })
 
     win.on('hide', function () {
         SetContextMenu(trayIcon, false, win)
-        winHandle.isHidden = true;
+        isHidden = true;
     })
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
@@ -153,7 +154,7 @@ function createWindow() {
         }
 
         if (a.playParams.id !== cache.playParams.id || firstSong) { // Checks if it is a new song
-            if (preferences.notificationsMinimized && (!winHandle.isMinimized && !winHandle.isHidden)) return;
+            if (preferences.notificationsMinimized && (!winHandle.isMinimized && !isHidden)) return;
             while (!notify) {
                 notify = CreatePlaybackNotification(a, preferences.playbackNotifications)
             }

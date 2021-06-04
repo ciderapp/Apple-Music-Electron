@@ -48,7 +48,7 @@ let Functions = {
             autoUpdater.allowDowngrade = false
         }
         console.log("[AutoUpdater] Checking for updates...")
-        autoUpdater.checkForUpdatesAndNotify().then(() => console.log("[AutoUpdater] Finished checking for updates."))
+        autoUpdater.checkForUpdatesAndNotify().then(r => console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}`))
 
         Functions.SetTaskList() // Set the Task List
 
@@ -86,7 +86,7 @@ let Functions = {
     },
     InitDevMode: function(config) {
         let adv = config.advanced
-        adv.allowMultipleInstances = true
+        adv.allowMultipleInstances = false
         adv.allowSetMenu = true
         adv.enableLogging = true
         let perf = config.preferences
@@ -270,6 +270,12 @@ let Functions = {
         if (visibility) {
             trayIcon.setContextMenu(Menu.buildFromTemplate([
                 {
+                    label: 'Check for Updates',
+                    click: function () {
+                        autoUpdater.checkForUpdatesAndNotify().then(r => console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}`));
+                    }
+                },
+                {
                     label: 'Minimize to Tray',
                     click: function () {
                         win.hide();
@@ -281,16 +287,16 @@ let Functions = {
                         app.isQuiting = true
                         app.quit();
                     }
-                },
-                {
-                    label: 'Check for Updates',
-                    click: function () {
-                        autoUpdater.checkForUpdatesAndNotify()
-                    }
                 }
             ]));
         } else {
             trayIcon.setContextMenu(Menu.buildFromTemplate([
+                {
+                    label: 'Check for Updates',
+                    click: function () {
+                        autoUpdater.checkForUpdatesAndNotify().then(r => console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}`));
+                    }
+                },
                 {
                     label: 'Show Apple Music',
                     click: function () {
@@ -303,21 +309,14 @@ let Functions = {
                         app.isQuiting = true
                         app.quit();
                     }
-                },
-                {
-                    label: 'Check for Updates',
-                    click: function () {
-                        autoUpdater.checkForUpdatesAndNotify()
-                    }
                 }
             ]));
         }
 
     },
 
-    WindowHandler: function(win, trayIcon, defaultTheme, macos) {
-        let isMinimized,
-            isMaximized;
+    WindowHandler: function(win) {
+        let isMinimized;
 
         win.on('minimize', function () {
             isMinimized = true;
@@ -355,27 +354,26 @@ let Functions = {
             }
         });
 
-        if (macos) {
-            ipcMain.on('minimize', () => { // listen for minimize event
-                win.minimize()
-            })
+        ipcMain.on('minimize', () => { // listen for minimize event
+            win.minimize()
+        })
 
-            ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
-                if (isMaximized) {
-                    win.restore()
-                    isMaximized = false
-                } else {
-                    win.maximize()
-                    isMaximized = true
-                }
-            })
+        let isMaximized = false;
+        ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
+            if (isMaximized) {
+                win.restore()
+                isMaximized = false
+            } else {
+                win.maximize()
+                isMaximized = true
+            }
+        })
 
-            ipcMain.on('close', () => { // listen for close event
-                win.close();
-            })
-        }
+        ipcMain.on('close', () => { // listen for close event
+            win.close();
+        })
 
-        return [isMinimized, isMaximized]
+        return [isMinimized]
     },
 
     CreatePlaybackNotification: function (a, enabled) {

@@ -14,6 +14,9 @@ try {
         dragDiv.style.zIndex = "15";
         dragDiv.style.webkitAppRegion = "drag";
         dragDiv.classList.add('dragDiv');
+        dragDiv.ondblclick = () => {
+            ipcRenderer.send("maximize")
+        };
 
         document.body.appendChild(dragDiv);
 
@@ -22,8 +25,6 @@ try {
         webNavigationMacFrame.style.bottom = "0";
         webNavigationMacFrame.style.position = "absolute";
         webNavigationMacFrame.style.zIndex = "10";
-
-
 
         document.head.insertAdjacentHTML("beforeend", "<style>.web-chrome { top: 32px !important; }</style>");
         document.head.insertAdjacentHTML("beforeend", "<style>.no-song-loaded.not-authenticated .web-navigation { height: calc(100vh - 32px); margin-top: 32px; }</style>");
