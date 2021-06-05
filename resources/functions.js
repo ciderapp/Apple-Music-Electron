@@ -4,11 +4,11 @@ const {join} = require('path');
 const {autoUpdater} = require("electron-updater");  // AutoUpdater Init
 
 let Functions = {
-    LoadTheme: function (win, cssPath) {
+    LoadTheme: function (cssPath) {
         readFile(join(__dirname, `./themes/${cssPath}`), "utf-8", function (error, data) {
             if (!error) {
                 let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
-                win.webContents.insertCSS(formattedData).then(() => console.log(`[Themes] '${cssPath}' successfully injected.`));
+                app.win.webContents.insertCSS(formattedData).then(() => console.log(`[Themes] '${cssPath}' successfully injected.`));
             }
         });
 
@@ -24,17 +24,17 @@ let Functions = {
             }
         }
     },
-    LoadJSFile: function (win, jsPath) {
+    LoadJSFile: function (jsPath) {
         readFile(join(__dirname, `./js/${jsPath}`), "utf-8", function (error, data) {
             if (!error) {
                 let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
-                win.webContents.executeJavaScript(formattedData).then(() => console.log(`[JS] '${jsPath}' successfully injected.`));
+                app.win.webContents.executeJavaScript(formattedData).then(() => console.log(`[JS] '${jsPath}' successfully injected.`));
             }
         });
     },
 
-    Init: function(config) {
-        if (config.advanced.enableLogging) { // Logging Init
+    Init: function() {
+        if (app.config.advanced.enableLogging) { // Logging Init
             const log = require("electron-log");
             console.log('---------------------------------------------------------------------')
             console.log('Apple-Music-Electron application has started.');
@@ -43,7 +43,7 @@ let Functions = {
         }
 
         autoUpdater.logger = require("electron-log");
-        if (config.advanced.autoUpdaterBetaBuilds) {
+        if (app.config.advanced.autoUpdaterBetaBuilds) {
             autoUpdater.allowPrerelease = true
             autoUpdater.allowDowngrade = false
         }
@@ -54,57 +54,66 @@ let Functions = {
 
         app.setPath("userData", join(app.getPath("cache"), app.name)) // Set proper cache folder
         app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors'); // Disable CORS
+
+        //    Set the Default Theme
+        let theme;
+        if (app.config.preferences.defaultTheme) {
+            theme = app.config.preferences.defaultTheme.toLowerCase()
+        } else if (nativeTheme.shouldUseDarkColors === true) {
+            theme = "dark"
+        } else if (nativeTheme.shouldUseDarkColors === false) {
+            theme = "light"
+        } else {
+            theme = "system"
+        }
+        app.config.systemTheme = theme
     },
-    InitDiscordRPC: function(client) {
-        if (!client) return;
-        let error = false;
+    InitDiscordRPC: function() {
+        if (!app.discord.client) return;
 
         // Connected to Discord
-        client.on("connected", () => {
+        app.discord.client.on("connected", () => {
             console.log("[DiscordRPC] Successfully Connected to Discord!");
-            if (error) error = false;
+            if (app.discord.error) app.discord.error = false;
         });
 
         // Error Handler
-        client.on('error', err => {
+        app.discord.client.on('error', err => {
             console.log(`[DiscordRPC] Error: ${err}`);
-            if (!error) error = true;
+            if (!app.discord.error) app.discord.error = true;
             console.log(`[DiscordRPC] Disconnecting from Discord.`)
         });
-
-        return error
     },
-    InitTray: function(win) {
-        let trayIcon = new Tray((process.platform === "win32") ? join(__dirname, `./icons/icon.ico`) : join(__dirname, `./icons/icon.png`))
-        trayIcon.setToolTip('Apple Music Electron');
-        Functions.SetContextMenu(trayIcon, true, win);
+    InitTray: function() {
+        app.tray = new Tray((process.platform === "win32") ? join(__dirname, `./icons/icon.ico`) : join(__dirname, `./icons/icon.png`))
+        app.tray.setToolTip('Apple Music Electron');
+        Functions.SetContextMenu(true);
 
-        trayIcon.on('double-click', () => {
-            win.show()
+        app.tray.on('double-click', () => {
+            app.win.show()
         })
-        return trayIcon
     },
-    InitDevMode: function(config) {
-        let adv = config.advanced
+    InitDevMode: function() {
+        let adv = app.config.advanced
         adv.allowMultipleInstances = false
         adv.allowSetMenu = true
         adv.enableLogging = true
-        let perf = config.preferences
+        let perf = app.config.preferences
         perf.closeButtonMinimize = true
         perf.discordRPC = true
         perf.playbackNotifications = true
         perf.trayTooltipSongName = true
-        let css = config.css
+        let css = app.config.css
         css.macosWindow = true
         css.removeUpsell = true
         css.removeAppleLogo = true
     },
 
-    UpdateDiscordActivity: function(client, a) {
-        if (!client) return;
+    UpdateDiscordActivity: function(a) {
+        if (!app.discord.client || app.discord.error) return;
         if (a.status === true) {
             console.log(`[DiscordRPC] Updating Play Presence for ${a.name} to ${a.status}`)
-            client.updatePresence({
+            app.discord.client.updatePresence({
                 details: `Playing ${a.name}`,
                 state: `By ${a.artistName}`,
                 startTimestamp: a.startTime,
@@ -117,7 +126,7 @@ let Functions = {
             });
         } else {
             console.log(`[DiscordRPC] Updating Pause Presence for ${a.name}`)
-            client.updatePresence({
+            app.discord.client.updatePresence({
                 details: `Playing ${a.name}`,
                 state: `By ${a.artistName}`,
                 largeImageKey: 'apple',
@@ -128,20 +137,20 @@ let Functions = {
             });
         }
     },
-    UpdateTooltip: function(a, trayIcon, enabled) {
-        if (!enabled) return;
+    UpdateTooltip: function(a) {
+        if (!app.config.preferences.trayTooltipSongName) return;
         if (a.status === true) {
-            trayIcon.setToolTip(`Playing ${a.name} by ${a.artistName} on ${a.albumName}`);
+            app.tray.setToolTip(`Playing ${a.name} by ${a.artistName} on ${a.albumName}`);
         } else {
-            trayIcon.setToolTip(`Paused ${a.name} by ${a.artistName} on ${a.albumName}`);
+            app.tray.setToolTip(`Paused ${a.name} by ${a.artistName} on ${a.albumName}`);
         }
     },
 
-    GetLocale: function (forceApplicationLanguage) {
+    GetLocale: function () {
         const SystemLang = app.getLocaleCountryCode().toLowerCase()
         const languages = require('./languages.json')
         let localeAs = SystemLang;
-        if (forceApplicationLanguage) {
+        if (app.config.advanced.forceApplicationLanguage) {
             for (let key in languages) {
                 if (languages.hasOwnProperty(key)) {
                     key = key.toLowerCase()
@@ -154,19 +163,9 @@ let Functions = {
         }
         return localeAs
     },
-    GetTheme: function (defaultTheme) {
-        if (defaultTheme) {
-            return defaultTheme.toLowerCase()
-        } else if (nativeTheme.shouldUseDarkColors === true) {
-            return "dark"
-        } else if (nativeTheme.shouldUseDarkColors === false) {
-            return "light"
-        } else {
-            return "system"
-        }
-    },
 
-    SetThumbarButtons: function (win, state, theme) {
+    SetThumbarButtons: function (state) {
+        let theme = app.config.systemTheme
         if (theme === "dark") {
             theme = "light"
         }
@@ -180,7 +179,7 @@ let Functions = {
                         icon: join(__dirname, `./media/${theme}/previous.png`),
                         click() {
                             console.log('[setThumbarButtons] Previous song button clicked.')
-                            win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPlaying] skipToPreviousItem"))
+                            app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPlaying] skipToPreviousItem"))
                         }
                     },
                     {
@@ -188,7 +187,7 @@ let Functions = {
                         icon: join(__dirname, `./media/${theme}/play.png`),
                         click() {
                             console.log('[setThumbarButtons] Play song button clicked.')
-                            win.webContents.executeJavaScript("MusicKit.getInstance().play()").then(() => console.log("[ThumbarPlaying] play"))
+                            app.win.webContents.executeJavaScript("MusicKit.getInstance().play()").then(() => console.log("[ThumbarPlaying] play"))
                         }
                     },
                     {
@@ -196,7 +195,7 @@ let Functions = {
                         icon: join(__dirname, `./media/${theme}/next.png`),
                         click() {
                             console.log('[setThumbarButtons] Pause song button clicked.')
-                            win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPlaying] skipToNextItem"))
+                            app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPlaying] skipToNextItem"))
                         }
                     }
                 ];
@@ -228,7 +227,7 @@ let Functions = {
                         icon: join(__dirname, `./media/${theme}/previous.png`),
                         click() {
                             console.log('[setThumbarButtons] Previous song button clicked.')
-                            win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPaused] skipToPreviousItem"))
+                            app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPaused] skipToPreviousItem"))
                         }
                     },
                     {
@@ -236,7 +235,7 @@ let Functions = {
                         icon: join(__dirname, `./media/${theme}/pause.png`),
                         click() {
                             console.log('[setThumbarButtons] Play song button clicked.')
-                            win.webContents.executeJavaScript("MusicKit.getInstance().pause()").then(() => console.log("[ThumbarPaused] pause"))
+                            app.win.webContents.executeJavaScript("MusicKit.getInstance().pause()").then(() => console.log("[ThumbarPaused] pause"))
                         }
                     },
                     {
@@ -244,14 +243,14 @@ let Functions = {
                         icon: join(__dirname, `./media/${theme}/next.png`),
                         click() {
                             console.log('[setThumbarButtons] Pause song button clicked.')
-                            win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPaused] skipToNextItem"))
+                            app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPaused] skipToNextItem"))
                         }
                     }
                 ]
                 break;
         }
         if (process.platform === "win32") {
-            win.setThumbarButtons(array)
+            app.win.setThumbarButtons(array)
         }
     },
     SetTaskList: function () {
@@ -266,9 +265,9 @@ let Functions = {
             }
         ]);
     },
-    SetContextMenu: function (trayIcon, visibility, win) {
+    SetContextMenu: function (visibility) {
         if (visibility) {
-            trayIcon.setContextMenu(Menu.buildFromTemplate([
+            app.tray.setContextMenu(Menu.buildFromTemplate([
                 {
                     label: 'Check for Updates',
                     click: function () {
@@ -278,7 +277,7 @@ let Functions = {
                 {
                     label: 'Minimize to Tray',
                     click: function () {
-                        win.hide();
+                        app.win.hide();
                     }
                 },
                 {
@@ -290,7 +289,7 @@ let Functions = {
                 }
             ]));
         } else {
-            trayIcon.setContextMenu(Menu.buildFromTemplate([
+            app.tray.setContextMenu(Menu.buildFromTemplate([
                 {
                     label: 'Check for Updates',
                     click: function () {
@@ -300,7 +299,7 @@ let Functions = {
                 {
                     label: 'Show Apple Music',
                     click: function () {
-                        win.show();
+                        app.win.show();
                     }
                 },
                 {
@@ -315,23 +314,13 @@ let Functions = {
 
     },
 
-    WindowHandler: function(win) {
-        let isMinimized;
-
-        win.on('minimize', function () {
-            isMinimized = true;
-        })
-
-        win.on('restore', function () {
-            isMinimized = false;
-        })
-
-        win.webContents.on('unresponsive', function () {
+    WindowHandler: function() {
+        app.win.webContents.on('unresponsive', function () {
             console.log("[Apple-Music-Electron] Application has become unresponsive and has been closed..")
             app.exit();
         });
 
-        win.webContents.setWindowOpenHandler(({url}) => {
+        app.win.webContents.setWindowOpenHandler(({url}) => {
             if (url.startsWith('https://apple.com/') || url.startsWith('https://www.apple.com/') || url.startsWith('https://support.apple.com/')) { // for security (pretty pointless ik)
                 shell.openExternal(url).then(() => console.log(`[Apple-Music-Electron] User has opened ${url} which has been redirected to browser.`));
                 return {action: 'deny'}
@@ -340,44 +329,48 @@ let Functions = {
             return {action: 'deny'}
         })
 
-        win.on('page-title-updated', function (event) { // Prevents the Window Title from being Updated
+        app.win.on('page-title-updated', function (event) { // Prevents the Window Title from being Updated
             event.preventDefault()
         });
 
-        win.on('close', function (event) { // Hide the App if isQuitting is not true
+        app.win.on('close', function (event) { // Hide the App if isQuitting is not true
             if (!app.isQuiting) {
                 event.preventDefault();
-                win.hide();
+                app.win.hide();
             } else {
                 event.preventDefault();
-                win.destroy();
+                app.win.destroy();
             }
         });
 
         ipcMain.on('minimize', () => { // listen for minimize event
-            win.minimize()
+            app.win.minimize()
         })
 
-        let isMaximized = false;
         ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
-            if (isMaximized) {
-                win.restore()
-                isMaximized = false
+            if (app.win.isMaximized()) {
+                app.win.restore()
             } else {
-                win.maximize()
-                isMaximized = true
+                app.win.maximize()
             }
         })
 
         ipcMain.on('close', () => { // listen for close event
-            win.close();
+            app.win.close();
         })
 
-        return [isMinimized]
+        app.win.on('show', function () {
+            Functions.SetContextMenu(true)
+            Functions.SetThumbarButtons(app.isPlaying)
+        })
+
+        app.win.on('hide', function () {
+            Functions.SetContextMenu(false)
+        })
     },
 
-    CreatePlaybackNotification: function (a, enabled) {
-        if (!enabled && Notification.isSupported()) return;
+    CreatePlaybackNotification: function (a) {
+        if (!app.config.preferences.playbackNotifications && Notification.isSupported()) return;
         if (process.platform === "win32") app.setAppUserModelId("Apple Music");
         console.log(`[CreatePlaybackNotification] Notification Generating | Function Parameters: SongName: ${a.name} | Artist: ${a.artistName} | Album: ${a.albumName}`)
         let NOTIFICATION_TITLE = a.name;
@@ -390,41 +383,39 @@ let Functions = {
         }).show()
         return true
     },
-    CreateBrowserWindow: function (frame, usingGlasstron, advanced) {
-        let win,
-            options = {
+    CreateBrowserWindow: function () {
+        let options = {
             icon: join(__dirname, `./icons/icon.ico`),
             width: 1024,
             height: 600,
             minWidth: 300,
             minHeight: 300,
-            frame: frame,
+            frame: !app.config.css.macosWindow,
             title: "Apple Music",
             // Enables DRM
             webPreferences: {
                 plugins: true,
                 preload: join(__dirname, './js/MusicKitInterop.js'),
-                allowRunningInsecureContent: advanced.allowRunningInsecureContent,
+                allowRunningInsecureContent: app.config.advanced.allowRunningInsecureContent,
                 contextIsolation: false,
                 webSecurity: false,
                 sandbox: true
             }
         };
 
-        if (usingGlasstron) { // Glasstron Theme Window Creation
+        if (app.config.css.glasstron) { // Glasstron Theme Window Creation
             let glasstron = require('glasstron');
             options.transparent = true;
             if (process.platform !== "win32") app.commandLine.appendSwitch("enable-transparent-visuals");
-            win = new glasstron.BrowserWindow(options)
-            win.blurType = "blurbehind";
-            win.setBlur(true);
+            app.win = new glasstron.BrowserWindow(options)
+            app.win.blurType = "blurbehind";
+            app.win.setBlur(true);
         } else {
-            win = new BrowserWindow(options)
+            app.win = new BrowserWindow(options)
         }
 
-        if (!advanced.menuBarVisible) win.setMenuBarVisibility(false); // Hide that nasty menu bar
-        if (!advanced.allowSetMenu) win.setMenu(null); // Disables DevTools
-        return win
+        if (!app.config.advanced.menuBarVisible) app.win.setMenuBarVisibility(false); // Hide that nasty menu bar
+        if (!app.config.advanced.allowSetMenu) app.win.setMenu(null); // Disables DevTools
     }
 };
 
