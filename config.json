@@ -29,11 +29,11 @@
     "discordRPC": true,
 
     "_playbackNotifications_comment": "Enabling this means you will get notifications when you change song. The notificationsMinimized option force notifications to only appear if the app is hidden / minimized.",
-    "playbackNotifications": false,
+    "playbackNotifications": true,
     "notificationsMinimized": true,
 
     "_trayTooltipSongName_comment": "Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.",
-    "trayTooltipSongName": false
+    "trayTooltipSongName": true
   },
 
   "advanced": {
