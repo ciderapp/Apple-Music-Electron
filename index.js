@@ -119,9 +119,9 @@ function createWindow() {
         }
 
         SetThumbarButtons(a.status)
-        UpdateDiscordActivity(a)
-        UpdateTooltip(a)
-    }); // DiscordRPC and Tooltip Update
+        UpdateTooltip(a) // Tooltip Update
+        UpdateDiscordActivity(a) // DiscordRPC Update
+    });
     ipcMain.on('mediaItemStateDidChange', (item, a) => {
         SetThumbarButtons();
         if (!a || a.playParams.id === 'no-id-found') return;
@@ -179,8 +179,11 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', function () {
+    app.discord.client.disconnect()
+    console.log("[DiscordRPC] Disconnecting from Discord.")
     console.log("---------------------------------------------------------------------")
     console.log("Application Closing...")
     console.log("---------------------------------------------------------------------")
     app.isQuiting = true;
+
 });

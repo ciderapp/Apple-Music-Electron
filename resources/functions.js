@@ -74,14 +74,14 @@ let Functions = {
         // Connected to Discord
         app.discord.client.on("connected", () => {
             console.log("[DiscordRPC] Successfully Connected to Discord!");
-            if (app.discord.error) app.discord.error = false;
         });
 
         // Error Handler
         app.discord.client.on('error', err => {
             console.log(`[DiscordRPC] Error: ${err}`);
-            if (!app.discord.error) app.discord.error = true;
             console.log(`[DiscordRPC] Disconnecting from Discord.`)
+            app.discord.client.disconnect()
+            app.discord.client = false;
         });
     },
     InitTray: function() {
@@ -110,25 +110,24 @@ let Functions = {
     },
 
     UpdateDiscordActivity: function(a) {
-        if (!app.discord.client || app.discord.error) return;
+        if (!app.discord.client || app.discord.error || !app.config.preference.discordRPC) return;
+        console.log(`[DiscordRPC] Updating Play Presence for ${a.name} to ${a.status}`)
         if (a.status === true) {
-            console.log(`[DiscordRPC] Updating Play Presence for ${a.name} to ${a.status}`)
             app.discord.client.updatePresence({
-                details: `Playing ${a.name}`,
-                state: `By ${a.artistName}`,
+                details: a.name,
+                state: `by ${a.artistName}`,
                 startTimestamp: a.startTime,
                 endTimestamp: a.endTime,
                 largeImageKey: 'apple',
                 largeImageText: a.albumName,
                 smallImageKey: 'play',
                 smallImageText: 'Playing',
-                instance: true,
+                instance: false,
             });
         } else {
-            console.log(`[DiscordRPC] Updating Pause Presence for ${a.name}`)
             app.discord.client.updatePresence({
-                details: `Playing ${a.name}`,
-                state: `By ${a.artistName}`,
+                details: a.name,
+                state: `by ${a.artistName}`,
                 largeImageKey: 'apple',
                 largeImageText: a.albumName,
                 smallImageKey: 'pause',
@@ -139,6 +138,7 @@ let Functions = {
     },
     UpdateTooltip: function(a) {
         if (!app.config.preferences.trayTooltipSongName) return;
+        console.log(`[UpdateTooltip] Updating Tooltip for ${a.name} to ${a.status}`)
         if (a.status === true) {
             app.tray.setToolTip(`Playing ${a.name} by ${a.artistName} on ${a.albumName}`);
         } else {
