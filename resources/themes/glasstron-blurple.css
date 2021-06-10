@@ -24,4 +24,5 @@
     backdrop-filter: saturate(0%) blur(25px) !important;
 }
 
+/* You can change the background color and opacity in index.js at line 77. */
 /* Don't do anything that affects body attributes as this will cause glasstron to break. */

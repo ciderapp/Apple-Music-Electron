@@ -2,11 +2,8 @@ require('v8-compile-cache');
 const { app, nativeTheme, ipcMain } = require('electron');
 const { LoadJSFile, LoadTheme, GetLocale, SetThumbarButtons, Init, InitDevMode, InitDiscordRPC, InitTray, UpdateDiscordActivity, UpdateTooltip, CreatePlaybackNotification, CreateBrowserWindow, WindowHandler } = require('./resources/functions');
 const gotTheLock = app.requestSingleInstanceLock();
-app.discord = {
-    client: false,
-    error: false
-}
-
+app.discord = { client: false, error: false };
+app.win = '';
 app.config = require('./config.json');
 if (app.config.preferences.discordRPC) {
     app.discord.client = require('discord-rich-presence')('749317071145533440');
@@ -17,7 +14,7 @@ app.config.css.glasstron = app.config.preferences.cssTheme.toLowerCase().split('
 
 
 //########################## NO TOUCHY TY ####################################
-let dev = false
+let dev = true
 //############################################################################
 
 function createWindow() {
@@ -30,7 +27,7 @@ function createWindow() {
         app.quit();
         return
     } else {
-        app.on('second-instance', (e, argv) => {
+        app.on('second-instance', (_e, argv) => {
             if (argv.indexOf("--force-quit") > -1) {
                 app.quit()
             } else if (app.win && !app.config.advanced.allowMultipleInstances) {
@@ -77,7 +74,15 @@ function createWindow() {
             LoadJSFile('macosWindowFrame.js')
         }
         if (app.config.css.glasstron) {
-            LoadJSFile('glasstron.js')
+          switch(app.config.preferences.cssTheme.toLowerCase()) {
+            case 'glasstron-blurple':
+              app.win.webContents.executeJavaScript(`document.getElementsByTagName('body')[0].style = 'background-color: rgb(19 21 25 / 84%) !important;';`).then(() => console.log(`[JS] 'glasstron-blurple' successfully injected.`));
+              break;
+
+            default:
+              app.win.webContents.executeJavaScript(`document.getElementsByTagName('body')[0].style = 'background-color: rgb(25 24 24 / 84%) !important;';`).then(() => console.log(`[JS] 'glasstron' successfully injected.`));
+              break
+          }
         }
         if (app.config.preferences.cssTheme) {
             LoadTheme(`${app.config.preferences.cssTheme.toLowerCase()}.css`)
@@ -158,7 +163,15 @@ app.on('ready', () => {
     console.log("[Apple-Music-Electron] Application is Ready.")
     console.log(`[Apple-Music-Electron] Configuration File: `)
     console.log(app.config)
-    createWindow()
+    console.log("[Apple-Music-Electron] Creating Window...")
+    if (app.config.css.glasstron) {
+        setTimeout(
+            createWindow,
+            process.platform === "linux" ? 1000 : 0 // Electron has a bug on linux where it won't initialize properly when using transparency. To work around that, it is necessary to delay the window spawn function.
+        );
+    } else createWindow()
+
+
 });
 
 app.on('window-all-closed', () => {

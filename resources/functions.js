@@ -405,7 +405,6 @@ let Functions = {
 
         if (app.config.css.glasstron) { // Glasstron Theme Window Creation
             let glasstron = require('glasstron');
-            options.transparent = true;
             if (process.platform !== "win32") app.commandLine.appendSwitch("enable-transparent-visuals");
             app.win = new glasstron.BrowserWindow(options)
             app.win.blurType = "blurbehind";
