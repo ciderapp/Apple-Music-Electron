@@ -8,8 +8,9 @@
     "_removeUpsell_comment": "Removes the open iTunes button if enabled (true by default)",
     "removeUpsell": true,
 
-    "_macosWindow_comment": "This enables the MacOS window frame. (false by default)",
-    "macosWindow": true
+    "_macosWindow_comment": "This enables the MacOS window frame. (false by default) | macosScrollbar is experimental and may be worked on in the future.",
+    "macosWindow": true,
+    "macosScrollbar": false
   },
 
   "preferences": {
@@ -19,7 +20,7 @@
     "defaultTheme": "",
 
     "_cssTheme_comment": "If you are using a custom CSS theme, set it below, otherwise leave empty.",
-    "cssTheme": "glasstron-blurple",
+    "cssTheme": "",
 
     "_closeButtonMinimize_comment": "Should the close button minimize your apple music (true) or should it quit the app (false). (true by default)",
     "closeButtonMinimize": true,

@@ -86,7 +86,7 @@ let Functions = {
     },
     InitTray: function() {
         app.tray = new Tray((process.platform === "win32") ? join(__dirname, `./icons/icon.ico`) : join(__dirname, `./icons/icon.png`))
-        app.tray.setToolTip('Apple Music Electron');
+        app.tray.setToolTip('Apple Music');
         Functions.SetContextMenu(true);
 
         app.tray.on('double-click', () => {
@@ -94,12 +94,11 @@ let Functions = {
         })
     },
     InitDevMode: function() {
+        console.log("[Apple-Music-Electron] [NOTICE] DEVELOPER MODE HAS BEEN ACTIVATED: allowSetMenu, Logging, discordRPC, trayTooltipSongName, macosWindow, removeUpsell and removeAppleLogo have been force enabled!")
         let adv = app.config.advanced
-        adv.allowMultipleInstances = false
         adv.allowSetMenu = true
         adv.enableLogging = true
         let perf = app.config.preferences
-        perf.closeButtonMinimize = true
         perf.discordRPC = true
         perf.playbackNotifications = true
         perf.trayTooltipSongName = true
@@ -110,7 +109,7 @@ let Functions = {
     },
 
     UpdateDiscordActivity: function(a) {
-        if (!app.discord.client || app.discord.error || !app.config.preference.discordRPC) return;
+        if (!app.discord.client || app.discord.error || !app.config.preferences.discordRPC) return;
         console.log(`[DiscordRPC] Updating Play Presence for ${a.name} to ${a.status}`)
         if (a.status === true) {
             app.discord.client.updatePresence({

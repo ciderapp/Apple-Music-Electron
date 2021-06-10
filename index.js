@@ -14,7 +14,7 @@ app.config.css.glasstron = app.config.preferences.cssTheme.toLowerCase().split('
 
 
 //########################## NO TOUCHY TY ####################################
-let dev = true
+let dev = false
 //############################################################################
 
 function createWindow() {
@@ -72,6 +72,10 @@ function createWindow() {
         }
         if (app.config.css.macosWindow) {
             LoadJSFile('macosWindowFrame.js')
+        }
+        if (app.config.css.macosScrollbar) {
+            LoadTheme('macosScrollbar.css')
+            app.config.advanced.removeScrollbars = false
         }
         if (app.config.css.glasstron) {
           switch(app.config.preferences.cssTheme.toLowerCase()) {
