@@ -206,14 +206,7 @@ app.on('ready', () => {
     console.log(`[Apple-Music-Electron] Configuration File: `)
     console.log(app.config)
     console.log("[Apple-Music-Electron] Creating Window...")
-    if (app.config.css.glasstron) {
-        setTimeout(
-            createWindow,
-            process.platform === "linux" ? 1000 : 0 // Electron has a bug on linux where it won't initialize properly when using transparency. To work around that, it is necessary to delay the window spawn function.
-        );
-    } else createWindow()
-
-
+    if (app.config.css.glasstron) { setTimeout(createWindow, process.platform === "linux" ? 1000 : 0); } else createWindow() // Electron has a bug on linux where it won't initialize properly when using transparency. To work around that, it is necessary to delay the window spawn function.
 });
 
 app.on('window-all-closed', () => {
@@ -221,7 +214,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', function () {
-    app.discord.client.disconnect()
+    if (app.config.preferences.discordRPC) app.discord.client.disconnect()
     console.log("[DiscordRPC] Disconnecting from Discord.")
     console.log("---------------------------------------------------------------------")
     console.log("Application Closing...")
