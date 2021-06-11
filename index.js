@@ -105,13 +105,18 @@ function createWindow() {
     //      Initialize DiscordRPC and Handle Media/Playback Changes
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     InitDiscordRPC() // Initialize DiscordRPC
-    let cache,
-        notify,
-        firstSong;
 
-    ipcMain.on('playbackStateDidChange', (item, a) => {
+    // Define cache for ipcMain
+    let cache;
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    //      Playback Change (Pause/Play)
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    let DiscordUpdate = false;
+    let TooltipUpdate = false;
+    let ThumbarUpdate = false;
+
+    ipcMain.on('playbackStateDidChange', (_item, a) => {
         app.isPlaying = a.status;
-        SetThumbarButtons();
         if (!a || a.playParams.id === 'no-id-found' || !cache) return;
 
         if (a.playParams.id !== cache.playParams.id) { // If it is a new song
@@ -122,34 +127,67 @@ function createWindow() {
             a.endTime = Number(Math.round(Date.now() + a.remainingTime));
         }
 
-        SetThumbarButtons(a.status)
-        UpdateTooltip(a) // Tooltip Update
-        UpdateDiscordActivity(a) // DiscordRPC Update
-    });
-    ipcMain.on('mediaItemStateDidChange', (item, a) => {
-        SetThumbarButtons();
-        if (!a || a.playParams.id === 'no-id-found') return;
-
-        while (!cache) {
-            firstSong = true
-            console.log('[mediaItemStateDidChange] Generating first Cache.')
-            cache = a;
+        // Thumbar Buttons
+        if (process.platform === "win32") {
+          while (!ThumbarUpdate) {
+            ThumbarUpdate = SetThumbarButtons(a.status)
+          }
         }
 
-        if (a.playParams.id !== cache.playParams.id || firstSong) { // Checks if it is a new song
-            if (app.config.preferences.notificationsMinimized && (!app.win.isMinimized() && app.win.isVisible())) return;
-            while (!notify) {
-                notify = CreatePlaybackNotification(a)
+        // TrayTooltipSongName
+        if (app.config.preferences.trayTooltipSongName) {
+          while (!TooltipUpdate) {
+            TooltipUpdate = UpdateTooltip(a)
+          }
+        }
+
+        // Discord Update
+        if (app.discord.client && app.config.preferences.discordRPC) {
+          while (DiscordUpdate) {
+            DiscordUpdate = UpdateDiscordActivity(a)
+          }
+        }
+
+        // Revert it All because This Runs too many times
+        setTimeout(() => {
+            if (ThumbarUpdate) ThumbarUpdate = false;
+            if (TooltipUpdate) TooltipUpdate = false;
+            if (DiscordUpdate) DiscordUpdate = false;
+        }, 500) // Give atleast 0.5 seconds between ThumbarUpdates/TooltipUpdates/DiscordUpdates
+    });
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    //      Song Change
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    let cacheNew = false;
+    let MediaNotificaion = false;
+  
+    ipcMain.on('mediaItemStateDidChange', (_item, a) => {
+        if (!cache) SetThumbarButtons();
+        if (!a || a.playParams.id === 'no-id-found') return;
+
+        // Generate the First Cache
+        if (!cache) {
+          console.log('[mediaItemStateDidChange] Generating first Cache.')
+          cache = a;
+          cacheNew = true;
+        }
+
+        // Create Playback Notification on Song Change
+        if (a.playParams.id !== cache.playParams.id || cacheNew) { // Checks if it is a new song
+            if (app.config.preferences.notificationsMinimized && (!app.win.isMinimized() && app.win.isVisible())) return; // Checks if Notificaitons Minimzied is On
+            while (!MediaNotificaion) {
+              MediaNotificaion = CreatePlaybackNotification(a)
             }
             setTimeout(function () {
-                notify = false;
-                firstSong = false;
+                MediaNotificaion = false;
+                if (cacheNew) cacheNew = false;
             }, 500);
         }
 
         // Update the Cache
         while (a.playParams.id !== cache.playParams.id) {
-            console.log('[mediaItemStateDidChange] Cache is not the same as attributes, updating cache.')
+            console.log('[mediaItemStateDidChange] Cached Song is not the same as Attribute Song, updating cache.')
             cache = a
         }
     }); // Playback Notifications

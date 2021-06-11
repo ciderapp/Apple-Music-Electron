@@ -109,7 +109,6 @@ let Functions = {
     },
 
     UpdateDiscordActivity: function(a) {
-        if (!app.discord.client || app.discord.error || !app.config.preferences.discordRPC) return;
         console.log(`[DiscordRPC] Updating Play Presence for ${a.name} to ${a.status}`)
         if (a.status === true) {
             app.discord.client.updatePresence({
@@ -134,15 +133,16 @@ let Functions = {
                 instance: false,
             });
         }
+        return true
     },
     UpdateTooltip: function(a) {
-        if (!app.config.preferences.trayTooltipSongName) return;
         console.log(`[UpdateTooltip] Updating Tooltip for ${a.name} to ${a.status}`)
         if (a.status === true) {
             app.tray.setToolTip(`Playing ${a.name} by ${a.artistName} on ${a.albumName}`);
         } else {
             app.tray.setToolTip(`Paused ${a.name} by ${a.artistName} on ${a.albumName}`);
         }
+        return true
     },
 
     GetLocale: function () {
@@ -251,6 +251,7 @@ let Functions = {
         if (process.platform === "win32") {
             app.win.setThumbarButtons(array)
         }
+        return true
     },
     SetTaskList: function () {
         if (process.platform !== "win32") return;
