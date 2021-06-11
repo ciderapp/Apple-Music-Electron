@@ -1,7 +1,4 @@
-node_modules/
-dist/
+node_modules
+dist
 yarn.lock
 package-lock.json
-
-
-node_modules.nosync
