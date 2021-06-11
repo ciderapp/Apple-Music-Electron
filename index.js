@@ -2,10 +2,10 @@ require('v8-compile-cache');
 const { app, nativeTheme, ipcMain } = require('electron');
 const { LoadJSFile, LoadTheme, GetLocale, SetThumbarButtons, Init, InitDevMode, InitDiscordRPC, InitTray, UpdateDiscordActivity, UpdateTooltip, CreatePlaybackNotification, CreateBrowserWindow, WindowHandler } = require('./resources/functions');
 const gotTheLock = app.requestSingleInstanceLock();
-app.discord = { client: false, error: false };
 app.win = '';
 app.config = require('./config.json');
 if (app.config.preferences.discordRPC) {
+    app.discord = {client: false, error: false};
     app.discord.client = require('discord-rich-presence')('749317071145533440');
     console.log("[DiscordRPC] Initializing Client.")
 }
@@ -143,9 +143,9 @@ function createWindow() {
 
         // Discord Update
         if (app.discord.client && app.config.preferences.discordRPC) {
-          while (DiscordUpdate) {
-            DiscordUpdate = UpdateDiscordActivity(a)
-          }
+            while (!DiscordUpdate) {
+                DiscordUpdate = UpdateDiscordActivity(a)
+            }
         }
 
         // Revert it All because This Runs too many times
@@ -153,14 +153,14 @@ function createWindow() {
             if (ThumbarUpdate) ThumbarUpdate = false;
             if (TooltipUpdate) TooltipUpdate = false;
             if (DiscordUpdate) DiscordUpdate = false;
-        }, 500) // Give atleast 0.5 seconds between ThumbarUpdates/TooltipUpdates/DiscordUpdates
+        }, 500) // Give at least 0.5 seconds between ThumbarUpdates/TooltipUpdates/DiscordUpdates
     });
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     //      Song Change
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     let cacheNew = false;
-    let MediaNotificaion = false;
+    let MediaNotification = false;
   
     ipcMain.on('mediaItemStateDidChange', (_item, a) => {
         if (!cache) SetThumbarButtons();
@@ -175,12 +175,12 @@ function createWindow() {
 
         // Create Playback Notification on Song Change
         if (a.playParams.id !== cache.playParams.id || cacheNew) { // Checks if it is a new song
-            if (app.config.preferences.notificationsMinimized && (!app.win.isMinimized() && app.win.isVisible())) return; // Checks if Notificaitons Minimzied is On
-            while (!MediaNotificaion) {
-              MediaNotificaion = CreatePlaybackNotification(a)
+            if (app.config.preferences.notificationsMinimized && (!app.win.isMinimized() && app.win.isVisible())) return; // Checks if Notifications Minimized is On
+            while (!MediaNotification) {
+              MediaNotification = CreatePlaybackNotification(a)
             }
             setTimeout(function () {
-                MediaNotificaion = false;
+                MediaNotification = false;
                 if (cacheNew) cacheNew = false;
             }, 500);
         }

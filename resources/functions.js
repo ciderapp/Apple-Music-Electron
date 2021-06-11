@@ -3,6 +3,7 @@ const { app, BrowserWindow, nativeTheme, Notification, Tray, shell, ipcMain, Men
 const {join} = require('path');
 const {autoUpdater} = require("electron-updater");  // AutoUpdater Init
 
+let cachedActivity;
 let Functions = {
     LoadTheme: function (cssPath) {
         readFile(join(__dirname, `./themes/${cssPath}`), "utf-8", function (error, data) {
@@ -109,6 +110,12 @@ let Functions = {
     },
 
     UpdateDiscordActivity: function(a) {
+        if (!cachedActivity) {
+            cachedActivity = a
+            return true
+        } else if (cachedActivity === a) {
+            return true
+        }
         console.log(`[DiscordRPC] Updating Play Presence for ${a.name} to ${a.status}`)
         if (a.status === true) {
             app.discord.client.updatePresence({
