@@ -322,11 +322,6 @@ let Functions = {
     },
 
     WindowHandler: function() {
-        app.win.webContents.on('unresponsive', function () {
-            console.log("[Apple-Music-Electron] Application has become unresponsive and has been closed..")
-            app.exit();
-        });
-
         app.win.webContents.setWindowOpenHandler(({url}) => {
             if (url.startsWith('https://apple.com/') || url.startsWith('https://www.apple.com/') || url.startsWith('https://support.apple.com/')) { // for security (pretty pointless ik)
                 shell.openExternal(url).then(() => console.log(`[Apple-Music-Electron] User has opened ${url} which has been redirected to browser.`));
@@ -335,6 +330,12 @@ let Functions = {
             console.log(`[Apple-Music-Electron] User has attempted to open ${url} which was blocked.`)
             return {action: 'deny'}
         })
+
+        app.win.on('unresponsive', function () {
+            console.log("[Apple-Music-Electron] Application has become unresponsive and has been closed.")
+            app.exit();
+        });
+
 
         app.win.on('page-title-updated', function (event) { // Prevents the Window Title from being Updated
             event.preventDefault()
@@ -377,7 +378,6 @@ let Functions = {
     },
 
     CreatePlaybackNotification: function (a) {
-        if (!app.config.preferences.playbackNotifications && Notification.isSupported()) return;
         if (process.platform === "win32") app.setAppUserModelId("Apple Music");
         console.log(`[CreatePlaybackNotification] Notification Generating | Function Parameters: SongName: ${a.name} | Artist: ${a.artistName} | Album: ${a.albumName}`)
         let NOTIFICATION_TITLE = a.name;

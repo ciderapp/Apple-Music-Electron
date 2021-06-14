@@ -1,5 +1,5 @@
 require('v8-compile-cache');
-const { app, nativeTheme, ipcMain } = require('electron');
+const { app, nativeTheme, ipcMain, Notification } = require('electron');
 const { LoadJSFile, LoadTheme, GetLocale, SetThumbarButtons, Init, InitDevMode, InitDiscordRPC, InitTray, UpdateDiscordActivity, UpdateTooltip, CreatePlaybackNotification, CreateBrowserWindow, WindowHandler } = require('./resources/functions');
 const gotTheLock = app.requestSingleInstanceLock();
 app.win = '';
@@ -174,8 +174,9 @@ function createWindow() {
         }
 
         // Create Playback Notification on Song Change
-        if (a.playParams.id !== cache.playParams.id || cacheNew) { // Checks if it is a new song
-            if (app.config.preferences.notificationsMinimized && (!app.win.isMinimized() && app.win.isVisible())) return; // Checks if Notifications Minimized is On
+        if ((a.playParams.id !== cache.playParams.id || cacheNew) && app.config.preferences.playbackNotifications && Notification.isSupported()) { // Checks if it is a new song
+            console.log("we got here")
+            if (app.config.preferences.notificationsMinimized && (!app.win.isMinimized() || app.win.isVisible())) return; // Checks if Notifications Minimized is On
             while (!MediaNotification) {
               MediaNotification = CreatePlaybackNotification(a)
             }
