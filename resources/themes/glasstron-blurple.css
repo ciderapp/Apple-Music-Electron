@@ -19,6 +19,11 @@
     backdrop-filter: saturate(0%) blur(25px) !important;
 }
 
+.search-scope-bar {
+    background-color: var(--playerBackground) !important;
+    backdrop-filter: saturate(0%) blur(25px) !important;
+}
+
 .dragDiv {
     background-color: var(--playerBackground) !important;
     backdrop-filter: saturate(0%) blur(25px) !important;
