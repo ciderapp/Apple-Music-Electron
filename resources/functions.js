@@ -108,6 +108,129 @@ let Functions = {
         css.removeUpsell = true
         css.removeAppleLogo = true
     },
+    InitMpris: function() {
+      const Mpris = require('mpris-service');
+      let pos_atr = {durationInMillis: 0};
+      let currentPlayBackProgress = "0";
+      app.mpris = Mpris({
+          name: 'AppleMusic',
+          identity: 'Apple Music (Linux)',
+          supportedUriSchemes: [],
+          supportedMimeTypes: [],
+          supportedInterfaces: ['player']
+      });
+      app.mpris.getPosition = function () {
+          const durationInMicro = pos_atr.durationInMillis * 1000;
+          const percentage = parseFloat(currentPlayBackProgress) || 0;
+          return durationInMicro * percentage;
+      }
+      app.mpris.canQuit = true;
+      app.mpris.canControl = true;
+      app.mpris.canPause = true;
+      app.mpris.canPlay = true;
+      app.mpris.canGoNext = true;
+      app.mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
+      app.mpris.playbackStatus = 'Stopped'
+
+      mpris.on('playpause', async () => {
+          if (mpris.playbackStatus === 'Playing') {
+              await app.win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
+          } else {
+              await app.win.webContents.executeJavaScript('MusicKit.getInstance().play()')
+          }
+        });
+
+        app.mpris.on('play', async () => {
+            await app.win.webContents.executeJavaScript('MusicKit.getInstance().play()')
+        });
+
+        app.mpris.on('pause', async () => {
+            await app.win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
+        });
+
+        app.mpris.on('next', async () => {
+            await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToNextItem()')
+        });
+
+        app.mpris.on('previous', async () => {
+            await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToPreviousItem()')
+        });
+    },
+    
+    UpdateMetaDataMpris: function(attributes) {
+        let m = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
+        if (attributes == null) {
+            return
+        } else if (attributes.playParams.id === 'no-id-found') {
+
+        } else {
+            let url = `${attributes.artwork.url.replace('/{w}x{h}bb', '/35x35bb')}`
+            url = `${url.replace('/2000x2000bb', '/35x35bb')}`
+            m = {
+                'mpris:trackid': mpris.objectPath(`track/${attributes.playParams.id.replace(/[\.]+/g, "")}`),
+                'mpris:length': attributes.durationInMillis * 1000, // In microseconds
+                'mpris:artUrl': url,
+                'xesam:title': `${attributes.name}`,
+                'xesam:album': `${attributes.albumName}`,
+                'xesam:artist': [`${attributes.artistName}`,],
+                'xesam:genre': attributes.genreNames
+            }
+        }
+        if (app.mpris.metadata["mpris:trackid"] === m["mpris:trackid"]) {
+            return
+        }
+        mpris.metadata = m
+    },
+    PlaybackStateHandler: function(a) {
+      const playbackStatusPlay = 'Playing';
+      const playbackStatusPause = 'Paused';
+      const playbackStatusStop = 'Stopped';
+
+      function setPlaybackIfNeeded(status) {
+        if (mpris.playbackStatus === status) {
+          return
+        }
+        mpris.playbackStatus = status;
+      }
+
+      switch (a) {
+        case 0:
+            console.log("[Mpris] NONE")
+            setPlaybackIfNeeded(playbackStatusPause);
+            break;
+        case 1:
+            console.log("[Mpris] loading")
+            setPlaybackIfNeeded(playbackStatusPause);
+            break;
+        case 2:
+            console.log("[Mpris] playing")
+            setPlaybackIfNeeded(playbackStatusPlay);
+            break;
+        case 3:
+            console.log("[Mpris] paused")
+            setPlaybackIfNeeded(playbackStatusPause);
+            break;
+        case 4:
+            console.log("[Mpris] stopped")
+            setPlaybackIfNeeded(playbackStatusStop);
+            break;
+        case 5:
+            console.log("[Mpris] ended")
+            break;
+        case 6:
+            console.log("[Mpris] seeking")
+            break;
+        case 7:
+            console.log("[Mpris] waiting")
+            break;
+        case 8:
+            console.log("[Mpris] stalled")
+            break;
+        case 9:
+            console.log("[Mpris] completed")
+            break;
+      }
+    },
 
     UpdateDiscordActivity: function(a) {
         if (!cachedActivity) {

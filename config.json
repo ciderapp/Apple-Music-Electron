@@ -33,7 +33,10 @@
     "notificationsMinimized": true,
 
     "_trayTooltipSongName_comment": "Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.",
-    "trayTooltipSongName": true
+    "trayTooltipSongName": true,
+
+    "_mprisSupport_comment": "Do you want to turn on Mpris support, connects to the Mpris interface for Linux. (Make sure you have it installed if you turn this on)",
+    "mprisSupport": false
   },
 
   "advanced": {

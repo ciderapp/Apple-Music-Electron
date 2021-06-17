@@ -1,6 +1,6 @@
 require('v8-compile-cache');
 const { app, nativeTheme, ipcMain, Notification } = require('electron');
-const { LoadJSFile, LoadTheme, GetLocale, SetThumbarButtons, Init, InitDevMode, InitDiscordRPC, InitTray, UpdateDiscordActivity, UpdateTooltip, CreatePlaybackNotification, CreateBrowserWindow, WindowHandler } = require('./resources/functions');
+const { UpdateMetaDataMpris, PlaybackStateHandler, InitMpris, LoadJSFile, LoadTheme, GetLocale, SetThumbarButtons, Init, InitDevMode, InitDiscordRPC, InitTray, UpdateDiscordActivity, UpdateTooltip, CreatePlaybackNotification, CreateBrowserWindow, WindowHandler } = require('./resources/functions');
 const gotTheLock = app.requestSingleInstanceLock();
 app.win = '';
 app.config = require('./config.json');
@@ -11,7 +11,13 @@ if (app.config.preferences.discordRPC) {
 }
 app.isQuiting = !app.config.preferences.closeButtonMinimize;
 app.config.css.glasstron = app.config.preferences.cssTheme.toLowerCase().split('-').includes('glasstron');
-
+if (app.config.preferences.mprisSupport) {
+  try {
+    InitMpris()
+  } catch(err) {
+    console.error(`[Mpris] ${err}`)
+  }
+}
 
 //########################## NO TOUCHY TY ####################################
 let dev = false
@@ -119,6 +125,8 @@ function createWindow() {
         app.isPlaying = a.status;
         if (!a || a.playParams.id === 'no-id-found' || !cache) return;
 
+        PlaybackStateHandler(a)
+
         if (a.playParams.id !== cache.playParams.id) { // If it is a new song
             a.startTime = Date.now()
             a.endTime = Number(Math.round(a.startTime + a.durationInMillis));
@@ -166,6 +174,8 @@ function createWindow() {
         if (!cache) SetThumbarButtons();
         if (!a || a.playParams.id === 'no-id-found') return;
 
+        UpdateMetaDataMpris(a)
+
         // Generate the First Cache
         if (!cache) {
           console.log('[mediaItemStateDidChange] Generating first Cache.')
@@ -211,10 +221,18 @@ app.on('ready', () => {
 });
 
 app.on('window-all-closed', () => {
+    if (app.mpris) {
+      mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
+      mpris.playbackStatus = 'Stopped';
+    }
     app.quit()
 });
 
 app.on('before-quit', function () {
+    if (app.mpris) {
+      mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
+      mpris.playbackStatus = 'Stopped';
+    }
     if (app.config.preferences.discordRPC) app.discord.client.disconnect()
     console.log("[DiscordRPC] Disconnecting from Discord.")
     console.log("---------------------------------------------------------------------")
