@@ -108,29 +108,28 @@ let Functions = {
         css.removeUpsell = true
         css.removeAppleLogo = true
     },
-    InitMpris: function() {
-      const Mpris = require('mpris-service');
+    InitMpris: function(Mpris) {
       let pos_atr = {durationInMillis: 0};
       let currentPlayBackProgress = "0";
-      app.mpris = Mpris({
+      const mpris = Mpris({
           name: 'AppleMusic',
           identity: 'Apple Music (Linux)',
           supportedUriSchemes: [],
           supportedMimeTypes: [],
           supportedInterfaces: ['player']
       });
-      app.mpris.getPosition = function () {
+      mpris.getPosition = function () {
           const durationInMicro = pos_atr.durationInMillis * 1000;
           const percentage = parseFloat(currentPlayBackProgress) || 0;
           return durationInMicro * percentage;
       }
-      app.mpris.canQuit = true;
-      app.mpris.canControl = true;
-      app.mpris.canPause = true;
-      app.mpris.canPlay = true;
-      app.mpris.canGoNext = true;
-      app.mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
-      app.mpris.playbackStatus = 'Stopped'
+      mpris.canQuit = true;
+      mpris.canControl = true;
+      mpris.canPause = true;
+      mpris.canPlay = true;
+      mpris.canGoNext = true;
+      mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
+      mpris.playbackStatus = 'Stopped'
 
       mpris.on('playpause', async () => {
           if (mpris.playbackStatus === 'Playing') {
@@ -140,24 +139,25 @@ let Functions = {
           }
         });
 
-        app.mpris.on('play', async () => {
+        mpris.on('play', async () => {
             await app.win.webContents.executeJavaScript('MusicKit.getInstance().play()')
         });
 
-        app.mpris.on('pause', async () => {
+        mpris.on('pause', async () => {
             await app.win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
         });
 
-        app.mpris.on('next', async () => {
+        mpris.on('next', async () => {
             await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToNextItem()')
         });
 
-        app.mpris.on('previous', async () => {
+        mpris.on('previous', async () => {
             await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToPreviousItem()')
         });
+        return mpris
     },
     
-    UpdateMetaDataMpris: function(attributes) {
+    UpdateMetaDataMpris: async function(attributes, mpris) {
         let m = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
         if (attributes == null) {
             return
@@ -176,12 +176,12 @@ let Functions = {
                 'xesam:genre': attributes.genreNames
             }
         }
-        if (app.mpris.metadata["mpris:trackid"] === m["mpris:trackid"]) {
+        if (mpris.metadata["mpris:trackid"] === m["mpris:trackid"]) {
             return
         }
         mpris.metadata = m
     },
-    PlaybackStateHandler: function(a) {
+    PlaybackStateHandler: function(a, mpris) {
       const playbackStatusPlay = 'Playing';
       const playbackStatusPause = 'Paused';
       const playbackStatusStop = 'Stopped';

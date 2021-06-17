@@ -13,7 +13,8 @@ app.isQuiting = !app.config.preferences.closeButtonMinimize;
 app.config.css.glasstron = app.config.preferences.cssTheme.toLowerCase().split('-').includes('glasstron');
 if (app.config.preferences.mprisSupport) {
   try {
-    InitMpris()
+    const Mpris = require('mpris-service');
+    app.mpris = InitMpris(Mpris)
   } catch(err) {
     console.error(`[Mpris] ${err}`)
   }
@@ -125,7 +126,7 @@ function createWindow() {
         app.isPlaying = a.status;
         if (!a || a.playParams.id === 'no-id-found' || !cache) return;
 
-        PlaybackStateHandler(a)
+        PlaybackStateHandler(a, app.mpris)
 
         if (a.playParams.id !== cache.playParams.id) { // If it is a new song
             a.startTime = Date.now()
@@ -174,7 +175,7 @@ function createWindow() {
         if (!cache) SetThumbarButtons();
         if (!a || a.playParams.id === 'no-id-found') return;
 
-        UpdateMetaDataMpris(a)
+        UpdateMetaDataMpris(a, app.mpris)
 
         // Generate the First Cache
         if (!cache) {
@@ -185,7 +186,6 @@ function createWindow() {
 
         // Create Playback Notification on Song Change
         if ((a.playParams.id !== cache.playParams.id || cacheNew) && app.config.preferences.playbackNotifications && Notification.isSupported()) { // Checks if it is a new song
-            console.log("we got here")
             if (app.config.preferences.notificationsMinimized && (!app.win.isMinimized() || app.win.isVisible())) return; // Checks if Notifications Minimized is On
             while (!MediaNotification) {
               MediaNotification = CreatePlaybackNotification(a)
@@ -222,16 +222,16 @@ app.on('ready', () => {
 
 app.on('window-all-closed', () => {
     if (app.mpris) {
-      mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
-      mpris.playbackStatus = 'Stopped';
+      app.mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
+      app.mpris.playbackStatus = 'Stopped';
     }
     app.quit()
 });
 
 app.on('before-quit', function () {
     if (app.mpris) {
-      mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
-      mpris.playbackStatus = 'Stopped';
+        app.mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
+        app.mpris.playbackStatus = 'Stopped';
     }
     if (app.config.preferences.discordRPC) app.discord.client.disconnect()
     console.log("[DiscordRPC] Disconnecting from Discord.")
