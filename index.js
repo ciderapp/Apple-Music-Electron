@@ -4,8 +4,8 @@ const { UpdateMetaDataMpris, PlaybackStateHandler, InitMpris, LoadJSFile, LoadTh
 const gotTheLock = app.requestSingleInstanceLock();
 app.win = '';
 app.config = require('./config.json');
+app.discord = {client: false, error: false};
 if (app.config.preferences.discordRPC) {
-    app.discord = {client: false, error: false};
     app.discord.client = require('discord-rich-presence')('749317071145533440');
     console.log("[DiscordRPC] Initializing Client.")
 }

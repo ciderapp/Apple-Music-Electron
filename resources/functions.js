@@ -4,6 +4,8 @@ const {join} = require('path');
 const {autoUpdater} = require("electron-updater");  // AutoUpdater Init
 
 let cachedActivity;
+let notif;
+
 let Functions = {
     LoadTheme: function (cssPath) {
         readFile(join(__dirname, `./themes/${cssPath}`), "utf-8", function (error, data) {
@@ -54,7 +56,7 @@ let Functions = {
         Functions.SetTaskList() // Set the Task List
 
         app.setPath("userData", join(app.getPath("cache"), app.name)) // Set proper cache folder
-        // app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors'); // Disable CORS (NO LONGER REQUIRED Thanks Apple ❤️)
+        app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors'); // Disable CORS (NO LONGER REQUIRED Thanks Apple ❤️)
 
         //    Set the Default Theme
         let theme;
@@ -276,9 +278,9 @@ let Functions = {
     },
 
     GetLocale: function () {
-        const SystemLang = app.getLocaleCountryCode().toLowerCase()
+        let localeAs = app.getLocaleCountryCode().toLowerCase()
         const languages = require('./languages.json')
-        let localeAs = SystemLang;
+        const targetLocaleAs = app.config.advanced.forceApplicationLanguage;
         if (app.config.advanced.forceApplicationLanguage) {
             for (let key in languages) {
                 if (languages.hasOwnProperty(key)) {
@@ -505,7 +507,8 @@ let Functions = {
         console.log(`[CreatePlaybackNotification] Notification Generating | Function Parameters: SongName: ${a.name} | Artist: ${a.artistName} | Album: ${a.albumName}`)
         let NOTIFICATION_TITLE = a.name;
         let NOTIFICATION_BODY = `${a.artistName} - ${a.albumName}`;
-        new Notification({
+        if (notif) notif.close()
+        notif = new Notification({
             title: NOTIFICATION_TITLE,
             body: NOTIFICATION_BODY,
             silent: true,
@@ -528,7 +531,7 @@ let Functions = {
                 preload: join(__dirname, './js/MusicKitInterop.js'),
                 allowRunningInsecureContent: app.config.advanced.allowRunningInsecureContent,
                 contextIsolation: false,
-                webSecurity: true,
+                webSecurity: false,
                 sandbox: true
             }
         };
