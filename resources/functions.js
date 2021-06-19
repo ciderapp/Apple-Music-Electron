@@ -54,7 +54,7 @@ let Functions = {
         Functions.SetTaskList() // Set the Task List
 
         app.setPath("userData", join(app.getPath("cache"), app.name)) // Set proper cache folder
-        app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors'); // Disable CORS
+        // app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors'); // Disable CORS (NO LONGER REQUIRED Thanks Apple ❤️)
 
         //    Set the Default Theme
         let theme;
@@ -528,7 +528,7 @@ let Functions = {
                 preload: join(__dirname, './js/MusicKitInterop.js'),
                 allowRunningInsecureContent: app.config.advanced.allowRunningInsecureContent,
                 contextIsolation: false,
-                webSecurity: false,
+                webSecurity: true,
                 sandbox: true
             }
         };
