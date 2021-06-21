@@ -75,7 +75,6 @@ function createWindow() {
 
     mpris.on('next', async () => {
         await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToNextItem()')
-        ontents.executeJavaScript('MusicKit.getInstance().skipToNextItem()')
     });
 
     mpris.on('previous', async () => {

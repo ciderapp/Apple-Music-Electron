@@ -4,7 +4,7 @@ const {join} = require('path');
 const {autoUpdater} = require("electron-updater");  // AutoUpdater Init
 
 let cachedActivity;
-let notif;
+let NOTIFICATION;
 
 let Functions = {
     LoadTheme: function (cssPath) {
@@ -446,15 +446,21 @@ let Functions = {
     CreatePlaybackNotification: function (a) {
         if (process.platform === "win32") app.setAppUserModelId("Apple Music");
         console.log(`[CreatePlaybackNotification] Notification Generating | Function Parameters: SongName: ${a.name} | Artist: ${a.artistName} | Album: ${a.albumName}`)
-        let NOTIFICATION_TITLE = a.name;
-        let NOTIFICATION_BODY = `${a.artistName} - ${a.albumName}`;
-        if (notif) notif.close()
-        notif = new Notification({
-            title: NOTIFICATION_TITLE,
-            body: NOTIFICATION_BODY,
-            silent: true,
-            icon: join(__dirname, './icons/icon.png')
-        }).show()
+
+        if (NOTIFICATION) {
+          console.log("[CreatePlaybackNotification] Existing Notification Found - Removing. ")
+          NOTIFICATION.close()
+          NOTIFICATION = false
+        }
+        
+        const NOTIFICATION_OBJECT = {
+          title: a.name,
+          body: `${a.artistName} - ${a.albumName}`,
+          silent: true,
+          icon: join(__dirname, './icons/icon.png')
+        }
+
+        NOTIFICATION = new Notification(NOTIFICATION_OBJECT).show()
         return true
     },
     CreateBrowserWindow: function () {
