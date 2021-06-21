@@ -3,7 +3,14 @@ const { app, nativeTheme, ipcMain, Notification } = require('electron');
 const { createConfigFile, UpdateMetaDataMpris, MprisPlaybackStateHandler, InitializeMpris, LoadJSFile, LoadTheme, GetLocale, SetThumbarButtons, Init, InitDevMode, InitDiscordRPC, InitTray, UpdateDiscordActivity, UpdateTooltip, CreatePlaybackNotification, CreateBrowserWindow, WindowHandler } = require('./resources/functions');
 const gotTheLock = app.requestSingleInstanceLock();
 app.win = '';
-app.config = require('./config.json');
+
+if (configCreated) {
+    const homedir = require('os').homedir();
+    app.config = require(homedir+'/AME/config.json');
+} else {
+    createConfigFile()
+}
+
 app.discord = {client: false, error: false};
 if (app.config.preferences.discordRPC) {
     app.discord.client = require('discord-rich-presence')('749317071145533440');
@@ -53,9 +60,6 @@ function createWindow() {
             }
         })
     }
-
-    // please work holy shit
-    createConfigFile()
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     //      Mpris State Handler
