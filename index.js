@@ -1,6 +1,6 @@
 require('v8-compile-cache');
 const { app, nativeTheme, ipcMain, Notification } = require('electron');
-const { UpdateMetaDataMpris, MprisPlaybackStateHandler, InitializeMpris, LoadJSFile, LoadTheme, GetLocale, SetThumbarButtons, Init, InitDevMode, InitDiscordRPC, InitTray, UpdateDiscordActivity, UpdateTooltip, CreatePlaybackNotification, CreateBrowserWindow, WindowHandler } = require('./resources/functions');
+const { createConfigFile, UpdateMetaDataMpris, MprisPlaybackStateHandler, InitializeMpris, LoadJSFile, LoadTheme, GetLocale, SetThumbarButtons, Init, InitDevMode, InitDiscordRPC, InitTray, UpdateDiscordActivity, UpdateTooltip, CreatePlaybackNotification, CreateBrowserWindow, WindowHandler } = require('./resources/functions');
 const gotTheLock = app.requestSingleInstanceLock();
 app.win = '';
 app.config = require('./config.json');
@@ -53,6 +53,9 @@ function createWindow() {
             }
         })
     }
+
+    // please work holy shit
+    createConfigFile()
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     //      Mpris State Handler

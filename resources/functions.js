@@ -495,6 +495,44 @@ let Functions = {
 
         if (!app.config.advanced.menuBarVisible) app.win.setMenuBarVisibility(false); // Hide that nasty menu bar
         if (!app.config.advanced.allowSetMenu) app.win.setMenu(null); // Disables DevTools
+    },
+
+    createConfigFile: function () {
+        const fs = require('fs')
+        const homedir = require('os').homedir();
+        // please lord save me from this endless hell.
+        fs.readFile('./config.json','utf8',readSample);
+        function readSample(error,data)
+        {
+            if(error){
+                console.log(error);
+            } else
+            {
+                console.log(data); // Logging config.json.sample to console.
+                console.log('[fs] Beginning file write process...')
+                console.log('[createConfig] Home Directory: '+homedir)
+
+                // please work
+                fs.mkdir(homedir+'/AME', writeDir)
+                fs.writeFile(homedir+'/AME/config.json',data,'utf8',writeSample);
+            }
+        }
+        function writeDir(error)
+        {
+            if(error){
+                console.log(error)
+            } else {
+                console.log('[fs] Wrote directory successfully.')
+            }
+        }
+        function writeSample(error)
+        {
+            if(error){
+                console.log(error)
+            } else {
+                console.log('[createConfig] [fs] Successfully wrote config.json to the user directory.');
+            }
+        }
     }
 };
 
