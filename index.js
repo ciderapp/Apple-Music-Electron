@@ -251,7 +251,7 @@ app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling'); //
 
 // This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('widevine-ready', () => {
+app.on('ready', () => {
     if (dev) InitDevMode();
     Init()
     console.log("[Apple-Music-Electron] Application is Ready.")
