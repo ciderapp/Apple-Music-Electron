@@ -9,7 +9,7 @@
     "removeUpsell": true,
 
     "_macosWindow_comment": "This enables the MacOS window frame. (false by default) | macosScrollbar is experimental and may be worked on in the future.",
-    "macosWindow": true,
+    "macosWindow": false,
     "macosScrollbar": false
   },
 
@@ -20,20 +20,20 @@
     "defaultTheme": "",
 
     "_cssTheme_comment": "If you are using a custom CSS theme, set it below, otherwise leave empty.",
-    "cssTheme": "",
+    "cssTheme": "Blurple-Dark",
 
     "_closeButtonMinimize_comment": "Should the close button minimize your apple music (true) or should it quit the app (false). (true by default)",
     "closeButtonMinimize": true,
 
     "_discordRPC_comment": "Enable/Disable Discord Rich Presence. (true by default)",
-    "discordRPC": true,
+    "discordRPC": false,
 
     "_playbackNotifications_comment": "Enabling this means you will get notifications when you change song. The notificationsMinimized option force notifications to only appear if the app is hidden / minimized.",
     "playbackNotifications": true,
     "notificationsMinimized": true,
 
     "_trayTooltipSongName_comment": "Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.",
-    "trayTooltipSongName": true,
+    "trayTooltipSongName": false,
 
     "_mprisSupport_comment": "Do you want to turn on Mpris support, connects to the Mpris interface for Linux. (Make sure you have it installed if you turn this on)",
     "mprisSupport": true
@@ -48,6 +48,7 @@
     "forceApplicationLanguage": "",
     "menuBarVisible": false,
     "removeScrollbars": true,
-    "useBeta": true
+    "useBeta": true,
+    "preventMediaHijacking": false
   }
 }

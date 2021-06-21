@@ -247,7 +247,7 @@ function createWindow() {
 // Done
 //----------------------------------------------------------------------------------------------------
 
-app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling'); // This prevents chromium from creating an mpris instance
+if (preventMediaHijacking) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
 
 // This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
