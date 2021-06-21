@@ -1,6 +1,6 @@
 require('v8-compile-cache');
 const { app, nativeTheme, ipcMain, Notification } = require('electron');
-const { UpdateMetaDataMpris, PlaybackStateHandler, InitMpris, LoadJSFile, LoadTheme, GetLocale, SetThumbarButtons, Init, InitDevMode, InitDiscordRPC, InitTray, UpdateDiscordActivity, UpdateTooltip, CreatePlaybackNotification, CreateBrowserWindow, WindowHandler } = require('./resources/functions');
+const { UpdateMetaDataMpris, MprisPlaybackStateHandler, InitializeMpris, LoadJSFile, LoadTheme, GetLocale, SetThumbarButtons, Init, InitDevMode, InitDiscordRPC, InitTray, UpdateDiscordActivity, UpdateTooltip, CreatePlaybackNotification, CreateBrowserWindow, WindowHandler } = require('./resources/functions');
 const gotTheLock = app.requestSingleInstanceLock();
 app.win = '';
 app.config = require('./config.json');
@@ -11,12 +11,23 @@ if (app.config.preferences.discordRPC) {
 }
 app.isQuiting = !app.config.preferences.closeButtonMinimize;
 app.config.css.glasstron = app.config.preferences.cssTheme.toLowerCase().split('-').includes('glasstron');
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~ MPRIS
+let mpris = false
 if (app.config.preferences.mprisSupport) {
   try {
     const Mpris = require('mpris-service');
-    app.mpris = InitMpris(Mpris)
+    console.log('[MPRIS] Initializing Connection...')
+    mpris = Mpris({
+      name: 'AppleMusicElectron',
+      identity: 'Apple Music Electron',
+      supportedUriSchemes: [],
+      supportedMimeTypes: [],
+      supportedInterfaces: ['player']
+    });
+    InitializeMpris(mpris)
   } catch(err) {
-    console.error(`[Mpris] ${err}`)
+    console.log(`[MPRIS] Error While Connecting: ${err}`)
   }
 }
 
@@ -42,6 +53,34 @@ function createWindow() {
             }
         })
     }
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    //      Mpris State Handler
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+    mpris.on('playpause', async () => {
+      if (mpris.playbackStatus === 'Playing') {
+          await app.win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
+      } else {
+          await app.win.webContents.executeJavaScript('MusicKit.getInstance().play()')
+      }
+    });
+
+    mpris.on('play', async () => {
+        await app.win.webContents.executeJavaScript('MusicKit.getInstance().play()')
+    });
+
+    mpris.on('pause', async () => {
+        await app.win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
+    });
+
+    mpris.on('next', async () => {
+        await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToNextItem()')
+        ontents.executeJavaScript('MusicKit.getInstance().skipToNextItem()')
+    });
+
+    mpris.on('previous', async () => {
+        await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToPreviousItem()')
+    });
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     //      Detects if the application has been opened with --force-quit
@@ -123,10 +162,10 @@ function createWindow() {
     let ThumbarUpdate = false;
 
     ipcMain.on('playbackStateDidChange', (_item, a) => {
+        if (mpris) MprisPlaybackStateHandler(a, mpris);
+
         app.isPlaying = a.status;
         if (!a || a.playParams.id === 'no-id-found' || !cache) return;
-
-        PlaybackStateHandler(a, app.mpris)
 
         if (a.playParams.id !== cache.playParams.id) { // If it is a new song
             a.startTime = Date.now()
@@ -172,10 +211,10 @@ function createWindow() {
     let MediaNotification = false;
   
     ipcMain.on('mediaItemStateDidChange', (_item, a) => {
+        if (mpris) UpdateMetaDataMpris(a, mpris);
+
         if (!cache) SetThumbarButtons();
         if (!a || a.playParams.id === 'no-id-found') return;
-
-        UpdateMetaDataMpris(a, app.mpris)
 
         // Generate the First Cache
         if (!cache) {
@@ -208,9 +247,11 @@ function createWindow() {
 // Done
 //----------------------------------------------------------------------------------------------------
 
+app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling'); // This prevents chromium from creating an mpris instance
+
 // This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', () => {
+app.on('widevine-ready', () => {
     if (dev) InitDevMode();
     Init()
     console.log("[Apple-Music-Electron] Application is Ready.")
@@ -221,17 +262,17 @@ app.on('ready', () => {
 });
 
 app.on('window-all-closed', () => {
-    if (app.mpris) {
-      app.mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
-      app.mpris.playbackStatus = 'Stopped';
+    if (mpris) { // Reset Mpris when app is closed
+      mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
+      mpris.playbackStatus = 'Stopped';
     }
     app.quit()
 });
 
 app.on('before-quit', function () {
-    if (app.mpris) {
-        app.mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
-        app.mpris.playbackStatus = 'Stopped';
+    if (mpris) { // Reset Mpris when app is closed
+        mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
+        mpris.playbackStatus = 'Stopped';
     }
     if (app.config.preferences.discordRPC) app.discord.client.disconnect()
     console.log("[DiscordRPC] Disconnecting from Discord.")

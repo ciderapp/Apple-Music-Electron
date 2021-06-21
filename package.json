@@ -21,6 +21,7 @@
     "electron-updater": "^4.3.9",
     "glasstron": "^0.0.7",
     "is-reachable": "^5.0.0",
+    "mpris-service": "^2.1.2",
     "node-fetch": "^2.6.1",
     "source-map-support": "^0.5.16",
     "v8-compile-cache": "^2.1.1"
@@ -53,7 +54,8 @@
         "pacman"
       ],
       "category": "AudioVideo",
-      "icon": "./resources/icons/icon.icns"
+      "icon": "./resources/icons/icon.icns",
+      "desktop": "./resources/applemusic.desktop"
     },
     "win": {
       "target": [
