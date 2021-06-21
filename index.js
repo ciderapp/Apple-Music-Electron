@@ -14,7 +14,7 @@ app.config.css.glasstron = app.config.preferences.cssTheme.toLowerCase().split('
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~ MPRIS
 let mpris = false
-if (app.config.preferences.mprisSupport) {
+if (app.config.preferences.mprisSupport && process.platform === "linux") {
   try {
     const Mpris = require('mpris-service');
     console.log('[MPRIS] Initializing Connection...')
