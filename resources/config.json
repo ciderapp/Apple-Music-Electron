@@ -40,11 +40,10 @@
   },
 
   "advanced": {
-    "allowMultipleInstances": false,
+    "allowMultipleInstances": true,
     "allowRunningInsecureContent": true,
-    "allowSetMenu": false,
     "autoUpdaterBetaBuilds": false,
-    "enableLogging": true,
+    "enableDevTools": false,
     "forceApplicationLanguage": "",
     "menuBarVisible": false,
     "removeScrollbars": true,

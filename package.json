@@ -19,6 +19,7 @@
     "discord-rpc": "^3.1.4",
     "electron-log": "^4.3.5",
     "electron-updater": "^4.3.9",
+    "fs-extra": "^10.0.0",
     "glasstron": "^0.0.7",
     "is-reachable": "^5.0.0",
     "mpris-service": "^2.1.2",
