@@ -1,15 +1,22 @@
 require('v8-compile-cache');
 const { app, nativeTheme, ipcMain, Notification } = require('electron');
-const { createConfigFile, UpdateMetaDataMpris, MprisPlaybackStateHandler, InitializeMpris, LoadJSFile, LoadTheme, GetLocale, SetThumbarButtons, Init, InitDevMode, InitDiscordRPC, InitTray, UpdateDiscordActivity, UpdateTooltip, CreatePlaybackNotification, CreateBrowserWindow, WindowHandler } = require('./resources/functions');
+const { access } = require('fs');
+const homedir = require('os').homedir();
+const userConfig = homedir+'/AME/config.json'
+app.config = require(userConfig)
+access(userConfig , (err) => {
+    console.log(`[CONFIG] ${userConfig} ${err ? ' does Not Exist' : 'does Exist!'}`);
+    let userFilesCreated = !err
+    if (userFilesCreated === true) {
+        console.log('[userConfig] Initialized!')
+    } else {
+        const { createUserFiles } = require('./resources/functions');
+        createUserFiles()
+    }
+})
+const { UpdateMetaDataMpris, MprisPlaybackStateHandler, InitializeMpris, LoadJSFile, LoadTheme, GetLocale, SetThumbarButtons, Init, InitDevMode, InitDiscordRPC, InitTray, UpdateDiscordActivity, UpdateTooltip, CreatePlaybackNotification, CreateBrowserWindow, WindowHandler } = require('./resources/functions');
 const gotTheLock = app.requestSingleInstanceLock();
 app.win = '';
-
-if (configCreated) {
-    const homedir = require('os').homedir();
-    app.config = require(homedir+'/AME/config.json');
-} else {
-    createConfigFile()
-}
 
 app.discord = {client: false, error: false};
 if (app.config.preferences.discordRPC) {
@@ -64,29 +71,31 @@ function createWindow() {
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     //      Mpris State Handler
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-    mpris.on('playpause', async () => {
-      if (mpris.playbackStatus === 'Playing') {
-          await app.win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
-      } else {
-          await app.win.webContents.executeJavaScript('MusicKit.getInstance().play()')
-      }
-    });
+    if (app.config.preferences.mprisSupport && process.platform === "linux") {
+        mpris.on('playpause', async () => {
+            if (mpris.playbackStatus === 'Playing') {
+                await app.win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
+            } else {
+                await app.win.webContents.executeJavaScript('MusicKit.getInstance().play()')
+            }
+        });
 
-    mpris.on('play', async () => {
-        await app.win.webContents.executeJavaScript('MusicKit.getInstance().play()')
-    });
+        mpris.on('play', async () => {
+            await app.win.webContents.executeJavaScript('MusicKit.getInstance().play()')
+        });
 
-    mpris.on('pause', async () => {
-        await app.win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
-    });
+        mpris.on('pause', async () => {
+            await app.win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
+        });
 
-    mpris.on('next', async () => {
-        await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToNextItem()')
-    });
+        mpris.on('next', async () => {
+            await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToNextItem()')
+        });
 
-    mpris.on('previous', async () => {
-        await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToPreviousItem()')
-    });
+        mpris.on('previous', async () => {
+            await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToPreviousItem()')
+        });
+    }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
     //      Detects if the application has been opened with --force-quit

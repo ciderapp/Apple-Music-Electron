@@ -8,14 +8,15 @@ let NOTIFICATION;
 
 let Functions = {
     LoadTheme: function (cssPath) {
-        readFile(join(__dirname, `./themes/${cssPath}`), "utf-8", function (error, data) {
+        const homedir = require('os').homedir();
+        readFile(homedir+`/AME/Themes/${cssPath}`, "utf-8", function (error, data) {
             if (!error) {
                 let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
                 app.win.webContents.insertCSS(formattedData).then(() => console.log(`[Themes] '${cssPath}' successfully injected.`));
             }
         });
 
-        let themeConfig = require('./themes/theme-config.json')
+        let themeConfig = require(homedir+'/AME/Themes/theme-config.json')
         for (let v in themeConfig.dark) {
             if (cssPath === v) {
                 nativeTheme.themeSource = "dark"
@@ -497,12 +498,12 @@ let Functions = {
         if (!app.config.advanced.allowSetMenu) app.win.setMenu(null); // Disables DevTools
     },
 
-    createConfigFile: function () {
+    createUserFiles: async function() {
         const fs = require('fs')
         const homedir = require('os').homedir();
         // please lord save me from this endless hell.
         fs.readFile('./config.json','utf8',readSample);
-        function readSample(error,data)
+        async function readSample(error,data)
         {
             if(error){
                 console.log(error);
@@ -510,11 +511,19 @@ let Functions = {
             {
                 console.log(data); // Logging config.json.sample to console.
                 console.log('[fs] Beginning file write process...')
-                console.log('[createConfig] Home Directory: '+homedir)
+                console.log('[createUserFiles] Home Directory: '+homedir)
 
                 // please work
-                fs.mkdir(homedir+'/AME', writeDir)
-                fs.writeFile(homedir+'/AME/config.json',data,'utf8',writeSample);
+                await fs.mkdir(homedir+'/AME', writeDir)
+                await fs.writeFile(homedir+'/AME/config.sample.json',data,'utf8',writeSample);
+                await fs.writeFile(homedir+'/AME/config.json',data,'utf8',writeConfig);
+
+                const fse = require('fs-extra');
+                const srcDir = `./resources/themes/`;
+                const destDir = homedir+`/AME/Themes/`;
+                await fse.copySync(srcDir, destDir, { overwrite: true});
+                console.log('[createUserFiles] [fs-extras] Successfully wrote Themes directory into the user directory.');
+
             }
         }
         function writeDir(error)
@@ -530,10 +539,19 @@ let Functions = {
             if(error){
                 console.log(error)
             } else {
-                console.log('[createConfig] [fs] Successfully wrote config.json to the user directory.');
+                console.log('[createUserFiles] [fs] Successfully wrote config.sample.json to the user directory.');
+            }
+        }
+        function writeConfig(error)
+        {
+            if(error){
+                console.log(error)
+            } else {
+                console.log('[createUserFiles] [fs] Successfully wrote config.json to the user directory.');
             }
         }
     }
+
 };
 
 module.exports = Functions;
