@@ -3,6 +3,7 @@ const {autoUpdater} = require("electron-updater");
 autoUpdater.logger = require("electron-log");
 
 exports.InitializeAutoUpdater = function () {
+    console.log('[InitializeAutoUpdater] Started.')
 
     if (app.config.advanced.autoUpdaterBetaBuilds) {
         autoUpdater.allowPrerelease = true

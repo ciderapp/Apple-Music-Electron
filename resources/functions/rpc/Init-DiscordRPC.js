@@ -1,7 +1,7 @@
 const {app} = require('electron')
 
 exports.InitializeRPC = function () {
-
+    console.log('[DiscordRPC] [InitializeRPC] Started.')
 
     if (!app.config.preferences.discordRPC) return;
 

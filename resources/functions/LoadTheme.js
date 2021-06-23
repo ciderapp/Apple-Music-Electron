@@ -1,11 +1,11 @@
 const {readFile} = require('fs')
 const {app, nativeTheme} = require('electron')
-const themeConfig = require(app.config.themeConfigPath)
+const themeConfig = require(app.config.user.theme.cfg)
 
 exports.LoadTheme = function (path) {
+    console.log('[LoadTheme] Started.')
 
-
-    readFile(app.config.themesPath, "utf-8", function (error, data) {
+    readFile(app.config.user.theme.cfg, "utf-8", function (error, data) {
         if (!error) {
             let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
             app.win.webContents.insertCSS(formattedData).then(() => console.log(`[Themes] '${path}' successfully injected.`));

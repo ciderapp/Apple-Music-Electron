@@ -2,6 +2,7 @@ const {app, Notification} = require('electron')
 const {join} = require('path')
 
 exports.CreatePlaybackNotification = function (attributes) {
+    console.log('[CreatePlaybackNotification] Started.')
 
     if (!app.config.preferences.playbackNotifications || !Notification.isSupported()) return;
 

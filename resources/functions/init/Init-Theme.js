@@ -1,7 +1,7 @@
 const {app, nativeTheme} = require('electron')
 
 exports.InitializeTheme = function () {
-
+    console.log('[InitializeTheme] Started.')
 
     let theme;
     if (app.config.preferences.defaultTheme) {

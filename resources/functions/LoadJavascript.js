@@ -3,6 +3,7 @@ const {LoadJSFile} = require('./LoadJSFile')
 const {LoadTheme} = require('./LoadTheme')
 
 exports.LoadJavascript = function () {
+    console.log('[LoadJavascript] Started.')
 
     nativeTheme.themeSource = app.config.systemTheme;
     app.win.webContents.on('did-stop-loading', async () => {

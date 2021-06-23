@@ -4,6 +4,7 @@ const {UpdateMetaData} = require('../mpris/UpdateMetaData')
 const {CreatePlaybackNotification} = require('../CreatePlaybackNotification')
 
 exports.mediaItemStateDidChange = function () {
+    console.log('[mediaItemStateDidChange] Started.')
     ipcMain.on('mediaItemStateDidChange', (_item, a) => {
 
         if (app.mpris) UpdateMetaData(a);

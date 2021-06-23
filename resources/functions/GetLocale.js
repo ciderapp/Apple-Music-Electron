@@ -3,6 +3,7 @@ const languages = require('../languages.json')
 
 
 exports.GetLocale = function () {
+    console.log('[GetLocale] Started.')
 
     const targetLocaleAs = app.config.advanced.forceApplicationLanguage;
     let localeAs = app.getLocaleCountryCode().toLowerCase()

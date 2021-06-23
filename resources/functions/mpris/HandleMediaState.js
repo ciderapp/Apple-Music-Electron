@@ -1,7 +1,7 @@
 const {app} = require('electron')
 
 exports.HandleMediaState = function () {
-
+    console.log('[Mpris] [HandleMediaState] Started.')
 
     if (!app.config.preferences.mprisSupport || !app.mpris || process.platform !== "linux") return;
 
