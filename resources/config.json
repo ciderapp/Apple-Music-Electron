@@ -40,7 +40,7 @@
   },
 
   "advanced": {
-    "allowMultipleInstances": true,
+    "allowMultipleInstances": false,
     "allowRunningInsecureContent": true,
     "autoUpdaterBetaBuilds": false,
     "enableDevTools": false,

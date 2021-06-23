@@ -10,11 +10,11 @@ exports.LoadUserFiles = function () {
     // Declare the Configuration File Location
     switch (process.platform) {
         case "linux":
-            UserFilesDirectory = join(HomeDirectory, ".config/Apple Music/")
+            UserFilesDirectory = join(HomeDirectory, ".config/apple-music-electron/")
             break;
 
         case "win32": // Windows
-            UserFilesDirectory = join(HomeDirectory, 'Documents/AME/')
+            UserFilesDirectory = join(HomeDirectory, 'Documents/apple-music-electron/')
             break;
 
         case "darwin": // MacOS
@@ -22,7 +22,7 @@ exports.LoadUserFiles = function () {
             break;
 
         default:
-            UserFilesDirectory = join(HomeDirectory, 'AME/')
+            UserFilesDirectory = join(HomeDirectory, 'apple-music-electron/')
             break;
     }
 
@@ -54,6 +54,13 @@ exports.LoadUserFiles = function () {
     console.log(paths)
 
     function LoadConfiguration() {
+
+        // Create Sample Configuration
+        copyFile(paths.app.cfg, paths.user.sampleConfig, (err) => {
+            if (err) console.log(`[CreateUserFiles] [copyFile] ${err}`)
+        })
+        console.log(`[CreateUserFiles] [copyFile] ${paths.user.sampleConfig} has been created/replaced.`)
+
         // Once the file has been found and/or created - set app.config to it and merge it with the path configuration
         try {
             let ConfigurationFile = require(join(UserFilesDirectory, 'config'))
@@ -73,21 +80,15 @@ exports.LoadUserFiles = function () {
 
         // Create Configuration Directory
         mkdir(paths.user.pathto, (err) => {
-            if (err) {
-                console.log(`[CreateUserFiles] [mkdir] Error while creating ${paths.user.pathto} - Error: ${err}`)
-            } else {
-                console.log(`[CreateUserFiles] [mkdir] ${paths.user.pathto} has been created!`)
-            }
+            if (err) console.log(`[CreateUserFiles] [mkdir] Error while creating ${paths.user.pathto} - Error: ${err}`)
         })
+        console.log(`[CreateUserFiles] [mkdir] ${paths.user.pathto} has been created!`)
 
         // Create Standard Configuration
         copyFile(paths.app.cfg, paths.user.cfg, (err) => {
-            if (err) {
-                console.log(`[CreateUserFiles] [copyFile] ${err}`)
-            } else {
-                console.log(`[CreateUserFiles] [copyFile] Configuration File Created at: '${config.pathto.user.cfg}'`)
-            }
+            if (err) console.log(`[CreateUserFiles] [copyFile] ${err}`)
         })
+        console.log(`[CreateUserFiles] [copyFile] Configuration File Created at: '${paths.user.cfg}'`)
 
         // Copy all Themes and Overwrite All ones in User Files
         copySync(paths.app.theme.pathto, paths.user.theme.pathto, {overwrite: true});
@@ -96,15 +97,6 @@ exports.LoadUserFiles = function () {
 
     // Checks if the configuration file exists
     console.log(`[CreateUserFiles] Checking if the config exists...`)
-
-    // Create Sample Configuration
-    copyFile(paths.app.cfg, paths.user.sampleConfig, (err) => {
-        if (err) {
-            console.log(`[CreateUserFiles] [copyFile] ${err}`)
-        } else {
-            console.log(`[CreateUserFiles] [copyFile] ${paths.user.sampleConfig} has been created/replaced.`)
-        }
-    })
 
     if(existsSync(paths.user.cfg)) {
         console.log(`[CreateUserFiles] Configuration file Does Exist!`)

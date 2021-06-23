@@ -1,6 +1,9 @@
 require('v8-compile-cache');
 const { app } = require('electron');
 
+const {InitializeLogging} = require('./resources/functions/init/Init-Logging')
+InitializeLogging()
+
 const { LoadUserFiles } = require('./resources/functions/LoadUserFiles')
 app.config = LoadUserFiles()
 

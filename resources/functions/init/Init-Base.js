@@ -1,12 +1,10 @@
 const {app} = require('electron')
 const {join} = require('path')
 const {InitializeAutoUpdater} = require('./Init-AutoUpdater')
-const {InitializeLogging} = require('./Init-Logging')
+
 
 
 exports.InitializeBase = function () {
-    InitializeLogging()
-
     console.log('[InitializeBase] Started.')
     // Set proper cache folder
     app.setPath("userData", join(app.getPath("cache"), app.name))
