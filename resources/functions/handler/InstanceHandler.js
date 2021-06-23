@@ -1,8 +1,8 @@
-const {app} = require('electron')
-const gotTheLock = app.requestSingleInstanceLock();
+const { app } = require('electron')
 
 exports.InstanceHandler = function () {
-
+    console.log('[InstanceHandler] Started.')
+    const gotTheLock = app.requestSingleInstanceLock();
 
     if (!gotTheLock && !app.config.advanced.allowMultipleInstances) {
         console.log("[Apple-Music-Electron] Existing Instance is Blocking Second Instance.")
@@ -18,6 +18,6 @@ exports.InstanceHandler = function () {
             }
         })
     }
-
+    return false
 
 }

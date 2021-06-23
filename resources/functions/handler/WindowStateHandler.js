@@ -3,7 +3,7 @@ const {SetContextMenu} = require('../win/SetContextMenu')
 const {SetThumbarButtons} = require('../win/SetThumbarButtons')
 
 exports.WindowStateHandler = function () {
-
+    console.log('[WindowStateHandler] Started.')
 
     app.win.webContents.setWindowOpenHandler(({url}) => {
         if (url.startsWith('https://apple.com/') || url.startsWith('https://www.apple.com/') || url.startsWith('https://support.apple.com/')) { // for security (pretty pointless ik)

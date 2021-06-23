@@ -1,14 +1,15 @@
 const {app} = require('electron')
 const {HandleMediaState} = require('./HandleMediaState')
-let Mpris;
-try {
-    Mpris = require('mpris-service');
-} catch {
-    app.config.preferences.mprisSupport = false
-}
 
 exports.InitializeMpris = function () {
+    console.log('[Mpris] [InitializeMpris] Started.')
 
+    let Mpris;
+    try {
+        Mpris = require('mpris-service');
+    } catch {
+        app.config.preferences.mprisSupport = false
+    }
 
     if (!app.config.preferences.mprisSupport || process.platform !== "linux" || !Mpris) return;
 
@@ -39,14 +40,4 @@ exports.InitializeMpris = function () {
     app.mpris.playbackStatus = 'Stopped'
 
     HandleMediaState()
-
-    app.on('window-all-closed', () => {
-        if (app.mpris) { // Reset Mpris when app is closed
-            app.mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
-            app.mpris.playbackStatus = 'Stopped';
-        }
-        app.quit()
-    });
-
-
 }

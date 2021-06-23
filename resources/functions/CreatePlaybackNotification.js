@@ -2,11 +2,8 @@ const {app, Notification} = require('electron')
 const {join} = require('path')
 
 exports.CreatePlaybackNotification = function (attributes) {
-
     if (!app.config.preferences.playbackNotifications || !Notification.isSupported()) return;
-
     if (app.config.preferences.notificationsMinimized && (!app.win.isMinimized() || app.win.isVisible())) return;
-
 
     if (process.platform === "win32") app.setAppUserModelId("Apple Music");
     console.log(`[CreatePlaybackNotification] Notification Generating | Function Parameters: SongName: ${attributes.name} | Artist: ${attributes.artistName} | Album: ${attributes.albumName}`)
@@ -19,6 +16,7 @@ exports.CreatePlaybackNotification = function (attributes) {
         }
     } catch (err) {
         console.log(`[CreatePlaybackNotification] No Existing Notification Found: ${err}. `)
+        return true
     }
 
 

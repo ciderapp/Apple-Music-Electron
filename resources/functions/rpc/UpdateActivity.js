@@ -1,7 +1,7 @@
 const {app} = require('electron')
 
 exports.UpdateActivity = function (attributes) {
-
+    console.log('[DiscordRPC] [UpdateActivity] Started.')
 
     if (!app.discord.client || !app.config.preferences.discordRPC) return;
 

@@ -5,6 +5,7 @@ const {SetTrayTooltip} = require('../win/SetTrayTooltip')
 const {UpdatePlaybackStatus} = require('../mpris/UpdatePlaybackStatus')
 
 exports.playbackStateDidChange = function () {
+    console.log('[playbackStateDidChange] Started.')
     ipcMain.on('playbackStateDidChange', (_item, a) => {
 
         if (app.mpris) UpdatePlaybackStatus(a);

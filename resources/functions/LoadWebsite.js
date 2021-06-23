@@ -2,7 +2,7 @@ const {app} = require('electron')
 const {GetLocale} = require('./GetLocale')
 
 exports.LoadWebsite = function () {
-
+    console.log('[LoadWebsite] Started.')
 
     let locale = GetLocale()
     let url = (app.config.advanced.useBeta) ? `https://beta.music.apple.com/${locale}?l=${locale}` : `https://music.apple.com/${locale}?l=${locale}`;
