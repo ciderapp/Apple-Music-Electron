@@ -2,7 +2,7 @@ require('v8-compile-cache');
 const { app } = require('electron');
 
 const { CreateUserFiles } = require('./resources/functions/CreateUserFiles')
-app.config = CreateUserFiles()
+CreateUserFiles()
 
 const { InitializeBase } = require('./resources/functions/init/Init-Base')
 InitializeBase()
@@ -13,8 +13,6 @@ const { CreateWindow } = require('./resources/init')
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
     console.log("[Apple-Music-Electron] Application is Ready.")
-    console.log(`[Apple-Music-Electron] Configuration File: `)
-    console.log(app.config)
     console.log("[Apple-Music-Electron] Creating Window...")
     if (app.config.css.glasstron) { setTimeout(CreateWindow, process.platform === "linux" ? 1000 : 0); } else CreateWindow()
     // Electron has a bug on linux where it won't initialize properly when using transparency. To work around that, it is necessary to delay the window spawn function.
