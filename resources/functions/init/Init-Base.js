@@ -1,5 +1,5 @@
 const {app} = require('electron')
-const {join} = require('os')
+const {join} = require('path')
 const {SetTaskList} = require('../win/SetTaskList')
 
 const {InstanceHandler} = require('../handler/InstanceHandler')
