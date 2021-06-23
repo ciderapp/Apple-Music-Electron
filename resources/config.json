@@ -48,6 +48,7 @@
     "menuBarVisible": false,
     "removeScrollbars": true,
     "useBeta": true,
-    "preventMediaHijacking": false
+    "preventMediaKeyHijacking": false,
+    "disableCORS": true
   }
 }

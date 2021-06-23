@@ -34,7 +34,7 @@ function CreateWindow() {
     playbackStateDidChange() // IPCMain
 
     const {mediaItemStateDidChange} = require('./resources/functions/handler/MediaStateHandler')
-    // mediaItemStateDidChange() // IPCMain
+    mediaItemStateDidChange() // IPCMain
 }
 
 // When its Ready call it all

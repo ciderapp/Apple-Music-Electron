@@ -12,7 +12,5 @@ exports.SetTrayTooltip = function (attributes) {
     } else {
         app.tray.setToolTip(`Paused ${attributes.name} by ${attributes.artistName} on ${attributes.albumName}`);
     }
-    return true
-
 
 }

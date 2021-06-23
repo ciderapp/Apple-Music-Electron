@@ -95,7 +95,4 @@ exports.SetThumbarButtons = function (state) {
             break;
     }
     app.win.setThumbarButtons(array)
-    return true
-
-
 }

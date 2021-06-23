@@ -1,19 +1,13 @@
 const {app} = require('electron')
 const {HandleMediaState} = require('./HandleMediaState')
+const Mpris = require('mpris-service');
 
 exports.InitializeMpris = function () {
     console.log('[Mpris] [InitializeMpris] Started.')
 
-    let Mpris;
-    try {
-        Mpris = require('mpris-service');
-    } catch {
-        app.config.preferences.mprisSupport = false
-    }
+    if (!app.config.preferences.mprisSupport || process.platform !== "linux") return;
 
-    if (!app.config.preferences.mprisSupport || process.platform !== "linux" || !Mpris) return;
-
-    console.log('[MPRIS] Initializing Connection...')
+    console.log('[Mpris] Initializing Connection...')
 
     app.mpris = Mpris({
         name: 'AppleMusicElectron',

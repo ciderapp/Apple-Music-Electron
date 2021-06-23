@@ -7,14 +7,14 @@ exports.UpdateActivity = function (attributes) {
 
     if (!app.discord.cachedAttributes) {
         app.discord.cachedAttributes = attributes
-        return true // Generate First Cache
+        return // Generate First Activity Cache
     } else if (app.discord.cachedAttributes === attributes) {
-        return true // Same Song and State
+        return // Same Song and Activity State
     }
 
     console.log(`[DiscordRPC] Updating Play Presence for ${attributes.name} to ${attributes.status}`)
 
-    if (a.status === true) {
+    if (attributes.status === true) {
         app.discord.client.updatePresence({
             details: attributes.name,
             state: `by ${attributes.artistName}`,
@@ -37,7 +37,6 @@ exports.UpdateActivity = function (attributes) {
             instance: false,
         });
     }
-    return true
 
 
 }

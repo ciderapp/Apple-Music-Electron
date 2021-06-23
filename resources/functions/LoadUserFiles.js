@@ -89,15 +89,6 @@ exports.LoadUserFiles = function () {
             }
         })
 
-        // Create Sample Configuration
-        copyFile(paths.app.cfg, paths.user.sampleConfig, (err) => {
-            if (err) {
-                console.log(`[CreateUserFiles] [copyFile] ${err}`)
-            } else {
-                console.log(`[CreateUserFiles] [copyFile] ${paths.user.sampleConfig} has been created.`)
-            }
-        })
-
         // Copy all Themes and Overwrite All ones in User Files
         copySync(paths.app.theme.pathto, paths.user.theme.pathto, {overwrite: true});
         console.log(`[CreateUserFiles] [copySync] Themes copied to ${paths.app.theme.pathto}`)
@@ -105,6 +96,16 @@ exports.LoadUserFiles = function () {
 
     // Checks if the configuration file exists
     console.log(`[CreateUserFiles] Checking if the config exists...`)
+
+    // Create Sample Configuration
+    copyFile(paths.app.cfg, paths.user.sampleConfig, (err) => {
+        if (err) {
+            console.log(`[CreateUserFiles] [copyFile] ${err}`)
+        } else {
+            console.log(`[CreateUserFiles] [copyFile] ${paths.user.sampleConfig} has been created/replaced.`)
+        }
+    })
+
     if(existsSync(paths.user.cfg)) {
         console.log(`[CreateUserFiles] Configuration file Does Exist!`)
         return LoadConfiguration()

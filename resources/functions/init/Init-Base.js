@@ -18,22 +18,28 @@ exports.InitializeBase = function () {
     }
 
     // Disable CORS (NO LONGER REQUIRED Thanks Apple ❤️)
-    app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+    if (app.config.advanced.disableCORS) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 
     // Media Key Hijacking
-    if (app.config.advanced.preventMediaHijacking) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
+    if (app.config.advanced.preventMediaKeyHijacking) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
+
+    // Sets the ModelId (For windows notifications)
+    if (process.platform === "win32") app.setAppUserModelId("Apple Music");
 
     // Assign Default Variables
     app.isQuiting = !app.config.preferences.closeButtonMinimize;
     app.config.css.glasstron = app.config.preferences.cssTheme.toLowerCase().split('-').includes('glasstron');
     app.win = '';
     app.ipc = {
-        ThumbarUpdate: false,
-        TooltipUpdate: false,
-        DiscordUpdate: false,
-        MediaNotification: false,
+        ThumbarUpdate: true,
+        TooltipUpdate: true,
+        DiscordUpdate: true,
+        MprisUpdate: true,
+        MprisStatusUpdate: true,
+        MediaNotification: true,
         cache: false,
-        cacheNew: false
+        cacheNew: false,
+        existingNotification: false
     };
     app.discord = {client: false, error: false, cachedAttributes: false};
     app.mpris = {}

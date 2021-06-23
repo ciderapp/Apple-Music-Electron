@@ -44,7 +44,7 @@
     "extends": null,
     "files": [
       "**/*",
-      "resources/icons/icon.*"
+      "./resources/icons/icon.*"
     ],
     "linux": {
       "target": [

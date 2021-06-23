@@ -7,9 +7,6 @@ const {UpdatePlaybackStatus} = require('../mpris/UpdatePlaybackStatus')
 exports.playbackStateDidChange = function () {
     console.log('[playbackStateDidChange] Started.')
     ipcMain.on('playbackStateDidChange', (_item, a) => {
-
-        if (app.mpris) UpdatePlaybackStatus(a);
-
         app.isPlaying = a.status;
         if (!a || a.playParams.id === 'no-id-found' || !app.ipc.cache) return;
 
@@ -22,27 +19,32 @@ exports.playbackStateDidChange = function () {
         }
 
         // Thumbar Buttons
-        while (!app.ipc.ThumbarUpdate) {
+        while (app.ipc.ThumbarUpdate) {
             app.ipc.ThumbarUpdate = SetThumbarButtons(a.status)
         }
 
         // TrayTooltipSongName
-        while (!app.ipc.TooltipUpdate) {
+        while (app.ipc.TooltipUpdate) {
             app.ipc.TooltipUpdate = SetTrayTooltip(a)
         }
 
         // Discord Update
-        while (!app.ipc.DiscordUpdate) {
+        while (app.ipc.DiscordUpdate) {
             app.ipc.DiscordUpdate = UpdateActivity(a)
         }
 
+        // Mpris Status Update
+        while (app.ipc.MprisStatusUpdate) {
+            app.ipc.MprisStatusUpdate = UpdatePlaybackStatus(a);
+        }
+
+
         // Revert it All because This Runs too many times
         setTimeout(() => {
-            if (app.ipc.ThumbarUpdate) app.ipc.ThumbarUpdate = false;
-            if (app.ipc.TooltipUpdate) app.ipc.TooltipUpdate = false;
-            if (app.ipc.DiscordUpdate) app.ipc.DiscordUpdate = false;
-        }, 500) // Give at least 0.5 seconds between ThumbarUpdates/TooltipUpdates/DiscordUpdates
-
-
+            if (!app.ipc.ThumbarUpdate) app.ipc.ThumbarUpdate = true;
+            if (!app.ipc.TooltipUpdate) app.ipc.TooltipUpdate = true;
+            if (!app.ipc.DiscordUpdate) app.ipc.DiscordUpdate = true;
+            if (!app.ipc.MprisStatusUpdate) app.ipc.MprisStatusUpdate = true;
+        }, 500)
     });
 }
