@@ -2,43 +2,43 @@ const {mkdir, writeFile, readFile, access, promises: fs} = require('fs')
 const HomeDirectory = require('os').homedir();
 const {copySync} = require('fs-extra');
 const {join} = require('path')
-const {app} = require('electron')
-let UserFileDirectory;
+let UserFilesDirectory,
+    config = {themesPath: false, configPath: false, themeConfigPath: false};
 
 exports.CreateUserFiles = function () {
 
     // Declare the Configuration File Location
     switch (process.platform) {
         case "linux":
-            UserFileDirectory = join(HomeDirectory, ".config/'Apple Music'/")
+            UserFilesDirectory = join(HomeDirectory, ".config/'Apple Music'/")
             break;
 
         case "win32": // Windows
-            UserFileDirectory = join(HomeDirectory, 'Documents/AME/')
+            UserFilesDirectory = join(HomeDirectory, 'Documents/AME/')
             break;
 
         case "darwin": // MacOS
-            UserFileDirectory = join(HomeDirectory, 'Library/Application Support/Apple Music/')
+            UserFilesDirectory = join(HomeDirectory, 'Library/Application Support/Apple Music/')
             break;
 
         default:
-            UserFileDirectory = join(HomeDirectory, 'AME/')
+            UserFilesDirectory = join(HomeDirectory, 'AME/')
             break;
     }
 
     // Declare all the Paths for Easy Access in Other Files
-    const UserThemesDirectory = join(UserFileDirectory, "Themes/")
-    const UserConfigPath = join(UserFileDirectory, 'config.json')
-    app.config.themesPath = UserThemesDirectory;
-    app.config.configPath = UserConfigPath;
-    app.config.themeConfigPath = join(UserThemesDirectory, 'theme-config.json')
+    const UserThemesDirectory = join(UserFilesDirectory, "Themes/")
+    const UserConfigPath = join(UserFilesDirectory, 'config.json')
+    config.themesPath = UserThemesDirectory;
+    config.configPath = UserConfigPath;
+    config.themeConfigPath = join(UserThemesDirectory, 'theme-config.json')
 
     // Checks if the configuration file exists
     access(UserConfigPath, (err) => {
         console.log(`[CreateUserFiles] ${UserConfigPath} ${err ? ' does Not Exist' : 'does Exist!'}`);
         if (!err) {
             console.log('[CreateUserFiles] Initialized!')
-            app.config = require(UserConfigPath)
+            config = require(UserConfigPath)
         } else {
             readFile('../config.json', 'utf8', readSample);
 
@@ -51,7 +51,7 @@ exports.CreateUserFiles = function () {
             }
 
             (async () => {
-                app.config = await getContent(UserConfigPath)
+                config = await getContent(UserConfigPath)
             })();
         }
     })
@@ -67,7 +67,7 @@ exports.CreateUserFiles = function () {
 
             // Config File
             console.log(`[CreateUserFiles] Configuration File Path: ${UserConfigPath}`)
-            await mkdir(UserFileDirectory, writeDir)
+            await mkdir(UserFilesDirectory, writeDir)
             await writeFile(UserFilesDirectory + 'config.sample.json', data, 'utf8', writeSample);
             await writeFile(UserFilesDirectory + 'config.json', data, 'utf8', writeConfig);
 
@@ -104,6 +104,8 @@ exports.CreateUserFiles = function () {
             console.log('[writeConfig] [fs] Successfully wrote config.json to the user directory.');
         }
     }
+    console.log(config)
+    return config
 
 
 }

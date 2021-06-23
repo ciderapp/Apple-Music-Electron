@@ -1,10 +1,13 @@
 require('v8-compile-cache');
 const { app } = require('electron');
-const { CreateWindow } = require('./resources/init')
+
 const { CreateUserFiles } = require('./resources/functions/CreateUserFiles')
+app.config = CreateUserFiles()
+
 const { InitializeBase } = require('./resources/functions/init/Init-Base')
-CreateUserFiles()
 InitializeBase()
+
+const { CreateWindow } = require('./resources/init')
 
 // This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
