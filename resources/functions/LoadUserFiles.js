@@ -55,12 +55,6 @@ exports.LoadUserFiles = function () {
 
     function LoadConfiguration() {
 
-        // Create Sample Configuration
-        copyFile(paths.app.cfg, paths.user.sampleConfig, (err) => {
-            if (err) console.log(`[CreateUserFiles] [copyFile] ${err}`)
-        })
-        console.log(`[CreateUserFiles] [copyFile] ${paths.user.sampleConfig} has been created/replaced.`)
-
         // Once the file has been found and/or created - set app.config to it and merge it with the path configuration
         try {
             let ConfigurationFile = require(join(UserFilesDirectory, 'config'))
@@ -84,21 +78,38 @@ exports.LoadUserFiles = function () {
         })
         console.log(`[CreateUserFiles] [mkdir] ${paths.user.pathto} has been created!`)
 
+        // Create Configuration Directory
+        mkdir(paths.user.theme.pathto, (err) => {
+            if (err) console.log(`[CreateUserFiles] [mkdir] Error while creating ${paths.user.theme.pathto} - Error: ${err}`)
+        })
+        console.log(`[CreateUserFiles] [mkdir] ${paths.user.theme.pathto} has been created!`)
+
         // Create Standard Configuration
         copyFile(paths.app.cfg, paths.user.cfg, (err) => {
             if (err) console.log(`[CreateUserFiles] [copyFile] ${err}`)
         })
-        console.log(`[CreateUserFiles] [copyFile] Configuration File Created at: '${paths.user.cfg}'`)
+
+        // Create Sample Configuration
+        copyFile(paths.app.cfg, paths.user.sampleConfig, (err) => {
+            if (err) console.log(`[CreateUserFiles] [copyFile] ${err}`)
+        })
+        console.log(`[CreateUserFiles] [copyFile] ${paths.user.sampleConfig} has been created/replaced.`)
 
         // Copy all Themes and Overwrite All ones in User Files
-        copySync(paths.app.theme.pathto, paths.user.theme.pathto, {overwrite: true});
-        console.log(`[CreateUserFiles] [copySync] Themes copied to ${paths.app.theme.pathto}`)
+        copySync(paths.app.theme.pathto, paths.user.theme.pathto, { overwrite: true, function (err) {
+                if (err) {
+                    console.error(`[CreateUserFiles] [moveSync] ${err}`);
+                } else {
+                    console.log(`[CreateUserFiles] [moveSync] Themes copied to ${paths.app.theme.pathto}`)
+                }
+        }});
+        console.log(`[CreateUserFiles] [copyFile] Configuration File Created at: '${paths.user.cfg}'`)
     }
 
     // Checks if the configuration file exists
     console.log(`[CreateUserFiles] Checking if the config exists...`)
 
-    if(existsSync(paths.user.cfg)) {
+    if(existsSync(paths.user.cfg) && existsSync(paths.user.sampleConfig) && existsSync(paths.user.theme.cfg)) {
         console.log(`[CreateUserFiles] Configuration file Does Exist!`)
         return LoadConfiguration()
     } else {
