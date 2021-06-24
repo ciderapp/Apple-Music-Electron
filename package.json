@@ -63,6 +63,12 @@
         "nsis"
       ],
       "icon": "./resources/icons/icon.ico"
+    },
+    "mac": {
+      "icon": "./resources/icons/icon.icns",
+      "category": "public.app-category.music",
+      "darkModeSupport": true
+      ]
     }
   }
 }
