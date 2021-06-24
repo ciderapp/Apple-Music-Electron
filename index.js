@@ -63,7 +63,7 @@ app.on('before-quit', function () {
         app.mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
         app.mpris.playbackStatus = 'Stopped';
     }
-    if (app.config.preferences.discordRPC) app.discord.client.disconnect()
+    if (app.config.preferences.discordRPC && app.discord.client) app.discord.client.disconnect
     console.log("[DiscordRPC] Disconnecting from Discord.")
     console.log("---------------------------------------------------------------------")
     console.log("Application Closing...")

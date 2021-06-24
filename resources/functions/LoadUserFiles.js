@@ -10,11 +10,11 @@ exports.LoadUserFiles = function () {
     // Declare the Configuration File Location
     switch (process.platform) {
         case "linux":
-            UserFilesDirectory = join(HomeDirectory, ".config/apple-music-electron/")
+            UserFilesDirectory = join(HomeDirectory, ".config/Apple Music/")
             break;
 
         case "win32": // Windows
-            UserFilesDirectory = join(HomeDirectory, 'Documents/apple-music-electron/')
+            UserFilesDirectory = join(HomeDirectory, 'Documents/Apple Music/')
             break;
 
         case "darwin": // MacOS

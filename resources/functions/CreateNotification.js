@@ -29,12 +29,29 @@ exports.CreateNotification = function (attributes) {
         app.ipc.existingNotification = false
     }
 
-    app.ipc.existingNotification = new Notification({
+    const NOTIFICATION_OBJECT = {
         title: attributes.name,
         body: `${attributes.artistName} - ${attributes.albumName}`,
         silent: true,
-        icon: join(__dirname, '../icons/icon.png')
-    })
+        icon: join(__dirname, '../icons/icon.png'),
+        actions: []
+    }
 
+    if (process.platform === "darwin") {
+        NOTIFICATION_OBJECT.actions = {
+            actions: [ {
+                type: 'button',
+                text: 'Skip'
+            }]
+        }
+    }
+
+    app.ipc.existingNotification = new Notification(NOTIFICATION_OBJECT)
     app.ipc.existingNotification.show()
+
+    if (process.platform === "darwin") {
+        app.ipc.existingNotification.addListener('action', (_event, index) => {
+            app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[CreateNotification] skipToNextItem"))
+        });
+    }
 }
