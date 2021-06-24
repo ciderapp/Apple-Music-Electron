@@ -17,7 +17,7 @@ exports.InitializeRPC = function () {
     app.discord.client.on('error', err => {
         console.log(`[DiscordRPC] Error: ${err}`);
         console.log(`[DiscordRPC] Disconnecting from Discord.`)
-        app.discord.client.disconnect()
+        app.discord.client.disconnect
         app.discord.client = false;
     });
 
