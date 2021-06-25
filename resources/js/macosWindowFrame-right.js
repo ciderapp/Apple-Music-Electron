@@ -41,10 +41,10 @@ try {
             ipcRenderer.send("close")
         };
         minimizeButton.onclick = () => {
-            ipcRenderer.send("minimize")
+            ipcRenderer.send("maximize")
         };
         maximizeButton.onclick = () => {
-            ipcRenderer.send("maximize")
+            ipcRenderer.send("minimize")
         };
 
         dragDiv.appendChild(closeButton);
@@ -72,5 +72,5 @@ try {
         };
     }
 } catch (e) {
-    console.error("caught exception applying custom MacOs Window Frame", e);
+    console.error("caught exception applying custom MacOS Window Frame", e);
 }
