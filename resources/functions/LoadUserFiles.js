@@ -9,7 +9,7 @@ exports.LoadUserFiles = function () {
     console.log(`[LoadUserFiles] Current User Path Configuration on Platform '${process.platform}':`)
     console.log(paths)
 
-    if(existsSync(paths.user.cfg) && existsSync(paths.user.sampleConfig) && existsSync(paths.user.theme.cfg)) {
+    if(existsSync(paths.user.pathto) && existsSync(paths.user.cfg) && existsSync(paths.user.sampleConfig) && existsSync(paths.user.theme.cfg)) {
         console.log(`[CreateUserFiles] All user files found! Located at '${paths.user.pathto}'`)
         return LoadConfiguration(paths)
     } else {
@@ -17,21 +17,21 @@ exports.LoadUserFiles = function () {
         try {
             if (!existsSync(paths.user.pathto)) {
                 // Main
-                CreateUserFiles("CreateConfigDirectory", paths)
-                CreateUserFiles("CopyConfig", paths)
-                CreateUserFiles("CopySampleConfig", paths)
+                CreateUserFiles("UserDir", paths)
+                CreateUserFiles("Config", paths)
+                CreateUserFiles("SampleConfig", paths)
                 // Themes
-                CreateUserFiles("CreateThemesDirectory", paths)
+                CreateUserFiles("ThemesDir", paths)
                 CreateUserFiles("CopyThemes", paths)
             }
             if (!existsSync(paths.user.cfg)) {
-                CreateUserFiles("CopyConfig", paths)
+                CreateUserFiles("Config", paths)
             }
             if (!existsSync(paths.user.sampleConfig)) {
                 CreateUserFiles("SampleConfig", paths)
             }
             if (!existsSync(paths.user.theme.pathto)) {
-                CreateUserFiles("CreateThemesDirectory", paths)
+                CreateUserFiles("ThemesDir", paths)
                 CreateUserFiles("CopyThemes", paths)
             }
         } catch(err) {

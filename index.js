@@ -1,5 +1,5 @@
 require('v8-compile-cache');
-const { app, dialog } = require('electron');
+const { app} = require('electron');
 
 const {InitializeLogging} = require('./resources/functions/init/Init-Logging')
 InitializeLogging()
@@ -49,45 +49,8 @@ app.on('ready', () => {
     console.log("[Apple-Music-Electron] Creating Window...")
     if (app.config.css.glasstron) { setTimeout(CreateWindow, process.platform === "linux" ? 1000 : 0); } else CreateWindow()
 
-    const baseConfiguration = require('./resources/config.json');
-
-    console.log(baseConfiguration.css)
-    console.log(baseConfiguration.preferences)
-    console.log(baseConfiguration.advanced)
-
-    let MissingKeys = []
-
-    Object.keys(baseConfiguration.css).forEach(function(key) {
-        if(!baseConfiguration.css.hasOwnProperty(key)){
-            console.log(`[MissingKey] ${key}`)
-            MissingKeys.push(key)
-        }
-    })
-
-    Object.keys(baseConfiguration.preferences).forEach(function(key) {
-        if(!baseConfiguration.css.hasOwnProperty(key)){
-            console.log(`[MissingKey] ${key}`)
-            MissingKeys.push(key)
-        }
-    })
-    if (MissingKeys) {
-        MissingKeys = MissingKeys.toString()
-        dialog.showMessageBox(app.win, {
-            message: `Your current configuration differs from the configuration the application uses. Please go to your config and update key names from the sample. The app will not be operable until you resolve this.`
-            title: "Missing Keys in Configuration",
-            type: "warning",
-            detail: `Missing Keys: \n${MissingKeys}`,
-            buttons: []
-        })
-        app.quit()
-    }
-
-    Object.keys(baseConfiguration.advanced).forEach(function(key) {
-        if(!baseConfiguration.css.hasOwnProperty(key)){
-            console.log(`[MissingKey] ${key}`)
-            MissingKeys.push(key)
-        }
-    })
+    const {CheckUserFiles} = require('./resources/functions/userfiles/CheckUserFiles')
+    CheckUserFiles()
 });
 
 app.on('window-all-closed', () => {

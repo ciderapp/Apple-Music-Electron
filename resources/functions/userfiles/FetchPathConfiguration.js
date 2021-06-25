@@ -1,4 +1,3 @@
-const {app} = require('electron')
 const {join} = require('path')
 const HomeDirectory = require('os').homedir();
 
@@ -26,7 +25,7 @@ exports.FetchPathConfiguration = function () {
     }
 
     return {
-        app: {
+        application: {
             pathto: join(__dirname, '../../'),
             cfg: join(__dirname, '../../config.json'),
             sampleConfig: join(__dirname, '../../config.json'),

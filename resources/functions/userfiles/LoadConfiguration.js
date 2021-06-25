@@ -3,7 +3,6 @@ const {join} = require('path')
 
 exports.LoadConfiguration = function (pathConfiguration) {
 
-
     // Once the file has been found and/or created - set app.config to it and merge it with the path configuration
     try {
         let ConfigurationFile = require(join(pathConfiguration.user.pathto, 'config'))

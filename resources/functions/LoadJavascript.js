@@ -15,7 +15,12 @@ exports.LoadJavascript = function () {
             LoadJSFile('removeUpsell.js')
         }
         if (app.config.css.macosWindow) {
-            LoadJSFile('macosWindowFrame.js')
+            if (!app.config.css.macosWindowForceRight) {
+                LoadJSFile('macosWindowFrame-left.js')
+            } else {
+                LoadJSFile('macosWindowFrame-right.js')
+            }
+
         }
         if (app.config.css.macosScrollbar) {
             LoadTheme('macosScrollbar.css')
