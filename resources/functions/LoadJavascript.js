@@ -7,6 +7,7 @@ exports.LoadJavascript = function () {
 
     nativeTheme.themeSource = app.config.systemTheme;
     app.win.webContents.on('did-stop-loading', async () => {
+        console.log('[Did-stop-loading] [LoadJavascript] Page Reloaded - Reloading Scripts.')
         if (app.config.css.removeAppleLogo) {
             LoadJSFile('removeAppleLogo.js')
         }
