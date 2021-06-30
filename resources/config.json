@@ -8,8 +8,10 @@
     "_removeUpsell_comment": "Removes the open iTunes button if enabled (true by default)",
     "removeUpsell": true,
 
-    "_macosWindow_comment": "This enables the MacOS window frame. (false by default)",
-    "macosWindow": true
+    "_macosWindow_comment": "This enables the MacOS window frame. (false by default) | macosScrollbar is experimental and may be worked on in the future.",
+    "macosWindow": true,
+    "macosWindowForceRight": true,
+    "macosScrollbar": false
   },
 
   "preferences": {
@@ -32,19 +34,22 @@
     "notificationsMinimized": true,
 
     "_trayTooltipSongName_comment": "Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.",
-    "trayTooltipSongName": true
+    "trayTooltipSongName": true,
+
+    "_mprisSupport_comment": "Do you want to turn on Mpris support, connects to the Mpris interface for Linux. (Make sure you have it installed if you turn this on)",
+    "mprisSupport": true
   },
 
   "advanced": {
     "allowMultipleInstances": false,
     "allowRunningInsecureContent": true,
-    "allowSetMenu": false,
     "autoUpdaterBetaBuilds": false,
-    "enableLogging": true,
+    "enableDevTools": false,
     "forceApplicationLanguage": "",
     "menuBarVisible": false,
     "removeScrollbars": true,
-    "siteDetection": false,
-    "useBeta": true
+    "useBeta": true,
+    "preventMediaKeyHijacking": false,
+    "disableCORS": true
   }
 }

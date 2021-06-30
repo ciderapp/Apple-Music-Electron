@@ -2,11 +2,12 @@
   "author": "cryptofyre <cryptofyre@protonmail.com>",
   "homepage": "https://github.com/cryptofyre/Apple-Music-Electron",
   "name": "apple-music-electron",
+  "applicationId": "AppleMusicElectron",
   "productName": "Apple Music",
-  "version": "2.1.1",
+  "version": "2.3.0",
   "description": "Unofficial Electron wrapper for Apple Music created by @cryptofyre",
   "license": "MIT",
-  "buildResources": "assets",
+  "buildResources": "resources",
   "scripts": {
     "init": "install",
     "start": "electron --enable-accelerated-mjpeg-decode --enable-accelerated-video --ignore-gpu-blacklist --enable-native-gpu-memory-buffers --enable-gpu-rasterization .",
@@ -19,8 +20,10 @@
     "discord-rpc": "^3.1.4",
     "electron-log": "^4.3.5",
     "electron-updater": "^4.3.9",
+    "fs-extra": "^10.0.0",
     "glasstron": "^0.0.7",
     "is-reachable": "^5.0.0",
+    "mpris-service": "^2.1.2",
     "node-fetch": "^2.6.1",
     "source-map-support": "^0.5.16",
     "v8-compile-cache": "^2.1.1"
@@ -42,7 +45,7 @@
     "extends": null,
     "files": [
       "**/*",
-      "assets/icon.*"
+      "./resources/icons/icon.*"
     ],
     "linux": {
       "target": [
@@ -52,13 +55,23 @@
         "rpm"
       ],
       "category": "AudioVideo",
-      "icon": "./assets/icon.icns"
+      "icon": "./resources/icons/icon.icns",
+      "desktop": "./resources/applemusic.desktop"
     },
     "win": {
       "target": [
         "nsis"
       ],
-      "icon": "./assets/icon.ico"
+      "icon": "./resources/icons/icon.ico"
+    },
+    "appx": {
+      "applicationId": "applemusicelectron",
+      "publisher": "CN=cryptofyre"
+    },
+    "mac": {
+      "icon": "./resources/icons/icon.icns",
+      "category": "public.app-category.music",
+      "darkModeSupport": true
     }
   }
 }

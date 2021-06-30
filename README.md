@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/cryptofyre/Apple-Music-Electron"><img src="https://i.imgur.com/2ELPR6I.png" alt="Banner"></a>
+  <a href="https://github.com/cryptofyre/Apple-Music-Electron"><img src="https://i.imgur.com/jw1cUQZ.png" alt="Banner"></a>
 </p>
 
 <p align="center"> 
@@ -21,19 +21,22 @@
   <img src="https://img.shields.io/github/license/cryptofyre/Apple-Music-Electron" alt="MIT">
   <img src="https://img.shields.io/github/downloads/cryptofyre/Apple-Music-Electron/total.svg?style=flat" alt="Downloads">
   <img src="https://img.shields.io/github/release/cryptofyre/Apple-Music-Electron.svg?style=flat" alt="Release">
-  <!--   <img src="https://github.com/cryptofyre/Apple-Music-Electron/actions/workflows/build-analyze.yml/badge.svg" alt="Build"> -->
   <span class="badge-buymeacoffee">
     <a href="https://ko-fi.com/cryptofyre" title="Donate to this project using Buy Me A Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee donate button" /></a>
   </span>
+  <br>
+  <img src="https://github.com/cryptofyre/Apple-Music-Electron/actions/workflows/build-analyze-win.yml/badge.svg" alt="Build Analysis - Windows">
+  <img src="https://github.com/cryptofyre/Apple-Music-Electron/actions/workflows/build-analyze-linux.yml/badge.svg" alt="Build Analysis - Linux">
+  <img src="https://github.com/cryptofyre/Apple-Music-Electron/actions/workflows/build-analyze-macos.yml/badge.svg" alt="Build Analysis - macOS">
 </p>
 
 <p align="center">
   <a href="https://github.com/cryptofyre/Apple-Music-Electron">
-    <img src="https://i.imgur.com/Im7geg3.png" alt="Features">
-    <img src="https://i.imgur.com/ZjC7NYM.png" alt="More Features">
+    <img src="https://i.imgur.com/1HCPN6B.png" alt="Features">
+    <img src="https://i.imgur.com/67KefOp.png" alt="More Features">
   </a>
   <a href="https://github.com/cryptofyre/Apple-Music-Electron/releases/latest">
-    <img src="https://i.imgur.com/ibO0ouw.png" alt="Installation"><br />
+    <img src="https://i.imgur.com/7N84yzy.png" alt="Installation"><br />
   </a>
 </p>
 
