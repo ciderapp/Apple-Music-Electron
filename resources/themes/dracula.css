@@ -1,5 +1,6 @@
 /* Dracula theme by zenorocha
  * converted by floookay
+ * fixed up a bit by cryptofyre
  * 
  * Background   #282a36
  * Current Line #44475a
@@ -44,4 +45,8 @@
 
 body > div {
     background-color: #282a36 !important;
+}
+
+.dragDiv {
+  background-color: var(--sidebar) !important;
 }
