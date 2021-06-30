@@ -10,6 +10,7 @@
 
     "_macosWindow_comment": "This enables the MacOS window frame. (false by default) | macosScrollbar is experimental and may be worked on in the future.",
     "macosWindow": true,
+    "macosWindowForceRight": true,
     "macosScrollbar": false
   },
 

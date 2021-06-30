@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/cryptofyre/Apple-Music-Electron"><img src="https://i.imgur.com/NwV8LCq.png" alt="Banner"></a>
+  <a href="https://github.com/cryptofyre/Apple-Music-Electron"><img src="https://i.imgur.com/jw1cUQZ.png" alt="Banner"></a>
 </p>
 
 <p align="center"> 
@@ -32,11 +32,11 @@
 
 <p align="center">
   <a href="https://github.com/cryptofyre/Apple-Music-Electron">
-    <img src="https://i.imgur.com/Im7geg3.png" alt="Features">
-    <img src="https://i.imgur.com/ZjC7NYM.png" alt="More Features">
+    <img src="https://i.imgur.com/1HCPN6B.png" alt="Features">
+    <img src="https://i.imgur.com/67KefOp.png" alt="More Features">
   </a>
   <a href="https://github.com/cryptofyre/Apple-Music-Electron/releases/latest">
-    <img src="https://i.imgur.com/ibO0ouw.png" alt="Installation"><br />
+    <img src="https://i.imgur.com/7N84yzy.png" alt="Installation"><br />
   </a>
 </p>
 

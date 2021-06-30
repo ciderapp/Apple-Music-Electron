@@ -1,5 +1,5 @@
 require('v8-compile-cache');
-const { app } = require('electron');
+const { app} = require('electron');
 
 const {InitializeLogging} = require('./resources/functions/init/Init-Logging')
 InitializeLogging()
@@ -48,6 +48,9 @@ app.on('ready', () => {
 
     console.log("[Apple-Music-Electron] Creating Window...")
     if (app.config.css.glasstron) { setTimeout(CreateWindow, process.platform === "linux" ? 1000 : 0); } else CreateWindow()
+
+    const {CheckUserFiles} = require('./resources/functions/userfiles/CheckUserFiles')
+    CheckUserFiles()
 });
 
 app.on('window-all-closed', () => {
@@ -63,7 +66,7 @@ app.on('before-quit', function () {
         app.mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
         app.mpris.playbackStatus = 'Stopped';
     }
-    if (app.config.preferences.discordRPC) app.discord.client.disconnect()
+    if (app.config.preferences.discordRPC && app.discord.client) app.discord.client.disconnect
     console.log("[DiscordRPC] Disconnecting from Discord.")
     console.log("---------------------------------------------------------------------")
     console.log("Application Closing...")

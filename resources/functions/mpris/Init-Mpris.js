@@ -1,11 +1,18 @@
 const {app} = require('electron')
 const {HandleMediaState} = require('./HandleMediaState')
-const Mpris = require('mpris-service');
 
 exports.InitializeMpris = function () {
     console.log('[Mpris] [InitializeMpris] Started.')
 
     if (!app.config.preferences.mprisSupport || process.platform !== "linux") return;
+    let Mpris;
+    try {
+        Mpris = require('mpris-service');
+    } catch(err) {
+        console.log(`[Mpris] [InitializeMpris] Failed to require. ${err}`)
+        app.config.preferences.mprisSupport = false
+        return
+    }
 
     console.log('[Mpris] Initializing Connection...')
 

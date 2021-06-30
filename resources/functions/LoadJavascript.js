@@ -7,6 +7,7 @@ exports.LoadJavascript = function () {
 
     nativeTheme.themeSource = app.config.systemTheme;
     app.win.webContents.on('did-stop-loading', async () => {
+        console.log('[Did-stop-loading] [LoadJavascript] Page Reloaded - Reloading Scripts.')
         if (app.config.css.removeAppleLogo) {
             LoadJSFile('removeAppleLogo.js')
         }
@@ -14,7 +15,12 @@ exports.LoadJavascript = function () {
             LoadJSFile('removeUpsell.js')
         }
         if (app.config.css.macosWindow) {
-            LoadJSFile('macosWindowFrame.js')
+            if (!app.config.css.macosWindowForceRight) {
+                LoadJSFile('macosWindowFrame-left.js')
+            } else {
+                LoadJSFile('macosWindowFrame-right.js')
+            }
+
         }
         if (app.config.css.macosScrollbar) {
             LoadTheme('macosScrollbar.css')
