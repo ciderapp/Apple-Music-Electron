@@ -52,8 +52,7 @@
         "AppImage",
         "deb",
         "snap",
-        "rpm",
-        "pacman"
+        "rpm"
       ],
       "category": "AudioVideo",
       "icon": "./resources/icons/icon.icns",
