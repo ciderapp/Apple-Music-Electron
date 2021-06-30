@@ -50,6 +50,6 @@
     "removeScrollbars": true,
     "useBeta": true,
     "preventMediaKeyHijacking": false,
-    "disableCORS": true
+    "disableCORS": false
   }
 }
