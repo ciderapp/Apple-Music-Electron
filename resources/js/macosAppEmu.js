@@ -37,8 +37,9 @@ try {
 
 
 
-        ///Stoplights
-
+        ///Stoplights 
+        //Change values to customize look and/or behaviour
+        
         //General
         const hoverEffects = 'onmouseenter="brightness(40%)" onmouseleave="brightness(100%)"'
 
@@ -65,26 +66,3 @@ try {
 } catch (e) {
     console.error("[CSS] Error while trying to apply macosAppEmu.js", e);
 }
-
-/*
-closeButton.onmouseenter = () => {
-            closeButton.style.filter = "brightness(50%)";
-        };
-        minimizeButton.onmouseenter = () => {
-            minimizeButton.style.filter = "brightness(50%)";
-        };
-        maximizeButton.onmouseenter = () => {
-            maximizeButton.style.filter = "brightness(50%)";
-        };
-
-        closeButton.onmouseleave = () => {
-            closeButton.style.filter = "brightness(100%)";
-        };
-        minimizeButton.onmouseleave = () => {
-            minimizeButton.style.filter = "brightness(100%)";
-        };
-        maximizeButton.onmouseleave = () => {
-            maximizeButton.style.filter = "brightness(100%)";
-        };
-
-*/
