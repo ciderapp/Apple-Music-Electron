@@ -10,7 +10,7 @@
 
     "_macosWindow_comment": "This enables the MacOS window frame. (false by default) | macosScrollbar is experimental and may be worked on in the future.",
     "macosWindow": true,
-    "macosWindowForceRight": true,
+    "macosWindowForceRight": false,
     "macosScrollbar": false
   },
 
@@ -50,6 +50,7 @@
     "removeScrollbars": true,
     "useBeta": true,
     "preventMediaKeyHijacking": false,
-    "disableCORS": true
+    "_disableCORS_comment": "This is also known as WebSecurity and Should be Toggled if you are experiencing issues.",
+    "disableCORS": false
   }
 }
