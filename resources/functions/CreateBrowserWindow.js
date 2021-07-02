@@ -32,7 +32,7 @@ exports.CreateBrowserWindow = function() {
         win.setBlur(true);
     } else {
         win = new BrowserWindow(options)
-        win.setBackgroundColor = '#1C00ff00'
+        win.setBackgroundColor = '#1f1f1f00'
     }
 
     if (!app.config.advanced.menuBarVisible) win.setMenuBarVisibility(false); // Hide that nasty menu bar

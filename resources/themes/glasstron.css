@@ -1,19 +1,22 @@
 :root {
-  /*--sidebar: rgba(25, 24, 24, 0.84) !important;*/
-  /*--footerBG: #191818bd !important;*/
-  /*--pageBG: rgb(25, 24, 24, 0.84) !important;*/
-  /*--pageBG-rgb: rgba(25, 24, 24, 0.1) !important;*/
+    --sidebar: #1f1f1f38!important;
+    /*--footerBG: #191818bd !important;*/
+    /*--pageBG: rgb(25, 24, 24, 0.84) !important;*/
+    /*--pageBG-rgb: rgba(25, 24, 24, 0.1) !important;*/
 
-  /*--modalBGColor: var(--pageBG) !important;*/
-  /*--playerBackground: var(--sidebar) !important;*/
-  /*--playerLCDBGFill: var(--sidebar) !important;*/
-  /*--systemHeaderMaterialSover: var(--pageBG) !important;*/
-  /*--systemQuaternary: var(--pageBG-rgb) !important;*/
+    /*--modalBGColor: var(--pageBG) !important;*/
+    /*--playerBackground: var(--sidebar) !important;*/
+    /*--playerLCDBGFill: var(--sidebar) !important;*/
+    /*--systemHeaderMaterialSover: var(--pageBG) !important;*/
+    /*--systemQuaternary: var(--pageBG-rgb) !important;*/
 }
 
-.web-chrome {
-    background-color: #2d2d2d40 !important;
-    backdrop-filter: saturate(0%) blur(25px) !important;
+.loading-inner {
+    background-color: #1f1f1f!important;
+}
+
+.dragDiv {
+    background-color: #1f1f1f!important;
 }
 
 /* Don't do anything that affects body attributes as this will cause glasstron to break. */

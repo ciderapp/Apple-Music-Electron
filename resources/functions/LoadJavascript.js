@@ -15,7 +15,6 @@ exports.LoadJavascript = function() {
             setTimeout(() => { LoadJSFile('macosAppEmu.min.js') }, 2000)
             app.config.css.removeAppleLogo = true
             app.config.css.removeUpsell = true
-            app.config.css.macOS.windowControls = true
         }
 
         // Apple Music Logo
