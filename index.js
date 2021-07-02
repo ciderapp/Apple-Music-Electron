@@ -18,13 +18,6 @@ function CreateWindow() {
     const ExistingInstance = InstanceHandler()
     if (ExistingInstance) return;
 
-    // If the User is on mac disable the window controls
-    if (process.platform === 'darwin') {
-        app.config.css.macOS.windowControls = false
-        app.config.css.macOS.WindowsStyleWindowControls = false
-    }
-
-
     const { CreateBrowserWindow } = require('./resources/functions/CreateBrowserWindow')
 
     app.win = CreateBrowserWindow() // Create the Browser Window

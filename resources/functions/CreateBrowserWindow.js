@@ -18,7 +18,7 @@ exports.CreateBrowserWindow = function() {
         webPreferences: {
             plugins: true,
             preload: join(__dirname, '../js/MusicKitInterop.js'),
-            allowRunningInsecureContent: app.config.advanced.allowRunningInsecureContent,
+            allowRunningInsecureContent: true,
             contextIsolation: false,
             webSecurity: false,
             sandbox: true

@@ -9,7 +9,7 @@
         "removeUpsell": true,
 
         "macOS": {
-            "_emulateMacOS_comment": "This enables various adjustments that make the Apple Music interface look like the MacOS Apple Music UI (Stoplights / Window Controls / No Upsell / No Logo)",
+            "_emulateMacOS_comment": "This enables various adjustments that make the Apple Music interface look like the MacOS Apple Music UI (Stoplights / Window Controls / No Upsell / No Logo / Glass-Sidebar)",
             "emulateMacOS": true,
 
             "_windowControls_comment": "This enables the MacOS Window Controls (Stop Lights). Enable Windows Style if you want the stop lights but to replicate the Windows controls (Right placed)",
@@ -49,9 +49,9 @@
 
     "advanced": {
         "allowMultipleInstances": false,
-        "allowRunningInsecureContent": true,
         "autoUpdaterBetaBuilds": false,
         "enableDevTools": false,
+        "forceDisableWindowFrame": false,
         "forceApplicationLanguage": "",
         "menuBarVisible": false,
         "removeScrollbars": true,
