@@ -31,6 +31,16 @@
 </p>
 
 <p align="center">
+  <a href="https://snapcraft.io/apple-music-electron">
+  <img alt="Get it from the Snap Store" src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg" />
+  </a>
+</p>
+
+<p align="center">
+  <img src="https://snapcraft.io/apple-music-electron/badge.svg" alt="Snap Store">
+</p>
+
+<p align="center">
   <a href="https://github.com/cryptofyre/Apple-Music-Electron">
     <img src="https://i.imgur.com/1HCPN6B.png" alt="Features">
     <img src="https://i.imgur.com/67KefOp.png" alt="More Features">
