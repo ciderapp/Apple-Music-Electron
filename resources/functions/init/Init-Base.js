@@ -15,6 +15,12 @@ exports.InitializeBase = function () {
         app.quit()
     }
 
+    // Hide the Application with Startup Params
+    if (app.commandLine.hasSwitch('hidden')) {
+        console.log("[Apple-Music-Electron] Application hidden with --hidden")
+        app.hide()
+    }
+
     // Disable CORS (NO LONGER REQUIRED Thanks Apple ❤️)
     if (app.config.advanced.disableCORS) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 

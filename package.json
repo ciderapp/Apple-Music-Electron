@@ -2,6 +2,7 @@
   "author": "cryptofyre <cryptofyre@protonmail.com>",
   "homepage": "https://github.com/cryptofyre/Apple-Music-Electron",
   "name": "apple-music-electron",
+  "applicationId": "AppleMusicElectron",
   "productName": "Apple Music",
   "version": "2.3.0",
   "description": "Unofficial Electron wrapper for Apple Music created by @cryptofyre",
@@ -51,8 +52,7 @@
         "AppImage",
         "deb",
         "snap",
-        "rpm",
-        "pacman"
+        "rpm"
       ],
       "category": "AudioVideo",
       "icon": "./resources/icons/icon.icns",
@@ -63,6 +63,10 @@
         "nsis"
       ],
       "icon": "./resources/icons/icon.ico"
+    },
+    "appx": {
+      "applicationId": "applemusicelectron",
+      "publisher": "CN=cryptofyre"
     },
     "mac": {
       "icon": "./resources/icons/icon.icns",

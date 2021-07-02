@@ -10,6 +10,7 @@ exports.LoadUserFiles = function () {
     console.log(paths)
 
     if(existsSync(paths.user.pathto) && existsSync(paths.user.cfg) && existsSync(paths.user.sampleConfig) && existsSync(paths.user.theme.cfg)) {
+        CreateUserFiles("CopyThemes", paths)
         console.log(`[CreateUserFiles] All user files found! Located at '${paths.user.pathto}'`)
         return LoadConfiguration(paths)
     } else {

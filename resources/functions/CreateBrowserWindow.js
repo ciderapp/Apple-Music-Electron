@@ -1,8 +1,8 @@
-const {app, BrowserWindow} = require('electron')
-const {join} = require('path')
+const { app, BrowserWindow } = require('electron')
+const { join } = require('path')
 const glasstron = require('glasstron');
 
-exports.CreateBrowserWindow = function () {
+exports.CreateBrowserWindow = function() {
     console.log('[CreateBrowserWindow] Initializing Browser Window Creation.')
     let win;
     const options = {
@@ -11,7 +11,8 @@ exports.CreateBrowserWindow = function () {
         height: 600,
         minWidth: 300,
         minHeight: 300,
-        frame: !app.config.css.macosWindow,
+        frame: false,
+        transparent: true,
         title: "Apple Music",
         // Enables DRM
         webPreferences: {
@@ -31,6 +32,7 @@ exports.CreateBrowserWindow = function () {
         win.setBlur(true);
     } else {
         win = new BrowserWindow(options)
+        win.setBackgroundColor = '#1C00ff00'
     }
 
     if (!app.config.advanced.menuBarVisible) win.setMenuBarVisibility(false); // Hide that nasty menu bar

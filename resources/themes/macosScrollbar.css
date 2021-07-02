@@ -1,4 +1,8 @@
-::-webkit-scrollbar {     
+.web-chrome {
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
   opacity: 0 !important;
   width: 0.8vw;
 }
@@ -11,4 +15,17 @@
 ::-webkit-scrollbar-thumb {
   background:  rgba(127, 127, 127, 0.84);
   border-radius: 10px !important;
+}
+
+/* no scrollbar in menu area */
+div {
+  overflow: hidden;
+}
+
+div.web-navigation__scrollable {
+  overflow: auto;
+}
+
+div.loading-inner {
+  overflow: auto;
 }
