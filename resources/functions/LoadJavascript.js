@@ -1,17 +1,18 @@
-const {app, nativeTheme} = require('electron')
-const {LoadJSFile} = require('./LoadJSFile')
-const {LoadTheme} = require('./LoadTheme')
+const { app, nativeTheme } = require('electron')
+const { LoadJSFile } = require('./LoadJSFile')
+const { LoadTheme } = require('./LoadTheme')
 
-exports.LoadJavascript = function () {
+exports.LoadJavascript = function() {
     console.log('[LoadJavascript] Started.')
 
     nativeTheme.themeSource = app.config.systemTheme;
-    app.win.webContents.on('did-stop-loading', async () => {
+    app.win.webContents.on('did-stop-loading', async() => {
 
         console.log('[Did-stop-loading] [LoadJavascript] Page Reloaded - Reloading Scripts.')
-        // MacOS Emaulation
+            // MacOS Emaulation
         if (app.config.css.macOS.emulateMacOS) {
-            LoadJSFile('macosAppEmu.js')
+            // Needs some time
+            setTimeout(() => { LoadJSFile('macosAppEmu.min.js') }, 2000)
             app.config.css.removeAppleLogo = true
             app.config.css.removeUpsell = true
             app.config.css.macOS.windowControls = true
