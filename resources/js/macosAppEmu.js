@@ -5,9 +5,6 @@ try {
 
 
         document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.marginTop = '0px';
-
-
-
         document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.webkitAppRegion = 'drag'
     }
 
@@ -41,7 +38,6 @@ try {
 
 
         //document.getElementById('web-navigation-search-box').insertAdjacentHTML('beforebegin', `<div style="" class="stoplight"><span style="height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5);"></span><span style="height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5);"></span><span style="height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5);"></span></div>`)
-
     }
 } catch (e) {
     console.error("[CSS] Error while trying to apply macosAppEmu.js", e);

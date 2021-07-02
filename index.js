@@ -24,7 +24,9 @@ function CreateWindow() {
         app.config.css.macOS.WindowsStyleWindowControls = false
     }
 
+
     const { CreateBrowserWindow } = require('./resources/functions/CreateBrowserWindow')
+
     app.win = CreateBrowserWindow() // Create the Browser Window
 
     const { SetThumbarButtons } = require('./resources/functions/win/SetThumbarButtons')
