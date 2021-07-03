@@ -73,5 +73,10 @@
             "category": "public.app-category.music",
             "darkModeSupport": true
         }
-    }
+    },
+    "protocols": [{
+        "name": "Apple Music",
+        "role": "web2app link",
+        "schemes": ["itms", "itmss"]
+    }]
 }
