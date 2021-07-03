@@ -34,11 +34,11 @@ exports.CheckUserFiles = function() {
         console.log(paths)
         CreateUserFiles("SampleConfig", paths)
         dialog.showMessageBox(app.win, {
-            message: `Your current configuration differs from the configuration the application uses. Please go to your config and update key names from the sample. The app will not be operable until you resolve this.`,
+            message: `Your current configuration differs from the configuration the application uses. Please make a backup of your current configuration - Pressing Ok will overwrite your current configuration..`,
             title: "Missing Keys in Configuration",
             type: "warning",
             detail: `Missing Keys: \n${MissingKeys}`,
             buttons: []
-        }).then(() => app.quit())
+        }).then(() => CreateUserFiles("Config", paths))
     }
 }
