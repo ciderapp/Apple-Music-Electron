@@ -5,7 +5,7 @@ try {
 
 
         document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.marginTop = '0px';
-        document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.webkitAppRegion = 'drag'
+        document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.webkitAppRegion = 'no-drag'
     }
 
 
@@ -15,19 +15,19 @@ try {
 
     if (document.getElementById('web-navigation-search-box').length > 0 && document.getElementById('stoplightCheck') < 1) {
 
-        var hoverEffects = 'onmouseenter="brightness(40%)" onmouseleave="brightness(100%)"'
+        var hoverEffects = 'onmouseenter="filter: brightness(40%)" onmouseleave="filter: brightness(100%)"'
 
 
-        var redStoplightStyle = 'height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); -webkit-app-region: no-drag; '
-        var redStoplightOnClick = "const { ipcRenderer } = require('electron'); ipcRenderer.send('close')"
+        var redStoplightStyle = 'height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); -webkit-app-region: no-drag;'
+        var redStoplightOnClick = "ipcRenderer.send('close');"
 
 
         var yellowStoplightStyle = 'height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); -webkit-app-region: no-drag;'
-        var yellowStoplightOnClick = "const { ipcRenderer } = require('electron'); ipcRenderer.send('minimize')"
+        var yellowStoplightOnClick = "ipcRenderer.send('minimize');"
 
 
         var greenStoplightStyle = 'height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); -webkit-app-region: no-drag;'
-        var greenStoplightOnClick = "const { ipcRenderer } = require('electron'); ipcRenderer.send('maximize')"
+        var greenStoplightOnClick = "ipcRenderer.send('maximize');"
 
         document.getElementById('web-navigation-search-box').insertAdjacentHTML('beforebegin', `
                 <div id="stoplightCheck"style="-webkit-app-region: drag;">
