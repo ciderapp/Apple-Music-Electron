@@ -24,5 +24,9 @@
     box-shadow: 0 1px 0 #000000ab,0 1px 3px #000000c7,inset 0 -.5px 0 var(--playerInnerShadow)!important;
 }
 
+.web-chrome-playback-lcd {
+    border-radius: 3px!important;
+}
+
 /* Don't do anything that affects body attributes as this will cause glasstron to break. */
 /* Currently not working - feel free to uncomment and mess around */
