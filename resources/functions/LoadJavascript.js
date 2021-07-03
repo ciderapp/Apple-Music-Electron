@@ -13,7 +13,7 @@ exports.LoadJavascript = function () {
         if (app.config.css.macOS.emulateMacOS) {
             // Needs some time
             setTimeout(() => {
-                LoadJSFile('macosAppEmu.min.js')
+                LoadJSFile('macosAppEmu.js')
             }, 2000)
             app.config.css.removeAppleLogo = true
             app.config.css.removeUpsell = true
