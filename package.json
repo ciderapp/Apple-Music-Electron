@@ -36,9 +36,9 @@
     "webpack": "~4.42.1"
   },
   "build": {
-    "electronVersion": "13.1.0",
+    "electronVersion": "13.1.4",
     "electronDownload": {
-      "version": "13.1.0-wvvmp",
+      "version": "14.0.0-wvvmp-beta.11",
       "mirror": "https://github.com/cryptofyre/castlabs-electron12/releases/download/v"
     },
     "appId": "apple-music",
