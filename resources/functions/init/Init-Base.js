@@ -3,7 +3,6 @@ const {join} = require('path')
 const {InitializeAutoUpdater} = require('./Init-AutoUpdater')
 
 
-
 exports.InitializeBase = function () {
     console.log('[InitializeBase] Started.')
     // Set proper cache folder

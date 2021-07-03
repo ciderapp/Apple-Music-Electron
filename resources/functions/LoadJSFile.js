@@ -8,8 +8,12 @@ exports.LoadJSFile = function (path) {
     readFile(filePath, "utf-8", function (error, data) {
 
         if (!error) {
-            let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
-            app.win.webContents.executeJavaScript(formattedData).then(() => console.log(`[LoadJSFile] '${path}' successfully injected.`));
+            try {
+                let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
+                app.win.webContents.executeJavaScript(formattedData).then(() => console.log(`[LoadJSFile] '${path}' successfully injected.`));
+            } catch (err) {
+                console.log(`[LoadJSFile] Error while injecting: ${path} - Error: ${err}`)
+            }
         } else {
             console.log(`[LoadJSFile] Error while injecting: ${path} - Error: ${error}`)
         }

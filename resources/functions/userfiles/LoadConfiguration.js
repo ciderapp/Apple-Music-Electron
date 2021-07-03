@@ -13,7 +13,7 @@ exports.LoadConfiguration = function (pathConfiguration) {
         console.log(`[CreateUserFiles] Configuration File: `)
         console.log(ConfigurationFile)
         return ConfigurationFile
-    } catch(err) {
+    } catch (err) {
         console.log(`[CreateUserFiles] [LoadConfiguration] ${err}`)
         app.quit()
     }

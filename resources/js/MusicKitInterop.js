@@ -3,7 +3,7 @@ const electron = require('electron');
 
 const MusicKitInterop = {
 
-    init: function() {
+    init: function () {
         MusicKit.getInstance().addEventListener(MusicKit.Events.playbackStateDidChange, () => {
             global.ipcRenderer.send('playbackStateDidChange', MusicKitInterop.getAttributes())
 
@@ -14,7 +14,7 @@ const MusicKitInterop = {
         });
     },
 
-    getAttributes: function() {
+    getAttributes: function () {
         let nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
         let isplaying = MusicKit.getInstance().isPlaying;
         let remainingTimeexport = MusicKit.getInstance().currentPlaybackTimeRemaining;
@@ -27,9 +27,9 @@ const MusicKitInterop = {
         attributes.status = isplaying ? isplaying : false;
         attributes.name = attributes.name ? attributes.name : 'No Title Found';
         attributes.durationInMillis = attributes.durationInMillis ? attributes.durationInMillis : 0;
-        attributes.artwork = attributes.artwork ? attributes.artwork : { url: '' };
+        attributes.artwork = attributes.artwork ? attributes.artwork : {url: ''};
         attributes.artwork.url = attributes.artwork.url ? attributes.artwork.url : '';
-        attributes.playParams = attributes.playParams ? attributes.playParams : { id: 'no-id-found' };
+        attributes.playParams = attributes.playParams ? attributes.playParams : {id: 'no-id-found'};
         attributes.playParams.id = attributes.playParams.id ? attributes.playParams.id : 'no-id-found';
         attributes.albumName = attributes.albumName ? attributes.albumName : '';
         attributes.artistName = attributes.artistName ? attributes.artistName : '';
@@ -56,7 +56,6 @@ document.addEventListener('loadeddata', () => {
 
 
             document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.marginTop = '0px';
-
 
 
             document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.webkitAppRegion = 'drag'
@@ -96,16 +95,7 @@ document.addEventListener('loadeddata', () => {
     }
 
 
-
-
-
-
 })
-
-
-
-
-
 
 
 // MusicKit.getInstance().addEventListener( MusicKit.Events.queueItemsDidChange,logIt );

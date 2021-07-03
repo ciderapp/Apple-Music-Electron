@@ -1,26 +1,26 @@
-const { app, dialog } = require('electron')
+const {app, dialog} = require('electron')
 const {CreateUserFiles} = require('./CreateUserFiles')
 const baseConfiguration = require('../../config.json');
 
-exports.CheckUserFiles = function() {
+exports.CheckUserFiles = function () {
     let MissingKeys = []
 
-    Object.keys(baseConfiguration.css).forEach(function(key) {
-        if(!app.config.css.hasOwnProperty(key)){
+    Object.keys(baseConfiguration.css).forEach(function (key) {
+        if (!app.config.css.hasOwnProperty(key)) {
             console.log(`[MissingKey] ${key}`)
             MissingKeys.push(key.toString())
         }
     })
 
-    Object.keys(baseConfiguration.preferences).forEach(function(key) {
-        if(!app.config.preferences.hasOwnProperty(key)){
+    Object.keys(baseConfiguration.preferences).forEach(function (key) {
+        if (!app.config.preferences.hasOwnProperty(key)) {
             console.log(`[MissingKey] ${key}`)
             MissingKeys.push(key)
         }
     })
 
-    Object.keys(baseConfiguration.advanced).forEach(function(key) {
-        if(!app.config.advanced.hasOwnProperty(key)){
+    Object.keys(baseConfiguration.advanced).forEach(function (key) {
+        if (!app.config.advanced.hasOwnProperty(key)) {
             console.log(`[MissingKey] ${key}`)
             MissingKeys.push(key)
         }

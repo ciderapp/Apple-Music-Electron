@@ -48,5 +48,5 @@ body > div {
 }
 
 .dragDiv {
-  background-color: var(--sidebar) !important;
+    background-color: var(--sidebar) !important;
 }

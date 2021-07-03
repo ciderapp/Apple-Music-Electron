@@ -1,8 +1,8 @@
-const { app, BrowserWindow } = require('electron')
-const { join } = require('path')
+const {app, BrowserWindow} = require('electron')
+const {join} = require('path')
 const glasstron = require('glasstron');
 
-exports.CreateBrowserWindow = function() {
+exports.CreateBrowserWindow = function () {
     console.log('[CreateBrowserWindow] Initializing Browser Window Creation.')
     let win;
     const options = {

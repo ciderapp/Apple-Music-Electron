@@ -1,31 +1,31 @@
 .web-chrome {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 ::-webkit-scrollbar {
-  opacity: 0 !important;
-  width: 0.8vw;
+    opacity: 0 !important;
+    width: 0.8vw;
 }
 
 ::-webkit-scrollbar-track:hover,
 ::-webkit-scrollbar:hover {
-  background: rgba(46, 46, 46, 0.84);
+    background: rgba(46, 46, 46, 0.84);
 }
 
 ::-webkit-scrollbar-thumb {
-  background:  rgba(127, 127, 127, 0.84);
-  border-radius: 10px !important;
+    background: rgba(127, 127, 127, 0.84);
+    border-radius: 10px !important;
 }
 
 /* no scrollbar in menu area */
 div {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 div.web-navigation__scrollable {
-  overflow: auto;
+    overflow: auto;
 }
 
 div.loading-inner {
-  overflow: auto;
+    overflow: auto;
 }

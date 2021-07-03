@@ -1,4 +1,4 @@
-const { app } = require('electron')
+const {app} = require('electron')
 
 exports.InstanceHandler = function () {
     console.log('[InstanceHandler] Started.')

@@ -35,8 +35,8 @@ exports.CreateUserFiles = function (fileToCreate, pathConfiguration) {
 
         case "copythemes": // Copy all Themes and Overwrite All ones in User Files
             try {
-                copySync(pathConfiguration.application.theme.pathto, pathConfiguration.user.theme.pathto, { overwrite: true })
-            } catch(err) {
+                copySync(pathConfiguration.application.theme.pathto, pathConfiguration.user.theme.pathto, {overwrite: true})
+            } catch (err) {
                 console.log(`[CreateUserFiles] [ThemesDirectory] [copySync] Error while copying to ${pathConfiguration.user.theme.pathto} | ${err}`)
             }
             console.log(`[CreateUserFiles] [ThemesDirectory] [copySync] Themes copied to ${pathConfiguration.application.theme.pathto}`)

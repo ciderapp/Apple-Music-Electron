@@ -4,12 +4,7 @@ try {
         //TODO: Add a 'Fix CORS button'
 
 
-
     }
-
-
-
-
 
 
 } catch (e) {

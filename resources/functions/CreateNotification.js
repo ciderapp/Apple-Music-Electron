@@ -39,7 +39,7 @@ exports.CreateNotification = function (attributes) {
 
     if (process.platform === "darwin") {
         NOTIFICATION_OBJECT.actions = {
-            actions: [ {
+            actions: [{
                 type: 'button',
                 text: 'Skip'
             }]

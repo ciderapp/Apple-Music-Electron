@@ -9,7 +9,7 @@ exports.LoadUserFiles = function () {
     console.log(`[LoadUserFiles] Current User Path Configuration on Platform '${process.platform}':`)
     console.log(paths)
 
-    if(existsSync(paths.user.pathto) && existsSync(paths.user.cfg) && existsSync(paths.user.sampleConfig) && existsSync(paths.user.theme.cfg)) {
+    if (existsSync(paths.user.pathto) && existsSync(paths.user.cfg) && existsSync(paths.user.sampleConfig) && existsSync(paths.user.theme.cfg)) {
         CreateUserFiles("CopyThemes", paths)
         console.log(`[CreateUserFiles] All user files found! Located at '${paths.user.pathto}'`)
         return LoadConfiguration(paths)
@@ -35,7 +35,7 @@ exports.LoadUserFiles = function () {
                 CreateUserFiles("ThemesDir", paths)
                 CreateUserFiles("CopyThemes", paths)
             }
-        } catch(err) {
+        } catch (err) {
             console.log(`[CreateUserFiles] Error Whilst Creating User Files: ${err}`)
         }
         return LoadConfiguration(paths)
