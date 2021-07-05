@@ -10,9 +10,9 @@ exports.InjectFiles = function () {
         /* Load the Emulation Files */
         if (app.config.css.emulateMacOS) {
             if (app.config.css.emulateMacOS_rightAlign) {
-                LoadJavascript('emulateMacOS_rightAlign.js')
+                LoadJavascript('emulatemacos_rightalign.js')
             } else {
-                LoadJavascript('emulateMacOS.js')
+                LoadJavascript('emulatemacos.js')
             }
         }
 
