@@ -33,6 +33,13 @@ exports.CheckUserFiles = function () {
         }
     })
 
+    Object.keys(baseConfiguration.login).forEach(function (key) {
+        if (!app.config.login.hasOwnProperty(key)) {
+            console.log(`[MissingKey] ${key}`)
+            MissingKeys.push(key)
+        }
+    })
+
     const application = app.config.application
     const user = app.config.user
     const paths = {application, user}

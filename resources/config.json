@@ -1,4 +1,9 @@
 {
+  "login": {
+    "_notice_": "The authMode option will allow you to login but should be disabled once you are logged in as it can cause some graphical issues.",
+    "authMode": false
+  },
+
   "css": {
     "_notice_": "This section is for manually disabling/enabling features.",
 
@@ -43,7 +48,6 @@
     "menuBarVisible": false,
     "removeScrollbars": true,
     "useBeta": true,
-    "preventMediaKeyHijacking": false,
-    "disableCORS": false
+    "preventMediaKeyHijacking": false
   }
 }

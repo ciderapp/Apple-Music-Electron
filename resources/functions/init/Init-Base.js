@@ -15,8 +15,8 @@ exports.InitializeBase = function () {
         app.quit()
     }
 
-    // Disable CORS (NO LONGER REQUIRED Thanks Apple ❤️)
-    if (app.config.advanced.disableCORS) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+    // Disable CORS
+    if (app.config.login.authMode) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 
     // Media Key Hijacking
     if (app.config.advanced.preventMediaKeyHijacking) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');

@@ -2,6 +2,16 @@ const {app, BrowserWindow} = require('electron')
 const {join} = require('path')
 const glasstron = require('glasstron');
 
+if (app.config.login.authMode) {
+    var insecure = false;
+    var websecurity = true;
+} else {
+    var insecure = true;
+    var websecurity = false;
+}
+
+console.log(insecure)
+
 exports.CreateBrowserWindow = function () {
     console.log('[CreateBrowserWindow] Initializing Browser Window Creation.')
     const options = {
@@ -16,9 +26,9 @@ exports.CreateBrowserWindow = function () {
         webPreferences: {
             plugins: true,
             preload: join(__dirname, '../js/MusicKitInterop.js'),
-            allowRunningInsecureContent: true,
+            allowRunningInsecureContent: insecure,
             contextIsolation: false,
-            webSecurity: false,
+            webSecurity: websecurity,
             sandbox: true
         }
     };
