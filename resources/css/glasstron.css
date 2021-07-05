@@ -20,8 +20,15 @@
 
 @media (prefers-color-scheme:light) {
     :root {
-        --sidebar: #0000006b !important;
-        --pageBG: #0D0C0CDB !important;
+        --sidebar: #FFFFFF6b !important;
+    }
+
+    .dt-search-box__input {
+        background-color: rgba(225, 225, 225, 0.45) !important;
+    }
+
+    .dt-search-box__input::placeholder {
+        color: #757582 !important;
     }
 }
 
