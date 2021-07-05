@@ -4,7 +4,7 @@
   "name": "apple-music-electron",
   "applicationId": "AppleMusicElectron",
   "productName": "Apple Music",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Unofficial Electron wrapper for Apple Music created by @cryptofyre",
   "license": "MIT",
   "buildResources": "resources",
