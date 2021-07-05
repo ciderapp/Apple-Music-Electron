@@ -24,7 +24,7 @@ exports.CreateBrowserWindow = function () {
     };
 
     let win;
-    if (app.config.advanced.forceDisableGlasstron) {
+    if (app.config.transparency.transparencyEnabled === false) {
         console.log('[CreateBrowserWindow] Creating Window without Glasstron')
         win = new BrowserWindow(options)
         win.setBackgroundColor = '#1f1f1f00'

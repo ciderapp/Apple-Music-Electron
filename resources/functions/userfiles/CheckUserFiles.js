@@ -26,6 +26,13 @@ exports.CheckUserFiles = function () {
         }
     })
 
+    Object.keys(baseConfiguration.transparency).forEach(function (key) {
+        if (!app.config.transparency.hasOwnProperty(key)) {
+            console.log(`[MissingKey] ${key}`)
+            MissingKeys.push(key)
+        }
+    })
+
     const application = app.config.application
     const user = app.config.user
     const paths = {application, user}

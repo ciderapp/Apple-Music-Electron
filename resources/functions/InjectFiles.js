@@ -15,8 +15,11 @@ exports.InjectFiles = function () {
             }
         }
 
-        if (app.isUsingGlasstron) {
+        if (app.config.transparency.transparencyEnabled) {
             LoadCSS('glasstron.css')
+            if (app.config.transparency.oledDark) {
+                LoadCSS('glasstron-oled.css')
+            }
         }
 
         /* Load a Theme if it is Found in the Configuration File */

@@ -7,6 +7,12 @@
     "emulateMacOS_rightAlign": false
   },
 
+  "transparency": {
+    "_notice_": "This category controls the transparency options for Apple Music Electron",
+    "transparencyEnabled": "true",
+    "oledDark": "false"
+  },
+
   "preferences": {
     "_notice_": "This is the basic user preferences. Modify to your liking below.",
 
@@ -32,7 +38,6 @@
     "autoUpdaterBetaBuilds": false,
     "enableDevTools": false,
     "forceDisableWindowFrame": false,
-    "forceDisableGlasstron": false,
     "forceApplicationLanguage": "",
     "forceDarkMode": false,
     "menuBarVisible": false,
