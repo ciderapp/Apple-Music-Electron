@@ -26,12 +26,14 @@ exports.CheckUserFiles = function () {
         }
     })
 
+    const application = app.config.application
+    const user = app.config.user
+    const paths = {application, user}
+
+    CreateUserFiles('CopyThemes', paths)
+
     if (MissingKeys.length !== 0) {
         MissingKeys = MissingKeys.toString()
-        const application = app.config.application
-        const user = app.config.user
-        const paths = {application, user}
-        console.log(paths)
         CreateUserFiles("SampleConfig", paths)
         dialog.showMessageBox(app.win, {
             message: `Your current configuration is incompatible, make a backup of your current configuration. Pressing OK will overwrite your current configuration.`,

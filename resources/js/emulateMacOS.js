@@ -57,7 +57,7 @@ try {
 
         /* Add the Stoplights! */
         document.getElementById('web-navigation-search-box').insertAdjacentHTML('beforebegin', `
-                <div class="dragDiv" style="-webkit-app-region: drag, background-color: var(--sidebar);">
+                <div class="dragDiv" style="-webkit-app-region: drag; background-color: var(--sidebar); -webkit-user-select: none;">
                 <span id="red" onmouseover="dimButton('red')" onmouseleave="brightenButton('red')" onclick="${redStoplightOnClick}" style="${redStoplightStyle}"></span>
                 <span id="yellow" onmouseover="dimButton('yellow')" onmouseleave="brightenButton('yellow')" onclick="${yellowStoplightOnClick}" style="${yellowStoplightStyle}"></span>
                 <span id="green" onmouseover="dimButton('green')" onmouseleave="brightenButton('green')" onclick="${greenStoplightOnClick}" style="${greenStoplightStyle}"></span>

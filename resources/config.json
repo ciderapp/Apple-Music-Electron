@@ -32,6 +32,7 @@
     "autoUpdaterBetaBuilds": false,
     "enableDevTools": false,
     "forceDisableWindowFrame": false,
+    "forceDisableGlasstron": false,
     "forceApplicationLanguage": "",
     "forceDarkMode": false,
     "menuBarVisible": false,

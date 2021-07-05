@@ -7,12 +7,17 @@ exports.InjectFiles = function () {
     app.win.webContents.on('did-stop-loading', async () => {
 
         /* Load the Emulation Files */
-        if (!app.config.css.emulateMacOS_rightAlign) {
-            LoadJavascript('emulateMacOS.js')
-        } else {
-            LoadJavascript('emulateMacOS_rightAlign.js')
+        if (app.config.css.emulateMacOS) {
+            if (app.config.css.emulateMacOS_rightAlign) {
+                LoadJavascript('emulateMacOS_rightAlign.js')
+            } else {
+                LoadJavascript('emulateMacOS.js')
+            }
         }
-        LoadCSS('glasstron.css')
+
+        if (app.isUsingGlasstron) {
+            LoadCSS('glasstron.css', true)
+        }
 
         /* Load a Theme if it is Found in the Configuration File */
         if (app.config.preferences.cssTheme) {
