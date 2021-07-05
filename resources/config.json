@@ -9,8 +9,8 @@
 
   "transparency": {
     "_notice_": "This category controls the transparency options for Apple Music Electron",
-    "transparencyEnabled": "true",
-    "oledDark": "false"
+    "transparencyEnabled": true,
+    "oledDark": false
   },
 
   "preferences": {
