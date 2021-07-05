@@ -3,7 +3,7 @@
 </p>
 
 <p align="center"> 
-  <a href="https://github.com/cryptofyre/Apple-Music-Electron/releases"><strong>View the releases! »</strong></a><br /><br />
+  <a href="https://github.com/cryptofyre/Apple-Music-Electron/releases/latest"><strong>View the releases! »</strong></a><br /><br />
   <a href="https://twitter.com/cryptofyre">Follow Me</a>
   <b> · </b>
   <a href="https://github.com/cryptofyre/Apple-Music-Electron/issues/new">Report Bug</a>
@@ -20,7 +20,7 @@
   <img src="https://img.shields.io/github/forks/cryptofyre/Apple-Music-Electron" alt="Forks">
   <img src="https://img.shields.io/github/license/cryptofyre/Apple-Music-Electron" alt="MIT">
   <img src="https://img.shields.io/github/downloads/cryptofyre/Apple-Music-Electron/total.svg?style=flat" alt="Downloads">
-  <img src="https://img.shields.io/github/release/cryptofyre/Apple-Music-Electron.svg?style=flat" alt="Release">
+  <a href="https://github.com/cryptofyre/Apple-Music-Electron/releases/latest"><img src="https://img.shields.io/github/release/cryptofyre/Apple-Music-Electron.svg?style=flat" alt="Release"></a>
   <span class="badge-buymeacoffee">
     <a href="https://ko-fi.com/cryptofyre" title="Donate to this project using Buy Me A Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee donate button" /></a>
   </span>
@@ -29,6 +29,15 @@
   <img src="https://github.com/cryptofyre/Apple-Music-Electron/actions/workflows/build-analyze-linux.yml/badge.svg" alt="Build Analysis - Linux">
   <img src="https://github.com/cryptofyre/Apple-Music-Electron/actions/workflows/build-analyze-macos.yml/badge.svg" alt="Build Analysis - macOS">
 </p>
+
+# Install Sources
+Here are all the places that you can install Apple-Music-Electron from (excluding repo releases which can be found [here](https://github.com/cryptofyre/Apple-Music-Electron/releases/latest)):
+
+Package Name | Source | Version | Maintainer
+---|---|---|---
+[apple-music-electron](https://aur.archlinux.org/packages/apple-music-electron) | [Arch User Repository](https://aur.archlinux.org/) | [![Build Version](https://img.shields.io/aur/version/apple-music-electron?style=flat)](https://aur.archlinux.org/cgit/aur.git/log/?h=apple-music-electron) | [17hoehbr](https://github.com/17hoehbr)
+[Apple Music Electron](https://snapcraft.io/apple-music-electron) | [Snapcraft](https://snapcraft.io/) | [![Snapcraft](https://snapcraft.io/apple-music-electron/badge.svg)](https://snapcraft.io/apple-music-electron) | Repo Owner
+`cryptofyre.AppleMusicElectron` | [Windows Package Manager](https://github.com/microsoft/winget-cli/) | ![Windows Package Manager](https://img.shields.io/badge/winget-v2.3.0-blue?style=flat&logo=windows) | Repo Owner
 
 <p align="center">
   <a href="https://github.com/cryptofyre/Apple-Music-Electron">
