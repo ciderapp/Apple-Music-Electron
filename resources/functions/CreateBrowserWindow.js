@@ -25,14 +25,16 @@ exports.CreateBrowserWindow = function () {
 
     let win;
     if (app.config.advanced.forceDisableGlasstron) {
+        console.log('[CreateBrowserWindow] Creating Window without Glasstron')
         win = new BrowserWindow(options)
         win.setBackgroundColor = '#1f1f1f00'
         app.isUsingGlasstron = false
     } else {
-        if (process.platform === "linux") {app.commandLine.appendSwitch("enable-transparent-visuals");} // Linux Append Commandline
+        console.log('[CreateBrowserWindow] Creating Window with Glasstron')
+        if (process.platform === "linux") app.commandLine.appendSwitch("enable-transparent-visuals"); // Linux Append Commandline
         win = new glasstron.BrowserWindow(options)
+        if (process.platform === "win32") win.blurType = "blurbehind"; // blurType only works on Windows
         win.setBlur(true);
-        if (process.platform === "win32") {win.blurType = "blurbehind";} // blurType only works on Windows
         app.isUsingGlasstron = true
     }
 

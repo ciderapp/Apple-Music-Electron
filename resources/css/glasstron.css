@@ -11,7 +11,7 @@
     /*--systemQuaternary: var(--pageBG-rgb) !important;*/
 }
 
-/*
+
 .web-chrome {
     background-color: #131313ad !important;
     box-shadow: 0 1px 0 #000000ab, 0 1px 3px #000000c7, inset 0 -.5px 0 var(--playerInnerShadow) !important;
@@ -19,7 +19,11 @@
 
 .web-chrome-playback-lcd {
     border-radius: 3px !important;
-}*/
+}
+
+html body {
+    background-color: var(--sidebar) !important;
+}
 
 .web-chrome {
     background-color: #2d2d2d40 !important;

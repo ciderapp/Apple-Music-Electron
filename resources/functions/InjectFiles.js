@@ -16,12 +16,14 @@ exports.InjectFiles = function () {
         }
 
         if (app.isUsingGlasstron) {
-            LoadCSS('glasstron.css', true)
+            app.win.webContents.executeJavaScript(`document.getElementsByTagName('body')[0].style = 'background-color: rgb(25 24 24 / 84%) !important;';`).then(() => console.log(`[JS] 'glasstron' successfully injected.`));
+            LoadCSS('glasstron.css')
+
         }
 
         /* Load a Theme if it is Found in the Configuration File */
         if (app.config.preferences.cssTheme) {
-            LoadCSS(app.config.preferences.cssTheme.toLowerCase(), true)
+            LoadCSS(`${app.config.preferences.cssTheme.toLowerCase()}.css`, true)
         }
 
         /* Remove the Scrollbar */

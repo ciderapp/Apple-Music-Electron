@@ -21,7 +21,7 @@ exports.LoadCSS = function (path, theme) {
         }
     }
 
-    readFile(path + '.css', "utf-8", function (error, data) {
+    readFile(path, "utf-8", function (error, data) {
         if (!error) {
             let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
             app.win.webContents.insertCSS(formattedData).then(() => console.log(`[Themes] '${path}' successfully injected.`));
