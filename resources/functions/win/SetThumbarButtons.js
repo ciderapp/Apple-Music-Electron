@@ -22,11 +22,6 @@ exports.SetThumbarButtons = function (state) {
         trayicondir = join(__dirname, `./media/dark/`);
     }
 
-
-
-    console.log(trayicondir)
-    // please dont add this again.
-
     let array;
     switch (state) {
 

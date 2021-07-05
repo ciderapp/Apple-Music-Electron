@@ -4,7 +4,7 @@ const { app} = require('electron');
 const {InitializeLogging} = require('./resources/functions/init/Init-Logging')
 InitializeLogging()
 
-const { LoadUserFiles } = require('./resources/functions/LoadUserFiles')
+const { LoadUserFiles } = require('./resources/functions/load/LoadUserFiles')
 app.config = LoadUserFiles()
 
 const { InitializeBase } = require('./resources/functions/init/Init-Base')
@@ -24,11 +24,11 @@ function CreateWindow() {
     const {SetThumbarButtons} = require('./resources/functions/win/SetThumbarButtons')
     SetThumbarButtons() // Set Inactive Thumbar Icons
 
-    const {LoadWebsite} = require('./resources/functions/LoadWebsite')
+    const {LoadWebsite} = require('./resources/functions/load/LoadWebsite')
     LoadWebsite() // Load the Website
 
-    const {LoadJavascript} = require('./resources/functions/LoadJavascript')
-    LoadJavascript() // Load the Website Javascript
+    const {InjectFiles} = require('./resources/functions/InjectFiles')
+    InjectFiles() // Load the Website Javascript
 
     const {WindowStateHandler} = require('./resources/functions/handler/WindowStateHandler')
     WindowStateHandler() // Handling the Window
@@ -45,10 +45,8 @@ app.on('ready', () => {
     const { ApplicationReady } = require('./resources/functions/init/App-Ready')
     ApplicationReady()
     console.log("[Apple-Music-Electron] Application is Ready.")
-
     console.log("[Apple-Music-Electron] Creating Window...")
-    if (app.config.css.glasstron) { setTimeout(CreateWindow, process.platform === "linux" ? 1000 : 0); } else CreateWindow()
-
+    setTimeout(CreateWindow, process.platform === "linux" ? 1000 : 0);
     const {CheckUserFiles} = require('./resources/functions/userfiles/CheckUserFiles')
     CheckUserFiles()
 });
