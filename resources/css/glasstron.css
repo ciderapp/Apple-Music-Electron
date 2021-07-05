@@ -1,17 +1,17 @@
 :root {
-  --sidebar: #0000006b !important;
-  /*--footerBG: #191818bd !important;*/
-  /*--pageBG: rgb(25, 24, 24, 0.84) !important;*/
-  /*--pageBG-rgb: rgba(25, 24, 24, 0.1) !important;*/
+    --sidebar: #0000006b !important;
+    /*--footerBG: #191818bd !important;*/
+    /*--pageBG: rgb(25, 24, 24, 0.84) !important;*/
+    /*--pageBG-rgb: rgba(25, 24, 24, 0.1) !important;*/
 
-  /*--modalBGColor: var(--pageBG) !important;*/
-  /*--playerBackground: var(--sidebar) !important;*/
-  /*--playerLCDBGFill: var(--sidebar) !important;*/
-  /*--systemHeaderMaterialSover: var(--pageBG) !important;*/
-  /*--systemQuaternary: var(--pageBG-rgb) !important;*/
+    /*--modalBGColor: var(--pageBG) !important;*/
+    /*--playerBackground: var(--sidebar) !important;*/
+    /*--playerLCDBGFill: var(--sidebar) !important;*/
+    /*--systemHeaderMaterialSover: var(--pageBG) !important;*/
+    /*--systemQuaternary: var(--pageBG-rgb) !important;*/
 }
 
-.loading-inner {
+.page-container {
     background-color: black !important;
 }
 
@@ -21,10 +21,12 @@
 
 .web-chrome {
     background-color: #131313ad !important;
-    box-shadow: 0 1px 0 #000000ab,0 1px 3px #000000c7,inset 0 -.5px 0 var(--playerInnerShadow) !important;
+    box-shadow: 0 1px 0 #000000ab, 0 1px 3px #000000c7, inset 0 -.5px 0 var(--playerInnerShadow) !important;
 }
 
-
+.web-chrome-playback-lcd {
+    border-radius: 3px !important;
+}
 
 /* Don't do anything that affects body attributes as this will cause glasstron to break. */
 /* Currently not working - feel free to uncomment and mess around */
