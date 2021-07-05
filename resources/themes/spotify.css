@@ -1,8 +1,14 @@
-/* made by devilAPI */
-:root {
+/**
+ * @name Spotify
+ * @author devilAPI#0361
+ * @description Spotify Theme
+*/
+
+@media (prefers-color-scheme:dark) {
+  :root {
     --primaryColor: #1DB954 !important;
     --primaryColor-rgb: 30, 215, 96 !important;
-    --sidebar: #191414 !important;
+    --sidebar: rgba(25, 20, 20, 0.6) !important;
     --footerBG: #191414 !important;
     --pageBG: #191414 !important;
     --pageBG-rgb: rgba(25, 20, 20, 0.1) !important;
@@ -13,8 +19,5 @@
     --systemHeaderMaterialSover: var(--pageBG) !important;
     --systemQuaternary: var(--pageBG-rgb) !important;
     --selectionColor: var(--primaryColor) !important;
-}
-
-body > div {
-    background-color: var(--pageBG) !important;
+  }
 }

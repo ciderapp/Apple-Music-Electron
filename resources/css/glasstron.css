@@ -1,0 +1,45 @@
+@media (prefers-color-scheme:dark) {
+    :root {
+        --sidebar: #0000006b !important;
+        --pageBG: #0D0C0CDB !important;
+    }
+
+    .dt-search-box__input {
+        background-color: rgba(60, 60, 67, 0.45) !important;
+    }
+
+    .dt-search-box__input::placeholder {
+        color: #757582 !important;
+    }
+
+    .web-chrome {
+        background-color: #131313ad !important;
+        box-shadow: 0 1px 0 #000000ab, 0 1px 3px #000000c7, inset 0 -.5px 0 var(--playerInnerShadow) !important;
+    }
+}
+
+@media (prefers-color-scheme:light) {
+    :root {
+        --sidebar: #FFFFFF6b !important;
+    }
+
+    .dt-search-box__input {
+        background-color: rgba(225, 225, 225, 0.45) !important;
+    }
+
+    .dt-search-box__input::placeholder {
+        color: #757582 !important;
+    }
+}
+
+.web-chrome-playback-lcd {
+    border-radius: 3px !important;
+}
+
+.web-navigation__navigation-container {
+    background-color: transparent !important;
+}
+
+html body {
+    background-color: var(--sidebar) !important;
+}

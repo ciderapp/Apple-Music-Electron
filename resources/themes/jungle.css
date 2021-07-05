@@ -1,8 +1,14 @@
-/* made by devilAPI */
-:root {
+/**
+ * @name Jungle
+ * @author devilAPI#0361
+ * @description Jungle Theme
+*/
+
+@media (prefers-color-scheme:dark) {
+  :root {
     --primaryColor: #D8E4FF !important;
     --primaryColor-rgb: 216, 228, 255 !important;
-    --sidebar: #00120B !important;
+    --sidebar: rgba(0, 18, 11, 0.6) !important;
     --footerBG: #24423E !important;
     --pageBG: #00120B !important;
     --pageBG-rgb: rgba(0, 18, 11, 0.1) !important;
@@ -13,8 +19,5 @@
     --systemHeaderMaterialSover: var(--pageBG) !important;
     --systemQuaternary: var(--pageBG-rgb) !important;
     --selectionColor: var(--primaryColor) !important;
-}
-
-body > div {
-    background-color: var(--pageBG) !important;
+  }
 }

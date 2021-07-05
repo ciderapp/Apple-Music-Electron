@@ -8,7 +8,7 @@ exports.CreateNotification = function (attributes) {
     if (!app.config.preferences.playbackNotifications || !Notification.isSupported()) return;
 
 
-    if (app.config.preferences.notificationsMinimized) {
+    if (app.config.preferences.playbackNotifications_minimized) {
         const isAppHidden = !app.win.isVisible()
         console.log(`[CreateNotification] [notificationsMinimized] Config Notification Minimized: ${app.config.preferences.notificationsMinimized}`)
         console.log(`[CreateNotification] [notificationsMinimized] App Minimized: ${app.win.isMinimized()}`)
@@ -50,7 +50,7 @@ exports.CreateNotification = function (attributes) {
     app.ipc.existingNotification.show()
 
     if (process.platform === "darwin") {
-        app.ipc.existingNotification.addListener('action', (_event, index) => {
+        app.ipc.existingNotification.addListener('action', (_event) => {
             app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[CreateNotification] skipToNextItem"))
         });
     }

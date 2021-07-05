@@ -2,18 +2,16 @@ const {app, nativeTheme} = require('electron')
 
 exports.InitializeTheme = function () {
     console.log('[InitializeTheme] Started.')
-
-    let theme;
-    if (app.config.preferences.defaultTheme) {
-        theme = app.config.preferences.defaultTheme.toLowerCase()
-    } else if (nativeTheme.shouldUseDarkColors === true) {
-        theme = "dark"
-    } else if (nativeTheme.shouldUseDarkColors === false) {
-        theme = "light"
+    if (app.config.advanced.forceDarkMode === true) {
+        app.config.systemTheme = "dark"
+        if (nativeTheme.shouldUseDarkColors === true) {
+            app.config.systemTheme = "dark"
+        } else {
+            app.config.systemTheme = "light"
+        }
     } else {
-        theme = "system"
+        app.config.systemTheme = "system"
     }
-    app.config.systemTheme = theme
-
+    nativeTheme.themeSource = app.config.systemTheme
 
 }

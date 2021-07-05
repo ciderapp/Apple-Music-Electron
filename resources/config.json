@@ -1,63 +1,53 @@
 {
-    "css": {
-        "_notice_": "This section is for manually disabling/enabling features.",
+  "login": {
+    "_notice_": "The authMode option will allow you to login but should be disabled once you are logged in as it can cause some graphical issues.",
+    "authMode": false
+  },
 
-        "_removeAppleLogo_comment": "Removes Apple Logo when enabled. (true by default)",
-        "removeAppleLogo": true,
+  "css": {
+    "_notice_": "This section is for manually disabling/enabling features.",
 
-        "_removeUpsell_comment": "Removes the open iTunes button if enabled (true by default)",
-        "removeUpsell": true,
+    "_emulateMacOS_comment": "This enables various adjustments that make the Apple Music interface look like the MacOS Apple Music UI. Enabling rightAlign will replicate the Windows Operating System's Window Control.",
+    "emulateMacOS": true,
+    "emulateMacOS_rightAlign": false
+  },
 
-        "macOS": {
-            "_emulateMacOS_comment": "This enables various adjustments that make the Apple Music interface look like the MacOS Apple Music UI (Stoplights / Window Controls / No Upsell / No Logo / Glass-Sidebar)",
-            "emulateMacOS": true,
+  "transparency": {
+    "_notice_": "This category controls the transparency options for Apple Music Electron",
+    "transparencyEnabled": true,
+    "oledDark": false
+  },
 
-            "_windowControls_comment": "This enables the MacOS Window Controls (Stop Lights). Enable Windows Style if you want the stop lights but to replicate the Windows controls (Right placed)",
-            "windowControls": false,
-            "WindowsStyleWindowControls": false,
+  "preferences": {
+    "_notice_": "This is the basic user preferences. Modify to your liking below.",
 
-            "_scrollbar_comment": "This enables the Sleek macos-style scrollbar.",
-            "scrollbar": false
-        }
-    },
+    "_cssTheme_comment": "If you are using a custom CSS theme, set it below, otherwise leave empty.",
+    "cssTheme": "",
 
-    "preferences": {
-        "_notice_": "This is the basic user preferences. Modify to your liking below.",
+    "_closeButtonMinimize_comment": "Should the close button minimize your apple music (true) or should it quit the app (false). (true by default)",
+    "closeButtonMinimize": true,
 
-        "_defaultTheme_comment": "Default UI theme (Light/Dark) or leave empty to detect from system.",
-        "defaultTheme": "",
+    "_discordRPC_comment": "Enable/Disable Discord Rich Presence. (true by default)",
+    "discordRPC": true,
 
-        "_cssTheme_comment": "If you are using a custom CSS theme, set it below, otherwise leave empty.",
-        "cssTheme": "",
+    "_playbackNotifications_comment": "Enabling this means you will get notifications when you change song. The minimized option forces notifications to only appear if the app is hidden / minimized.",
+    "playbackNotifications": true,
+    "playbackNotifications_minimized": true,
 
-        "_closeButtonMinimize_comment": "Should the close button minimize your apple music (true) or should it quit the app (false). (true by default)",
-        "closeButtonMinimize": true,
+    "_trayTooltipSongName_comment": "Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.",
+    "trayTooltipSongName": true
+  },
 
-        "_discordRPC_comment": "Enable/Disable Discord Rich Presence. (true by default)",
-        "discordRPC": true,
-
-        "_playbackNotifications_comment": "Enabling this means you will get notifications when you change song. The notificationsMinimized option force notifications to only appear if the app is hidden / minimized.",
-        "playbackNotifications": true,
-        "notificationsMinimized": true,
-
-        "_trayTooltipSongName_comment": "Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.",
-        "trayTooltipSongName": true,
-
-        "_mprisSupport_comment": "Do you want to turn on Mpris support, connects to the Mpris interface for Linux. (Make sure you have it installed if you turn this on)",
-        "mprisSupport": true
-    },
-
-    "advanced": {
-        "allowMultipleInstances": false,
-        "autoUpdaterBetaBuilds": false,
-        "enableDevTools": false,
-        "forceDisableWindowFrame": false,
-        "forceApplicationLanguage": "",
-        "menuBarVisible": false,
-        "removeScrollbars": true,
-        "useBeta": true,
-        "preventMediaKeyHijacking": false,
-        "_disableCORS_comment": "This is also known as WebSecurity and Should be Toggled if you are experiencing issues.",
-        "disableCORS": false
-    }
+  "advanced": {
+    "allowMultipleInstances": false,
+    "autoUpdaterBetaBuilds": false,
+    "enableDevTools": false,
+    "forceDisableWindowFrame": false,
+    "forceApplicationLanguage": "",
+    "forceDarkMode": false,
+    "menuBarVisible": false,
+    "removeScrollbars": true,
+    "useBeta": true,
+    "preventMediaKeyHijacking": false
+  }
 }

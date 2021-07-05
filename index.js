@@ -1,13 +1,13 @@
 require('v8-compile-cache');
-const {app} = require('electron');
+const { app} = require('electron');
 
 const {InitializeLogging} = require('./resources/functions/init/Init-Logging')
 InitializeLogging()
 
-const {LoadUserFiles} = require('./resources/functions/LoadUserFiles')
+const { LoadUserFiles } = require('./resources/functions/load/LoadUserFiles')
 app.config = LoadUserFiles()
 
-const {InitializeBase} = require('./resources/functions/init/Init-Base')
+const { InitializeBase } = require('./resources/functions/init/Init-Base')
 InitializeBase()
 
 // Creating the Application Window and Calling all the Functions
@@ -19,17 +19,16 @@ function CreateWindow() {
     if (ExistingInstance) return;
 
     const {CreateBrowserWindow} = require('./resources/functions/CreateBrowserWindow')
-
     app.win = CreateBrowserWindow() // Create the Browser Window
 
     const {SetThumbarButtons} = require('./resources/functions/win/SetThumbarButtons')
     SetThumbarButtons() // Set Inactive Thumbar Icons
 
-    const {LoadWebsite} = require('./resources/functions/LoadWebsite')
+    const {LoadWebsite} = require('./resources/functions/load/LoadWebsite')
     LoadWebsite() // Load the Website
 
-    const {LoadJavascript} = require('./resources/functions/LoadJavascript')
-    LoadJavascript() // Load the Website Javascript
+    const {InjectFiles} = require('./resources/functions/InjectFiles')
+    InjectFiles() // Load the Website Javascript
 
     const {WindowStateHandler} = require('./resources/functions/handler/WindowStateHandler')
     WindowStateHandler() // Handling the Window
@@ -43,39 +42,14 @@ function CreateWindow() {
 
 // When its Ready call it all
 app.on('ready', () => {
-    const {ApplicationReady} = require('./resources/functions/init/App-Ready')
+    const { ApplicationReady } = require('./resources/functions/init/App-Ready')
     ApplicationReady()
     console.log("[Apple-Music-Electron] Application is Ready.")
-
     console.log("[Apple-Music-Electron] Creating Window...")
-    if (app.config.css.glasstron) {
-        setTimeout(CreateWindow, process.platform === "linux" ? 1000 : 0);
-    } else CreateWindow()
-
+    setTimeout(CreateWindow, process.platform === "linux" ? 1000 : 0);
     const {CheckUserFiles} = require('./resources/functions/userfiles/CheckUserFiles')
     CheckUserFiles()
 });
-
-//Support for itunes deep links (There is litterly no documention on this so this may, or may not work)
-//
-// Platform specific testing:
-// - Windows
-//      Should work if packed/packaged
-// - Linux/macOS
-//      Should work, even in dev
-
-app.setAsDefaultProtocolClient('itms') // http:// link
-app.setAsDefaultProtocolClient('itmss') // https:// link
-app.on('open-url', function (event, url) {
-    //Stop the navigation to about:blank
-    event.preventDefault()
-
-    //Load link
-    const {LoadWebsite} = require('./resources/functions/LoadWebsite')
-    LoadWebsite(url)
-
-})
-
 
 app.on('window-all-closed', () => {
     if (app.mpris) { // Reset Mpris when app is closed

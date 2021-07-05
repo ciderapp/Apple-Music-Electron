@@ -14,39 +14,34 @@
  * Red          #ff5555
  * Yellow       #f1fa8c
 */
-:root {
-    --primaryColor: #bd93f9 !important;
-    --sidebar: #21222c !important;
-    --footerBG: #44475a !important;
-    --pageBG: #282a36 !important;
-    --playerBackground: #21222c !important;
-    --playerLCDBGFill: #44475a !important;
-    --playerVolumeIconFill: #6272a4 !important;
-    --systemGreen: #50fa7b !important;
-    --systemRed: #ff5555 !important;
-    --lovedBGColor: #ff79c6 !important;
 
-    --modalBGColor: #282a36 !important;
-    --systemHeaderMaterialSover: #282a36 !important;
-    --systemPrimary: #f8f8f2 !important;
-    --systemSecondary: #6272a4 !important;
-    --systemQuaternary: #44475a !important;
-    --selectionColor: #bd93f9 !important;
+@media (prefers-color-scheme:dark) {
+    :root {
+        --primaryColor: #bd93f9 !important;
+        --sidebar: rgba(33, 34, 44, 0.6) !important;
+        --footerBG: #44475a !important;
+        --pageBG: #282a36 !important;
+        --playerBackground: #21222c !important;
+        --playerLCDBGFill: #44475a !important;
+        --playerVolumeIconFill: #6272a4 !important;
+        --systemGreen: #50fa7b !important;
+        --systemRed: #ff5555 !important;
+        --lovedBGColor: #ff79c6 !important;
 
-    --systemHeaderMaterialSoverIncreaseContrast: #282a36 !important;
-    --segmentedControlSelectedBG: #44475a !important;
-    --modalBGHeaderColor: #21222c !important;
-    --tracklistHoverColor: #44475a !important;
-    --sidebarSelectedState: #44475a !important;
+        --modalBGColor: #282a36 !important;
+        --systemHeaderMaterialSover: #282a36 !important;
+        --systemPrimary: #f8f8f2 !important;
+        --systemSecondary: #6272a4 !important;
+        --systemQuaternary: #44475a !important;
+        --selectionColor: #bd93f9 !important;
 
-    --playerPlatterButtonBGFill: #bd93f9 !important;
-    --playerPlatterButtonIconFill: #f8f8f2 !important;
-}
+        --systemHeaderMaterialSoverIncreaseContrast: #282a36 !important;
+        --segmentedControlSelectedBG: #44475a !important;
+        --modalBGHeaderColor: #21222c !important;
+        --tracklistHoverColor: #44475a !important;
+        --sidebarSelectedState: #44475a !important;
 
-body > div {
-    background-color: #282a36 !important;
-}
-
-.dragDiv {
-    background-color: var(--sidebar) !important;
+        --playerPlatterButtonBGFill: #bd93f9 !important;
+        --playerPlatterButtonIconFill: #f8f8f2 !important;
+    }
 }

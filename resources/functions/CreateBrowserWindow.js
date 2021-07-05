@@ -2,38 +2,52 @@ const {app, BrowserWindow} = require('electron')
 const {join} = require('path')
 const glasstron = require('glasstron');
 
+if (app.config.login.authMode) {
+    var insecure = false;
+    var websecurity = true;
+} else {
+    var insecure = true;
+    var websecurity = false;
+}
+
+console.log(insecure)
+
 exports.CreateBrowserWindow = function () {
     console.log('[CreateBrowserWindow] Initializing Browser Window Creation.')
-    let win;
     const options = {
         icon: join(__dirname, `../icons/icon.ico`),
         width: 1024,
         height: 600,
         minWidth: 300,
         minHeight: 300,
-        frame: false,
-        transparent: true,
+        frame: !app.config.css.emulateMacOS,
         title: "Apple Music",
         // Enables DRM
         webPreferences: {
             plugins: true,
             preload: join(__dirname, '../js/MusicKitInterop.js'),
-            allowRunningInsecureContent: true,
+            allowRunningInsecureContent: insecure,
             contextIsolation: false,
-            webSecurity: false,
+            webSecurity: websecurity,
             sandbox: true
         }
     };
 
-    if (app.config.css.glasstron) { // Glasstron Theme Window Creation
-        if (process.platform !== "win32") app.commandLine.appendSwitch("enable-transparent-visuals");
-        win = new glasstron.BrowserWindow(options)
-        win.blurType = "blurbehind";
-        win.setBlur(true);
-    } else {
+    let win;
+    if (!app.config.transparency.transparencyEnabled) {
+        console.log('[CreateBrowserWindow] Creating Window without Glasstron')
         win = new BrowserWindow(options)
         win.setBackgroundColor = '#1f1f1f00'
+        app.isUsingGlasstron = false
+    } else {
+        console.log('[CreateBrowserWindow] Creating Window with Glasstron')
+        if (process.platform === "linux") app.commandLine.appendSwitch("enable-transparent-visuals"); // Linux Append Commandline
+        win = new glasstron.BrowserWindow(options)
+        if (process.platform === "win32") win.blurType = "blurbehind"; // blurType only works on Windows
+        win.setBlur(true);
+        app.isUsingGlasstron = true
     }
+
 
     if (!app.config.advanced.menuBarVisible) win.setMenuBarVisibility(false); // Hide that nasty menu bar
     if (!app.config.advanced.enableDevTools) win.setMenu(null); // Disables DevTools

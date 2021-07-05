@@ -1,7 +1,7 @@
 const {existsSync} = require('fs');
-const {LoadConfiguration} = require('./userfiles/LoadConfiguration')
-const {FetchPathConfiguration} = require('./userfiles/FetchPathConfiguration')
-const {CreateUserFiles} = require('./userfiles/CreateUserFiles')
+const {LoadConfiguration} = require('../userfiles/LoadConfiguration')
+const {FetchPathConfiguration} = require('../userfiles/FetchPathConfiguration')
+const {CreateUserFiles} = require('../userfiles/CreateUserFiles')
 
 exports.LoadUserFiles = function () {
     console.log('[LoadUserFiles] Started.')

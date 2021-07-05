@@ -26,15 +26,31 @@ exports.CheckUserFiles = function () {
         }
     })
 
+    Object.keys(baseConfiguration.transparency).forEach(function (key) {
+        if (!app.config.transparency.hasOwnProperty(key)) {
+            console.log(`[MissingKey] ${key}`)
+            MissingKeys.push(key)
+        }
+    })
+
+    Object.keys(baseConfiguration.login).forEach(function (key) {
+        if (!app.config.login.hasOwnProperty(key)) {
+            console.log(`[MissingKey] ${key}`)
+            MissingKeys.push(key)
+        }
+    })
+
+    const application = app.config.application
+    const user = app.config.user
+    const paths = {application, user}
+
+    CreateUserFiles('CopyThemes', paths)
+
     if (MissingKeys.length !== 0) {
         MissingKeys = MissingKeys.toString()
-        const application = app.config.application
-        const user = app.config.user
-        const paths = {application, user}
-        console.log(paths)
         CreateUserFiles("SampleConfig", paths)
         dialog.showMessageBox(app.win, {
-            message: `Your current configuration differs from the configuration the application uses. Please make a backup of your current configuration - Pressing Ok will overwrite your current configuration..`,
+            message: `Your current configuration is incompatible, make a backup of your current configuration. Pressing OK will overwrite your current configuration.`,
             title: "Missing Keys in Configuration",
             type: "warning",
             detail: `Missing Keys: \n${MissingKeys}`,

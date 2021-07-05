@@ -4,12 +4,12 @@
   "name": "apple-music-electron",
   "applicationId": "AppleMusicElectron",
   "productName": "Apple Music",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Unofficial Electron wrapper for Apple Music created by @cryptofyre",
   "license": "MIT",
   "buildResources": "resources",
   "scripts": {
-    "init": "npm i && npm i",
+    "init": "install",
     "start": "electron --enable-accelerated-mjpeg-decode --enable-accelerated-video --ignore-gpu-blacklist --enable-native-gpu-memory-buffers --enable-gpu-rasterization .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
@@ -36,9 +36,9 @@
     "webpack": "~4.42.1"
   },
   "build": {
-    "electronVersion": "13.1.4",
+    "electronVersion": "13.1.5",
     "electronDownload": {
-      "version": "14.0.0-wvvmp-beta.11",
+      "version": "13.1.5-wvvmp",
       "mirror": "https://github.com/cryptofyre/castlabs-electron12/releases/download/v"
     },
     "appId": "apple-music",
@@ -73,15 +73,5 @@
       "category": "public.app-category.music",
       "darkModeSupport": true
     }
-  },
-  "protocols": [
-    {
-      "name": "Apple Music",
-      "role": "web2app link",
-      "schemes": [
-        "itms",
-        "itmss"
-      ]
-    }
-  ]
+  }
 }

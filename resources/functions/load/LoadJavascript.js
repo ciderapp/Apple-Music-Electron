@@ -2,11 +2,10 @@ const {readFile} = require('fs')
 const {app} = require('electron')
 const {join} = require('path')
 
-exports.LoadJSFile = function (path) {
-    const filePath = join(join(__dirname, '../js/'), path)
-    console.log(`[LoadJSFile] Attempting to load: '${filePath}`)
-    readFile(filePath, "utf-8", function (error, data) {
+exports.LoadJavascript = function (path) {
+    path = join(join(__dirname, '../../js/'), path.toLowerCase())
 
+    readFile(path, "utf-8", function (error, data) {
         if (!error) {
             try {
                 let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
@@ -15,7 +14,7 @@ exports.LoadJSFile = function (path) {
                 console.log(`[LoadJSFile] Error while injecting: ${path} - Error: ${err}`)
             }
         } else {
-            console.log(`[LoadJSFile] Error while injecting: ${path} - Error: ${error}`)
+            console.log(`[LoadJSFile] Error while injecting: '${path}' - Error: ${error}`)
         }
     });
 
