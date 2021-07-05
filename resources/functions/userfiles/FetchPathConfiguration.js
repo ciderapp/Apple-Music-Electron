@@ -31,7 +31,6 @@ exports.FetchPathConfiguration = function () {
             sampleConfig: join(__dirname, '../../config.json'),
             theme: {
                 pathto: join(__dirname, '../../themes/'),
-                cfg: join(join(__dirname, '../../themes/'), 'theme-config.json')
             }
         },
 
@@ -41,7 +40,6 @@ exports.FetchPathConfiguration = function () {
             sampleConfig: join(UserFilesDirectory, 'config.sample.json'),
             theme: {
                 pathto: join(UserFilesDirectory, 'Themes/'),
-                cfg: join(join(UserFilesDirectory, 'Themes/'), 'theme-config.json')
             }
         }
     }

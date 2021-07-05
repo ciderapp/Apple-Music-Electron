@@ -1,25 +1,14 @@
 const {readFile} = require('fs')
-const {app, nativeTheme} = require('electron')
-const themeConfig = require(app.config.user.theme.cfg)
+const {app} = require('electron')
 const {join} = require('path')
 
 exports.LoadCSS = function (path, theme) {
-    const fileName = path
-    path = join(join(__dirname, '../../css/'), fileName.toLowerCase())
     if (theme) {
-        path = join(app.config.user.theme.pathto, fileName.toLowerCase())
-
-        for (let v in themeConfig.dark) {
-            if (path === v) {
-                nativeTheme.themeSource = "dark"
-            }
-        }
-        for (let v in themeConfig.light) {
-            if (path === v) {
-                nativeTheme.themeSource = "light"
-            }
-        }
+        path = join(app.config.user.theme.pathto, path.toLowerCase());
+    } else {
+        path = join(join(__dirname, '../../css/'), path.toLowerCase())
     }
+
 
     readFile(path, "utf-8", function (error, data) {
         if (!error) {

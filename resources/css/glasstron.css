@@ -43,10 +43,3 @@
 html body {
     background-color: var(--sidebar) !important;
 }
-
-.page-container {
-    background-color: var(--pageBG) !important;
-}
-
-/* Don't do anything that affects body attributes as this will cause glasstron to break. */
-/* Currently not working - feel free to uncomment and mess around */

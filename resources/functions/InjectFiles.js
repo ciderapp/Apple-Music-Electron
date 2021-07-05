@@ -5,6 +5,7 @@ const {LoadCSS} = require('./load/LoadCSS')
 exports.InjectFiles = function () {
     console.log('[InjectFilesIntoBrowserWindow] Started.')
     app.win.webContents.on('did-stop-loading', async () => {
+        LoadCSS('init.css')
 
         /* Load the Emulation Files */
         if (app.config.css.emulateMacOS) {
