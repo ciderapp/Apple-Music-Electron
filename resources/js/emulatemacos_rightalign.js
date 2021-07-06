@@ -21,78 +21,51 @@ try {
         document.getElementsByClassName('web-navigation__native-upsell')[0].remove();
     }
 
-    if (!webNavigationMacFrame) {
-        var webNavigationMacFrame = document.getElementsByClassName("web-navigation")[0];
-    }
+    if (document.getElementsByClassName('web-chrome').length > 0 && !document.querySelector('.dragDiv')) {
 
-    if (webNavigationMacFrame && !(webNavigationMacFrame.style.height === "calc(100vh - 32px)")) {
+        /*
+        * Stoplights
+        * Change values to customize look and/or behaviour
+        */
 
-        const dragDiv = document.createElement("div");
-        dragDiv.style.width = "100%";
-        dragDiv.style.height = "32px";
-        dragDiv.style.position = "absolute";
-        dragDiv.style.top = "0";
-        dragDiv.style.left = "0";
-        dragDiv.style.zIndex = "15";
-        dragDiv.style.webkitAppRegion = "drag";
-        dragDiv.classList.add('dragDiv');
-        dragDiv.ondblclick = () => {
-            ipcRenderer.send("maximize")
-        };
+        /* Red - Close */
+        const redStoplightStyle = "height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; float: right; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag; ";
+        const redStoplightOnClick = "ipcRenderer.send('close');";
 
-        document.body.appendChild(dragDiv);
+        /* Yellow - Minimize */
+        const yellowStoplightStyle = "height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; float: right; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;";
+        const yellowStoplightOnClick = "ipcRenderer.send('maximize');";
 
-        webNavigationMacFrame.style.height = "calc(100vh - 32px)";
-        webNavigationMacFrame.style.width = "100%";
-        webNavigationMacFrame.style.bottom = "0";
-        webNavigationMacFrame.style.position = "absolute";
-        webNavigationMacFrame.style.zIndex = "10";
+        /* Green - Maximize */
+        const greenStoplightStyle = "height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; float: right; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;";
+        const greenStoplightOnClick = "ipcRenderer.send('minimize');";
 
+        /* Dim the Button Function */
+        function dimButton(id) {
+            document.getElementById(id).style.filter = "brightness(40%)";
+        }
+
+        /* Brighten the Button Function */
+        function brightenButton(id) {
+            document.getElementById(id).style.filter = "brightness(100%)";
+        }
+
+        /* Give it Space */
         document.head.insertAdjacentHTML("beforeend", "<style>.web-chrome { top: 32px !important; }</style>");
-        document.head.insertAdjacentHTML("beforeend", "<style>.no-song-loaded.not-authenticated .web-navigation { height: calc(100vh - 32px); margin-top: 32px; }</style>");
 
-        const closeButton = document.createElement("span");
-        const minimizeButton = document.createElement("span");
-        const maximizeButton = document.createElement("span");
-
-        closeButton.style = "height: 11px; width: 11px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; float: right; top: 0px; margin: 10px 10px 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag; ";
-        minimizeButton.style = "height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; float: right; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;";
-        maximizeButton.style = "height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; float: right; top: 0px; margin: 10px 4px 10px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;";
-
-        closeButton.onclick = () => {
-            ipcRenderer.send("close")
-        };
-        minimizeButton.onclick = () => {
-            ipcRenderer.send("maximize")
-        };
-        maximizeButton.onclick = () => {
-            ipcRenderer.send("minimize")
-        };
-
-        dragDiv.appendChild(closeButton);
-        dragDiv.appendChild(minimizeButton);
-        dragDiv.appendChild(maximizeButton);
-
-        closeButton.onmouseenter = () => {
-            closeButton.style.filter = "brightness(50%)";
-        };
-        minimizeButton.onmouseenter = () => {
-            minimizeButton.style.filter = "brightness(50%)";
-        };
-        maximizeButton.onmouseenter = () => {
-            maximizeButton.style.filter = "brightness(50%)";
-        };
-
-        closeButton.onmouseleave = () => {
-            closeButton.style.filter = "brightness(100%)";
-        };
-        minimizeButton.onmouseleave = () => {
-            minimizeButton.style.filter = "brightness(100%)";
-        };
-        maximizeButton.onmouseleave = () => {
-            maximizeButton.style.filter = "brightness(100%)";
-        };
+        /* Add the Stoplights! */
+        document.body.insertAdjacentHTML('afterbegin', `
+            <div class="dragDiv" style="display: flex">
+                <div class="sidebarDragDiv" style="top: 0; -webkit-app-region: drag; background-color: transparent !important; -webkit-user-select: none; width: var(--web-navigation-width); height: 32px;">
+                </div>
+                <div class="mainDragDiv" style="background-color: var(--playerBackground); top: 0; -webkit-app-region: drag; -webkit-user-select: none; flex-grow: 1; height: 32px;">
+                    <span id="red" onmouseover="dimButton('red')" onmouseleave="brightenButton('red')" onclick="${redStoplightOnClick}" style="${redStoplightStyle}"></span>
+                    <span id="yellow" onmouseover="dimButton('yellow')" onmouseleave="brightenButton('yellow')" onclick="${yellowStoplightOnClick}" style="${yellowStoplightStyle}"></span>
+                    <span id="green" onmouseover="dimButton('green')" onmouseleave="brightenButton('green')" onclick="${greenStoplightOnClick}" style="${greenStoplightStyle}"></span>
+                </div>
+            </div>
+        `);
     }
 } catch (e) {
-    console.error("[CSS] Error while trying to apply emulatemacos.js", e);
+    console.error("[CSS] Error while trying to apply emulatemacos_rightalign.js", e);
 }

@@ -17,6 +17,10 @@
     box-shadow: 0 1px 0 #000000ab, 0 1px 3px #000000c7, inset 0 -.5px 0 var(--playerInnerShadow) !important;
   }
 
+  .mainDragDiv {
+    background-color: #131313 !important;
+  }
+
   .web-chrome-playback-lcd {
     border-radius: 3px !important;
   }
