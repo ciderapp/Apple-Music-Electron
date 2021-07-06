@@ -1,5 +1,5 @@
-const {app, BrowserWindow} = require('electron')
-const {join} = require('path')
+const { app, BrowserWindow } = require('electron')
+const { join } = require('path')
 const glasstron = require('glasstron');
 
 if (app.config.login.authMode) {
@@ -12,7 +12,7 @@ if (app.config.login.authMode) {
 
 console.log(insecure)
 
-exports.CreateBrowserWindow = function () {
+exports.CreateBrowserWindow = function() {
     console.log('[CreateBrowserWindow] Initializing Browser Window Creation.')
     const options = {
         icon: join(__dirname, `../icons/icon.ico`),
@@ -44,6 +44,8 @@ exports.CreateBrowserWindow = function () {
         if (process.platform === "linux") app.commandLine.appendSwitch("enable-transparent-visuals"); // Linux Append Commandline
         win = new glasstron.BrowserWindow(options)
         if (process.platform === "win32") win.blurType = "blurbehind"; // blurType only works on Windows
+        if (process.platform === "darwin") win.setVibrancy('under-window'); // setVibrancy only works on macoOS
+
         win.setBlur(true);
         app.isUsingGlasstron = true
     }
