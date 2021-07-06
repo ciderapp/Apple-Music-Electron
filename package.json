@@ -23,6 +23,7 @@
     "fs-extra": "^10.0.0",
     "glasstron": "^0.0.7",
     "is-reachable": "^5.0.0",
+    "lastfmapi": "^0.1.1",
     "mpris-service": "^2.1.2",
     "node-fetch": "^2.6.1",
     "source-map-support": "^0.5.16",

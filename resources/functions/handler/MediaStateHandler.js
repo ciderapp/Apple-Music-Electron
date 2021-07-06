@@ -2,6 +2,7 @@ const {app, ipcMain} = require('electron')
 const {SetThumbarButtons} = require('../win/SetThumbarButtons')
 const {UpdateMetaData} = require('../mpris/UpdateMetaData')
 const {CreateNotification} = require('../CreateNotification')
+const {scrobble} = require("../lastfm/scrobbleSong");
 
 exports.mediaItemStateDidChange = function () {
     console.log('[mediaItemStateDidChange] Started.')
@@ -31,10 +32,13 @@ exports.mediaItemStateDidChange = function () {
 
         }
 
-        // Update the Cache
+        // Update the Cache and send a request to LastFM if enabled of course :smile:
         while (a.playParams.id !== app.ipc.cache.playParams.id) {
             console.log('[mediaItemStateDidChange] Cached Song is not the same as Attribute Song, updating cache.')
             app.ipc.cache = a;
+            if (app.config.lastfm.enabled) {
+                scrobble(a)
+            }
         }
 
         // Revert it All because This Runs too many times

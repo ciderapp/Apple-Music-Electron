@@ -3,6 +3,7 @@ const {InitializeTheme} = require('./Init-Theme')
 const {InitializeTray} = require('./Init-Tray')
 const {InitializeRPC} = require('../rpc/Init-DiscordRPC')
 const {InitializeMpris} = require('../mpris/Init-Mpris')
+const {lfmauthenticate} = require("../lastfm/authenticate");
 
 
 exports.ApplicationReady = function () {
@@ -15,4 +16,5 @@ exports.ApplicationReady = function () {
     // Init (Other)
     InitializeMpris()
     InitializeRPC()
+    lfmauthenticate()
 }

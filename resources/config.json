@@ -38,6 +38,12 @@
     "trayTooltipSongName": true
   },
 
+  "lastfm": {
+    "_notice_": "These options allow you to scrobble music through LastFM. Learn how to set this up here https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM",
+    "enabled": false,
+    "authKey": "Put your Auth Key here."
+  },
+
   "advanced": {
     "allowMultipleInstances": false,
     "autoUpdaterBetaBuilds": false,
