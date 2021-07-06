@@ -21,8 +21,6 @@ exports.mediaItemStateDidChange = function () {
         // New Song Updates
         if (a.playParams.id !== app.ipc.cache.playParams.id || app.ipc.cacheNew) {
 
-            scrobble(a)
-
             //  Notifications
             while (app.ipc.MediaNotification) {
                 app.ipc.MediaNotification = CreateNotification(a)

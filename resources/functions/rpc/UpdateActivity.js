@@ -28,7 +28,7 @@ exports.UpdateActivity = function (attributes) {
             instance: false,
         });
 
-        // scrobble(attributes)
+        scrobble(attributes)
     } else {
         app.discord.client.updatePresence({
             details: attributes.name,
