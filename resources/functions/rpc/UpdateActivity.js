@@ -27,6 +27,8 @@ exports.UpdateActivity = function (attributes) {
             smallImageText: 'Playing',
             instance: false,
         });
+
+        // scrobble(attributes)
     } else {
         app.discord.client.updatePresence({
             details: attributes.name,

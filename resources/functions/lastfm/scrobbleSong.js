@@ -35,10 +35,11 @@ lfm.setSessionCredentials(sessiondata.name, sessiondata.key)
 exports.scrobble = function(attributes) {
     // Scrobble playing song.
     if (attributes.status === true) {
+        lfm.setSessionCredentials(sessiondata.name, sessiondata.key)
         lfm.track.scrobble({
             'artist': attributes.artistName,
             'track': attributes.name,
-            'timestamp': Math.floor((new Date()).getTime() / 1000) - 300
+            'timestamp': new Date().getTime() / 1000
         }, function (err, scrobbled) {
             if (err) {
                 return console.log('[LastFM] An error occurred while scrobbling', err);

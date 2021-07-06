@@ -21,6 +21,8 @@ exports.mediaItemStateDidChange = function () {
         // New Song Updates
         if (a.playParams.id !== app.ipc.cache.playParams.id || app.ipc.cacheNew) {
 
+            scrobble(a)
+
             //  Notifications
             while (app.ipc.MediaNotification) {
                 app.ipc.MediaNotification = CreateNotification(a)
@@ -36,9 +38,6 @@ exports.mediaItemStateDidChange = function () {
         while (a.playParams.id !== app.ipc.cache.playParams.id) {
             console.log('[mediaItemStateDidChange] Cached Song is not the same as Attribute Song, updating cache.')
             app.ipc.cache = a;
-            if (app.config.lastfm.enabled) {
-                scrobble(a)
-            }
         }
 
         // Revert it All because This Runs too many times

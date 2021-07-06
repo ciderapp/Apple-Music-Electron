@@ -35,7 +35,7 @@ exports.lfmauthenticate = function () {
 
         let sessionfile = join(UserFilesDirectory, "session.json")
 
-        fs.readFile(sessionfile, 'utf8', function(err, sessioninfo){
+        fs.stat(sessionfile, 'utf8', function(err){
             if (err) {
                 console.log("[LastFM] [Session] Session file couldn't be opened or doesn't exist,", err)
                 console.log("[LastFM] [Auth] Beginning authentication from config.json")
