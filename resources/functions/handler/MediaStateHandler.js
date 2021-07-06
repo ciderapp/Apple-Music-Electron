@@ -2,7 +2,6 @@ const {app, ipcMain} = require('electron')
 const {SetThumbarButtons} = require('../win/SetThumbarButtons')
 const {UpdateMetaData} = require('../mpris/UpdateMetaData')
 const {CreateNotification} = require('../CreateNotification')
-const {scrobble} = require("../lastfm/scrobbleSong");
 
 exports.mediaItemStateDidChange = function () {
     console.log('[mediaItemStateDidChange] Started.')

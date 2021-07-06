@@ -32,7 +32,6 @@ exports.InitializeBase = function () {
         ThumbarUpdate: true,
         TooltipUpdate: true,
         DiscordUpdate: true,
-        LastFMUpdate: true,
         MprisUpdate: true,
         MprisStatusUpdate: true,
         MediaNotification: true,

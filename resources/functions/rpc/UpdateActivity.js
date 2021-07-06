@@ -1,5 +1,7 @@
-const {scrobble} = require("../lastfm/scrobbleSong");
 const {app} = require('electron')
+if (app.config.lastfm.enabled) {
+    var {scrobble} = require("../lastfm/scrobbleSong");
+}
 
 exports.UpdateActivity = function (attributes) {
     console.log('[DiscordRPC] [UpdateActivity] Started.')
@@ -28,7 +30,9 @@ exports.UpdateActivity = function (attributes) {
             instance: false,
         });
 
-        scrobble(attributes)
+        if (app.config.lastfm.enabled) {
+            scrobble(attributes)
+        }
     } else {
         app.discord.client.updatePresence({
             details: attributes.name,
