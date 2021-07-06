@@ -53,7 +53,7 @@ Package Name | Source | Version | Maintainer
 For more information surrounding configuration, compiling and other developer documentation, see the [wiki](https://github.com/cryptofyre/Apple-Music-Electron/wiki).
 
 ### Credits
-[![](https://github.com/cryptofyre.png?size=50)](https://github.com/cryptofyre)[![](https://github.com/core.png?size=50)](https://github.com/cryptofyre)
+[![](https://github.com/cryptofyre.png?size=50)](https://github.com/cryptofyre)[![](https://github.com/coredev-uk.png?size=50)](https://github.com/cryptofyre)
 [cryptofyre](https://github.com/cryptofyre), [Core](https://github.com/coredev-uk), [devilAPI](https://github.com/devilAPI), [child-duckling](https://github.com/child-duckling) [Apple](https://apple.com), [castlabs](https://github.com/castlabs) (for electron), and more!
 
 ### Disclaimer
