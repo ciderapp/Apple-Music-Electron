@@ -29,20 +29,20 @@ try {
     if (document.getElementById('web-navigation-search-box').length > 0 && !document.querySelector('.dragDiv')) {
 
         /*
-        * Stoplights
-        * Change values to customize look and/or behaviour
-        */
+         * Stoplights
+         * Change values to customize look and/or behaviour
+         */
 
         /* Red - Close */
-        const redStoplightStyle = 'height: 13px; width: 13px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 26px 4px 10px 17px; color: rgb(130, 0, 5); -webkit-app-region: no-drag;';
+        const redStoplightStyle = 'height: 12px; width: 12px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 26px 4px 10px 17px; color: rgb(130, 0, 5); -webkit-app-region: no-drag;';
         const redStoplightOnClick = "ipcRenderer.send('close');";
 
         /* Yellow - Minimize */
-        const yellowStoplightStyle = 'height: 13px; width: 13px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 26px 4px; color: rgb(130, 0, 5); -webkit-app-region: no-drag;';
+        const yellowStoplightStyle = 'height: 12px; width: 12px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 26px 4px; color: rgb(130, 0, 5); -webkit-app-region: no-drag;';
         const yellowStoplightOnClick = "ipcRenderer.send('minimize');";
 
         /* Green - Maximize */
-        const greenStoplightStyle = 'height: 13px; width: 13px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 26px 4px; color: rgb(130, 0, 5); -webkit-app-region: no-drag;';
+        const greenStoplightStyle = 'height: 12px; width: 12px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 26px 4px; color: rgb(130, 0, 5); -webkit-app-region: no-drag;';
         const greenStoplightOnClick = "ipcRenderer.send('maximize');";
 
         /* Dim the Button Function */
