@@ -4,10 +4,11 @@ const {app} = require('electron')
 const fs = require('fs')
 const {join} = require('path')
 const HomeDirectory = require('os').homedir();
+const { Notification } = require('electron')
 
 let UserFilesDirectory;
 
-exports.lfmauthenticate = function () {
+exports.lfmauthenticate = function (){
     if (!app.config.lastfm.enabled) return;
     if (app.config.lastfm.enabled) {
         const lfm = new LastfmAPI({
@@ -48,10 +49,11 @@ exports.lfmauthenticate = function () {
                     let tempdata = JSON.stringify(session)
                     fs.writeFile(sessionfile, tempdata, (err) => {
                         if (err)
-                            console.log("[LastFM] [fs]")
+                            console.log("[LastFM] [fs]", err)
                         else {
                             console.log("[LastFM] [fs] File was written successfully.")
                             authenticatefromfile()
+                            new Notification({ title: "Apple Music", body: "Successfully logged into LastFM using Authentication Key." }).show()
                         }
                     })
                 });

@@ -29,7 +29,6 @@ exports.UpdateActivity = function (attributes) {
             smallImageText: 'Playing',
             instance: false,
         });
-
         if (app.config.lastfm.enabled) {
             scrobble(attributes)
         }
