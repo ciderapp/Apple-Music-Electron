@@ -54,9 +54,9 @@ For more information surrounding configuration, compiling and other developer do
 
 ### Credits
 <p align="center">
-  <a href="https://github.com/cryptofyre"><img src="https://github.com/cryptofyre.png" height="auto" width="50" style="border-radius:50%"> cryptofyre</a>
+  <a href="https://github.com/cryptofyre"><img class="avatar-user" src="https://github.com/cryptofyre.png" height="auto" width="50"> cryptofyre</a>
   <br>
-  <a href="https://github.com/coredev-uk"><img src="https://github.com/coredev-uk.png" height="auto" width="50" style="border-radius:50%"> cryptofyre</a>
+  <a href="https://github.com/coredev-uk"><img class="avatar-user" src="https://github.com/coredev-uk.png" height="auto" width="50"> core</a>
 </p>
 
 [devilAPI](https://github.com/devilAPI), [child-duckling](https://github.com/child-duckling) [Apple](https://apple.com), [castlabs](https://github.com/castlabs) (for electron), and [more](https://github.com/cryptofyre/Apple-Music-Electron/contributors)!
