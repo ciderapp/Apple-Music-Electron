@@ -53,7 +53,11 @@ Package Name | Source | Version | Maintainer
 For more information surrounding configuration, compiling and other developer documentation, see the [wiki](https://github.com/cryptofyre/Apple-Music-Electron/wiki).
 
 ### Credits
-[cryptofyre](https://github.com/cryptofyre), [Core](https://github.com/coredev-uk), [devilAPI](https://github.com/devilAPI), [Apple](https://apple.com), [castlabs](https://github.com/castlabs) (for electron), and more!
+<a href="https://github.com/cryptofyre"><img src="https://github.com/cryptofyre.png?size=50"> cryptofyre</a>
+<br>
+<a href="https://github.com/coredev-uk"><img src="https://github.com/coredev-uk.png?size=50"> core</a>
+<br>
+[devilAPI](https://github.com/devilAPI), [child-duckling](https://github.com/child-duckling) [Apple](https://apple.com), [castlabs](https://github.com/castlabs) (for electron), and [more](https://github.com/cryptofyre/Apple-Music-Electron/contributors)!
 
 ### Disclaimer
 *I do not intend to compete in any way to Apple. Apple owns the right to the Apple logo, Apple Music, Apple Music Logo,
