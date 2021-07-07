@@ -9,7 +9,6 @@ exports.ApplicationReady = function () {
     console.log('[ApplicationReady] Started.')
     // Run the Functions
     settingsmenuinit()
-
     SetTaskList()
     InitializeTheme()
     InitializeTray()
