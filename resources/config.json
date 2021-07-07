@@ -9,7 +9,10 @@
 
     "_emulateMacOS_comment": "This enables various adjustments that make the Apple Music interface look like the MacOS Apple Music UI. Enabling rightAlign will replicate the Windows Operating System's Window Control.",
     "emulateMacOS": true,
-    "emulateMacOS_rightAlign": false
+    "emulateMacOS_rightAlign": false,
+
+    "_streamerMode_comment": "Enabling this will remove certain personal elements (your profile picture) and will allow you to scale the app to a size that allows you to use it in streams.",
+    "streamerMode": false
   },
 
   "transparency": {

@@ -21,6 +21,9 @@ exports.InitializeBase = function () {
 
         // Media Key Hijacking
         if (app.config.advanced.preventMediaKeyHijacking) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
+
+        // Just turn it on because i was dumb and made it so you have to have both on.
+        if (app.config.css.emulateMacOS_rightAlign && !app.config.css.emulateMacOS) app.config.css.emulateMacOS = true;
     } else {
         app.configInitializationFailed = true
     }

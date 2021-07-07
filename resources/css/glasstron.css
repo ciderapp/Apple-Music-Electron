@@ -41,3 +41,7 @@
 html body {
     background-color: var(--sidebar) !important;
 }
+
+.dt-footer {
+    background-color: var(--pageBG) !important;
+}

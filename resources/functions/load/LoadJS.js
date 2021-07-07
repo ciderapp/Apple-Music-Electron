@@ -2,7 +2,7 @@ const {readFile} = require('fs')
 const {app} = require('electron')
 const {join} = require('path')
 
-exports.LoadJavascript = function (path) {
+exports.LoadJS = function (path) {
     path = join(join(__dirname, '../../js/'), path.toLowerCase())
 
     readFile(path, "utf-8", function (error, data) {

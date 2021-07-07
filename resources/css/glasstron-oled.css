@@ -27,6 +27,10 @@
     }
 }
 
+.dt-footer {
+    background-color: var(--pageBG) !important;
+}
+
 
 /* Don't do anything that affects body attributes as this will cause glasstron to break. */
 

@@ -50,8 +50,9 @@ try {
             document.getElementById(id).style.filter = "brightness(100%)";
         }
 
+
         /* Give it Space */
-        document.head.insertAdjacentHTML("beforeend", "<style>.web-chrome { top: 32px !important; }</style>");
+        document.head.insertAdjacentHTML("beforeend", "<style>.web-chrome { top: 32px; }</style>");
 
         /* Add the Stoplights! */
         document.body.insertAdjacentHTML('afterbegin', `

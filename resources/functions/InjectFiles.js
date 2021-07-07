@@ -1,5 +1,5 @@
 const {app} = require('electron')
-const {LoadJavascript} = require('./load/LoadJavascript')
+const {LoadJS} = require('./load/LoadJS')
 const {LoadCSS} = require('./load/LoadCSS')
 
 exports.InjectFiles = function () {
@@ -10,17 +10,23 @@ exports.InjectFiles = function () {
         /* Load the Emulation Files */
         if (app.config.css.emulateMacOS) {
             if (app.config.css.emulateMacOS_rightAlign) {
-                LoadJavascript('emulatemacos_rightalign.js')
+                LoadJS('emulatemacos_rightalign.js')
             } else {
-                LoadJavascript('emulatemacos.js')
+                LoadJS('emulatemacos.js')
             }
         }
 
+        /* Load Glasstron and/or Oled theme */
         if (app.config.transparency.enabled) {
             LoadCSS('glasstron.css')
             if (app.config.transparency.oledDark) {
                 LoadCSS('glasstron-oled.css')
             }
+        }
+
+        /* Streamer Mode */
+        if (app.config.css.streamerMode) {
+            LoadCSS('streamerMode.css')
         }
 
         /* Load a Theme if it is Found in the Configuration File */

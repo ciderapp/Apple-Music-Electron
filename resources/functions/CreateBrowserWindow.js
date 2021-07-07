@@ -8,9 +8,9 @@ exports.CreateBrowserWindow = function() {
         icon: join(__dirname, `../icons/icon.ico`),
         width: 1024,
         height: 600,
-        minWidth: 300,
-        minHeight: 300,
-        frame: !app.config.css.emulateMacOS,
+        minWidth: ((app.config.css.emulateMacOS || app.config.css.emulateMacOS_rightAlign) ? ((app.config.css.streamerMode) ? 400 : 300) : ((app.config.css.streamerMode) ? 400 : 300)),
+        minHeight: ((app.config.css.emulateMacOS || app.config.css.emulateMacOS_rightAlign) ? ((app.config.css.streamerMode) ? 55 : 300) : ((app.config.css.streamerMode) ? 115 : 300)),
+        frame: ((!(app.config.css.emulateMacOS || app.config.css.emulateMacOS_rightAlign))),
         title: "Apple Music",
         // Enables DRM
         webPreferences: {
