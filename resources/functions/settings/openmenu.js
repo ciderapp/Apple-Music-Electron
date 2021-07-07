@@ -5,36 +5,18 @@ const { app, globalShortcut } = require('electron')
 
 exports.settingsmenuinit = function() {
     const settingsmenu = new ElectronPreferences({
-        /**
-         * Where should preferences be saved?
-         */
         'dataStore': path.resolve(app.getPath('userData'), 'preferences.json'),
-        /**
-         * Default values.
-         */
         'defaults': {
-            'notes': {
-                'folder': path.resolve(os.homedir(), 'Notes')
-            }
+            // remind me to set this up later
         },
-        /**
-         * The preferences window is divided into sections. Each section has a label, an icon, and one or
-         * more fields associated with it. Each section should also be given a unique ID.
-         */
         'sections': [
             {
                 'id': 'quick',
                 'label': 'Quick Settings',
-                /**
-                 * See the list of available icons below.
-                 */
                 'icon': 'notes',
                 'form': {
                     'groups': [
                         {
-                            /**
-                             * Group heading is optional.
-                             */
                             'label': 'Quick Settings',
                             'fields': [
                                 {
@@ -44,9 +26,6 @@ exports.settingsmenuinit = function() {
                                     'options': [
                                         { 'label': 'Auth Mode', 'value': 'authEnabled' },
                                     ],
-                                    /**
-                                     * Optional text to be displayed beneath the field.
-                                     */
                                     'help': 'Enable Authentication Mode to allow some users to sign in.'
                                 },
                                 {
@@ -146,9 +125,6 @@ exports.settingsmenuinit = function() {
                                     'options': [
                                         { 'label': 'Enable Transparency', 'value': 'transparentEnabled' }
                                     ],
-                                    /**
-                                     * Optional text to be displayed beneath the field.
-                                     */
                                     'help': 'Enable Glasstron transparency'
                                 },
                             ]
@@ -199,9 +175,6 @@ exports.settingsmenuinit = function() {
                 }
             }
         ],
-        /**
-         * These parameters on the preference window settings can be overwrinten
-         */
         browserWindowOpts: {
             'title': 'Settings',
             'width': 900,
