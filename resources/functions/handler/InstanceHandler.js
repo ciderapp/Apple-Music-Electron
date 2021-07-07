@@ -5,7 +5,7 @@ exports.InstanceHandler = function () {
     const gotTheLock = app.requestSingleInstanceLock();
 
     if (!gotTheLock && !app.config.advanced.allowMultipleInstances) {
-        console.log("[Apple-Music-Electron] Existing Instance is Blocking Second Instance.")
+        console.log("[InstanceHandler] Existing Instance is Blocking Second Instance.")
         app.quit();
         return true
     } else {
@@ -15,6 +15,7 @@ exports.InstanceHandler = function () {
                 return true
             } else if (app.win && !app.config.advanced.allowMultipleInstances) {
                 app.win.show()
+                app.win.focus()
             }
         })
     }

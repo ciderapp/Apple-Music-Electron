@@ -2,46 +2,25 @@ const {app, dialog} = require('electron')
 const {CreateUserFiles} = require('./CreateUserFiles')
 const baseConfiguration = require('../../config.json');
 
-exports.CheckUserFiles = function () {
-    const application = app.config.application
-    const user = app.config.user
-    const paths = {application, user}
-    CreateUserFiles("SampleConfig", paths)
+exports.CheckUserFiles = function (paths) {
     let MissingKeys = []
+    CreateUserFiles("SampleConfig", paths)
 
     try {
-        Object.keys(baseConfiguration.css).forEach(function (key) {
-            if (!app.config.css.hasOwnProperty(key)) {
-                console.log(`[MissingKey] ${key}`)
-                MissingKeys.push(key.toString())
-            }
-        })
-
-        Object.keys(baseConfiguration.preferences).forEach(function (key) {
-            if (!app.config.preferences.hasOwnProperty(key)) {
-                console.log(`[MissingKey] ${key}`)
-                MissingKeys.push(key)
-            }
-        })
-
-        Object.keys(baseConfiguration.advanced).forEach(function (key) {
-            if (!app.config.advanced.hasOwnProperty(key)) {
-                console.log(`[MissingKey] ${key}`)
-                MissingKeys.push(key)
-            }
-        })
-
-        Object.keys(baseConfiguration.login).forEach(function (key) {
-            if (!app.config.login.hasOwnProperty(key)) {
-                console.log(`[MissingKey] ${key}`)
-                MissingKeys.push(key)
-            }
-        })
-
-        Object.keys(baseConfiguration.lastfm).forEach(function (key) {
-            if (!app.config.lastfm.hasOwnProperty(key)) {
-                console.log(`[MissingKey] ${key}`)
-                MissingKeys.push(key)
+        const userConfiguration = require(paths.user.cfg)
+        console.log('[CheckUserFiles] Checking Configuration File...')
+        Object.keys(baseConfiguration).forEach(function (parentKey) {
+            if (parentKey in userConfiguration) {
+                Object.keys(baseConfiguration[parentKey]).forEach(function (childKey) {
+                    if (!userConfiguration[parentKey].hasOwnProperty(childKey)) {
+                        console.log(`[MissingKey] ${childKey}`)
+                        MissingKeys.push(`${parentKey}.${childKey}`)
+                    }
+                })
+            } else {
+                MissingKeys.push(parentKey)
+                console.log(`[CheckUserFiles] ${parentKey} not found in userConfiguration!`)
+                app.config = none;
             }
         })
     } catch(err) {
@@ -54,13 +33,22 @@ exports.CheckUserFiles = function () {
 
     if (MissingKeys.length !== 0 || app.configInitializationFailed) {
         MissingKeys = MissingKeys.toString()
-        CreateUserFiles("SampleConfig", paths)
+        if (!app.configInitializationFailed) CreateUserFiles("SampleConfig", paths);
         dialog.showMessageBox(app.win, {
             message: `Your current configuration is incompatible, make a backup of your current configuration. Pressing OK will overwrite your current configuration.`,
             title: "Missing Keys in Configuration",
             type: "warning",
             detail: `Missing Keys: \n${MissingKeys}`,
-            buttons: []
-        }).then(() => CreateUserFiles("Config", paths))
+            buttons: ['Update Configuration and Relaunch', 'Quit Application']
+        }).then(({response, checked}) => {
+            if (response === 0) {
+                CreateUserFiles("Config", paths);
+                app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) });
+                app.quit();
+            } else if (response === 1) {
+                app.quit();
+            }
+        })
+        app.configInitializationFailed = true
     }
 }
