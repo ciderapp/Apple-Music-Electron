@@ -59,3 +59,6 @@ For more information surrounding configuration, compiling and other developer do
 *I do not intend to compete in any way to Apple. Apple owns the right to the Apple logo, Apple Music, Apple Music Logo,
 and MusicKit. If anyone has any issues with the legal reasoning behind this application you can contact me
 at <a href="mailto:cryptofyre@protonmail.com">cryptofyre@protonmail.com</a>.*
+
+![image](https://user-images.githubusercontent.com/33162551/124784711-cce31300-df0b-11eb-826e-7ef289bae574.png)
+
