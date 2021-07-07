@@ -8,7 +8,8 @@
   :root {
     --primaryColor: #D8E4FF !important;
     --primaryColor-rgb: 216, 228, 255 !important;
-    --sidebar: rgba(0, 18, 11, 0.6) !important;
+    --sidebarStandard: #00120 !important;
+    --sidebarGlasstron: #00120b18 !important;
     --footerBG: #24423E !important;
     --pageBG: #00120B !important;
     --pageBG-rgb: rgba(0, 18, 11, 0.1) !important;

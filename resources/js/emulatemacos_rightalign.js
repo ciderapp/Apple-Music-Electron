@@ -57,7 +57,7 @@ try {
         /* Add the Stoplights! */
         document.body.insertAdjacentHTML('afterbegin', `
             <div class="dragDiv" style="display: flex">
-                <div class="sidebarDragDiv" style="top: 0; -webkit-app-region: drag; background-color: transparent !important; -webkit-user-select: none; width: var(--web-navigation-width); height: 32px;">
+                <div class="sidebarDragDiv" style="top: 0; -webkit-app-region: drag; background-color: var(--sidebar) !important; -webkit-user-select: none; width: var(--web-navigation-width); height: 32px;">
                 </div>
                 <div class="mainDragDiv" style="background-color: var(--playerBackground); top: 0; -webkit-app-region: drag; -webkit-user-select: none; flex-grow: 1; height: 32px;">
                     <span id="red" onmouseover="dimButton('red')" onmouseleave="brightenButton('red')" onclick="${redStoplightOnClick}" style="${redStoplightStyle}"></span>

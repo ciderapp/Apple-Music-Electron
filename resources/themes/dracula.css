@@ -18,7 +18,8 @@
 @media (prefers-color-scheme:dark) {
     :root {
         --primaryColor: #bd93f9 !important;
-        --sidebar: rgba(33, 34, 44, 0.6) !important;
+        --sidebarStandard: #21222c !important;
+        --sidebarGlasstron: #21222c18 !important;
         --footerBG: #44475a !important;
         --pageBG: #282a36 !important;
         --playerBackground: #21222c !important;

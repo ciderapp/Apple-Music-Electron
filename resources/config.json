@@ -12,14 +12,10 @@
     "emulateMacOS_rightAlign": false,
 
     "_streamerMode_comment": "Enabling this will remove certain personal elements (your profile picture) and will allow you to scale the app to a size that allows you to use it in streams.",
-    "streamerMode": false
-  },
+    "streamerMode": false,
 
-  "transparency": {
-    "_notice_": "This category controls the transparency options for Apple Music Electron",
-
-    "enabled": true,
-    "oledDark": false
+    "_transparencyMode_comment": "This enables the transparency affect for the Apple Music UI. This can affect performance if you are using older hardware.",
+    "transparencyMode": true
   },
 
   "lastfm": {
@@ -55,6 +51,7 @@
     "enableDevTools": false,
     "forceDisableWindowFrame": false,
     "forceApplicationLanguage": "",
+    "forceApplicationRegion": "",
     "forceDarkMode": false,
     "menuBarVisible": false,
     "removeScrollbars": true,

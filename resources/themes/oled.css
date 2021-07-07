@@ -1,0 +1,17 @@
+/**
+ * @name Oled Black
+ * @author cryptofyre
+ * @description Sexy oled black theme
+*/
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --sidebarGlasstron: #00000046 !important;
+        --pageBG: rgb(0, 0, 0) !important;
+        --playerBackground: #131313 !important;
+    }
+
+    .dt-search-box__input {
+        background-color: #00000013 !important;
+    }
+}

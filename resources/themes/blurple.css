@@ -8,13 +8,18 @@
     :root {
         --primaryColor: #5865f2 !important;
         --primaryColor-rgb: 88, 101, 242 !important;
-        --sidebar: rgba(19, 21, 25, 0.6) !important;
-        --footerBG: var(--sidebar) !important;
+        --footerBG: #131519 !important;
         --pageBG: #171a1f !important;
-        --pageBG-rgb: rgba(62, 71, 87, 0.1) !important;
-        --playerBackground: var(--sidebar) !important;
-        --playerLCDBGFill: rgba(19, 21, 25, 0.35) !important;
+        --playerBackground: #131519 !important;
+        --playerLCDBGFill: #131519 !important;
 
+        /* Glasstron */
+        --sidebarGlasstron: #00000018;
+
+        /* Standard */
+        --sidebarStandard: #131519;
+
+        /* Set the Default Stuff */
         --modalBGColor: var(--pageBG) !important;
         --systemHeaderMaterialSover: var(--pageBG) !important;
         --systemQuaternary: var(--pageBG-rgb) !important;

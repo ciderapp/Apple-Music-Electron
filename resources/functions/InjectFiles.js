@@ -16,17 +16,21 @@ exports.InjectFiles = function () {
             }
         }
 
-        /* Load Glasstron and/or Oled theme */
-        if (app.config.transparency.enabled) {
+        /* Load Glasstron */
+        if (app.config.css.transparencyMode) {
             LoadCSS('glasstron.css')
-            if (app.config.transparency.oledDark) {
-                LoadCSS('glasstron-oled.css')
-            }
+        } else {
+            LoadCSS('glasstronDisabled.css')
         }
 
         /* Streamer Mode */
         if (app.config.css.streamerMode) {
             LoadCSS('streamerMode.css')
+        }
+
+        /* Stop the Banner Popping up */
+        if (app.config.advanced.forceApplicationRegion || forceApplicationLanguage) {
+            LoadJS('regionChange.js')
         }
 
         /* Load a Theme if it is Found in the Configuration File */
