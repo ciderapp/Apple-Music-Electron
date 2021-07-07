@@ -60,5 +60,7 @@ For more information surrounding configuration, compiling and other developer do
 and MusicKit. If anyone has any issues with the legal reasoning behind this application you can contact me
 at <a href="mailto:cryptofyre@protonmail.com">cryptofyre@protonmail.com</a>.*
 
-![image](https://user-images.githubusercontent.com/33162551/124784711-cce31300-df0b-11eb-826e-7ef289bae574.png)
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/33162551/124784795-df5d4c80-df0b-11eb-99a7-dc2b1cfb81bd.png" alt="MacStadium">
+<p/>
