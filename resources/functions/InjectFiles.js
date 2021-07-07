@@ -16,7 +16,7 @@ exports.InjectFiles = function () {
             }
         }
 
-        if (app.config.transparency.transparencyEnabled) {
+        if (app.config.transparency.enabled) {
             LoadCSS('glasstron.css')
             if (app.config.transparency.oledDark) {
                 LoadCSS('glasstron-oled.css')

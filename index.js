@@ -1,13 +1,13 @@
 require('v8-compile-cache');
-const { app} = require('electron');
+const {app} = require('electron');
 
 const {InitializeLogging} = require('./resources/functions/init/Init-Logging')
 InitializeLogging()
 
-const { LoadUserFiles } = require('./resources/functions/load/LoadUserFiles')
+const {LoadUserFiles} = require('./resources/functions/load/LoadUserFiles')
 app.config = LoadUserFiles()
 
-const { InitializeBase } = require('./resources/functions/init/Init-Base')
+const {InitializeBase} = require('./resources/functions/init/Init-Base')
 InitializeBase()
 
 // Creating the Application Window and Calling all the Functions
@@ -42,13 +42,14 @@ function CreateWindow() {
 
 // When its Ready call it all
 app.on('ready', () => {
-    const { ApplicationReady } = require('./resources/functions/init/App-Ready')
+    const {ApplicationReady} = require('./resources/functions/init/App-Ready')
     ApplicationReady()
     console.log("[Apple-Music-Electron] Application is Ready.")
     console.log("[Apple-Music-Electron] Creating Window...")
-    setTimeout(CreateWindow, process.platform === "linux" ? 1000 : 0);
     const {CheckUserFiles} = require('./resources/functions/userfiles/CheckUserFiles')
     CheckUserFiles()
+    if (app.configInitializationFailed) return;
+    setTimeout(CreateWindow, process.platform === "linux" ? 1000 : 0);
 });
 
 app.on('window-all-closed', () => {

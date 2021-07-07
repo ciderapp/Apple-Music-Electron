@@ -15,11 +15,15 @@ exports.InitializeBase = function () {
         app.quit()
     }
 
-    // Disable CORS
-    if (app.config.login.authMode) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+    if (app.config) {
+        // Disable CORS
+        if (app.config.login.authMode) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 
-    // Media Key Hijacking
-    if (app.config.advanced.preventMediaKeyHijacking) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
+        // Media Key Hijacking
+        if (app.config.advanced.preventMediaKeyHijacking) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
+    } else {
+        app.configInitializationFailed = true
+    }
 
     // Sets the ModelId (For windows notifications)
     if (process.platform === "win32") app.setAppUserModelId("Apple Music");

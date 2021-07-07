@@ -14,8 +14,16 @@
 
   "transparency": {
     "_notice_": "This category controls the transparency options for Apple Music Electron",
-    "transparencyEnabled": true,
+
+    "enabled": true,
     "oledDark": false
+  },
+
+  "lastfm": {
+    "_notice_": "These options allow you to scrobble music through LastFM. Learn how to set this up here https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM",
+
+    "enabled": false,
+    "authKey": "Put your Auth Key here."
   },
 
   "preferences": {
@@ -36,12 +44,6 @@
 
     "_trayTooltipSongName_comment": "Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.",
     "trayTooltipSongName": true
-  },
-
-  "lastfm": {
-    "_notice_": "These options allow you to scrobble music through LastFM. Learn how to set this up here https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM",
-    "enabled": false,
-    "authKey": "Put your Auth Key here."
   },
 
   "advanced": {

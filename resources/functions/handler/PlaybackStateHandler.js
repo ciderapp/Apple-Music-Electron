@@ -10,12 +10,23 @@ exports.playbackStateDidChange = function () {
         app.isPlaying = a.status;
         if (!a || a.playParams.id === 'no-id-found' || !app.ipc.cache) return;
 
-        if (a.playParams.id !== app.ipc.cache.playParams.id) { // If it is a new song
-            a.startTime = Date.now()
-            a.endTime = Number(Math.round(a.startTime + a.durationInMillis));
-        } else { // If its continuing from the same song
-            a.startTime = Date.now()
-            a.endTime = Number(Math.round(Date.now() + a.remainingTime));
+        try {
+            if (a.playParams.id !== app.ipc.cache.playParams.id) { // If it is a new song
+                a.startTime = Date.now()
+                a.endTime = Number(Math.round(a.startTime + a.durationInMillis));
+            } else { // If its continuing from the same song
+                a.startTime = Date.now()
+                a.endTime = Number(Math.round(Date.now() + a.remainingTime));
+            }
+        } catch(err) {
+            console.log(`[playbackStateDidChange] Error when setting endTime - ${err}`);
+            a.endTime = 0;
+        }
+
+
+        // Just incase
+        if (!a.endTime) {
+            a.endTime = Number(Math.round(Date.now()));
         }
 
         // Thumbar Buttons
