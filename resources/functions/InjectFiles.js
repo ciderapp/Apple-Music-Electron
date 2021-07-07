@@ -29,7 +29,7 @@ exports.InjectFiles = function () {
         }
 
         /* Stop the Banner Popping up */
-        if (app.config.advanced.forceApplicationRegion || forceApplicationLanguage) {
+        if (app.config.advanced.forceApplicationRegion || app.config.advanced.forceApplicationLanguage) {
             LoadJS('regionChange.js')
         }
 

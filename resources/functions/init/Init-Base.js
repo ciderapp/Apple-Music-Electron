@@ -1,8 +1,5 @@
 const {app} = require('electron')
 const {join} = require('path')
-const {InitializeAutoUpdater} = require('./Init-AutoUpdater')
-
-
 
 exports.InitializeBase = function () {
     console.log('[InitializeBase] Started.')
@@ -15,18 +12,15 @@ exports.InitializeBase = function () {
         app.quit()
     }
 
-    if (app.config) {
-        // Disable CORS
-        if (app.config.login.authMode) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+    // Disable CORS
+    if (app.config.login.authMode) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 
-        // Media Key Hijacking
-        if (app.config.advanced.preventMediaKeyHijacking) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
+    // Media Key Hijacking
+    if (app.config.advanced.preventMediaKeyHijacking) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
 
-        // Just turn it on because i was dumb and made it so you have to have both on.
-        if (app.config.css.emulateMacOS_rightAlign && !app.config.css.emulateMacOS) app.config.css.emulateMacOS = true;
-    } else {
-        app.configInitializationFailed = true
-    }
+    // Just turn it on because i was dumb and made it so you have to have both on.
+    if (app.config.css.emulateMacOS_rightAlign && !app.config.css.emulateMacOS) app.config.css.emulateMacOS = true;
+
 
     // Sets the ModelId (For windows notifications)
     if (process.platform === "win32") app.setAppUserModelId("Apple Music");
@@ -49,7 +43,7 @@ exports.InitializeBase = function () {
     app.discord = {client: false, error: false, cachedAttributes: false};
     app.mpris = {}
 
-
     // Init
+    const {InitializeAutoUpdater} = require('./Init-AutoUpdater')
     InitializeAutoUpdater()
 }

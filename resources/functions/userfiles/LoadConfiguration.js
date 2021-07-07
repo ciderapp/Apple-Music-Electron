@@ -12,10 +12,13 @@ exports.LoadConfiguration = function (pathConfiguration) {
         };
         console.log(`[CreateUserFiles] Configuration File: `)
         console.log(ConfigurationFile)
+        const {CheckUserFiles} = require('./CheckUserFiles')
+        CheckUserFiles(ConfigurationFile)
         return ConfigurationFile
     } catch (err) {
         console.log(`[CreateUserFiles] [LoadConfiguration] ${err}`)
-        app.quit()
+        const {CheckUserFiles} = require('./CheckUserFiles')
+        CheckUserFiles(pathConfiguration)
     }
 
 
