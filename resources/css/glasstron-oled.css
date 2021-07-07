@@ -1,27 +1,30 @@
 @media (prefers-color-scheme:dark) {
      :root {
         --sidebar: #00000046 !important;
-        --pageBG: rgba(0, 0, 0, 0.562) !important;
+        --pageBG: rgba(0, 0, 0, 1) !important;
     }
-    .loading-inner {
-        background-color: black !important;
-    }
+
     .dragDiv {
         background-color: transparent !important;
     }
+
     .web-chrome {
         background-color: #131313ad !important;
         box-shadow: 0 1px 0 #000000ab, 0 1px 3px #000000c7, inset 0 -.5px 0 var(--playerInnerShadow) !important;
     }
+
     .mainDragDiv {
         background-color: #131313 !important;
     }
+
     .web-chrome-playback-lcd {
         border-radius: 3px !important;
     }
+
     .dt-search-box__input {
         background-color: #00000013 !important;
     }
+
     html body {
         background-color: var(--sidebar) !important;
     }
