@@ -50,6 +50,10 @@ exports.WindowStateHandler = function () {
         app.win.close();
     })
 
+    ipcMain.on('preferencesUpdated', (e, preferences) => {
+        console.log('Preferences were updated', preferences);
+    });
+
     app.win.on('show', function () {
         SetContextMenu(true)
         SetThumbarButtons(app.isPlaying)

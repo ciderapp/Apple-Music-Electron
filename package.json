@@ -2,7 +2,7 @@
   "author": "cryptofyre <cryptofyre@protonmail.com>",
   "homepage": "https://github.com/cryptofyre/Apple-Music-Electron",
   "name": "apple-music-electron",
-  "applicationId": "AppleMusicElectron",
+  "applicationId": "AppleMusicElectron22",
   "productName": "Apple Music",
   "version": "2.4.0",
   "description": "Unofficial Electron wrapper for Apple Music created by @cryptofyre",

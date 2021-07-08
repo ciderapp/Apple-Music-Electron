@@ -1,6 +1,6 @@
 require('v8-compile-cache');
 const path = require('path');
-const {app, ipcRenderer, remote} = require('electron');
+const {app} = require('electron');
 
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {

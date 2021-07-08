@@ -29,7 +29,7 @@ exports.UpdateActivity = function (attributes) {
             smallImageText: 'Playing',
             instance: false,
         });
-        if (app.config.quick.lastfm_enabled.includes(true)) {
+        if (app.config.quick.lastfm.enabled.includes(true)) {
             scrobble(attributes)
         }
     } else {
