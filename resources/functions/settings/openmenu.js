@@ -10,6 +10,53 @@ exports.settingsmenuinit = function() {
          * Default values.
          */
         'defaults': {
+            "quick": {
+                "authMode": [],
+                "lastfm.enabled": [],
+                "lastfm.authKey": "Put your Auth Key here."
+            },
+            "css": {
+                "cssTheme": "",
+                "emulateMacOS": [
+                    true
+                ],
+                "transparencyMode": [
+                    true
+                ],
+                "streamerMode": []
+            },
+            "preferences": {
+                "closeButtonMinimize": [
+                    true
+                ],
+                "discordRPC": [
+                    true
+                ],
+                "playbackNotifications": [
+                    true,
+                    "minimized"
+                ],
+                "trayTooltipSongName": [
+                    true
+                ]
+            },
+            "advanced": {
+                "allowMultipleInstances": [],
+                "autoUpdaterBetaBuilds": [],
+                "enableDevTools": [],
+                "forceDisableWindowFrame": [],
+                "forceApplicationLanguage": "",
+                "forceApplicationRegion": "",
+                "forceDarkMode": [],
+                "menuBarVisible": [],
+                "removeScrollbars": [
+                    true
+                ],
+                "useBeta": [
+                    true
+                ],
+                "preventMediaKeyHijacking": []
+            }
         },
         'sections': [
             {
