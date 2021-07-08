@@ -4,6 +4,13 @@
     "authMode": false
   },
 
+  "lastfm": {
+    "_notice_": "These options allow you to scrobble music through LastFM. Learn how to set this up here https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM",
+
+    "enabled": false,
+    "authKey": "Put your Auth Key here."
+  },
+
   "css": {
     "_notice_": "This section is for manually disabling/enabling features.",
 
@@ -18,13 +25,6 @@
     "transparencyMode": true
   },
 
-  "lastfm": {
-    "_notice_": "These options allow you to scrobble music through LastFM. Learn how to set this up here https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM",
-
-    "enabled": false,
-    "authKey": "Put your Auth Key here."
-  },
-
   "preferences": {
     "_notice_": "This is the basic user preferences. Modify to your liking below.",
 
@@ -37,7 +37,7 @@
     "_discordRPC_comment": "Enable/Disable Discord Rich Presence. (true by default)",
     "discordRPC": true,
 
-    "_playbackNotifications_comment": "Enabling this means you will get notifications when you change song. The minimized option forces notifications to only appear if the app is hidden / minimized.",
+    "_playbackNotifications_comment": "",
     "playbackNotifications": true,
     "playbackNotifications_minimized": true,
 

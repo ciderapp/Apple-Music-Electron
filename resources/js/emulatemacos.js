@@ -26,7 +26,7 @@ try {
     }
 
 
-    if (document.getElementById('web-navigation-search-box').length > 0 && !document.querySelector('.dragDiv')) {
+    if (document.getElementById('web-navigation-search-box') && !document.querySelector('.dragDiv')) {
 
         /*
          * Stoplights

@@ -6,93 +6,69 @@ const { app, globalShortcut } = require('electron')
 exports.settingsmenuinit = function() {
     const settingsmenu = new ElectronPreferences({
         'dataStore': path.resolve(app.getPath('userData'), 'preferences.json'),
+        /**
+         * Default values.
+         */
         'defaults': {
-            // remind me to set this up later
         },
         'sections': [
             {
+                // New Section for Quick Settings
                 'id': 'quick',
                 'label': 'Quick Settings',
-                'icon': 'notes',
+                'icon': 'settings-gear-63',
                 'form': {
                     'groups': [
                         {
+                            // Quick Settings Page Contents
                             'label': 'Quick Settings',
                             'fields': [
-                                {
+                                { // Auth Mode
                                     'label': 'Authentication Mode',
-                                    'key': 'Enable Auth Mode',
+                                    'key': 'authMode',
                                     'type': 'checkbox',
                                     'options': [
-                                        { 'label': 'Auth Mode', 'value': 'authEnabled' },
+                                        { 'label': 'Auth Mode', 'value': true },
                                     ],
                                     'help': 'Enable Authentication Mode to allow some users to sign in.'
                                 },
-                                {
+                                { // LastFM
                                     'label': 'LastFM',
-                                    'key': 'lastfm',
+                                    'key': 'lastfm.enabled',
                                     'type': 'checkbox',
                                     'options': [
-                                        { 'label': 'LastFM Scrobbling', 'value': 'lastfmEnabled' }
+                                        { 'label': 'LastFM Scrobbling', 'value': true }
                                     ],
                                     'help': 'Enable this option and fill out the the Authentication Key to use LastFM scrobbling.'
                                 },
-                                {
+                                { // LastFM Auth Key
                                     'label': 'LastFM Authentication Key',
-                                    'key': 'lastfm-authkey',
+                                    'key': 'lastfm.authKey',
                                     'type': 'text',
                                     'help': 'Enter your authentication key you get from this link https://www.last.fm/api/auth?api_key=174905d201451602407b428a86e8344d&cb=https://cryptofyre.org/auth/lastfm/ to enable LastFM scrobbling.'
-                                },
-                                {
-                                    'label': 'Discord RPC',
-                                    'key': 'discordrpc',
-                                    'type': 'checkbox',
-                                    'options': [
-                                        { 'label': 'Discord RPC', 'value': 'discordrpcEnabled' }
-                                    ],
-                                    'help': 'Enabling this allows other users on Discord to see what your listening to.'
-                                },
-                                {
-                                    'label': 'Streamer Mode',
-                                    'key': 'streamerMode',
-                                    'type': 'checkbox',
-                                    'options': [
-                                        { 'label': 'Streamer Mode', 'value': 'streamerModeEnabled' }
-                                    ],
-                                    'help': 'Enabling this option allows you to show off your Music to your stream without showing personal data.'
-                                },
-                                {
-                                    'label': 'Force Application Language',
-                                    'key': 'appLang',
-                                    'type': 'text',
-                                    'help': 'Enter a language ex. en or fr'
-                                },
-                                {
-                                    'label': 'Force Application Region',
-                                    'key': 'appRegion',
-                                    'type': 'text',
-                                    'help': 'Enter a region ex. ca or de'
-                                },
-
+                                }
                             ]
                         }
                     ]
                 }
             },
             {
-                'id': 'theme',
-                'label': 'Themes',
+                // New Section for Themes and CSS
+                'id': 'css',
+                'label': 'Themes and CSS Features',
                 'icon': 'layers-3',
                 'form': {
                     'groups': [
                         {
-                            'label': 'Theme Settings',
+                            // Section Header (Again)
+                            'label': 'Themes and CSS Features',
                             'fields': [
                                 {
                                     'heading': 'Important Message',
                                     'content': '<p>These settings require an app restart to take effect.</p>',
                                     'type': 'message',
                                 },
+                                // Setting Your Theme
                                 {
                                     'label': 'Themes:',
                                     'key': 'cssTheme',
@@ -108,68 +84,211 @@ exports.settingsmenuinit = function() {
                                     ],
                                     'help': 'Select a theme'
                                 },
+                                // MacOS Application Emulation
                                 {
-                                    'label': 'Window Settings',
-                                    'key': 'css',
+                                    'label': 'emulate MacOS Interface',
+                                    'key': 'emulateMacOS',
                                     'type': 'checkbox',
                                     'options': [
-                                        { 'label': 'emulateMacOS', 'value': 'emumacosEnabled' },
-                                        { 'label': 'emulateMacOS Right Align', 'value': 'emumacosRightAlignEnabled'}
+                                        { 'label': 'Turn on emulateMacOS?', 'value': true },
+                                        { 'label': 'Would you like it aligned to the right (Like Windows)', 'value': 'rightAlign' },
                                     ],
-                                    'help': 'These options allow you to control Window behavior.'
+                                    'help': 'This enables various adjustments that make the Apple Music interface look like the MacOS Apple Music UI. Enabling rightAlign will replicate the Windows Operating System\'s Window Control.'
                                 },
+                                // Turning on transparency
                                 {
                                     'label': 'Transparency',
-                                    'key': 'transparency',
+                                    'key': 'transparencyMode',
                                     'type': 'checkbox',
                                     'options': [
-                                        { 'label': 'Enable Transparency', 'value': 'transparentEnabled' }
+                                        { 'label': 'Enable Transparency', 'value': true }
                                     ],
-                                    'help': 'Enable Glasstron transparency'
+                                    'help': 'This enables the transparency affect for the Apple Music UI. This can affect performance if you are using older hardware.'
                                 },
+                                // Streaming Mode
+                                {
+                                    'label': 'Streaming Mode',
+                                    'key': 'streamerMode',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        { 'label': 'Enable Streaming Mode', 'value': true }
+                                    ],
+                                    'help': 'Enabling this will remove certain personal elements (your profile picture) and will allow you to scale the app to a size that allows you to use it in streams.'
+                                }
                             ]
                         }
                     ]
                 }
             },
             {
-                'id': 'others',
-                'label': 'Other Settings',
+                'id': 'preferences',
+                'label': 'User Preferences',
                 'icon': 'preferences',
                 'form': {
                     'groups': [
                         {
-                            'label': 'Other Settings',
+                            'label': 'User Preferences',
                             'fields': [
+                                // Turning on closeButtonMinimize
                                 {
-                                    'label': 'Extras',
-                                    'key': 'extras',
+                                    'label': 'Close Button Minimize',
+                                    'key': 'closeButtonMinimize',
                                     'type': 'checkbox',
                                     'options': [
-                                        { 'label': 'Minimize to tray', 'value': 'trayEnabled' },
-                                        { 'label': 'Show Song on tray', 'value': 'traySongEnabled' },
-                                        { 'label': 'Song Notifications', 'value': 'notificationsEnabled' },
-                                        { 'label': 'Song Notifications when Minimized', 'value': 'minnotificationsEnabled' },
+                                        { 'label': 'Close Button Should Minimize Application', 'value': true }
                                     ],
-                                    'help': 'Enabling these options allows you to use extra features supported by Apple Music Electron'
+                                    'help': 'Should the close button minimize your apple music or should it quit the app.'
                                 },
+                                // Turning on discordRPC
                                 {
-                                    'label': 'Advanced',
-                                    'key': 'advanced',
+                                    'label': 'Discord Rich Presence',
+                                    'key': 'discordRPC',
                                     'type': 'checkbox',
                                     'options': [
-                                        { 'label': 'allowMultipleInstances', 'value': 'multipleInstancesEnabled' },
-                                        { 'label': 'Enable Beta Versions', 'value': 'betaversEnabled' },
-                                        { 'label': 'Enable Dev Tools', 'value': 'devtoolsEnabled' },
-                                        { 'label': 'Force Dark Mode', 'value': 'forcedarkEnabled' },
-                                        { 'label': 'Show Menu Bar', 'value': 'menubarEnabled' },
-                                        { 'label': 'Remove Scrollbars', 'value': 'noscrollsEnabled' },
-                                        { 'label': 'Use Beta Site', 'value': 'usebetaSiteEnabled' },
-                                        { 'label': 'Prevent Media Key Hijacking', 'value': 'preventmediaKeyHijackingEnabled' },
+                                        { 'label': 'DiscordRPC', 'value': true }
                                     ],
-                                    'help': 'These options should only be touched if you know what your doing.'
+                                    'help': 'Enable/Disable Discord Rich Presence.'
                                 },
-                            ]
+                                // Turning on playbackNotifications
+                                {
+                                    'label': 'Notifications on Song Change',
+                                    'key': 'playbackNotifications',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        { 'label': 'Playback Notifications', 'value': true },
+                                        { 'label': 'Playback Notifications when Minimized or Hidden', 'value': 'minimized' }
+                                    ],
+                                    'help': 'Enabling this means you will get notifications when you change song. The minimized option forces notifications to only appear if the app is hidden / minimized.'
+                                },
+                                // Turning on trayTooltipSongName
+                                {
+                                    'label': 'Show Song Name as Tray Icon Tooltip',
+                                    'key': 'trayTooltipSongName',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        { 'label': 'Tray Icon Tooltip Song Name', 'value': true }
+                                    ],
+                                    'help': 'Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.'
+                                },
+                            ],
+                        }
+                    ]
+                }
+            },
+            {
+                'id': 'advanced',
+                'label': 'Advanced Options',
+                'icon': 'preferences',
+                'form': {
+                    'groups': [
+                        {
+                            'label': 'User Preferences',
+                            'fields': [
+                                // Turning on allowMultipleInstances
+                                {
+                                    'label': 'allowMultipleInstances',
+                                    'key': 'allowMultipleInstances',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        { 'label': 'allowMultipleInstances', 'value': true }
+                                    ],
+                                    'help': 'tba'
+                                },
+                                // Turning on autoUpdaterBetaBuilds
+                                {
+                                    'label': 'autoUpdaterBetaBuilds',
+                                    'key': 'autoUpdaterBetaBuilds',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        { 'label': 'autoUpdaterBetaBuilds', 'value': true }
+                                    ],
+                                    'help': 'tba'
+                                },
+                                // Turning on enableDevTools
+                                {
+                                    'label': 'enableDevTools',
+                                    'key': 'enableDevTools',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        { 'label': 'enableDevTools', 'value': true }
+                                    ],
+                                    'help': 'tba'
+                                },
+                                // Turning on forceDisableWindowFrame
+                                {
+                                    'label': 'forceDisableWindowFrame',
+                                    'key': 'forceDisableWindowFrame',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        { 'label': 'forceDisableWindowFrame', 'value': true }
+                                    ],
+                                    'help': 'tba'
+                                },
+                                // Turning on forceApplicationLanguage
+                                {
+                                    'label': 'forceApplicationLanguage',
+                                    'key': 'forceApplicationLanguage',
+                                    'type': 'text',
+                                    'help': 'tba'
+                                },
+                                // Turning on forceApplicationRegion
+                                {
+                                    'label': 'forceApplicationRegion',
+                                    'key': 'forceApplicationRegion',
+                                    'type': 'text',
+                                    'help': 'tba'
+                                },
+                                // Turning on forceDarkMode
+                                {
+                                    'label': 'forceDarkMode',
+                                    'key': 'forceDarkMode',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        { 'label': 'forceDarkMode', 'value': true }
+                                    ],
+                                    'help': 'tba'
+                                },
+                                // Turning on menuBarVisible
+                                {
+                                    'label': 'menuBarVisible',
+                                    'key': 'menuBarVisible',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        { 'label': 'menuBarVisible', 'value': true }
+                                    ],
+                                    'help': 'tba'
+                                },
+                                // Turning on removeScrollbars
+                                {
+                                    'label': 'removeScrollbars',
+                                    'key': 'removeScrollbars',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        { 'label': 'removeScrollbars', 'value': true }
+                                    ],
+                                    'help': 'tba'
+                                },
+                                // Turning on useBeta
+                                {
+                                    'label': 'useBeta',
+                                    'key': 'useBeta',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        { 'label': 'useBeta', 'value': true }
+                                    ],
+                                    'help': 'tba'
+                                },
+                                // Turning on preventMediaKeyHijacking
+                                {
+                                    'label': 'preventMediaKeyHijacking',
+                                    'key': 'preventMediaKeyHijacking',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        { 'label': 'preventMediaKeyHijacking', 'value': true }
+                                    ],
+                                    'help': 'tba'
+                                },
+                            ],
                         }
                     ]
                 }
