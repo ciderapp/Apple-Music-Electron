@@ -22,9 +22,6 @@ exports.scrobble = function(attributes) {
     if (fs.existsSync(lastfmsessionpath)) {
         var sessiondata = require(lastfmsessionpath)
         lfm.setSessionCredentials(sessiondata.name, sessiondata.key)
-    } else {
-        lfmauthenticate()
-        var sessiondata = require(lastfmsessionpath)
         // Scrobble playing song.
         if (attributes.status === true) {
             lfm.setSessionCredentials(sessiondata.name, sessiondata.key)
@@ -43,5 +40,7 @@ exports.scrobble = function(attributes) {
                 });
             }
         }
+    } else {
+        lfmauthenticate()
     }
 }
