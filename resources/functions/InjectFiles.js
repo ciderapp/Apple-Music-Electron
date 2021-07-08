@@ -8,7 +8,7 @@ exports.InjectFiles = function () {
         LoadCSS('init.css')
 
         /* Load the Emulation Files */
-        if (app.config.css.emulateMacOS) {
+        if (app.config.css.emulateMacOS.indexOf(true)) {
             if (app.config.css.emulateMacOS_rightAlign) {
                 LoadJS('emulatemacos_rightalign.js')
             } else {
@@ -17,14 +17,14 @@ exports.InjectFiles = function () {
         }
 
         /* Load Glasstron */
-        if (app.config.css.transparencyMode) {
+        if (app.config.css.transparencyMode.indexOf(true)) {
             LoadCSS('glasstron.css')
         } else {
             LoadCSS('glasstronDisabled.css')
         }
 
         /* Streamer Mode */
-        if (app.config.css.streamerMode) {
+        if (app.config.css.streamerMode.indexOf(true)) {
             LoadCSS('streamerMode.css')
         }
 

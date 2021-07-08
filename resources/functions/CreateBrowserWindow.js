@@ -16,15 +16,15 @@ exports.CreateBrowserWindow = function() {
         webPreferences: {
             plugins: true,
             preload: join(__dirname, '../js/MusicKitInterop.js'),
-            allowRunningInsecureContent: !app.config.login.authMode,
+            allowRunningInsecureContent: !app.config.login.authMode.indexOf(true),
             contextIsolation: false,
-            webSecurity: app.config.login.authMode,
+            webSecurity: app.config.quick.authMode.indexOf(true),
             sandbox: true
         }
     };
 
     let win;
-    if (!app.config.css.transparencyMode) {
+    if (!app.config.css.transparencyMode.indexOf(true)) {
         console.log('[CreateBrowserWindow] Creating Window without Glasstron')
         win = new BrowserWindow(options)
         win.setBackgroundColor = '#1f1f1f00'
@@ -41,8 +41,8 @@ exports.CreateBrowserWindow = function() {
     }
 
 
-    if (!app.config.advanced.menuBarVisible) win.setMenuBarVisibility(false); // Hide that nasty menu bar
-    if (!app.config.advanced.enableDevTools) win.setMenu(null); // Disables DevTools
+    if (!app.config.advanced.menuBarVisible.indexOf(true)) win.setMenuBarVisibility(false); // Hide that nasty menu bar
+    if (!app.config.advanced.enableDevTools.indexOf(true)) win.setMenu(null); // Disables DevTools
 
     return win
 }

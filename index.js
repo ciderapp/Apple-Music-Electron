@@ -1,4 +1,5 @@
 require('v8-compile-cache');
+const path = require('path');
 const {app} = require('electron');
 
 // Creating the Application Window and Calling all the Functions
@@ -36,10 +37,7 @@ app.on('ready', () => {
     const {InitializeLogging} = require('./resources/functions/init/Init-Logging')
     InitializeLogging()
 
-    const {LoadUserFiles} = require('./resources/functions/load/LoadUserFiles')
-    app.config = LoadUserFiles()
-
-    if (app.configInitializationFailed) return;
+    app.config = path.resolve(app.getPath('userData'), 'preferences.json')
 
     const {InitializeBase} = require('./resources/functions/init/Init-Base')
     InitializeBase()

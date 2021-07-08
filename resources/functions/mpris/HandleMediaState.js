@@ -3,7 +3,7 @@ const {app} = require('electron')
 exports.HandleMediaState = function () {
     console.log('[Mpris] [HandleMediaState] Started.')
 
-    if (!app.config.preferences.mprisSupport || !app.mpris || process.platform !== "linux") return;
+    if (!app.mpris || process.platform !== "linux") return;
 
     app.mpris.on('playpause', async () => {
         if (app.mpris.playbackStatus === 'Playing') {

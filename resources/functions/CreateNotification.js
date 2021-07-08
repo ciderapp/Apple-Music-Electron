@@ -3,12 +3,12 @@ const {join} = require('path')
 
 exports.CreateNotification = function (attributes) {
     console.log(`[CreateNotification] Attempting to CreateNotification with parameters:`)
-    console.log(`[CreateNotification] Config Option: ${app.config.preferences.playbackNotifications}`)
+    console.log(`[CreateNotification] Config Option: ${app.config.preferences.playbackNotifications.indexOf(true)}`)
     console.log(`[CreateNotification] Notification Supported: ${Notification.isSupported()}`)
-    if (!app.config.preferences.playbackNotifications || !Notification.isSupported()) return;
+    if (!app.config.preferences.playbackNotifications.indexOf(true) || !Notification.isSupported()) return;
 
 
-    if (app.config.preferences.playbackNotifications_minimized) {
+    if (app.config.preferences.playbackNotifications.indexOf(minimized)) {
         const isAppHidden = !app.win.isVisible()
         console.log(`[CreateNotification] [notificationsMinimized] Config Notification Minimized: ${app.config.preferences.notificationsMinimized}`)
         console.log(`[CreateNotification] [notificationsMinimized] App Minimized: ${app.win.isMinimized()}`)

@@ -4,7 +4,7 @@ const {HandleMediaState} = require('./HandleMediaState')
 exports.InitializeMpris = function () {
     console.log('[Mpris] [InitializeMpris] Started.')
 
-    if (!app.config.preferences.mprisSupport || process.platform !== "linux") return;
+    if (process.platform !== "linux") return;
     let Mpris;
     try {
         Mpris = require('mpris-service');

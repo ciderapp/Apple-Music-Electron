@@ -1,7 +1,7 @@
 const {app} = require('electron')
 
 exports.UpdatePlaybackStatus = function (attributes) {
-    if (!app.config.preferences.mprisSupport || !app.mpris || process.platform !== "linux") return;
+    if (!app.mpris || process.platform !== "linux") return;
 
     function setPlaybackIfNeeded(status) {
         console.log(`[Mpris] [UpdatePlaybackStatus] Updating Status to ${status}`)

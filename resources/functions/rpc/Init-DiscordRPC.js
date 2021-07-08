@@ -3,7 +3,7 @@ const {app} = require('electron')
 exports.InitializeRPC = function () {
     console.log('[DiscordRPC] [InitializeRPC] Started.')
 
-    if (!app.config.preferences.discordRPC) return;
+    if (!app.config.preferences.discordRPC.indexOf(true)) return;
 
     app.discord.client = require('discord-rich-presence')('749317071145533440');
     console.log("[DiscordRPC] Initializing Client.")

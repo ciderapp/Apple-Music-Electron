@@ -1,7 +1,7 @@
 const {app} = require('electron')
 
 exports.UpdateMetaData = function (attributes) {
-    if (!app.config.preferences.mprisSupport || !app.mpris || process.platform !== "linux") return;
+    if (!app.mpris || process.platform !== "linux") return;
 
     console.log('[Mpris] [UpdateMetaData] Updating Mpris Meta Data...')
     let url = `${attributes.artwork.url.replace('/{w}x{h}bb', '/35x35bb')}`

@@ -12,8 +12,8 @@ exports.settingsmenuinit = function() {
         'defaults': {
             "quick": {
                 "authMode": [],
-                "lastfm.enabled": [],
-                "lastfm.authKey": "Put your Auth Key here."
+                "lastfm_enabled": [],
+                "lastfm_authKey": "Put your Auth Key here."
             },
             "css": {
                 "cssTheme": "",
@@ -81,7 +81,7 @@ exports.settingsmenuinit = function() {
                                 },
                                 { // LastFM
                                     'label': 'LastFM',
-                                    'key': 'lastfm.enabled',
+                                    'key': 'lastfm_enabled',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'LastFM Scrobbling', 'value': true }
@@ -90,7 +90,7 @@ exports.settingsmenuinit = function() {
                                 },
                                 { // LastFM Auth Key
                                     'label': 'LastFM Authentication Key',
-                                    'key': 'lastfm.authKey',
+                                    'key': 'lastfm_authKey',
                                     'type': 'text',
                                     'help': 'Enter your authentication key you get from this link https://www.last.fm/api/auth?api_key=174905d201451602407b428a86e8344d&cb=https://cryptofyre.org/auth/lastfm/ to enable LastFM scrobbling.'
                                 }
