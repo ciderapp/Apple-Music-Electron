@@ -1,3 +1,4 @@
+const {scrobble} = require("../lastfm/scrobbleSong");
 const {app} = require('electron')
 
 exports.UpdateActivity = function (attributes) {
@@ -26,6 +27,11 @@ exports.UpdateActivity = function (attributes) {
             smallImageText: 'Playing',
             instance: false,
         });
+
+        // why the fuck wont you execute anywhere else.
+        if (app.config.quick.lastfmEnabled.includes(true)) {
+            scrobble(attributes)
+        }
     } else {
         app.discord.client.updatePresence({
             details: attributes.name,
