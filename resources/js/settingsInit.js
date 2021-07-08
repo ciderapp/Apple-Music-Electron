@@ -14,4 +14,5 @@ while (document.getElementsByClassName('web-chrome-auth-options-container').leng
                 </span>
             </li>
         `)
-}*/
+}
+*/

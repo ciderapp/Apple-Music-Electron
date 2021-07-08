@@ -6,7 +6,7 @@ exports.UpdateLFMActivity = function (attributes) {
     console.log(`[UpdateLFMActivity] Scrobbling LastFM`)
     var {scrobble} = require("../lastfm/scrobbleSong");
 
-    if (attributes.status === true && app.config.quick.lastfmEnabled.includes(true)) {
+    if (app.config.quick.lastfmEnabled.includes(true)) {
         scrobble(attributes)
     }
 }

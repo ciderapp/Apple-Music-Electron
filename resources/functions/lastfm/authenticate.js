@@ -3,8 +3,10 @@ const fs = require('fs')
 const {join} = require('path')
 const HomeDirectory = require('os').homedir();
 const { Notification } = require('electron')
+const path = require('path')
 
 let UserFilesDirectory;
+let lastfmsessionpath = path.resolve(app.getPath('userData'), 'session.json')
 
 exports.lfmauthenticate = function (){
     if (!app.config.quick.lastfmEnabled.includes(true)) return;
@@ -17,7 +19,7 @@ exports.lfmauthenticate = function (){
         'secret': apistuff.secret
     });
 
-    fs.stat(app.config.lastFMsessionPath, 'utf8', function(err){
+    fs.stat(lastfmsessionpath, 'utf8', function(err){
         if (err) {
             console.log("[LastFM] [Session] Session file couldn't be opened or doesn't exist,", err)
             console.log("[LastFM] [Auth] Beginning authentication from config.json")
@@ -28,7 +30,7 @@ exports.lfmauthenticate = function (){
                 console.log("[LastFM] Successfully obtained LastFM session info,", session); // {"name": "LASTFM_USERNAME", "key": "THE_USER_SESSION_KEY"}
                 console.log("[LastFM] Saving session info to disk.")
                 let tempdata = JSON.stringify(session)
-                fs.writeFile(app.config.lastFMsessionPath, tempdata, (err) => {
+                fs.writeFile(lastfmsessionpath, tempdata, (err) => {
                     if (err)
                         console.log("[LastFM] [fs]", err)
                     else {
@@ -45,6 +47,8 @@ exports.lfmauthenticate = function (){
 }
 
 function authenticatefromfile () {
+    const LastfmAPI = require('lastfmapi')
+    const apistuff = require('./creds.json')
     const lfm = new LastfmAPI({
         'api_key': apistuff.apikey,
         'secret': apistuff.secret
@@ -68,7 +72,7 @@ function authenticatefromfile () {
     }
 
 
-    let sessiondata = require(app.config.lastFMsessionPath)
+    let sessiondata = require(lastfmsessionpath)
     console.log("[LastFM] [Auth] Logging in with sessioninfo.")
     lfm.setSessionCredentials(sessiondata.name, sessiondata.key)
     console.log("[LastFM] [Auth] Logged in.")
