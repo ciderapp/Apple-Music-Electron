@@ -8,9 +8,9 @@ exports.CreateNotification = function (attributes) {
     if (!app.config.preferences.playbackNotifications.includes(true) || !Notification.isSupported()) return;
 
 
-    if (app.config.preferences.playbackNotifications.includes(minimized)) {
+    if (app.config.preferences.playbackNotifications.includes("minimized")) {
         const isAppHidden = !app.win.isVisible()
-        console.log(`[CreateNotification] [notificationsMinimized] Config Notification Minimized: ${app.config.preferences.notificationsMinimized}`)
+        console.log(`[CreateNotification] [notificationsMinimized] Config Notification Minimized: ${app.config.preferences.playbackNotifications.includes("minimized")}`)
         console.log(`[CreateNotification] [notificationsMinimized] App Minimized: ${app.win.isMinimized()}`)
         console.log(`[CreateNotification] [notificationsMinimized] App Hidden: ${isAppHidden}`)
         if (isAppHidden || app.win.isMinimized()) {
