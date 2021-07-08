@@ -62,6 +62,7 @@ exports.playbackStateDidChange = function () {
             if (!app.ipc.TooltipUpdate) app.ipc.TooltipUpdate = true;
             if (!app.ipc.DiscordUpdate) app.ipc.DiscordUpdate = true;
             if (!app.ipc.MprisStatusUpdate) app.ipc.MprisStatusUpdate = true;
+            if (!app.ipc.lastFMUpdate) app.ipc.lastFMUpdate = true;
         }, 500)
     });
 }
