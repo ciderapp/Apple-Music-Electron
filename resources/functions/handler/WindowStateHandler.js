@@ -6,7 +6,7 @@ exports.WindowStateHandler = function () {
     console.log('[WindowStateHandler] Started.')
 
     app.win.webContents.setWindowOpenHandler(({url}) => {
-        if (url.startsWith('https://apple.com/') || url.startsWith('https://www.apple.com/') || url.startsWith('https://support.apple.com/')) { // for security (pretty pointless ik)
+        if (url.startsWith('https://apple.com/') || url.startsWith('https://www.apple.com/') || url.startsWith('https://support.apple.com/') || url.startsWith('https://beta.music.apple.com') || url.startsWith('https://music.apple.com')) { // for security (pretty pointless ik)
             shell.openExternal(url).then(() => console.log(`[WindowStateHandler] User has opened ${url} which has been redirected to browser.`));
             return {action: 'deny'}
         }
