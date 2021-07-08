@@ -1,6 +1,6 @@
 require('v8-compile-cache');
 const path = require('path');
-const {app} = require('electron');
+const {app, ipcRenderer, remote} = require('electron');
 
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {
@@ -37,7 +37,11 @@ app.on('ready', () => {
     const {InitializeLogging} = require('./resources/functions/init/Init-Logging')
     InitializeLogging()
 
-    app.config = path.resolve(app.getPath('userData'), 'preferences.json')
+    const {SettingsMenuInit} = require("./resources/functions/settings/OpenMenu");
+    SettingsMenuInit()
+
+    app.config = require(path.resolve(app.getPath('userData'), 'preferences.json'));
+    console.log(app.config)
 
     const {InitializeBase} = require('./resources/functions/init/Init-Base')
     InitializeBase()

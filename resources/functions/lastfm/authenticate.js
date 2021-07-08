@@ -1,5 +1,3 @@
-const LastfmAPI = require('lastfmapi')
-const apistuff = require('./creds.json')
 const {app} = require('electron')
 const fs = require('fs')
 const {join} = require('path')
@@ -10,6 +8,9 @@ let UserFilesDirectory;
 
 exports.lfmauthenticate = function (){
     if (!app.config.lastfm.enabled) return;
+
+    const LastfmAPI = require('lastfmapi')
+    const apistuff = require('./creds.json')
 
     const lfm = new LastfmAPI({
         'api_key': apistuff.apikey,

@@ -8,23 +8,23 @@ exports.CreateBrowserWindow = function() {
         icon: join(__dirname, `../icons/icon.ico`),
         width: 1024,
         height: 600,
-        minWidth: ((app.config.css.emulateMacOS || app.config.css.emulateMacOS_rightAlign) ? ((app.config.css.streamerMode) ? 400 : 300) : ((app.config.css.streamerMode) ? 400 : 300)),
-        minHeight: ((app.config.css.emulateMacOS || app.config.css.emulateMacOS_rightAlign) ? ((app.config.css.streamerMode) ? 55 : 300) : ((app.config.css.streamerMode) ? 115 : 300)),
-        frame: ((!(app.config.css.emulateMacOS || app.config.css.emulateMacOS_rightAlign))),
+        minWidth: ((app.config.css.emulateMacOS.includes(true) || app.config.css.emulateMacOS.includes("rightAlign") ) ? ((app.config.css.streamerMode.includes(true)) ? 400 : 300) : ((app.config.css.streamerMode.includes(true)) ? 400 : 300)),
+        minHeight: ((app.config.css.emulateMacOS.includes(true) || app.config.css.emulateMacOS.includes("rightAlign") ) ? ((app.config.css.streamerMode.includes(true)) ? 55 : 300) : ((app.config.css.streamerMode.includes(true)) ? 115 : 300)),
+        frame: ((!(app.config.css.emulateMacOS.includes(true) || app.config.css.emulateMacOS.includes("rightAlign")))),
         title: "Apple Music",
         // Enables DRM
         webPreferences: {
             plugins: true,
             preload: join(__dirname, '../js/MusicKitInterop.js'),
-            allowRunningInsecureContent: !app.config.login.authMode.indexOf(true),
+            allowRunningInsecureContent: !app.config.quick.authMode.includes(true),
             contextIsolation: false,
-            webSecurity: app.config.quick.authMode.indexOf(true),
+            webSecurity: app.config.quick.authMode.includes(true),
             sandbox: true
         }
     };
 
     let win;
-    if (!app.config.css.transparencyMode.indexOf(true)) {
+    if (!app.config.css.transparencyMode.includes(true)) {
         console.log('[CreateBrowserWindow] Creating Window without Glasstron')
         win = new BrowserWindow(options)
         win.setBackgroundColor = '#1f1f1f00'
@@ -41,8 +41,8 @@ exports.CreateBrowserWindow = function() {
     }
 
 
-    if (!app.config.advanced.menuBarVisible.indexOf(true)) win.setMenuBarVisibility(false); // Hide that nasty menu bar
-    if (!app.config.advanced.enableDevTools.indexOf(true)) win.setMenu(null); // Disables DevTools
+    if (!app.config.advanced.menuBarVisible.includes(true)) win.setMenuBarVisibility(false); // Hide that nasty menu bar
+    if (!app.config.advanced.enableDevTools.includes(true)) win.setMenu(null); // Disables DevTools
 
     return win
 }

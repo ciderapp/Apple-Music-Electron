@@ -3,8 +3,8 @@ const os = require('os');
 const ElectronPreferences = require('electron-preferences');
 const { app, globalShortcut } = require('electron')
 
-exports.settingsmenuinit = function() {
-    const settingsmenu = new ElectronPreferences({
+exports.SettingsMenuInit = function() {
+    const SettingsMenu = new ElectronPreferences({
         'dataStore': path.resolve(app.getPath('userData'), 'preferences.json'),
         /**
          * Default values.
@@ -355,7 +355,7 @@ exports.settingsmenuinit = function() {
 
     app.whenReady().then(() => {
         globalShortcut.register('Alt+CommandOrControl+S', () => {
-            settingsmenu.show();
+            SettingsMenu.show();
         })
     })
 }

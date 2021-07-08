@@ -8,8 +8,8 @@ exports.InjectFiles = function () {
         LoadCSS('init.css')
 
         /* Load the Emulation Files */
-        if (app.config.css.emulateMacOS.indexOf(true)) {
-            if (app.config.css.emulateMacOS_rightAlign) {
+        if (app.config.css.emulateMacOS.includes(true)) {
+            if (app.config.css.emulateMacOS.includes("rightAlign")) {
                 LoadJS('emulatemacos_rightalign.js')
             } else {
                 LoadJS('emulatemacos.js')
@@ -17,24 +17,24 @@ exports.InjectFiles = function () {
         }
 
         /* Load Glasstron */
-        if (app.config.css.transparencyMode.indexOf(true)) {
+        if (app.config.css.transparencyMode.includes(true)) {
             LoadCSS('glasstron.css')
         } else {
             LoadCSS('glasstronDisabled.css')
         }
 
         /* Streamer Mode */
-        if (app.config.css.streamerMode.indexOf(true)) {
+        if (app.config.css.streamerMode.includes(true)) {
             LoadCSS('streamerMode.css')
         }
 
         /* Stop the Banner Popping up */
-        if (app.config.advanced.forceApplicationRegion || app.config.advanced.forceApplicationLanguage) {
+        if (app.config.advanced.forceApplicationRegion.includes(true) || app.config.advanced.forceApplicationLanguage.includes(true)) {
             LoadJS('regionChange.js')
         }
 
         /* Load a Theme if it is Found in the Configuration File */
-        if (app.config.preferences.cssTheme) {
+        if (app.config.css.cssTheme) {
             LoadCSS(`${app.config.preferences.cssTheme.toLowerCase()}.css`, true)
         }
 

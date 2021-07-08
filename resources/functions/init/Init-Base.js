@@ -12,22 +12,21 @@ exports.InitializeBase = function () {
         app.quit()
     }
 
+
     // Disable CORS
-    if (app.config.quick.authMode.indexOf(true)) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+    if (app.config.quick.authMode.includes(true)) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 
     // Media Key Hijacking
-    if (app.config.advanced.preventMediaKeyHijacking.indexOf(true)) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
+    if (app.config.advanced.preventMediaKeyHijacking.includes(true)) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
 
     // Just turn it on because i was dumb and made it so you have to have both on.
-    if (app.config.css.emulateMacOS.indexOf("rightAlign") && !app.config.css.emulateMacOS.indexOf(true)) app.config.css.emulateMacOS = true;
-
+    if (app.config.css.emulateMacOS.includes("rightAlign") && !app.config.css.emulateMacOS.includes(true)) app.config.css.emulateMacOS = [true];
 
     // Sets the ModelId (For windows notifications)
     if (process.platform === "win32") app.setAppUserModelId("Apple Music");
 
     // Assign Default Variables
-    app.isQuiting = !app.config.preferences.closeButtonMinimize.indexOf(true);
-    app.config.css.glasstron = app.config.preferences.cssTheme.toLowerCase().split('-').includes('glasstron');
+    app.isQuiting = !app.config.preferences.closeButtonMinimize.includes(true);
     app.win = '';
     app.ipc = {
         ThumbarUpdate: true,

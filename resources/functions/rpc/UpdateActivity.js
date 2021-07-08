@@ -1,12 +1,12 @@
 const {app} = require('electron')
-if (app.config.quick.lastfm_enabled.indexOf(true)) {
+if (app.config.quick.lastfm_enabled.includes(true)) {
     var {scrobble} = require("../lastfm/scrobbleSong");
 }
 
 exports.UpdateActivity = function (attributes) {
     console.log('[DiscordRPC] [UpdateActivity] Started.')
 
-    if (!app.discord.client || !app.config.preferences.discordRPC.indexOf(true)) return;
+    if (!app.discord.client || !app.config.preferences.discordRPC.includes(true)) return;
 
     if (!app.discord.cachedAttributes) {
         app.discord.cachedAttributes = attributes
@@ -29,7 +29,7 @@ exports.UpdateActivity = function (attributes) {
             smallImageText: 'Playing',
             instance: false,
         });
-        if (app.config.quick.lastfm_enabled.indexOf(true)) {
+        if (app.config.quick.lastfm_enabled.includes(true)) {
             scrobble(attributes)
         }
     } else {

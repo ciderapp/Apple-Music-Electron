@@ -1,12 +1,13 @@
-const LastfmAPI = require('lastfmapi')
-const apistuff = require('./creds.json')
 const fs = require('fs');
-const {lfmauthenticate} = require("./authenticate");
 const {join} = require('path')
 const {app} = require('electron')
 
 exports.scrobble = function(attributes) {
     if (!app.config.lastfm.enabled) return;
+
+    const LastfmAPI = require('lastfmapi')
+    const apistuff = require('./creds.json')
+    const {lfmauthenticate} = require("./authenticate");
 
     const lfm = new LastfmAPI({
         'api_key': apistuff.apikey,
