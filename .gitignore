@@ -2,4 +2,3 @@ node_modules
 dist
 yarn.lock
 package-lock.json
-resources/functions/lastfm/creds.json
