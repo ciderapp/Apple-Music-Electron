@@ -3,6 +3,7 @@ const {UpdateActivity} = require('../rpc/UpdateActivity')
 const {SetThumbarButtons} = require('../win/SetThumbarButtons')
 const {SetTrayTooltip} = require('../win/SetTrayTooltip')
 const {UpdatePlaybackStatus} = require('../mpris/UpdatePlaybackStatus')
+const {UpdateLFMActivity} = require('../lastfm/UpdateActivity')
 
 exports.playbackStateDidChange = function () {
     console.log('[playbackStateDidChange] Started.')
@@ -42,6 +43,11 @@ exports.playbackStateDidChange = function () {
         // Discord Update
         while (app.ipc.DiscordUpdate) {
             app.ipc.DiscordUpdate = UpdateActivity(a)
+        }
+
+        // LastFM Update (IT IS NOT GOING IN DISCORDRPC!)
+        while (app.ipc.LastFMUPdate) {
+            app.ipc.lastFMUpdate = UpdateLFMActivity(a)
         }
 
         // Mpris Status Update

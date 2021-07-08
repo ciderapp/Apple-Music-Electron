@@ -1,7 +1,4 @@
 const {app} = require('electron')
-if (app.config.quick.lastfm_enabled.includes(true)) {
-    var {scrobble} = require("../lastfm/scrobbleSong");
-}
 
 exports.UpdateActivity = function (attributes) {
     console.log('[DiscordRPC] [UpdateActivity] Started.')
@@ -29,9 +26,6 @@ exports.UpdateActivity = function (attributes) {
             smallImageText: 'Playing',
             instance: false,
         });
-        if (app.config.quick.lastfm.enabled.includes(true)) {
-            scrobble(attributes)
-        }
     } else {
         app.discord.client.updatePresence({
             details: attributes.name,

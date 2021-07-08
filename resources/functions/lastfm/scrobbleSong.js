@@ -3,7 +3,7 @@ const {join} = require('path')
 const {app} = require('electron')
 
 exports.scrobble = function(attributes) {
-    if (!app.config.lastfm.enabled) return;
+    if (!app.config.lastfmEnabled.includes(true)) return;
 
     const LastfmAPI = require('lastfmapi')
     const apistuff = require('./creds.json')

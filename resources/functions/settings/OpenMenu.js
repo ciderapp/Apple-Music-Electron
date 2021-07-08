@@ -12,8 +12,8 @@ exports.SettingsMenuInit = function() {
         'defaults': {
             "quick": {
                 "authMode": [],
-                "lastfm.enabled": [],
-                "lastfm.authKey": "Put your Auth Key here."
+                "lastfmEnabled": [],
+                "lastfmAuthKey": "Put your Auth Key here."
             },
             "css": {
                 "cssTheme": "",
@@ -85,7 +85,7 @@ exports.SettingsMenuInit = function() {
                                     'type': 'message',
                                 },
                                 { // LastFM Toggle
-                                    'key': 'lastfm.enabled',
+                                    'key': 'lastfmEnabled',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'LastFM Scrobbling', 'value': true }
@@ -94,7 +94,7 @@ exports.SettingsMenuInit = function() {
                                 },
                                 { // LastFM Auth Key
                                     'label': 'LastFM Authentication Key',
-                                    'key': 'lastfm.authKey',
+                                    'key': 'lastfmAuthKey',
                                     'type': 'text',
                                     'help': 'Read the notice above for more information regarding what you need to put in this field.'
                                 }

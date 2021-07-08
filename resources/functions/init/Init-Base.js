@@ -34,6 +34,7 @@ exports.InitializeBase = function () {
         DiscordUpdate: true,
         MprisUpdate: true,
         MprisStatusUpdate: true,
+        LastFMUpdate: true,
         MediaNotification: true,
         cache: false,
         cacheNew: false,
