@@ -6,7 +6,9 @@ exports.InjectFiles = function () {
     console.log('[InjectFilesIntoBrowserWindow] Started.')
     app.win.webContents.on('did-stop-loading', async () => {
         LoadCSS('init.css')
-        LoadJS('settingsInit.js')
+        setTimeout(function() {
+            LoadJS('settingsInit.js')
+        }, 1500)
 
         /* Load the Emulation Files */
         if (app.config.css.emulateMacOS.includes(true)) {

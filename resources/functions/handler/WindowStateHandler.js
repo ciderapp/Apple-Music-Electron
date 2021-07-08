@@ -7,15 +7,15 @@ exports.WindowStateHandler = function () {
 
     app.win.webContents.setWindowOpenHandler(({url}) => {
         if (url.startsWith('https://apple.com/') || url.startsWith('https://www.apple.com/') || url.startsWith('https://support.apple.com/')) { // for security (pretty pointless ik)
-            shell.openExternal(url).then(() => console.log(`[Apple-Music-Electron] User has opened ${url} which has been redirected to browser.`));
+            shell.openExternal(url).then(() => console.log(`[WindowStateHandler] User has opened ${url} which has been redirected to browser.`));
             return {action: 'deny'}
         }
-        console.log(`[Apple-Music-Electron] User has attempted to open ${url} which was blocked.`)
+        console.log(`[WindowStateHandler] User has attempted to open ${url} which was blocked.`)
         return {action: 'deny'}
     })
 
     app.win.on('unresponsive', function () {
-        console.log("[Apple-Music-Electron] Application has become unresponsive and has been closed.")
+        console.log("[WindowStateHandler] Application has become unresponsive and has been closed.")
         app.exit();
     });
 
@@ -51,7 +51,8 @@ exports.WindowStateHandler = function () {
     })
 
     ipcMain.on('preferencesUpdated', (e, preferences) => {
-        console.log('Preferences were updated', preferences);
+        console.log('[WindowStateHandler] Preferences have been updated!');
+        app.config = preferences
     });
 
     app.win.on('show', function () {
