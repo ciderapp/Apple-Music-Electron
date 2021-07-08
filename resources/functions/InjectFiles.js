@@ -35,7 +35,7 @@ exports.InjectFiles = function () {
 
         /* Load a Theme if it is Found in the Configuration File */
         if (app.config.css.cssTheme) {
-            LoadCSS(`${app.config.preferences.cssTheme.toLowerCase()}.css`, true)
+            LoadCSS(`${app.config.css.cssTheme.toLowerCase()}.css`, true)
         }
 
         /* Remove the Scrollbar */
