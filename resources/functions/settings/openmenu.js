@@ -80,7 +80,11 @@ exports.settingsmenuinit = function() {
                                     'help': 'Enable Authentication Mode to allow some users to sign in.'
                                 },
                                 { // LastFM
-                                    'label': 'LastFM',
+                                    'heading': 'LastFM Notice',
+                                    'content': '<p>For information regarding this section, read the wiki post found <a style="color: #227bff !important" target="_blank" href="https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM">here</a>.</p>',
+                                    'type': 'message',
+                                },
+                                { // LastFM Toggle
                                     'key': 'lastfm.enabled',
                                     'type': 'checkbox',
                                     'options': [
@@ -92,7 +96,7 @@ exports.settingsmenuinit = function() {
                                     'label': 'LastFM Authentication Key',
                                     'key': 'lastfm.authKey',
                                     'type': 'text',
-                                    'help': 'Enter your authentication key you get from this link https://www.last.fm/api/auth?api_key=174905d201451602407b428a86e8344d&cb=https://cryptofyre.org/auth/lastfm/ to enable LastFM scrobbling.'
+                                    'help': 'Read the notice above for more information regarding what you need to put in this field.'
                                 }
                             ]
                         }
@@ -111,9 +115,9 @@ exports.settingsmenuinit = function() {
                             'label': 'Themes and CSS Features',
                             'fields': [
                                 {
-                                    'heading': 'Important Message',
-                                    'content': '<p>These settings require an app restart to take effect.</p>',
-                                    'type': 'message',
+                                    'heading': 'Themes Notice',
+                                    'content': '<p>You can preview all the themes <a style="color: #227bff !important" target="_blank" href="https://github.com/cryptofyre/Apple-Music-Electron/wiki/Theme-Preview-Images">here</a>.</p>',
+                                    'type': 'message'
                                 },
                                 // Setting Your Theme
                                 {
@@ -123,13 +127,11 @@ exports.settingsmenuinit = function() {
                                     'options': [
                                         {'label': 'Default', 'value': 'default'},
                                         {'label': 'Blurple', 'value': 'blurple'},
-                                        {'label': 'Blurple-Dark', 'value': 'blurple-dark'},
                                         {'label': 'Dracula', 'value': 'dracula'},
                                         {'label': 'Jungle', 'value': 'jungle'},
                                         {'label': 'Spotify', 'value': 'spotify'},
-                                        {'label': 'OLED Dark', 'value': 'oled-dark'}
-                                    ],
-                                    'help': 'Select a theme'
+                                        {'label': 'OLED', 'value': 'oled'}
+                                    ]
                                 },
                                 // MacOS Application Emulation
                                 {
@@ -231,109 +233,94 @@ exports.settingsmenuinit = function() {
                         {
                             'label': 'User Preferences',
                             'fields': [
+                                {
+                                    'heading': 'Warning',
+                                    'content': "<p><b>Do not mess with these options unless you know what you're doing.</b></p>",
+                                    'type': 'message'
+                                },
                                 // Turning on allowMultipleInstances
                                 {
-                                    'label': 'allowMultipleInstances',
                                     'key': 'allowMultipleInstances',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'allowMultipleInstances', 'value': true }
-                                    ],
-                                    'help': 'tba'
+                                    ]
                                 },
                                 // Turning on autoUpdaterBetaBuilds
                                 {
-                                    'label': 'autoUpdaterBetaBuilds',
                                     'key': 'autoUpdaterBetaBuilds',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'autoUpdaterBetaBuilds', 'value': true }
-                                    ],
-                                    'help': 'tba'
+                                    ]
                                 },
                                 // Turning on enableDevTools
                                 {
-                                    'label': 'enableDevTools',
                                     'key': 'enableDevTools',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'enableDevTools', 'value': true }
-                                    ],
-                                    'help': 'tba'
+                                    ]
                                 },
                                 // Turning on forceDisableWindowFrame
                                 {
-                                    'label': 'forceDisableWindowFrame',
                                     'key': 'forceDisableWindowFrame',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'forceDisableWindowFrame', 'value': true }
-                                    ],
-                                    'help': 'tba'
+                                    ]
                                 },
                                 // Turning on forceApplicationLanguage
                                 {
                                     'label': 'forceApplicationLanguage',
                                     'key': 'forceApplicationLanguage',
                                     'type': 'text',
-                                    'help': 'tba'
                                 },
                                 // Turning on forceApplicationRegion
                                 {
                                     'label': 'forceApplicationRegion',
                                     'key': 'forceApplicationRegion',
                                     'type': 'text',
-                                    'help': 'tba'
                                 },
                                 // Turning on forceDarkMode
                                 {
-                                    'label': 'forceDarkMode',
                                     'key': 'forceDarkMode',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'forceDarkMode', 'value': true }
-                                    ],
-                                    'help': 'tba'
+                                    ]
                                 },
                                 // Turning on menuBarVisible
                                 {
-                                    'label': 'menuBarVisible',
                                     'key': 'menuBarVisible',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'menuBarVisible', 'value': true }
-                                    ],
-                                    'help': 'tba'
+                                    ]
                                 },
                                 // Turning on removeScrollbars
                                 {
-                                    'label': 'removeScrollbars',
                                     'key': 'removeScrollbars',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'removeScrollbars', 'value': true }
-                                    ],
-                                    'help': 'tba'
+                                    ]
                                 },
                                 // Turning on useBeta
                                 {
-                                    'label': 'useBeta',
                                     'key': 'useBeta',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'useBeta', 'value': true }
-                                    ],
-                                    'help': 'tba'
+                                    ]
                                 },
                                 // Turning on preventMediaKeyHijacking
                                 {
-                                    'label': 'preventMediaKeyHijacking',
                                     'key': 'preventMediaKeyHijacking',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'preventMediaKeyHijacking', 'value': true }
-                                    ],
-                                    'help': 'tba'
+                                    ]
                                 },
                             ],
                         }

@@ -13,10 +13,10 @@ exports.scrobble = function(attributes) {
         'secret': apistuff.secret
     });
 
-    app.config.user.lastFMsessionPath = join(app.config.user.pathto, "session.json")
+    app.config.lastFMsessionPath = join(join(__dirname, '../../'), "session.json")
 
-    if (fs.existsSync(app.config.user.lastFMsessionPath)) {
-        var sessiondata = require(app.config.user.lastFMsessionPath)
+    if (fs.existsSync(app.config.lastFMsessionPath)) {
+        var sessiondata = require(app.config.lastFMsessionPath)
         lfm.setSessionCredentials(sessiondata.name, sessiondata.key)
     } else {
         lfmauthenticate()
