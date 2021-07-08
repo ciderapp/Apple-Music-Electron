@@ -46,8 +46,8 @@ exports.playbackStateDidChange = function () {
         }
 
         // LastFM Update (IT IS NOT GOING IN DISCORDRPC!)
-        while (app.ipc.LastFMUPdate) {
-            app.ipc.lastFMUpdate = UpdateLFMActivity(a)
+        while (app.ipc.LastFMUpdate) {
+            app.ipc.LastFMUpdate = UpdateLFMActivity(a)
         }
 
         // Mpris Status Update
@@ -62,7 +62,7 @@ exports.playbackStateDidChange = function () {
             if (!app.ipc.TooltipUpdate) app.ipc.TooltipUpdate = true;
             if (!app.ipc.DiscordUpdate) app.ipc.DiscordUpdate = true;
             if (!app.ipc.MprisStatusUpdate) app.ipc.MprisStatusUpdate = true;
-            if (!app.ipc.lastFMUpdate) app.ipc.lastFMUpdate = true;
+            if (!app.ipc.LastFMUpdate) app.ipc.LastFMUpdate = true;
         }, 500)
     });
 }

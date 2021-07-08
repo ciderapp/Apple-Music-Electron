@@ -7,7 +7,7 @@ const { Notification } = require('electron')
 let UserFilesDirectory;
 
 exports.lfmauthenticate = function (){
-    if (!app.config.lastfmEnabled.includes(true)) return;
+    if (!app.config.quick.lastfmEnabled.includes(true)) return;
 
     const LastfmAPI = require('lastfmapi')
     const apistuff = require('./creds.json')
@@ -21,7 +21,7 @@ exports.lfmauthenticate = function (){
         if (err) {
             console.log("[LastFM] [Session] Session file couldn't be opened or doesn't exist,", err)
             console.log("[LastFM] [Auth] Beginning authentication from config.json")
-            lfm.authenticate(app.config.lastfmAuthKey, function (err, session) {
+            lfm.authenticate(app.config.quick.lastfmAuthKey, function (err, session) {
                 if (err) {
                     throw err;
                 }

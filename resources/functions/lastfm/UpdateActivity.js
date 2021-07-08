@@ -1,3 +1,5 @@
+const {app} = require('electron')
+
 exports.UpdateLFMActivity = function (attributes) {
     if (!app.config.quick.lastfmEnabled.includes(true)) return;
 
