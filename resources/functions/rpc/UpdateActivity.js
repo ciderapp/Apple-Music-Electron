@@ -29,9 +29,9 @@ exports.UpdateActivity = function (attributes) {
         });
 
         // why the fuck wont you execute anywhere else.
-        if (app.config.quick.lastfmEnabled.includes(true)) {
-            scrobble(attributes)
-        }
+        //if (app.config.quick.lastfmEnabled.includes(true)) {
+        //   scrobble(attributes)
+        //}
     } else {
         app.discord.client.updatePresence({
             details: attributes.name,

@@ -46,9 +46,10 @@ exports.playbackStateDidChange = function () {
         }
 
         // LastFM Update (IT IS NOT GOING IN DISCORDRPC!)
-        //while (app.ipc.LastFMUpdate) {
-        //    app.ipc.LastFMUpdate = UpdateLFMActivity(a)
-        //} NEEDS DEBUGGING THEN.
+        while (app.ipc.LastFMUpdate) {
+            app.ipc.LastFMUpdate = UpdateLFMActivity(a)
+        }
+        // giving this another shot.
 
         // Mpris Status Update
         while (app.ipc.MprisStatusUpdate) {

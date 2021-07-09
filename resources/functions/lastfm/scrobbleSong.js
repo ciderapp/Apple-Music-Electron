@@ -30,6 +30,7 @@ exports.scrobble = function(attributes) {
                     'artist': attributes.artistName,
                     'track': attributes.name,
                     'album': attributes.albumName,
+                    'albumArtist': attributes.artistName,
                     'timestamp': new Date().getTime() / 1000
                 }, function (err, scrobbled) {
                     if (err) {
