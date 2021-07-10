@@ -1,6 +1,10 @@
 try {
-    if (document.getElementById('ember17')) {
-        document.getElementById('ember17').addEventListener('click', function () {
+    function GetXPath(path) {
+        return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    }
+
+    if (GetXPath('/html/body/div[4]/div/div[3]/div/div[3]/div[3]/button/div')) {
+        GetXPath('/html/body/div[4]/div/div[3]/div/div[3]/div[3]/button/div').addEventListener('click', function () {
             setTimeout(function() {
                 if (document.querySelector('.context-menu__option--app-settings')) {
                     console.log("[settingsInit] Preventing second button.");
@@ -19,7 +23,7 @@ try {
                 li.classList.add("context-menu__option--app-settings");
                 li.classList.add("context-menu__option");
 
-                const ul = document.evaluate("/html/body/div[6]/ul", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                const ul = GetXPath("/html/body/div[6]/ul");
 
                 li.onclick = function() {
                     ipcRenderer.send("showPreferences");
