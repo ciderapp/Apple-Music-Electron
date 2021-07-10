@@ -1,7 +1,7 @@
 const path = require('path');
-const os = require('os');
 const ElectronPreferences = require('electron-preferences');
-const { app, globalShortcut } = require('electron')
+const { app } = require('electron')
+const { Menu, MenuItem } = require('electron')
 
 exports.SettingsMenuInit = function() {
     const SettingsMenu = new ElectronPreferences({
@@ -41,6 +41,7 @@ exports.SettingsMenuInit = function() {
                 ]
             },
             "advanced": {
+                "settingsShortcut": "Ctrl+S",
                 "allowMultipleInstances": [],
                 "autoUpdaterBetaBuilds": [],
                 "enableDevTools": [],
@@ -238,6 +239,12 @@ exports.SettingsMenuInit = function() {
                                     'content': "<p><b>Do not mess with these options unless you know what you're doing.</b></p>",
                                     'type': 'message'
                                 },
+                                { // Settings shortcut
+                                    'label': 'Settings Shortcut',
+                                    'key': 'settingsShortcut',
+                                    'type': 'text',
+                                    'help': 'Sets the shortcut used to open the settings menu. (ex. CTRL+S or Cmd+S)'
+                                },
                                 // Turning on allowMultipleInstances
                                 {
                                     'key': 'allowMultipleInstances',
@@ -341,8 +348,24 @@ exports.SettingsMenuInit = function() {
     });
 
     app.whenReady().then(() => {
-        globalShortcut.register('Alt+CommandOrControl+S', () => {
-            SettingsMenu.show();
-        })
+        const settingsShortcut = new Menu()
+        if (app.config.advanced.settingsShortcut === "") {
+            var setShortcut = "CTRL+S"
+        } else {
+            var setShortcut = app.config.advanced.settingsShortcut;
+        }
+        settingsShortcut.append(new MenuItem({
+            label: 'Settings',
+            submenu: [{
+                role: 'Open Settings',
+                accelerator: setShortcut,
+                click: () => {
+                    SettingsMenu.show()
+                    console.log("[Settings] Settings shortcut pressed!")
+                }
+            }]
+        }))
+
+        Menu.setApplicationMenu(settingsShortcut)
     })
 }
