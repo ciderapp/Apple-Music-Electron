@@ -15,7 +15,7 @@ try {
                 if (document.querySelector('.context-menu__option--app-settings')) {
                     console.log("[settingsInit] Preventing second button.");
                     return;
-                };
+                }
 
                 const li = document.createElement("li");
                 li.innerHTML = `
