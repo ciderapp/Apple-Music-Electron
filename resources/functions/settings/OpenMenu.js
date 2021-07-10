@@ -636,13 +636,32 @@ exports.SettingsMenuInit = function () {
                                 { // Setting Keybind for Opening Settings
                                     'label': 'settingsMenuKeybind',
                                     'key': 'settingsMenuKeybind',
-                                    'type': 'accelerator',
+                                    'type': 'text',
                                 },
                             ],
                         }
                     ]
                 }
-            }
+            },
+            {
+                'id': 'audio',
+                'label': 'Audio Quality',
+                'icon': 'dashboard-level',
+                'form': {
+                    'groups': [
+                        {
+                            // Audio Settings
+                            'label': 'Audio Settings',
+                            'fields': [
+                                {
+                                    'content': '<p>coming soon™</p>',
+                                    'type': 'message'
+                                },
+                            ],
+                        }
+                    ]
+                }
+            },
         ],
         browserWindowOpts: {
             'title': 'App Settings',
@@ -657,8 +676,8 @@ exports.SettingsMenuInit = function () {
     });
 
     app.whenReady().then(() => {
-        const menu = new Menu()
-        menu.append(new MenuItem({label:'Settings',submenu:[{role:'Settings Menu',accelerator:app.preferences.value('advanced.settingsMenuKeybind'),click:()=>{app.preferences.show();}}]}));
-        Menu.setApplicationMenu(menu)
-    })
+        globalShortcut.register(app.preferences.value('advanced.settingsMenuKeybind'), () => {
+            app.preferences.show();
+        });
+    });
 }
