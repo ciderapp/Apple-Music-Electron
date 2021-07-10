@@ -5,7 +5,6 @@ const HomeDirectory = require('os').homedir();
 const { Notification } = require('electron')
 const path = require('path')
 
-let UserFilesDirectory;
 let lastfmsessionpath = path.resolve(app.getPath('userData'), 'session.json')
 
 exports.lfmauthenticate = function (){
@@ -22,7 +21,7 @@ exports.lfmauthenticate = function (){
     fs.stat(lastfmsessionpath, 'utf8', function(err){
         if (err) {
             console.log("[LastFM] [Session] Session file couldn't be opened or doesn't exist,", err)
-            console.log("[LastFM] [Auth] Beginning authentication from config.json")
+            console.log("[LastFM] [Auth] Beginning authentication from configuration")
             lfm.authenticate(app.config.quick.lastfmAuthKey, function (err, session) {
                 if (err) {
                     throw err;
@@ -53,24 +52,6 @@ function authenticatefromfile () {
         'api_key': apistuff.apikey,
         'secret': apistuff.secret
     });
-    switch (process.platform) {
-        case "linux":
-            UserFilesDirectory = join(HomeDirectory, ".config/Apple Music/")
-            break;
-
-        case "win32": // Windows
-            UserFilesDirectory = join(HomeDirectory, 'Documents/Apple Music/')
-            break;
-
-        case "darwin": // MacOS
-            UserFilesDirectory = join(HomeDirectory, 'Library/Application Support/Apple Music/')
-            break;
-
-        default:
-            UserFilesDirectory = join(HomeDirectory, 'apple-music-electron/')
-            break;
-    }
-
 
     let sessiondata = require(lastfmsessionpath)
     console.log("[LastFM] [Auth] Logging in with sessioninfo.")

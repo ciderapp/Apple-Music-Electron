@@ -1,8 +1,8 @@
 const {app, ipcMain} = require('electron')
-const {UpdateActivity} = require('../rpc/UpdateActivity')
 const {SetThumbarButtons} = require('../win/SetThumbarButtons')
 const {SetTrayTooltip} = require('../win/SetTrayTooltip')
 const {UpdatePlaybackStatus} = require('../mpris/UpdatePlaybackStatus')
+const {UpdateRPCActivity} = require('../rpc/UpdateActivity')
 const {UpdateLFMActivity} = require('../lastfm/UpdateActivity')
 
 exports.playbackStateDidChange = function () {
@@ -24,7 +24,6 @@ exports.playbackStateDidChange = function () {
             a.endTime = 0;
         }
 
-
         // Just incase
         if (!a.endTime) {
             a.endTime = Number(Math.round(Date.now()));
@@ -42,20 +41,18 @@ exports.playbackStateDidChange = function () {
 
         // Discord Update
         while (app.ipc.DiscordUpdate) {
-            app.ipc.DiscordUpdate = UpdateActivity(a)
+            app.ipc.DiscordUpdate = UpdateRPCActivity(a)
         }
 
-        // LastFM Update (IT IS NOT GOING IN DISCORDRPC!)
+        // LastFM Update
         while (app.ipc.LastFMUpdate) {
             app.ipc.LastFMUpdate = UpdateLFMActivity(a)
         }
-        // giving this another shot.
 
         // Mpris Status Update
         while (app.ipc.MprisStatusUpdate) {
             app.ipc.MprisStatusUpdate = UpdatePlaybackStatus(a);
         }
-
 
         // Revert it All because This Runs too many times
         setTimeout(() => {
