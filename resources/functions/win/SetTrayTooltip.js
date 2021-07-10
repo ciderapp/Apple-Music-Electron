@@ -3,7 +3,7 @@ const {app} = require('electron')
 exports.SetTrayTooltip = function (attributes) {
 
 
-    if (!app.preferences.value('general.trayTooltipSongName')) return;
+    if (!app.preferences.value('general.trayTooltipSongName').includes(true)) return;
 
     console.log(`[UpdateTooltip] Updating Tooltip for ${attributes.name} to ${attributes.status}`)
 

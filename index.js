@@ -69,7 +69,7 @@ app.on('window-all-closed', () => {
 
 app.on('before-quit', function () {
     ClearMPRIS()
-    if (app.preferences.value('general.discordRPC')[0] && app.discord.client) app.discord.client.disconnect
+    if (app.preferences.value('general.discordRPC').includes(true) && app.discord.client) app.discord.client.disconnect
     console.log("[DiscordRPC] Disconnecting from Discord.")
     console.log("---------------------------------------------------------------------")
     console.log("Application Closing...")

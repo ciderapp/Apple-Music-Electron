@@ -5,7 +5,7 @@ exports.CreateNotification = function (attributes) {
     console.log(`[CreateNotification] Attempting to CreateNotification with parameters:`)
     console.log(`[CreateNotification] Config Option: ${app.preferences.value('general.playbackNotifications')}`)
     console.log(`[CreateNotification] Notification Supported: ${Notification.isSupported()}`)
-    if (!app.preferences.value('general.playbackNotifications') || !Notification.isSupported()) return;
+    if (!app.preferences.value('general.playbackNotifications').includes(true) || !Notification.isSupported()) return;
 
 
     if (app.preferences.value('general.playbackNotifications').includes("minimized")) {

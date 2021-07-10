@@ -25,13 +25,10 @@ exports.InitializeBase = function () {
     }
 
     // Disable CORS
-    if (app.preferences.value('general.authMode')) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+    if (app.preferences.value('general.authMode').includes(true)) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 
     // Media Key Hijacking
-    if (app.preferences.value('advanced.preventMediaKeyHijacking')) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
-
-    // Just turn it on because i was dumb and made it so you have to have both on.
-    if (app.preferences.value('visual.emulateMacOS').includes('right') && !app.preferences.value('visual.emulateMacOS') === true) app.preferences.value('visual.emulateMacOS') = [true];
+    if (app.preferences.value('advanced.preventMediaKeyHijacking').includes(true)) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
 
     // Sets the ModelId (For windows notifications)
     if (process.platform === "win32") app.setAppUserModelId("Apple Music");

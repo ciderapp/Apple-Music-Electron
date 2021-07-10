@@ -5,7 +5,7 @@ const path = require('path')
 let lastfmsessionpath = path.resolve(app.getPath('userData'), 'session.json')
 
 exports.scrobble = function(attributes) {
-    if (!app.preferences.value('general.lastfmEnabled') || app.preferences.value('general.lastfmAuthKey')[0] === 'Put your Auth Key here.' || !app.preferences.value('general.lastfmAuthKey')) {
+    if (!app.preferences.value('general.lastfmEnabled').includes(true) || app.preferences.value('general.lastfmAuthKey')[0] === 'Put your Auth Key here.' || !app.preferences.value('general.lastfmAuthKey')) {
         app.preferences.value('general.lastfmEnabled') = []
         return
     }

@@ -5,7 +5,7 @@ autoUpdater.logger = require("electron-log");
 exports.InitializeAutoUpdater = function () {
     console.log('[InitializeAutoUpdater] Started.')
 
-    if (app.preferences.value('advanced.autoUpdaterBetaBuilds')) {
+    if (app.preferences.value('advanced.autoUpdaterBetaBuilds').includes(true)) {
         autoUpdater.allowPrerelease = true
         autoUpdater.allowDowngrade = false
     }

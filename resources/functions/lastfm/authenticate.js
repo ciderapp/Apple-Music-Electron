@@ -8,7 +8,7 @@ const path = require('path')
 let lastfmsessionpath = path.resolve(app.getPath('userData'), 'session.json')
 
 exports.lfmauthenticate = function (){
-    if (!app.preferences.value('general.lastfmEnabled')) return;
+    if (!app.preferences.value('general.lastfmEnabled').includes(true)) return;
 
     const LastfmAPI = require('lastfmapi')
     const apistuff = require('./creds.json')

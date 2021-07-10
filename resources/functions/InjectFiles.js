@@ -19,14 +19,14 @@ exports.InjectFiles = function () {
         }
 
         /* Load Glasstron */
-        if (app.preferences.value('visual.transparencyMode')) {
+        if (app.preferences.value('visual.transparencyMode').includes(true)) {
             LoadCSS('glasstron.css')
         } else {
             LoadCSS('glasstronDisabled.css')
         }
 
         /* Streamer Mode */
-        if (app.preferences.value('visual.streamerMode')) {
+        if (app.preferences.value('visual.streamerMode').includes(true)) {
             LoadCSS('streamerMode.css')
         }
 
@@ -36,7 +36,7 @@ exports.InjectFiles = function () {
         }
 
         /* Remove the Scrollbar */
-        if (app.preferences.value('advanced.removeScrollbars')) app.win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
+        if (app.preferences.value('advanced.removeScrollbars').includes(true)) app.win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
 
         /* Inject the MusicKitInterop file */
         await app.win.webContents.executeJavaScript('MusicKitInterop.init()');
