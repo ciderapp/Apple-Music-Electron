@@ -4,7 +4,7 @@ exports.InstanceHandler = function () {
     console.log('[InstanceHandler] Started.')
     const gotTheLock = app.requestSingleInstanceLock();
 
-    if (!gotTheLock && !app.config.advanced.allowMultipleInstances.includes(true)) {
+    if (!gotTheLock && !app.preferences.value('advanced.allowMultipleInstances')) {
         console.log("[InstanceHandler] Existing Instance is Blocking Second Instance.")
         app.quit();
         return true
@@ -13,7 +13,7 @@ exports.InstanceHandler = function () {
             if (argv.includes("--force-quit") > -1) {
                 app.quit()
                 return true
-            } else if (app.win && !app.config.advanced.allowMultipleInstances.includes(true)) {
+            } else if (app.win && !app.preferences.value('advanced.allowMultipleInstances')) {
                 app.win.show()
                 app.win.focus()
             }

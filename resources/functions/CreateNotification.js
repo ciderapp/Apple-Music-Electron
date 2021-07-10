@@ -3,14 +3,14 @@ const {join} = require('path')
 
 exports.CreateNotification = function (attributes) {
     console.log(`[CreateNotification] Attempting to CreateNotification with parameters:`)
-    console.log(`[CreateNotification] Config Option: ${app.config.preferences.playbackNotifications.includes(true)}`)
+    console.log(`[CreateNotification] Config Option: ${app.preferences.value('general.playbackNotifications')}`)
     console.log(`[CreateNotification] Notification Supported: ${Notification.isSupported()}`)
-    if (!app.config.preferences.playbackNotifications.includes(true) || !Notification.isSupported()) return;
+    if (!app.preferences.value('general.playbackNotifications') || !Notification.isSupported()) return;
 
 
-    if (app.config.preferences.playbackNotifications.includes("minimized")) {
+    if (app.preferences.value('general.playbackNotifications').includes("minimized")) {
         const isAppHidden = !app.win.isVisible()
-        console.log(`[CreateNotification] [notificationsMinimized] Config Notification Minimized: ${app.config.preferences.playbackNotifications.includes("minimized")}`)
+        console.log(`[CreateNotification] [notificationsMinimized] Config Notification Minimized: ${app.preferences.value('general.playbackNotifications').includes("minimized")}`)
         console.log(`[CreateNotification] [notificationsMinimized] App Minimized: ${app.win.isMinimized()}`)
         console.log(`[CreateNotification] [notificationsMinimized] App Hidden: ${isAppHidden}`)
         if (isAppHidden || app.win.isMinimized()) {

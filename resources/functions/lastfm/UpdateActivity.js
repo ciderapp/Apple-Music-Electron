@@ -1,12 +1,9 @@
 const {app} = require('electron')
 
 exports.UpdateLFMActivity = function (attributes) {
-    if (!app.config.quick.lastfmEnabled.includes(true)) return;
+    if (!app.preferences.value('general.lastfmEnabled')) return;
 
     console.log(`[UpdateLFMActivity] Scrobbling LastFM`)
     var {scrobble} = require("./scrobbleSong");
-
-    if (app.config.quick.lastfmEnabled.includes(true)) {
-        scrobble(attributes)
-    }
+    scrobble(attributes);
 }

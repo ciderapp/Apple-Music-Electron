@@ -39,9 +39,7 @@ app.on('ready', () => {
 
     const {SettingsMenuInit} = require("./resources/functions/settings/OpenMenu");
     SettingsMenuInit()
-
-    app.config = require(path.resolve(app.getPath('userData'), 'preferences.json'));
-    console.log(app.config)
+    console.log(app.preferences)
 
     const {InitializeBase} = require('./resources/functions/init/Init-Base')
     InitializeBase()
@@ -51,22 +49,27 @@ app.on('ready', () => {
     console.log("[Apple-Music-Electron] Application is Ready.")
     console.log("[Apple-Music-Electron] Creating Window...")
     setTimeout(CreateWindow, process.platform === "linux" ? 1000 : 0);
+
+    app.preferences.on('save', (preferences) => {
+        console.log(`Preferences were saved.`, JSON.stringify(preferences, null, 4));
+    });
 });
 
-app.on('window-all-closed', () => {
+function ClearMPRIS() {
     if (app.mpris) { // Reset Mpris when app is closed
         app.mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
         app.mpris.playbackStatus = 'Stopped';
     }
+}
+
+app.on('window-all-closed', () => {
+    ClearMPRIS()
     app.quit()
 });
 
 app.on('before-quit', function () {
-    if (app.mpris) { // Reset Mpris when app is closed
-        app.mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
-        app.mpris.playbackStatus = 'Stopped';
-    }
-    if (app.config.preferences.discordRPC && app.discord.client) app.discord.client.disconnect
+    ClearMPRIS()
+    if (app.preferences.value('general.discordRPC')[0] && app.discord.client) app.discord.client.disconnect
     console.log("[DiscordRPC] Disconnecting from Discord.")
     console.log("---------------------------------------------------------------------")
     console.log("Application Closing...")

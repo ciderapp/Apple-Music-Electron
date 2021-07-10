@@ -10,7 +10,7 @@ exports.InitializeMpris = function () {
         Mpris = require('mpris-service');
     } catch (err) {
         console.log(`[Mpris] [InitializeMpris] Failed to require. ${err}`)
-        app.config.preferences.mprisSupport = false
+        app.mpris = false;
         return
     }
 

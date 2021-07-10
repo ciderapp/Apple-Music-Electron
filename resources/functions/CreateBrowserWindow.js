@@ -4,27 +4,28 @@ const glasstron = require('glasstron');
 
 exports.CreateBrowserWindow = function() {
     console.log('[CreateBrowserWindow] Initializing Browser Window Creation.')
+
     const options = {
         icon: join(__dirname, `../icons/icon.ico`),
         width: 1024,
         height: 600,
-        minWidth: ((app.config.css.emulateMacOS.includes(true) || app.config.css.emulateMacOS.includes("rightAlign") ) ? ((app.config.css.streamerMode.includes(true)) ? 400 : 300) : ((app.config.css.streamerMode.includes(true)) ? 400 : 300)),
-        minHeight: ((app.config.css.emulateMacOS.includes(true) || app.config.css.emulateMacOS.includes("rightAlign") ) ? ((app.config.css.streamerMode.includes(true)) ? 55 : 300) : ((app.config.css.streamerMode.includes(true)) ? 115 : 300)),
-        frame: ((!(app.config.css.emulateMacOS.includes(true) || app.config.css.emulateMacOS.includes("rightAlign")))),
+        minWidth: (app.preferences.value('visual.emulateMacOS') ? ((app.preferences.value('visual.streamerMode')) ? 400 : 300) : ((app.preferences.value('visual.streamerMode').includes(true)) ? 400 : 300)),
+        minHeight: (app.preferences.value('visual.emulateMacOS') ? ((app.preferences.value('visual.streamerMode').includes(true)) ? 55 : 300) : ((app.preferences.value('visual.streamerMode').includes(true)) ? 115 : 300)),
+        frame: ((!(app.preferences.value('visual.emulateMacOS').includes('left') || app.preferences.value('visual.emulateMacOS').includes("right")))),
         title: "Apple Music",
         // Enables DRM
         webPreferences: {
             plugins: true,
             preload: join(__dirname, '../js/MusicKitInterop.js'),
-            allowRunningInsecureContent: !app.config.quick.authMode.includes(true),
+            allowRunningInsecureContent: !app.preferences.value('general.authMode'),
             contextIsolation: false,
-            webSecurity: app.config.quick.authMode.includes(true),
+            webSecurity: app.preferences.value('general.authMode'),
             sandbox: true
         }
     };
 
     let win;
-    if (!app.config.css.transparencyMode.includes(true)) {
+    if (!app.preferences.value('visual.transparencyMode')) {
         console.log('[CreateBrowserWindow] Creating Window without Glasstron')
         win = new BrowserWindow(options)
         win.setBackgroundColor = '#1f1f1f00'
@@ -41,8 +42,8 @@ exports.CreateBrowserWindow = function() {
     }
 
 
-    if (!app.config.advanced.menuBarVisible.includes(true)) win.setMenuBarVisibility(false); // Hide that nasty menu bar
-    if (!app.config.advanced.enableDevTools.includes(true)) win.setMenu(null); // Disables DevTools
+    if (!app.preferences.value('advanced.menuBarVisible')) win.setMenuBarVisibility(false); // Hide that nasty menu bar
+    if (!app.preferences.value('advanced.enableDevTools')) win.setMenu(null); // Disables DevTools
 
     return win
 }

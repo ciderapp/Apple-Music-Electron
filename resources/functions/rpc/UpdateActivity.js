@@ -2,7 +2,7 @@ const {scrobble} = require("../lastfm/scrobbleSong");
 const {app} = require('electron')
 
 exports.UpdateRPCActivity = function (attributes) {
-    if (!app.discord.client || !app.config.preferences.discordRPC.includes(true)) return;
+    if (!app.discord.client || !app.preferences.value('general.discordRPC')) return;
 
     if (!app.discord.cachedAttributes) {
         app.discord.cachedAttributes = attributes

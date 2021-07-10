@@ -68,5 +68,5 @@ try {
         `);
     }
 } catch (e) {
-    console.error("[CSS] Error while trying to apply emulatemacos_rightalign.js", e);
+    console.error("[CSS] Error while trying to apply emulatemacos_right.js", e);
 }

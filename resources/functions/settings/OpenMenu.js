@@ -1,103 +1,270 @@
 const path = require('path');
+const os = require('os');
 const ElectronPreferences = require('electron-preferences');
-const { app } = require('electron')
-const { Menu, MenuItem } = require('electron')
+const { app, globalShortcut } = require('electron')
 
 exports.SettingsMenuInit = function() {
-    const SettingsMenu = new ElectronPreferences({
+     app.preferences = new ElectronPreferences({
         'dataStore': path.resolve(app.getPath('userData'), 'preferences.json'),
         /**
          * Default values.
          */
         'defaults': {
-            "quick": {
+            "general": {
                 "authMode": [],
+                "language": "",
+                "discordRPC": [ true ],
+                "playbackNotifications": "minimized",
+                "trayTooltipSongName": [ true ],
                 "lastfmEnabled": [],
                 "lastfmAuthKey": "Put your Auth Key here."
             },
-            "css": {
-                "cssTheme": "",
-                "emulateMacOS": [
-                    true
-                ],
-                "transparencyMode": [
-                    true
-                ],
+            "visual": {
+                "theme": "",
+                "emulateMacOS": "left",
+                "transparencyMode": [ true ],
                 "streamerMode": []
             },
-            "preferences": {
-                "closeButtonMinimize": [
-                    true
-                ],
-                "discordRPC": [
-                    true
-                ],
-                "playbackNotifications": [
-                    true,
-                    "minimized"
-                ],
-                "trayTooltipSongName": [
-                    true
-                ]
+            "window": {
+                "appStartupBehavior": "false",
+                "closeButtonMinimize": [ true ]
             },
             "advanced": {
-                "settingsShortcut": "Ctrl+S",
-                "allowMultipleInstances": [],
-                "autoUpdaterBetaBuilds": [],
-                "enableDevTools": [],
-                "forceDisableWindowFrame": [],
-                "forceApplicationLanguage": "",
-                "forceApplicationRegion": "",
-                "forceDarkMode": [],
-                "menuBarVisible": [],
-                "removeScrollbars": [
-                    true
-                ],
-                "useBeta": [
-                    true
-                ],
-                "preventMediaKeyHijacking": []
+                "enableDevTools": [ true ],
+                "removeScrollbars": [ true ],
+                "useBetaSite": [ true ],
+                "settingsMenuKeybind": "Control+Alt+S",
+                "forceApplicationRegion": ""
             }
         },
         'sections': [
             {
-                // New Section for Quick Settings
-                'id': 'quick',
-                'label': 'Quick Settings',
+                'id': 'general',
+                'label': 'General Settings',
                 'icon': 'settings-gear-63',
                 'form': {
                     'groups': [
                         {
-                            // Quick Settings Page Contents
-                            'label': 'Quick Settings',
+                            // General Settings
+                            'label': 'General Settings',
                             'fields': [
                                 { // Auth Mode
                                     'label': 'Authentication Mode',
                                     'key': 'authMode',
                                     'type': 'checkbox',
                                     'options': [
-                                        { 'label': 'Auth Mode', 'value': true },
+                                        { 'label': 'Authentication mode allows certain users to resolve issues when logging in', 'value': true }
                                     ],
-                                    'help': 'Enable Authentication Mode to allow some users to sign in.'
+                                    'help': 'This should be disabled after logging in.'
+                                },
+                                { // Language
+                                    'label': 'Language',
+                                    'key': 'language',
+                                    'type': 'dropdown',
+                                    'options': [
+                                        { 'label': 'English (USA)', 'value': 'us'},
+                                        { 'label': 'English (GB)', 'value': 'gb'},
+                                        { 'label': 'United Arab Emirates', 'value': 'ae' },
+                                        { 'label': 'Antigua and Barbuda', 'value': 'ag' },
+                                        { 'label': 'Anguilla', 'value': 'ai' },
+                                        { 'label': 'Albania', 'value': 'al' },
+                                        { 'label': 'Armenia', 'value': 'am' },
+                                        { 'label': 'Angola', 'value': 'ao' },
+                                        { 'label': 'Argentina', 'value': 'ar' },
+                                        { 'label': 'Austria', 'value': 'at' },
+                                        { 'label': 'Australia', 'value': 'au' },
+                                        { 'label': 'Azerbaijan', 'value': 'az' },
+                                        { 'label': 'Barbados', 'value': 'bb' },
+                                        { 'label': 'Belgium', 'value': 'be' },
+                                        { 'label': 'Burkina-Faso', 'value': 'bf' },
+                                        { 'label': 'Bulgaria', 'value': 'bg' },
+                                        { 'label': 'Bahrain', 'value': 'bh' },
+                                        { 'label': 'Benin', 'value': 'bj' },
+                                        { 'label': 'Bermuda', 'value': 'bm' },
+                                        { 'label': 'Brunei Darussalam', 'value': 'bn' },
+                                        { 'label': 'Bolivia', 'value': 'bo' },
+                                        { 'label': 'Brazil', 'value': 'br' },
+                                        { 'label': 'Bahamas', 'value': 'bs' },
+                                        { 'label': 'Bhutan', 'value': 'bt' },
+                                        { 'label': 'Botswana', 'value': 'bw' },
+                                        { 'label': 'Belarus', 'value': 'by' },
+                                        { 'label': 'Belize', 'value': 'bz' },
+                                        { 'label': 'Canada', 'value': 'ca' },
+                                        { 'label': 'Democratic Republic of the Congo', 'value': 'cg' },
+                                        { 'label': 'Switzerland', 'value': 'ch' },
+                                        { 'label': 'Chile', 'value': 'cl' },
+                                        { 'label': 'China', 'value': 'cn' },
+                                        { 'label': 'Colombia', 'value': 'co' },
+                                        { 'label': 'Costa Rica', 'value': 'cr'},
+                                        { 'label': 'Cape Verde', 'value': 'cv'},
+                                        { 'label': 'Cyprus', 'value': 'cy'},
+                                        { 'label': 'Czech Republic', 'value': 'cz'},
+                                        { 'label': 'Germany', 'value': 'de'},
+                                        { 'label': 'Denmark', 'value': 'dk'},
+                                        { 'label': 'Dominica', 'value': 'dm'},
+                                        { 'label': 'Dominican Republic', 'value': 'do'},
+                                        { 'label': 'Algeria', 'value': 'dz'},
+                                        { 'label': 'Ecuador', 'value': 'ec'},
+                                        { 'label': 'Estonia', 'value': 'ee'},
+                                        { 'label': 'Egypt', 'value': 'eg'},
+                                        { 'label': 'Spain', 'value': 'es'},
+                                        { 'label': 'Finland', 'value': 'fi'},
+                                        { 'label': 'Fiji', 'value': 'fj'},
+                                        { 'label': 'Federated States of Micronesia', 'value': 'fm'},
+                                        { 'label': 'France', 'value': 'fr'},
+                                        { 'label': 'Grenada', 'value': 'gd'},
+                                        { 'label': 'Ghana', 'value': 'gh'},
+                                        { 'label': 'Gambia', 'value': 'gm'},
+                                        { 'label': 'Greece', 'value': 'gr'},
+                                        { 'label': 'Guatemala', 'value': 'gt'},
+                                        { 'label': 'Guinea Bissau', 'value': 'gw'},
+                                        { 'label': 'Guyana', 'value': 'gy'},
+                                        { 'label': 'Hong Kong', 'value': 'hk'},
+                                        { 'label': 'Honduras', 'value': 'hn'},
+                                        { 'label': 'Croatia', 'value': 'hr'},
+                                        { 'label': 'Hungaria', 'value': 'hu'},
+                                        { 'label': 'Indonesia', 'value': 'id'},
+                                        { 'label': 'Ireland', 'value': 'ie'},
+                                        { 'label': 'Israel', 'value': 'il'},
+                                        { 'label': 'India', 'value': 'in'},
+                                        { 'label': 'Iceland', 'value': 'is'},
+                                        { 'label': 'Italy', 'value': 'it'},
+                                        { 'label': 'Jamaica', 'value': 'jm'},
+                                        { 'label': 'Jordan', 'value': 'jo'},
+                                        { 'label': 'Japan', 'value': 'jp'},
+                                        { 'label': 'Kenya', 'value': 'ke'},
+                                        { 'label': 'Krygyzstan', 'value': 'kg'},
+                                        { 'label': 'Cambodia', 'value': 'kh'},
+                                        { 'label': 'Saint Kitts and Nevis', 'value': 'kn'},
+                                        { 'label': 'South Korea', 'value': 'kr'},
+                                        { 'label': 'Kuwait', 'value': 'kw'},
+                                        { 'label': 'Cayman Islands', 'value': 'ky'},
+                                        { 'label': 'Kazakhstan', 'value': 'kz'},
+                                        { 'label': 'Laos', 'value': 'la'},
+                                        { 'label': 'Lebanon', 'value': 'lb'},
+                                        { 'label': 'Saint Lucia', 'value': 'lc'},
+                                        { 'label': 'Sri Lanka', 'value': 'lk'},
+                                        { 'label': 'Liberia', 'value': 'lr'},
+                                        { 'label': 'Lithuania', 'value': 'lt'},
+                                        { 'label': 'Luxembourg', 'value': 'lu'},
+                                        { 'label': 'Latvia', 'value': 'lv'},
+                                        { 'label': 'Moldova', 'value': 'md'},
+                                        { 'label': 'Madagascar', 'value': 'mg'},
+                                        { 'label': 'Macedonia', 'value': 'mk'},
+                                        { 'label': 'Mali', 'value': 'ml'},
+                                        { 'label': 'Mongolia', 'value': 'mn'},
+                                        { 'label': 'Macau', 'value': 'mo'},
+                                        { 'label': 'Mauritania', 'value': 'mr'},
+                                        { 'label': 'Montserrat', 'value': 'ms'},
+                                        { 'label': 'Malta', 'value': 'mt'},
+                                        { 'label': 'Mauritius', 'value': 'mu'},
+                                        { 'label': 'Malawi', 'value': 'mw'},
+                                        { 'label': 'Mexico', 'value': 'mx'},
+                                        { 'label': 'Malaysia', 'value': 'my'},
+                                        { 'label': 'Mozambique', 'value': 'mz'},
+                                        { 'label': 'Namibia', 'value': 'na'},
+                                        { 'label': 'Niger', 'value': 'ne'},
+                                        { 'label': 'Nigeria', 'value': 'ng'},
+                                        { 'label': 'Nicaragua', 'value': 'ni'},
+                                        { 'label': 'Netherlands', 'value': 'nl'},
+                                        { 'label': 'Nepal', 'value': 'np'},
+                                        { 'label': 'Norway', 'value': 'no'},
+                                        { 'label': 'New Zealand', 'value': 'nz'},
+                                        { 'label': 'Oman', 'value': 'om'},
+                                        { 'label': 'Panama', 'value': 'pa'},
+                                        { 'label': 'Peru', 'value': 'pe'},
+                                        { 'label': 'Papua New Guinea', 'value': 'pg'},
+                                        { 'label': 'Philippines', 'value': 'ph'},
+                                        { 'label': 'Pakistan', 'value': 'pk'},
+                                        { 'label': 'Poland', 'value': 'pl'},
+                                        { 'label': 'Portugal', 'value': 'pt'},
+                                        { 'label': 'Palau', 'value': 'pw'},
+                                        { 'label': 'Paraguay', 'value': 'py'},
+                                        { 'label': 'Qatar', 'value': 'qa'},
+                                        { 'label': 'Romania', 'value': 'ro'},
+                                        { 'label': 'Russia', 'value': 'ru'},
+                                        { 'label': 'Saudi Arabia', 'value': 'sa'},
+                                        { 'label': 'Soloman Islands', 'value': 'sb'},
+                                        { 'label': 'Seychelles', 'value': 'sc'},
+                                        { 'label': 'Sweden', 'value': 'se'},
+                                        { 'label': 'Singapore', 'value': 'sg'},
+                                        { 'label': 'Slovenia', 'value': 'si'},
+                                        { 'label': 'Slovakia', 'value': 'sk'},
+                                        { 'label': 'Sierra Leone', 'value': 'sl'},
+                                        { 'label': 'Senegal', 'value': 'sn'},
+                                        { 'label': 'Suriname', 'value': 'sr'},
+                                        { 'label': 'Sao Tome e Principe', 'value': 'st'},
+                                        { 'label': 'El Salvador', 'value': 'sv'},
+                                        { 'label': 'Swaziland', 'value': 'sz'},
+                                        { 'label': 'Turks and Caicos Islands', 'value': 'tc'},
+                                        { 'label': 'Chad', 'value': 'td'},
+                                        { 'label': 'Thailand', 'value': 'th'},
+                                        { 'label': 'Tajikistan', 'value': 'tj'},
+                                        { 'label': 'Turkmenistan', 'value': 'tm'},
+                                        { 'label': 'Tunisia', 'value': 'tn'},
+                                        { 'label': 'Turkey', 'value': 'tr'},
+                                        { 'label': 'Republic of Trinidad and Tobago', 'value': 'tt'},
+                                        { 'label': 'Taiwan', 'value': 'tw'},
+                                        { 'label': 'Tanzania', 'value': 'tz'},
+                                        { 'label': 'Ukraine', 'value': 'ua'},
+                                        { 'label': 'Uganda', 'value': 'ug'},
+                                        { 'label': 'Uruguay', 'value': 'uy'},
+                                        { 'label': 'Uzbekistan', 'value': 'uz'},
+                                        { 'label': 'Saint Vincent and the Grenadines', 'value': 'vc'},
+                                        { 'label': 'Venezuela', 'value': 've'},
+                                        { 'label': 'British Virgin Islands', 'value': 'vg'},
+                                        { 'label': 'Vietnam', 'value': 'vn'},
+                                        { 'label': 'Yemen', 'value': 'ye'},
+                                        { 'label': 'South Africa', 'value': 'za'},
+                                        { 'label': 'Zimbabwe', 'value': 'zw'}
+                                    ],
+                                    'help': 'You will need to restart the application for language settings to apply.'
+                                },
+                                { // Discord Rich Presence
+                                    'label': 'Discord Rich Presence',
+                                    'key': 'discordRPC',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        { 'label': 'Display your current song as your Discord Game activity', 'value': true }
+                                    ],
+                                    'help': `In order for this to appear, you must have 'Display current activity as status message.' turned on.`
+                                },
+                                { // Turning on playbackNotifications
+                                    'label': 'Notifications on Song Change',
+                                    'key': 'playbackNotifications',
+                                    'type': 'dropdown',
+                                    'options': [
+                                        { 'label': 'Yes', 'value': true },
+                                        { 'label': 'No', 'value': false},
+                                        { 'label': 'Minimized', 'value': 'minimized' }
+                                    ],
+                                    'help': 'Enabling this means you will get notifications when you change song. The minimized option forces notifications to only appear if the app is hidden / minimized.'
+                                },
+                                { // Turning on trayTooltipSongName
+                                    'label': 'Show Song Name as Tray Icon Tooltip',
+                                    'key': 'trayTooltipSongName',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        { 'label': 'Tray Icon Tooltip Song Name', 'value': true }
+                                    ],
+                                    'help': 'Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.'
                                 },
                                 { // LastFM
                                     'heading': 'LastFM Notice',
-                                    'content': '<p>For information regarding this section, read the wiki post found <a style="color: #227bff !important" target="_blank" href="https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM">here</a>.</p>',
-                                    'type': 'message',
+                                    'content': `<p style="size='8px'">For information regarding this section, read the wiki post found <a style="color: #227bff !important" target="_blank" onclick='shell.openExternal("https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM")'>here</a>.</p>`,
+                                    'type': 'message'
                                 },
                                 { // LastFM Toggle
                                     'key': 'lastfmEnabled',
                                     'type': 'checkbox',
                                     'options': [
-                                        { 'label': 'LastFM Scrobbling', 'value': true }
-                                    ],
-                                    'help': 'Enable this option and fill out the the Authentication Key to use LastFM scrobbling.'
+                                        { 'label': 'Scrobble LastFM on Song Change', 'value': true }
+                                    ]
                                 },
                                 { // LastFM Auth Key
                                     'label': 'LastFM Authentication Key',
                                     'key': 'lastfmAuthKey',
-                                    'type': 'text',
-                                    'help': 'Read the notice above for more information regarding what you need to put in this field.'
+                                    'type': 'text'
                                 }
                             ]
                         }
@@ -105,25 +272,18 @@ exports.SettingsMenuInit = function() {
                 }
             },
             {
-                // New Section for Themes and CSS
-                'id': 'css',
-                'label': 'Themes and CSS Features',
-                'icon': 'layers-3',
+                'id': 'visual',
+                'label': 'Visual Settings',
+                'icon': 'eye-19',
                 'form': {
                     'groups': [
                         {
-                            // Section Header (Again)
-                            'label': 'Themes and CSS Features',
+                            // Visual Settings
+                            'label': 'Visual Settings',
                             'fields': [
-                                {
-                                    'heading': 'Themes Notice',
-                                    'content': '<p>You can preview all the themes <a style="color: #227bff !important" target="_blank" href="https://github.com/cryptofyre/Apple-Music-Electron/wiki/Theme-Preview-Images">here</a>.</p>',
-                                    'type': 'message'
-                                },
-                                // Setting Your Theme
-                                {
+                                { // Setting Your Theme
                                     'label': 'Themes:',
-                                    'key': 'cssTheme',
+                                    'key': 'theme',
                                     'type': 'dropdown',
                                     'options': [
                                         {'label': 'Default', 'value': 'default'},
@@ -134,36 +294,36 @@ exports.SettingsMenuInit = function() {
                                         {'label': 'OLED', 'value': 'oled'}
                                     ]
                                 },
-                                // MacOS Application Emulation
                                 {
-                                    'label': 'emulate MacOS Interface',
-                                    'key': 'emulateMacOS',
-                                    'type': 'checkbox',
-                                    'options': [
-                                        { 'label': 'Turn on emulateMacOS?', 'value': true },
-                                        { 'label': 'Would you like it aligned to the right (Like Windows)', 'value': 'rightAlign' },
-                                    ],
-                                    'help': 'This enables various adjustments that make the Apple Music interface look like the MacOS Apple Music UI. Enabling rightAlign will replicate the Windows Operating System\'s Window Control.'
+                                    'content': '<p>You can preview all the themes <a style="color: #227bff !important" target="_blank" href="https://github.com/cryptofyre/Apple-Music-Electron/wiki/Theme-Preview-Images">here</a>.</p>',
+                                    'type': 'message'
                                 },
-                                // Turning on transparency
-                                {
+                                { // MacOS Application Emulation
+                                    'label': 'MacOS Music Emulation',
+                                    'key': 'emulateMacOS',
+                                    'type': 'dropdown',
+                                    'options': [
+                                        { 'label': 'Left (Default)', 'value': 'left' },
+                                        { 'label': 'Right (Like Windows)', 'value': 'right' },
+                                    ],
+                                    'help': 'This enables various adjustments that make the Apple Music interface look like the MacOS Apple Music UI. Here it allows you to select a side that you would like to align the MacOS Window Controls.'
+                                },
+                                { // Turning on transparency
                                     'label': 'Transparency',
                                     'key': 'transparencyMode',
                                     'type': 'checkbox',
                                     'options': [
-                                        { 'label': 'Enable Transparency', 'value': true }
+                                        { 'label': `Creates a 'glass-blur' affect on the UI, with slight transparency.`, 'value': true }
                                     ],
-                                    'help': 'This enables the transparency affect for the Apple Music UI. This can affect performance if you are using older hardware.'
+                                    'help': 'This enables the transparency affect for the Apple Music UI. This can affect performance if you are using older hardware. Themes can vary in transparency.'
                                 },
-                                // Streaming Mode
-                                {
+                                { // Streaming Mode
                                     'label': 'Streaming Mode',
                                     'key': 'streamerMode',
                                     'type': 'checkbox',
                                     'options': [
-                                        { 'label': 'Enable Streaming Mode', 'value': true }
-                                    ],
-                                    'help': 'Enabling this will remove certain personal elements (your profile picture) and will allow you to scale the app to a size that allows you to use it in streams.'
+                                        { 'label': 'Removes certain UI elements and has unique scaling properties', 'value': true }
+                                    ]
                                 }
                             ]
                         }
@@ -171,55 +331,33 @@ exports.SettingsMenuInit = function() {
                 }
             },
             {
-                'id': 'preferences',
-                'label': 'User Preferences',
+                'id': 'window',
+                'label': 'Startup and Window Behavior',
                 'icon': 'preferences',
                 'form': {
                     'groups': [
                         {
-                            'label': 'User Preferences',
+                            // Startup and Window Settings
+                            'label': 'Startup and Window Behavior',
                             'fields': [
-                                // Turning on closeButtonMinimize
-                                {
-                                    'label': 'Close Button Minimize',
+                                { // Open Apple Music on Startup
+                                    'label': 'Open Apple Music automatically after login',
+                                    'key': 'appStartupBehavior',
+                                    'type': 'dropdown',
+                                    'options': [
+                                        { 'label': 'Hidden', 'value': 'hidden' },
+                                        { 'label': 'Minimized', 'value': 'minimized' },
+                                        { 'label': 'Yes', 'value': true },
+                                        { 'label': 'No', 'value': false }
+                                    ]
+                                },
+                                { // Turning on closeButtonMinimize
                                     'key': 'closeButtonMinimize',
                                     'type': 'checkbox',
                                     'options': [
-                                        { 'label': 'Close Button Should Minimize Application', 'value': true }
-                                    ],
-                                    'help': 'Should the close button minimize your apple music or should it quit the app.'
-                                },
-                                // Turning on discordRPC
-                                {
-                                    'label': 'Discord Rich Presence',
-                                    'key': 'discordRPC',
-                                    'type': 'checkbox',
-                                    'options': [
-                                        { 'label': 'DiscordRPC', 'value': true }
-                                    ],
-                                    'help': 'Enable/Disable Discord Rich Presence.'
-                                },
-                                // Turning on playbackNotifications
-                                {
-                                    'label': 'Notifications on Song Change',
-                                    'key': 'playbackNotifications',
-                                    'type': 'checkbox',
-                                    'options': [
-                                        { 'label': 'Playback Notifications', 'value': true },
-                                        { 'label': 'Playback Notifications when Minimized or Hidden', 'value': 'minimized' }
-                                    ],
-                                    'help': 'Enabling this means you will get notifications when you change song. The minimized option forces notifications to only appear if the app is hidden / minimized.'
-                                },
-                                // Turning on trayTooltipSongName
-                                {
-                                    'label': 'Show Song Name as Tray Icon Tooltip',
-                                    'key': 'trayTooltipSongName',
-                                    'type': 'checkbox',
-                                    'options': [
-                                        { 'label': 'Tray Icon Tooltip Song Name', 'value': true }
-                                    ],
-                                    'help': 'Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.'
-                                },
+                                        { 'label': 'Close button should minimize Apple Music', 'value': true }
+                                    ]
+                                }
                             ],
                         }
                     ]
@@ -227,107 +365,248 @@ exports.SettingsMenuInit = function() {
             },
             {
                 'id': 'advanced',
-                'label': 'Advanced Options',
-                'icon': 'preferences',
+                'label': 'Advanced Settings',
+                'icon': 'flash-21',
                 'form': {
                     'groups': [
                         {
-                            'label': 'User Preferences',
+                            'label': 'Advanced Settings',
                             'fields': [
                                 {
-                                    'heading': 'Warning',
-                                    'content': "<p><b>Do not mess with these options unless you know what you're doing.</b></p>",
+                                    'content': "<p>Do not mess with these options unless you know what you're doing.</p>",
                                     'type': 'message'
                                 },
-                                { // Settings shortcut
-                                    'label': 'Settings Shortcut',
-                                    'key': 'settingsShortcut',
-                                    'type': 'text',
-                                    'help': 'Sets the shortcut used to open the settings menu. (ex. CTRL+S or Cmd+S)'
+                                { // Turning on forceApplicationRegion
+                                    'label': 'forceApplicationRegion',
+                                    'key': 'forceApplicationRegion',
+                                    'type': 'dropdown',
+                                    'options': [
+                                        { 'label': 'United Arab Emirates', 'value': 'ae' },
+                                        { 'label': 'Antigua and Barbuda', 'value': 'ag' },
+                                        { 'label': 'Anguilla', 'value': 'ai' },
+                                        { 'label': 'Albania', 'value': 'al' },
+                                        { 'label': 'Armenia', 'value': 'am' },
+                                        { 'label': 'Angola', 'value': 'ao' },
+                                        { 'label': 'Argentina', 'value': 'ar' },
+                                        { 'label': 'Austria', 'value': 'at' },
+                                        { 'label': 'Australia', 'value': 'au' },
+                                        { 'label': 'Azerbaijan', 'value': 'az' },
+                                        { 'label': 'Barbados', 'value': 'bb' },
+                                        { 'label': 'Belgium', 'value': 'be' },
+                                        { 'label': 'Burkina-Faso', 'value': 'bf' },
+                                        { 'label': 'Bulgaria', 'value': 'bg' },
+                                        { 'label': 'Bahrain', 'value': 'bh' },
+                                        { 'label': 'Benin', 'value': 'bj' },
+                                        { 'label': 'Bermuda', 'value': 'bm' },
+                                        { 'label': 'Brunei Darussalam', 'value': 'bn' },
+                                        { 'label': 'Bolivia', 'value': 'bo' },
+                                        { 'label': 'Brazil', 'value': 'br' },
+                                        { 'label': 'Bahamas', 'value': 'bs' },
+                                        { 'label': 'Bhutan', 'value': 'bt' },
+                                        { 'label': 'Botswana', 'value': 'bw' },
+                                        { 'label': 'Belarus', 'value': 'by' },
+                                        { 'label': 'Belize', 'value': 'bz' },
+                                        { 'label': 'Canada', 'value': 'ca' },
+                                        { 'label': 'Democratic Republic of the Congo', 'value': 'cg' },
+                                        { 'label': 'Switzerland', 'value': 'ch' },
+                                        { 'label': 'Chile', 'value': 'cl' },
+                                        { 'label': 'China', 'value': 'cn' },
+                                        { 'label': 'Colombia', 'value': 'co' },
+                                        { 'label': 'Costa Rica', 'value': 'cr'},
+                                        { 'label': 'Cape Verde', 'value': 'cv'},
+                                        { 'label': 'Cyprus', 'value': 'cy'},
+                                        { 'label': 'Czech Republic', 'value': 'cz'},
+                                        { 'label': 'Germany', 'value': 'de'},
+                                        { 'label': 'Denmark', 'value': 'dk'},
+                                        { 'label': 'Dominica', 'value': 'dm'},
+                                        { 'label': 'Dominican Republic', 'value': 'do'},
+                                        { 'label': 'Algeria', 'value': 'dz'},
+                                        { 'label': 'Ecuador', 'value': 'ec'},
+                                        { 'label': 'Estonia', 'value': 'ee'},
+                                        { 'label': 'Egypt', 'value': 'eg'},
+                                        { 'label': 'Spain', 'value': 'es'},
+                                        { 'label': 'Finland', 'value': 'fi'},
+                                        { 'label': 'Fiji', 'value': 'fj'},
+                                        { 'label': 'Federated States of Micronesia', 'value': 'fm'},
+                                        { 'label': 'France', 'value': 'fr'},
+                                        { 'label': 'Great Britain', 'value': 'gb'},
+                                        { 'label': 'Grenada', 'value': 'gd'},
+                                        { 'label': 'Ghana', 'value': 'gh'},
+                                        { 'label': 'Gambia', 'value': 'gm'},
+                                        { 'label': 'Greece', 'value': 'gr'},
+                                        { 'label': 'Guatemala', 'value': 'gt'},
+                                        { 'label': 'Guinea Bissau', 'value': 'gw'},
+                                        { 'label': 'Guyana', 'value': 'gy'},
+                                        { 'label': 'Hong Kong', 'value': 'hk'},
+                                        { 'label': 'Honduras', 'value': 'hn'},
+                                        { 'label': 'Croatia', 'value': 'hr'},
+                                        { 'label': 'Hungaria', 'value': 'hu'},
+                                        { 'label': 'Indonesia', 'value': 'id'},
+                                        { 'label': 'Ireland', 'value': 'ie'},
+                                        { 'label': 'Israel', 'value': 'il'},
+                                        { 'label': 'India', 'value': 'in'},
+                                        { 'label': 'Iceland', 'value': 'is'},
+                                        { 'label': 'Italy', 'value': 'it'},
+                                        { 'label': 'Jamaica', 'value': 'jm'},
+                                        { 'label': 'Jordan', 'value': 'jo'},
+                                        { 'label': 'Japan', 'value': 'jp'},
+                                        { 'label': 'Kenya', 'value': 'ke'},
+                                        { 'label': 'Krygyzstan', 'value': 'kg'},
+                                        { 'label': 'Cambodia', 'value': 'kh'},
+                                        { 'label': 'Saint Kitts and Nevis', 'value': 'kn'},
+                                        { 'label': 'South Korea', 'value': 'kr'},
+                                        { 'label': 'Kuwait', 'value': 'kw'},
+                                        { 'label': 'Cayman Islands', 'value': 'ky'},
+                                        { 'label': 'Kazakhstan', 'value': 'kz'},
+                                        { 'label': 'Laos', 'value': 'la'},
+                                        { 'label': 'Lebanon', 'value': 'lb'},
+                                        { 'label': 'Saint Lucia', 'value': 'lc'},
+                                        { 'label': 'Sri Lanka', 'value': 'lk'},
+                                        { 'label': 'Liberia', 'value': 'lr'},
+                                        { 'label': 'Lithuania', 'value': 'lt'},
+                                        { 'label': 'Luxembourg', 'value': 'lu'},
+                                        { 'label': 'Latvia', 'value': 'lv'},
+                                        { 'label': 'Moldova', 'value': 'md'},
+                                        { 'label': 'Madagascar', 'value': 'mg'},
+                                        { 'label': 'Macedonia', 'value': 'mk'},
+                                        { 'label': 'Mali', 'value': 'ml'},
+                                        { 'label': 'Mongolia', 'value': 'mn'},
+                                        { 'label': 'Macau', 'value': 'mo'},
+                                        { 'label': 'Mauritania', 'value': 'mr'},
+                                        { 'label': 'Montserrat', 'value': 'ms'},
+                                        { 'label': 'Malta', 'value': 'mt'},
+                                        { 'label': 'Mauritius', 'value': 'mu'},
+                                        { 'label': 'Malawi', 'value': 'mw'},
+                                        { 'label': 'Mexico', 'value': 'mx'},
+                                        { 'label': 'Malaysia', 'value': 'my'},
+                                        { 'label': 'Mozambique', 'value': 'mz'},
+                                        { 'label': 'Namibia', 'value': 'na'},
+                                        { 'label': 'Niger', 'value': 'ne'},
+                                        { 'label': 'Nigeria', 'value': 'ng'},
+                                        { 'label': 'Nicaragua', 'value': 'ni'},
+                                        { 'label': 'Netherlands', 'value': 'nl'},
+                                        { 'label': 'Nepal', 'value': 'np'},
+                                        { 'label': 'Norway', 'value': 'no'},
+                                        { 'label': 'New Zealand', 'value': 'nz'},
+                                        { 'label': 'Oman', 'value': 'om'},
+                                        { 'label': 'Panama', 'value': 'pa'},
+                                        { 'label': 'Peru', 'value': 'pe'},
+                                        { 'label': 'Papua New Guinea', 'value': 'pg'},
+                                        { 'label': 'Philippines', 'value': 'ph'},
+                                        { 'label': 'Pakistan', 'value': 'pk'},
+                                        { 'label': 'Poland', 'value': 'pl'},
+                                        { 'label': 'Portugal', 'value': 'pt'},
+                                        { 'label': 'Palau', 'value': 'pw'},
+                                        { 'label': 'Paraguay', 'value': 'py'},
+                                        { 'label': 'Qatar', 'value': 'qa'},
+                                        { 'label': 'Romania', 'value': 'ro'},
+                                        { 'label': 'Russia', 'value': 'ru'},
+                                        { 'label': 'Saudi Arabia', 'value': 'sa'},
+                                        { 'label': 'Soloman Islands', 'value': 'sb'},
+                                        { 'label': 'Seychelles', 'value': 'sc'},
+                                        { 'label': 'Sweden', 'value': 'se'},
+                                        { 'label': 'Singapore', 'value': 'sg'},
+                                        { 'label': 'Slovenia', 'value': 'si'},
+                                        { 'label': 'Slovakia', 'value': 'sk'},
+                                        { 'label': 'Sierra Leone', 'value': 'sl'},
+                                        { 'label': 'Senegal', 'value': 'sn'},
+                                        { 'label': 'Suriname', 'value': 'sr'},
+                                        { 'label': 'Sao Tome e Principe', 'value': 'st'},
+                                        { 'label': 'El Salvador', 'value': 'sv'},
+                                        { 'label': 'Swaziland', 'value': 'sz'},
+                                        { 'label': 'Turks and Caicos Islands', 'value': 'tc'},
+                                        { 'label': 'Chad', 'value': ''},
+                                        { 'label': '', 'value': 'td'},
+                                        { 'label': 'Thailand', 'value': 'th'},
+                                        { 'label': 'Tajikistan', 'value': 'tj'},
+                                        { 'label': 'Turkmenistan', 'value': 'tm'},
+                                        { 'label': 'Tunisia', 'value': 'tn'},
+                                        { 'label': 'Turkey', 'value': 'tr'},
+                                        { 'label': 'Republic of Trinidad and Tobago', 'value': 'tt'},
+                                        { 'label': 'Taiwan', 'value': 'tw'},
+                                        { 'label': 'Tanzania', 'value': 'tz'},
+                                        { 'label': 'Ukraine', 'value': 'ua'},
+                                        { 'label': 'Uganda', 'value': 'ug'},
+                                        { 'label': 'United States of America', 'value': 'us'},
+                                        { 'label': 'Uruguay', 'value': 'uy'},
+                                        { 'label': 'Uzbekistan', 'value': 'uz'},
+                                        { 'label': 'Saint Vincent and the Grenadines', 'value': 'vc'},
+                                        { 'label': 'Venezuela', 'value': 've'},
+                                        { 'label': 'British Virgin Islands', 'value': 'vg'},
+                                        { 'label': 'Vietnam', 'value': 'vn'},
+                                        { 'label': 'Yemen', 'value': 'ye'},
+                                        { 'label': 'South Africa', 'value': 'za'},
+                                        { 'label': 'Zimbabwe', 'value': 'zw'}
+                                    ],
+                                    'help': 'WARNING: This can cause unexpected side affects. This is not advised. On most cases, the webapp will force you to your Apple ID Region or Region based on IP.'
                                 },
-                                // Turning on allowMultipleInstances
-                                {
+                                { // Turning on allowMultipleInstances
                                     'key': 'allowMultipleInstances',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'allowMultipleInstances', 'value': true }
                                     ]
                                 },
-                                // Turning on autoUpdaterBetaBuilds
-                                {
+                                { // Turning on autoUpdaterBetaBuilds
                                     'key': 'autoUpdaterBetaBuilds',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'autoUpdaterBetaBuilds', 'value': true }
                                     ]
                                 },
-                                // Turning on enableDevTools
-                                {
+                                { // Turning on enableDevTools
                                     'key': 'enableDevTools',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'enableDevTools', 'value': true }
                                     ]
                                 },
-                                // Turning on forceDisableWindowFrame
-                                {
+                                { // Turning on forceDisableWindowFrame
                                     'key': 'forceDisableWindowFrame',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'forceDisableWindowFrame', 'value': true }
                                     ]
                                 },
-                                // Turning on forceApplicationLanguage
-                                {
-                                    'label': 'forceApplicationLanguage',
-                                    'key': 'forceApplicationLanguage',
-                                    'type': 'text',
-                                },
-                                // Turning on forceApplicationRegion
-                                {
-                                    'label': 'forceApplicationRegion',
-                                    'key': 'forceApplicationRegion',
-                                    'type': 'text',
-                                },
-                                // Turning on forceDarkMode
-                                {
+                                { // Turning on forceDarkMode
                                     'key': 'forceDarkMode',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'forceDarkMode', 'value': true }
                                     ]
                                 },
-                                // Turning on menuBarVisible
-                                {
+                                { // Turning on menuBarVisible
                                     'key': 'menuBarVisible',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'menuBarVisible', 'value': true }
                                     ]
                                 },
-                                // Turning on removeScrollbars
-                                {
+                                { // Turning on removeScrollbars
                                     'key': 'removeScrollbars',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'removeScrollbars', 'value': true }
                                     ]
                                 },
-                                // Turning on useBeta
-                                {
-                                    'key': 'useBeta',
+                                { // Turning on useBeta
+                                    'key': 'useBetaSite',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'useBeta', 'value': true }
                                     ]
                                 },
-                                // Turning on preventMediaKeyHijacking
-                                {
+                                { // Turning on preventMediaKeyHijacking
                                     'key': 'preventMediaKeyHijacking',
                                     'type': 'checkbox',
                                     'options': [
                                         { 'label': 'preventMediaKeyHijacking', 'value': true }
                                     ]
+                                },
+                                { // Setting Keybind for Opening Settings
+                                    'label': 'settingsMenuKeybind',
+                                    'key': 'settingsMenuKeybind',
+                                    'type': 'accelerator',
                                 },
                             ],
                         }
@@ -336,7 +615,7 @@ exports.SettingsMenuInit = function() {
             }
         ],
         browserWindowOpts: {
-            'title': 'Settings',
+            'title': 'App Settings',
             'width': 900,
             'maxWidth': 1000,
             'height': 700,
@@ -348,24 +627,8 @@ exports.SettingsMenuInit = function() {
     });
 
     app.whenReady().then(() => {
-        const settingsShortcut = new Menu()
-        if (app.config.advanced.settingsShortcut === "") {
-            var setShortcut = "CTRL+S"
-        } else {
-            var setShortcut = app.config.advanced.settingsShortcut;
-        }
-        settingsShortcut.append(new MenuItem({
-            label: 'Settings',
-            submenu: [{
-                role: 'Open Settings',
-                accelerator: setShortcut,
-                click: () => {
-                    SettingsMenu.show()
-                    console.log("[Settings] Settings shortcut pressed!")
-                }
-            }]
-        }))
-
-        Menu.setApplicationMenu(settingsShortcut)
+        globalShortcut.register(app.preferences.value('advanced.settingsMenuKeybind'), () => {
+            app.preferences.show();
+        })
     })
 }

@@ -1,5 +1,5 @@
 const {nativeImage} = require("electron");
-const {app} = require('electron')
+const {app, nativeTheme} = require('electron')
 const {join} = require('path')
 const { systemPreferences } = require('electron')
 
@@ -8,7 +8,7 @@ exports.SetThumbarButtons = function (state) {
     let trayicondir;
     if (process.platform !== "win32") return;
 
-    let preferredtheme = app.config.systemTheme
+    let preferredtheme = nativeTheme.themeSource
 
     if (preferredtheme === "") {
         if (systemPreferences.isDarkMode()) {

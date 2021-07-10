@@ -46,7 +46,7 @@
         overflow: hidden !important;
     }
 
-    /* Hide the Drag Div if the user has rightAlign */
+    /* Hide the Drag Div if the user has right */
     .dragDiv, .mainDragDiv, .sidebarDragDiv {
         display: none !important;
         overflow: hidden !important;

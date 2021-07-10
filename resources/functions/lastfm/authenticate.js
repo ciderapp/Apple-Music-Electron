@@ -8,7 +8,7 @@ const path = require('path')
 let lastfmsessionpath = path.resolve(app.getPath('userData'), 'session.json')
 
 exports.lfmauthenticate = function (){
-    if (!app.config.quick.lastfmEnabled.includes(true)) return;
+    if (!app.preferences.value('general.lastfmEnabled')) return;
 
     const LastfmAPI = require('lastfmapi')
     const apistuff = require('./creds.json')
@@ -22,7 +22,7 @@ exports.lfmauthenticate = function (){
         if (err) {
             console.log("[LastFM] [Session] Session file couldn't be opened or doesn't exist,", err)
             console.log("[LastFM] [Auth] Beginning authentication from configuration")
-            lfm.authenticate(app.config.quick.lastfmAuthKey, function (err, session) {
+            lfm.authenticate(app.preferences.value('general.lastfmAuthKey'), function (err, session) {
                 if (err) {
                     throw err;
                 }

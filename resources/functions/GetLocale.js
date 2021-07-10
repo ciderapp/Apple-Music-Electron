@@ -18,20 +18,22 @@ exports.GetLocale = function () {
     }
 
     // Check if the Region is being forced
-    if (!app.config.advanced.forceApplicationRegion) {
+    if (!app.preferences.value('advanced.forceApplicationRegion')) {
         Region = foundKey;
+        app.preferences.value('advanced.forceApplicationRegion', foundKey);
     } else {
-        Region = app.config.advanced.forceApplicationRegion.toLowerCase();
+        Region = app.preferences.value('advanced.forceApplicationRegion');
     }
-    console.log(`[GetLocale] Chosen Region: ${Region}`)
+    console.log(`[GetLocale] Chosen Region: ${Region}`);
 
     // Check if the Language is being forced
-    if (!app.config.advanced.forceApplicationLanguage) {
+    if (!app.preferences.value('general.language')) {
         Language = foundKey;
+        app.preferences.value('general.language', foundKey);
     } else {
-        Language = app.config.advanced.forceApplicationLanguage.toLowerCase();
+        Language = app.preferences.value('general.language');
     }
-    console.log(`[GetLocale] Chosen Language: ${Language}`)
+    console.log(`[GetLocale] Chosen Language: ${Language}`);
 
     // Return it
     console.log(`[GetLocale] Outputting Locale.`)

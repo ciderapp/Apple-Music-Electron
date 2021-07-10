@@ -1,21 +1,11 @@
 try {
-
-    ipcRenderer.on('preferencesUpdated', (e, preferences) => {
-        ipcRenderer.send('preferencesUpdated', (e, preferences));
-    });
-
-    function getElementByXpath(path) {
-        return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    }
-
-
     if (document.getElementById('ember17')) {
         document.getElementById('ember17').addEventListener('click', function () {
             setTimeout(function() {
                 if (document.querySelector('.context-menu__option--app-settings')) {
                     console.log("[settingsInit] Preventing second button.");
                     return;
-                }
+                };
 
                 const li = document.createElement("li");
                 li.innerHTML = `
@@ -29,7 +19,7 @@ try {
                 li.classList.add("context-menu__option--app-settings");
                 li.classList.add("context-menu__option");
 
-                const ul = getElementByXpath("/html/body/div[6]/ul");
+                const ul = document.evaluate("/html/body/div[6]/ul", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
                 li.onclick = function() {
                     ipcRenderer.send("showPreferences");

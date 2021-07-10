@@ -12,21 +12,58 @@ exports.InitializeBase = function () {
         app.quit()
     }
 
+    // Detect if the application has been opened with --minimized
+    if (app.commandLine.hasSwitch('minimized')) {
+        console.log("[Apple-Music-Electron] Application opened with --minimized");
+        app.win.minimize();
+    }
+
+    // Detect if the application has been opened with --hidden
+    if (app.commandLine.hasSwitch('hidden')) {
+        console.log("[Apple-Music-Electron] Application opened with --hidden");
+        app.win.hide();
+    }
 
     // Disable CORS
-    if (app.config.quick.authMode.includes(true)) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+    if (app.preferences.value('general.authMode')) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 
     // Media Key Hijacking
-    if (app.config.advanced.preventMediaKeyHijacking.includes(true)) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
+    if (app.preferences.value('advanced.preventMediaKeyHijacking')) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
 
     // Just turn it on because i was dumb and made it so you have to have both on.
-    if (app.config.css.emulateMacOS.includes("rightAlign") && !app.config.css.emulateMacOS.includes(true)) app.config.css.emulateMacOS = [true];
+    if (app.preferences.value('visual.emulateMacOS').includes('right') && !app.preferences.value('visual.emulateMacOS') === true) app.preferences.value('visual.emulateMacOS') = [true];
 
     // Sets the ModelId (For windows notifications)
     if (process.platform === "win32") app.setAppUserModelId("Apple Music");
 
+    if (app.preferences.value('window.appStartupBehavior').includes('hidden')) {
+        app.setLoginItemSettings({
+            openAtLogin: true,
+            args: [
+                '--process-start-args', `"--hidden"`
+            ]
+        })
+    } else if (app.preferences.value('window.appStartupBehavior').includes('minimized')) {
+        app.setLoginItemSettings({
+            openAtLogin: true,
+            args: [
+                '--process-start-args', `"--minimized"`
+            ]
+        })
+    } else if (app.preferences.value('window.appStartupBehavior').includes('true')) {
+        app.setLoginItemSettings({
+            openAtLogin: true,
+            args: []
+        })
+    } else {
+        app.setLoginItemSettings({
+            openAtLogin: false,
+            args: []
+        })
+    }
+
     // Assign Default Variables
-    app.isQuiting = !app.config.preferences.closeButtonMinimize.includes(true);
+    app.isQuiting = !app.preferences.value('window.closeButtonMinimize');
     app.win = '';
     app.ipc = {
         ThumbarUpdate: true,
