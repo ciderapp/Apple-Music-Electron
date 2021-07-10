@@ -1,7 +1,7 @@
 const path = require('path');
-const os = require('os');
 const ElectronPreferences = require('electron-preferences');
 const { app, globalShortcut } = require('electron')
+const { Menu, MenuItem } = require('electron')
 
 exports.SettingsMenuInit = function() {
      app.preferences = new ElectronPreferences({
@@ -627,8 +627,8 @@ exports.SettingsMenuInit = function() {
     });
 
     app.whenReady().then(() => {
-        globalShortcut.register(app.preferences.value('advanced.settingsMenuKeybind'), () => {
-            app.preferences.show();
-        })
+        const menu = new Menu()
+        menu.append(new MenuItem({label:'Settings',submenu:[{role:'Settings Menu',accelerator:app.preferences.value('advanced.settingsMenuKeybind'),click:()=>{app.preferences.show();}}]}));
+        Menu.setApplicationMenu(menu)
     })
 }
