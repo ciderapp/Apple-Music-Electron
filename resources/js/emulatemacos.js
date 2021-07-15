@@ -34,7 +34,7 @@ try {
          */
 
         /* Red - Close */
-        const redStoplightStyle = 'height: 12px; width: 12px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 26px 4px 10px 17px; color: rgb(130, 0, 5); -webkit-app-region: no-drag;';
+        const redStoplightStyle = 'height: 12px; width: 12px; background-color: rgb(255, 92, 92); border-radius: 50%; display: inline-block; left: 0px; top: 0px; margin: 26px 4px 10px 26px; color: rgb(130, 0, 5); -webkit-app-region: no-drag;';
         const redStoplightOnClick = "ipcRenderer.send('close');";
 
         /* Yellow - Minimize */

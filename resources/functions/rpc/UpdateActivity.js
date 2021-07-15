@@ -1,4 +1,3 @@
-const {scrobble} = require("../lastfm/scrobbleSong");
 const {app} = require('electron')
 
 exports.UpdateRPCActivity = function (attributes) {
