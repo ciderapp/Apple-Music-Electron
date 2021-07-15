@@ -13,9 +13,9 @@ exports.InjectFiles = function () {
 
         /* Load the Emulation Files */
         if (app.preferences.value('visual.emulateMacOS').includes('left')) {
-            LoadJS('emulatemacos.js')
+            LoadJS('emulateMacOS.js')
         } else if (app.preferences.value('visual.emulateMacOS').includes('right')) {
-            LoadJS('emulatemacos_rightalign.js')
+            LoadJS('emulateMacOS_rightAlign.js')
         }
 
         /* Load Glasstron */

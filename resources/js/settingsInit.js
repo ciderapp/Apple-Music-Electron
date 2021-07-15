@@ -37,5 +37,5 @@ try {
 
 
 } catch (e) {
-    console.error("[CSS] Error while trying to apply settingsinit.js", e);
+    console.error("[CSS] Error while trying to apply settingsInit.js", e);
 }
