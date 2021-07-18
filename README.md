@@ -6,9 +6,9 @@
   <a href="https://github.com/cryptofyre/Apple-Music-Electron/releases/latest"><strong>View the releases! »</strong></a><br /><br />
   <a href="https://twitter.com/cryptofyre">Follow Me</a>
   <b> · </b>
-  <a href="https://github.com/cryptofyre/Apple-Music-Electron/issues/new">Report Bug</a>
+  <a href="https://github.com/cryptofyre/Apple-Music-Electron/issues/new?title=[Bug]<insert bug title>&body=<!-- Make sure to include the expected and actual result, steps to reproduce, and other notes to help us figure out and squash this bug. This note is only visiable to you. Make sure to put a short but diescriptive title at the top after the ``[Bug]`` --!>">Report Bug</a>
   <b> · </b>
-  <a href="https://github.com/cryptofyre/Apple-Music-Electron/issues/new">Request Feature</a>
+  <a href="https://github.com/cryptofyre/Apple-Music-Electron/issues/new?title=[Feature+]  &body=<!-- What feature would you like to be added and why?  This note is only visible to you. Make sure to put a short but descriptive title at the top after the ``[Feature]`` --!>">Request Feature</a>
   <b> · </b>
   <a href="https://github.com/cryptofyre/Apple-Music-Electron/wiki">Wiki</a>
   <b> · </b>
