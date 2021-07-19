@@ -1,4 +1,6 @@
-const {app, nativeTheme} = require('electron')
+const {app, nativeTheme} = require('electron');
+const {resolve, join} = require('path');
+const {copySync} = require('fs-extra');
 
 exports.InitializeTheme = function () {
     console.log('[InitializeTheme] Started.')
@@ -11,4 +13,8 @@ exports.InitializeTheme = function () {
             nativeTheme.themeSource = "light"
         }
     }
+
+    app.ThemesFolderPath = resolve(app.getPath('userData'), 'Themes');
+    copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
+    console.log(`[InitializeTheme] [copyThemes] Themes copied to ${app.ThemesFolderPath}`)
 }

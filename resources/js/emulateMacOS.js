@@ -66,5 +66,5 @@ try {
 
     }
 } catch (e) {
-    console.error("[CSS] Error while trying to apply emulateMacOS.js", e);
+    console.error("[JS] Error while trying to apply emulateMacOS.js", e);
 }

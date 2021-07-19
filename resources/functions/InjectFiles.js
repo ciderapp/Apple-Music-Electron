@@ -7,6 +7,8 @@ exports.InjectFiles = function () {
     app.win.webContents.on('did-stop-loading', async () => {
         LoadCSS('init.css')
         LoadJS('regionChange.js')
+
+        /* Create Settings Button */
         setTimeout(function() {
             LoadJS('settingsInit.js')
         }, 1500)
@@ -33,6 +35,13 @@ exports.InjectFiles = function () {
         /* Load a Theme if it is Found in the Configuration File */
         if (app.preferences.value('visual.theme')) {
             LoadCSS(`${app.preferences.value('visual.theme')}.css`, true)
+        }
+
+        /* Load Back Button */
+        if (app.win.webContents.canGoBack()) {
+            LoadJS('backButton.js')
+        } else { /* Remove it if user cannot go back */
+            app.win.webContents.executeJavaScript(`if (document.querySelector('#backButton')) { document.getElementById('backButton').remove() };`);
         }
 
         /* Remove the Scrollbar */

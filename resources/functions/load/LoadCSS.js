@@ -4,7 +4,7 @@ const {join} = require('path')
 
 exports.LoadCSS = function (path, theme) {
     if (theme) {
-        path = join(join(__dirname, '../../themes/'), path.toLowerCase());
+        path = join(app.ThemesFolderPath, path.toLowerCase());
     } else {
         path = join(join(__dirname, '../../css/'), path.toLowerCase())
     }

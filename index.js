@@ -22,6 +22,9 @@ function CreateWindow() {
     const {InjectFiles} = require('./resources/functions/InjectFiles')
     InjectFiles() // Load the Website Javascript
 
+    const {SettingsHandler} = require('./resources/functions/handler/SettingsHandler')
+    SettingsHandler() // Handles updates to settings
+
     const {WindowStateHandler} = require('./resources/functions/handler/WindowStateHandler')
     WindowStateHandler() // Handling the Window
 
@@ -49,10 +52,6 @@ app.on('ready', () => {
     console.log("[Apple-Music-Electron] Application is Ready.")
     console.log("[Apple-Music-Electron] Creating Window...")
     setTimeout(CreateWindow, process.platform === "linux" ? 1000 : 0);
-
-    app.preferences.on('save', (preferences) => {
-        console.log(`Preferences were saved.`, JSON.stringify(preferences, null, 4));
-    });
 });
 
 function ClearMPRIS() {

@@ -38,6 +38,12 @@ exports.WindowStateHandler = function () {
         app.win.minimize()
     })
 
+    ipcMain.on('back', () => { // listen for back event
+        if (app.win.webContents.canGoBack()) {
+            app.win.webContents.goBack()
+        }
+    })
+
     ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
         if (app.win.isMaximized()) {
             app.win.restore()
