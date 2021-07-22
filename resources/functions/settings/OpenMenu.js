@@ -30,7 +30,13 @@ exports.SettingsMenuInit = function() {
                 "transparencyMode": [
                     true
                 ],
-                "streamerMode": []
+                "streamerMode": [],
+                "removeUpsell": [
+                    true
+                ],
+                "removeAppleLogo": [
+                    true
+                ]
             },
             "window": {
                 "appStartupBehavior": "false",
@@ -52,7 +58,8 @@ exports.SettingsMenuInit = function() {
                 "settingsMenuKeybind": "Control+Alt+S",
                 "forceApplicationRegion": "",
                 "allowMultipleInstances": [],
-                "forceDisableWindowFrame": []
+                "forceDisableWindowFrame": [],
+                "forceApplicationMode": ""
             }
         },
         'sections': [{
@@ -338,7 +345,25 @@ exports.SettingsMenuInit = function() {
                                 'key': 'streamerMode',
                                 'type': 'checkbox',
                                 'options': [{
-                                    'label': 'Removes certain UI elements and has unique scaling properties',
+                                    'label': 'Removes certain UI elements and has unique scaling properties.',
+                                    'value': true
+                                }]
+                            },
+                            { // Remove Upsell
+                                'label': 'Remove Upsell',
+                                'key': 'removeUpsell',
+                                'type': 'checkbox',
+                                'options': [{
+                                    'label': 'Removes the Open in iTunes and Exit Beta Buttons.',
+                                    'value': true
+                                }]
+                            },
+                            { // Remove Upsell
+                                'label': 'Remove Apple Music Logo',
+                                'key': 'removeAppleLogo',
+                                'type': 'checkbox',
+                                'options': [{
+                                    'label': 'Removes the Apple Music Logo and moves search bar up.',
                                     'value': true
                                 }]
                             }

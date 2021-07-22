@@ -14,6 +14,21 @@ exports.InjectFiles = function () {
             LoadJS('uwpWindowFrame.js')
         }*/
 
+        if (app.preferences.value('visual.emulateMacOS').includes('left') || app.preferences.value('visual.emulateMacOS').includes('right')) {
+            app.preferences.value('visual.removeUpsell', [true]);
+            app.preferences.value('visual.removeAppleLogo', [true]);
+        }
+
+        /* Remove Apple Music Logo */
+        if (app.preferences.value('visual.removeAppleLogo').includes(true)) {
+            LoadJS('removeAppleLogo.js')
+        }
+
+        /* Remove Upsell */
+        if (app.preferences.value('visual.removeUpsell').includes(true)) {
+            LoadJS('removeUpsell.js')
+        }
+
         /* Create Settings Button */
         setTimeout(function() {
             LoadJS('settingsInit.js')

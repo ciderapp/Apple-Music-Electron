@@ -4,28 +4,6 @@
  *
  */
 try {
-
-
-    /* Remove Apple */
-    while (document.getElementsByClassName('web-navigation__header web-navigation__header--logo').length > 0) {
-        document.getElementsByClassName('web-navigation__header web-navigation__header--logo')[0].remove();
-    }
-
-    /* Remove Upsell */
-    while (document.getElementsByClassName('web-navigation__native-upsell').length > 0) {
-        document.getElementsByClassName('web-navigation__native-upsell')[0].remove();
-    }
-
-    /* Make Searchbar area same color */
-    if (document.getElementsByClassName('search-box dt-search-box web-navigation__search-box').length > 0) {
-        document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.gridArea = "auto";
-
-        /* Up you go! */
-        document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.marginTop = '0px';
-        /* document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.backgroundColor = 'var(--playerBackground)'; */
-    }
-
-
     if (document.getElementById('web-navigation-search-box') && !document.querySelector('.dragDiv')) {
 
         /*
