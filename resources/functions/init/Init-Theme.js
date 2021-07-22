@@ -4,8 +4,6 @@ const {copySync} = require('fs-extra');
 
 exports.InitializeTheme = function () {
     console.log('[InitializeTheme] Started.')
-    console.log(app.preferences.value('advanced.forceApplicationMode'))
-    console.log(nativeTheme.themeSource)
     if (app.preferences.value('advanced.forceApplicationMode') === 'dark') {
         nativeTheme.themeSource = "dark"
     } else if (app.preferences.value('advanced.forceApplicationMode') === 'light') {
