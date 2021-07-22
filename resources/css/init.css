@@ -1,3 +1,21 @@
 .page-container {
     background-color: var(--pageBG) !important;
 }
+
+#titlebar {
+    display: block;
+    position: fixed;
+    height: 32px;
+    width: calc(100% - 2px); /*Compensate for body 1px border*/
+    background: #254053;
+}
+
+#titlebar {
+    padding: 4px;
+}
+
+#titlebar #drag-region {
+    width: 100%;
+    height: 100%;
+    -webkit-app-region: drag;
+}

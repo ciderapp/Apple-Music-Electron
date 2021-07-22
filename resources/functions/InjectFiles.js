@@ -7,18 +7,19 @@ exports.InjectFiles = function () {
     app.win.webContents.on('did-stop-loading', async () => {
         LoadCSS('init.css')
         LoadJS('regionChange.js')
+        LoadJS('uwpWindowFrame.js')
 
         /* Create Settings Button */
         setTimeout(function() {
             LoadJS('settingsInit.js')
         }, 1500)
 
-        /* Load the Emulation Files */
+        /* Load the Emulation Files
         if (app.preferences.value('visual.emulateMacOS').includes('left')) {
             LoadJS('emulateMacOS.js')
         } else if (app.preferences.value('visual.emulateMacOS').includes('right')) {
             LoadJS('emulateMacOS_rightAlign.js')
-        }
+        }*/
 
         /* Load Glasstron */
         if (app.preferences.value('visual.transparencyMode').includes(true)) {
