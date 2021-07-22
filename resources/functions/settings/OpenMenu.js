@@ -25,8 +25,8 @@ exports.SettingsMenuInit = function() {
                 "lastfmAuthKey": "Put your Auth Key here."
             },
             "visual": {
-                "theme": "",
-                "emulateMacOS": "left",
+                "theme": "default",
+                "emulateMacOS": "false",
                 "transparencyMode": [
                     true
                 ],
@@ -48,7 +48,6 @@ exports.SettingsMenuInit = function() {
                 ],
                 "preventMediaKeyHijacking": [],
                 "autoUpdaterBetaBuilds": [],
-                "forceDarkMode": [],
                 "menuBarVisible": [],
                 "settingsMenuKeybind": "Control+Alt+S",
                 "forceApplicationRegion": "",
@@ -320,6 +319,7 @@ exports.SettingsMenuInit = function() {
                                 'options': [
                                     { 'label': 'Left (Default)', 'value': 'left' },
                                     { 'label': 'Right (Like Windows)', 'value': 'right' },
+                                    { 'label': 'Disabled', 'value': false }
                                 ],
                                 'help': 'This enables various adjustments that make the Apple Music interface look like the MacOS Apple Music UI. Here it allows you to select a side that you would like to align the MacOS Window Controls.'
                             },
@@ -551,6 +551,16 @@ exports.SettingsMenuInit = function() {
                                 ],
                                 'help': 'WARNING: This can cause unexpected side affects. This is not advised. On most cases, the webapp will force you to your Apple ID Region or Region based on IP.'
                             },
+                            { // Forcing Application Mode / Theme
+                                'label': 'forceApplicationMode',
+                                'key': 'forceApplicationMode',
+                                'type': 'dropdown',
+                                'options': [
+                                    { 'label': 'forceDarkMode', 'value': 'dark' },
+                                    { 'label': 'forceLightMode', 'value': 'light' }
+                                ],
+                                'help': 'If you want the application to be in a mode that your system is not using by default.'
+                            },
                             { // Turning on allowMultipleInstances
                                 'key': 'allowMultipleInstances',
                                 'type': 'checkbox',
@@ -579,13 +589,6 @@ exports.SettingsMenuInit = function() {
                                     { 'label': 'forceDisableWindowFrame', 'value': true }
                                 ]
                             },
-                            { // Turning on forceDarkMode
-                                'key': 'forceDarkMode',
-                                'type': 'checkbox',
-                                'options': [
-                                    { 'label': 'forceDarkMode', 'value': true }
-                                ]
-                            },
                             { // Turning on menuBarVisible
                                 'key': 'menuBarVisible',
                                 'type': 'checkbox',
@@ -612,6 +615,13 @@ exports.SettingsMenuInit = function() {
                                 'type': 'checkbox',
                                 'options': [
                                     { 'label': 'preventMediaKeyHijacking', 'value': true }
+                                ]
+                            },
+                            { // Back Buton
+                                'key': 'backButton',
+                                'type': 'checkbox',
+                                'options': [
+                                    { 'label': 'backButton', 'value': true }
                                 ]
                             },
                             { // Setting Keybind for Opening Settings

@@ -4,14 +4,19 @@ const {copySync} = require('fs-extra');
 
 exports.InitializeTheme = function () {
     console.log('[InitializeTheme] Started.')
-    if (app.preferences.value('advanced.forceDarkMode').includes(true)) {
+    console.log(app.preferences.value('advanced.forceApplicationMode'))
+    console.log(nativeTheme.themeSource)
+    if (app.preferences.value('advanced.forceApplicationMode') === 'dark') {
         nativeTheme.themeSource = "dark"
+    } else if (app.preferences.value('advanced.forceApplicationMode') === 'light') {
+        nativeTheme.themeSource = "light"
     } else {
         if (nativeTheme.shouldUseDarkColors === true) {
-            nativeTheme.themeSource = "dark"
+            app.preferences.value('advanced.forceApplicationMode', 'dark');
         } else {
-            nativeTheme.themeSource = "light"
+            app.preferences.value('advanced.forceApplicationMode', 'light');
         }
+
     }
 
     app.ThemesFolderPath = resolve(app.getPath('userData'), 'Themes');

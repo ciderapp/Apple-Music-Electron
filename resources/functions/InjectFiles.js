@@ -7,19 +7,24 @@ exports.InjectFiles = function () {
     app.win.webContents.on('did-stop-loading', async () => {
         LoadCSS('init.css')
         LoadJS('regionChange.js')
-        LoadJS('uwpWindowFrame.js')
+
+        /* Custom UWP Window Frame (WIP) */
+        /*if (app.preferences.value('visual.emulateMacOS').includes(false)) {
+            LoadCSS('uwpWindowFrame.css')
+            LoadJS('uwpWindowFrame.js')
+        }*/
 
         /* Create Settings Button */
         setTimeout(function() {
             LoadJS('settingsInit.js')
         }, 1500)
 
-        /* Load the Emulation Files
+        /* Load the Emulation Files */
         if (app.preferences.value('visual.emulateMacOS').includes('left')) {
             LoadJS('emulateMacOS.js')
         } else if (app.preferences.value('visual.emulateMacOS').includes('right')) {
             LoadJS('emulateMacOS_rightAlign.js')
-        }*/
+        }
 
         /* Load Glasstron */
         if (app.preferences.value('visual.transparencyMode').includes(true)) {
@@ -34,12 +39,12 @@ exports.InjectFiles = function () {
         }
 
         /* Load a Theme if it is Found in the Configuration File */
-        if (app.preferences.value('visual.theme')) {
+        if (app.preferences.value('visual.theme') && !(app.preferences.value('visual.theme').includes('default'))) {
             LoadCSS(`${app.preferences.value('visual.theme')}.css`, true)
         }
 
         /* Load Back Button */
-        if (app.win.webContents.canGoBack()) {
+        if (app.win.webContents.canGoBack() && app.preferences.value('advanced.backButton').includes(true)) {
             LoadJS('backButton.js')
         } else { /* Remove it if user cannot go back */
             app.win.webContents.executeJavaScript(`if (document.querySelector('#backButton')) { document.getElementById('backButton').remove() };`);

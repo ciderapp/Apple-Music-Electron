@@ -24,7 +24,6 @@ exports.CreateBrowserWindow = function() {
         minHeight: minHigh,
         frame: Frame,
         title: "Apple Music",
-        backgroundColor: '#FFF', // Enables subpixel AA
         // Enables DRM
         webPreferences: {
             plugins: true,
