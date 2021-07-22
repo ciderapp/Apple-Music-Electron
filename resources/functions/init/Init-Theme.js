@@ -19,5 +19,5 @@ exports.InitializeTheme = function () {
 
     app.ThemesFolderPath = resolve(app.getPath('userData'), 'Themes');
     copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
-    console.log(`[InitializeTheme] [copyThemes] Themes copied to ${app.ThemesFolderPath}`)
+    console.log(`[InitializeTheme] [copyThemes] Themes copied to '${app.ThemesFolderPath}'`)
 }

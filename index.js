@@ -1,5 +1,4 @@
 require('v8-compile-cache');
-const path = require('path');
 const {app} = require('electron');
 
 // Creating the Application Window and Calling all the Functions
@@ -8,7 +7,13 @@ function CreateWindow() {
 
     const {InstanceHandler} = require('./resources/functions/handler/InstanceHandler')
     const ExistingInstance = InstanceHandler()
-    if (ExistingInstance) return;
+    if (ExistingInstance === true) {
+        console.log('[Apple-Music-Electron] [InstanceHandler] Existing Instance Found. Terminating.')
+        app.quit()
+        return;
+    } else {
+        console.log('[Apple-Music-Electron] [InstanceHandler] No existing instances found.')
+    }
 
     const {CreateBrowserWindow} = require('./resources/functions/CreateBrowserWindow')
     app.win = CreateBrowserWindow() // Create the Browser Window
@@ -42,7 +47,8 @@ app.on('ready', () => {
 
     const {SettingsMenuInit} = require("./resources/functions/settings/OpenMenu");
     SettingsMenuInit()
-    console.log(app.preferences)
+    console.log('[Apple-Music-Electron] Current Configuration:')
+    console.log(app.preferences._preferences)
 
     const {InitializeBase} = require('./resources/functions/init/Init-Base')
     InitializeBase()
