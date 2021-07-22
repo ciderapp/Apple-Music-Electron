@@ -6,7 +6,7 @@ exports.LoadCSS = function (path, theme) {
     if (theme) {
         path = join(app.ThemesFolderPath, path.toLowerCase());
     } else {
-        path = join(join(__dirname, '../../css/'), path.toLowerCase())
+        path = join(join(__dirname, '../../css/'), path)
     }
 
 

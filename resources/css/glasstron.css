@@ -1,7 +1,10 @@
+:root {
+    --sidebar: var(--sidebarGlasstron) !important;
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         --sidebarGlasstron: #00000018;
-        --sidebar: var(--sidebarGlasstron) !important;
         --pageBG: #0D0C0CDB;
         --playerBackgroundFallback: #131313ad;
         --playerBackground: #131313ad;
@@ -23,7 +26,7 @@
 
 @media (prefers-color-scheme: light) {
     :root {
-        --sidebar: #FFFFFF6b;
+        --sidebarGlasstron: #FFFFFF6b;
     }
 
     .dt-search-box__input {

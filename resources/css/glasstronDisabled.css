@@ -1,15 +1,3 @@
-@media (prefers-color-scheme: dark) {
-    :root {
-        --sidebarStandard: rgba(60, 60, 67, 0.03);
-    }
-}
-
-@media (prefers-color-scheme: light) {
-    :root {
-        --sidebarStandard: rgba(235, 235, 245, 0.03);
-    }
-}
-
 :root {
     --sidebar: var(--sidebarStandard) !important;
 }

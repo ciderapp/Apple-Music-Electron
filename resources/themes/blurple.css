@@ -1,4 +1,4 @@
-/**
+/*
  * @name Blurple
  * @author Core#1034
  * @description Cool blurple theme, uses similar colors to discord but a bit darker.
@@ -14,10 +14,10 @@
         --playerLCDBGFill: #131519 !important;
 
         /* Glasstron */
-        --sidebarGlasstron: #13151957;
+        --sidebarGlasstron: #13151957 !important;
 
         /* Standard */
-        --sidebarStandard: #131519;
+        --sidebarStandard: #131519 !important;
 
         /* Set the Default Stuff */
         --modalBGColor: var(--pageBG) !important;
