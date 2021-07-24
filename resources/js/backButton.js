@@ -1,7 +1,7 @@
 try {
 
     if (!document.querySelector('#backButton')) {
-        const backButtonStyle = `position: absolute; left: 0; float: left; border: 3px solid var(--searchBarBorderColor); background-color: rgba(60, 60, 67, 0.45); width: 20px`;
+        const backButtonStyle = `background-color: rgb(0 0 0 / 0%); width: 9px; margin: -43px 8px 8px 228px; -webkit-app-region: no-drag;`;
 
         document.getElementById('green').insertAdjacentHTML("afterend", `
             <div id="backButton" onclick="ipcRenderer.send('back');" style="${backButtonStyle}">
