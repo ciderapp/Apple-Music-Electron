@@ -4,7 +4,7 @@ const {app} = require('electron');
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {
     console.log('[CreateWindow] Started.')
-
+    //test 2
     const {InstanceHandler} = require('./resources/functions/handler/InstanceHandler')
     const ExistingInstance = InstanceHandler()
     if (ExistingInstance === true) {
