@@ -22,7 +22,10 @@ exports.SettingsMenuInit = function() {
                     true
                 ],
                 "lastfmEnabled": [],
-                "lastfmAuthKey": "Put your Auth Key here."
+                "lastfmAuthKey": "Put your Auth Key here.",
+                "lastfmRemoveFeaturingArtists": [
+                    true
+                ]
             },
             "visual": {
                 "theme": "default",
@@ -59,7 +62,8 @@ exports.SettingsMenuInit = function() {
                 "forceApplicationRegion": "",
                 "allowMultipleInstances": [],
                 "forceDisableWindowFrame": [],
-                "forceApplicationMode": ""
+                "forceApplicationMode": "",
+                "backButton": []
             }
         },
         'sections': [{
@@ -283,6 +287,13 @@ exports.SettingsMenuInit = function() {
                                 'type': 'checkbox',
                                 'options': [
                                     { 'label': 'Scrobble LastFM on Song Change', 'value': true }
+                                ]
+                            },
+                            { // LastFM Remove Featuring Artists
+                                'key': 'lastfmRemoveFeaturingArtists',
+                                'type': 'checkbox',
+                                'options': [
+                                    { 'label': 'Remove featuring artists', 'value': true }
                                 ]
                             },
                             { // LastFM Auth Key

@@ -75,6 +75,7 @@ exports.InitializeBase = function () {
         existingNotification: false
     };
     app.discord = {client: false, error: false, cachedAttributes: false};
+    app.lastfm = {cachedAttributes: false, }
     app.mpris = {}
 
     // Init

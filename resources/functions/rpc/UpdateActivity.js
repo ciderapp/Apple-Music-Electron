@@ -3,6 +3,9 @@ const {app} = require('electron')
 exports.UpdateRPCActivity = function (attributes) {
     if (!app.discord.client || !app.preferences.value('general.discordRPC').includes(true)) return;
 
+    // This prevents the script from running constantly when the attributes are:
+    // - the same
+    // - only just been created
     if (!app.discord.cachedAttributes) {
         app.discord.cachedAttributes = attributes
         return // Generate First Activity Cache
