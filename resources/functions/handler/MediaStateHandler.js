@@ -2,6 +2,7 @@ const {app, ipcMain} = require('electron')
 const {SetThumbarButtons} = require('../win/SetThumbarButtons')
 const {UpdateMetaData} = require('../mpris/UpdateMetaData')
 const {CreateNotification} = require('../CreateNotification')
+const {ScrobbleLFM} = require('../lastfm/scrobbleSong')
 
 exports.mediaItemStateDidChange = function () {
     console.log('[mediaItemStateDidChange] Started.')
@@ -24,9 +25,15 @@ exports.mediaItemStateDidChange = function () {
             while (app.ipc.MediaNotification) {
                 app.ipc.MediaNotification = CreateNotification(a)
             }
+
             //  Update Mpris Meta Data
             while (app.ipc.MprisUpdate) {
                 app.ipc.MprisUpdate = UpdateMetaData(a);
+            }
+
+            // LastFM Update
+            while (app.ipc.LastFMUpdate) {
+                app.ipc.LastFMUpdate = ScrobbleLFM(a)
             }
 
         }
@@ -42,6 +49,7 @@ exports.mediaItemStateDidChange = function () {
             if (!app.ipc.MprisUpdate) app.ipc.MprisUpdate = true;
             if (!app.ipc.MediaNotification) app.ipc.MediaNotification = true;
             if (app.ipc.cacheNew) app.ipc.cacheNew = false;
+            if (!app.ipc.LastFMUpdate) app.ipc.LastFMUpdate = true;
         }, 500)
     });
 }

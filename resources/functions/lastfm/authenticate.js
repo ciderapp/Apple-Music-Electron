@@ -5,9 +5,9 @@ const HomeDirectory = require('os').homedir();
 const { Notification } = require('electron')
 const path = require('path')
 
-let lastfmsessionpath = path.resolve(app.getPath('userData'), 'session.json')
+let lfmSessionPath = path.resolve(app.getPath('userData'), 'session.json')
 
-exports.lfmauthenticate = function (){
+exports.lfmAuthenticate = function (){
     if (!app.preferences.value('general.lastfmEnabled').includes(true)) return;
 
     const LastfmAPI = require('lastfmapi')
@@ -18,7 +18,7 @@ exports.lfmauthenticate = function (){
         'secret': apistuff.secret
     });
 
-    fs.stat(lastfmsessionpath, 'utf8', function(err){
+    fs.stat(lfmSessionPath, 'utf8', function(err){
         if (err) {
             console.log("[LastFM] [Session] Session file couldn't be opened or doesn't exist,", err)
             console.log("[LastFM] [Auth] Beginning authentication from configuration")
@@ -28,24 +28,24 @@ exports.lfmauthenticate = function (){
                 }
                 console.log("[LastFM] Successfully obtained LastFM session info,", session); // {"name": "LASTFM_USERNAME", "key": "THE_USER_SESSION_KEY"}
                 console.log("[LastFM] Saving session info to disk.")
-                let tempdata = JSON.stringify(session)
-                fs.writeFile(lastfmsessionpath, tempdata, (err) => {
+                let tempData = JSON.stringify(session)
+                fs.writeFile(lfmSessionPath, tempData, (err) => {
                     if (err)
                         console.log("[LastFM] [fs]", err)
                     else {
                         console.log("[LastFM] [fs] File was written successfully.")
-                        authenticatefromfile()
+                        authenticateFromFile()
                         new Notification({ title: "Apple Music", body: "Successfully logged into LastFM using Authentication Key." }).show()
                     }
                 })
             });
         } else {
-            authenticatefromfile()
+            authenticateFromFile()
         }
     })
 }
 
-function authenticatefromfile () {
+function authenticateFromFile () {
     const LastfmAPI = require('lastfmapi')
     const apistuff = require('./creds.json')
     const lfm = new LastfmAPI({
@@ -53,8 +53,8 @@ function authenticatefromfile () {
         'secret': apistuff.secret
     });
 
-    let sessiondata = require(lastfmsessionpath)
+    let sessionData = require(lfmSessionPath)
     console.log("[LastFM] [Auth] Logging in with sessioninfo.")
-    lfm.setSessionCredentials(sessiondata.name, sessiondata.key)
+    lfm.setSessionCredentials(sessionData.name, sessionData.key)
     console.log("[LastFM] [Auth] Logged in.")
 }

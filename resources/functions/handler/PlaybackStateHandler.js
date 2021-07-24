@@ -3,7 +3,6 @@ const {SetThumbarButtons} = require('../win/SetThumbarButtons')
 const {SetTrayTooltip} = require('../win/SetTrayTooltip')
 const {UpdatePlaybackStatus} = require('../mpris/UpdatePlaybackStatus')
 const {UpdateRPCActivity} = require('../rpc/UpdateActivity')
-const {UpdateLFMActivity} = require('../lastfm/UpdateActivity')
 
 exports.playbackStateDidChange = function () {
     console.log('[playbackStateDidChange] Started.')
@@ -44,11 +43,6 @@ exports.playbackStateDidChange = function () {
             app.ipc.DiscordUpdate = UpdateRPCActivity(a)
         }
 
-        // LastFM Update
-        while (app.ipc.LastFMUpdate) {
-            app.ipc.LastFMUpdate = UpdateLFMActivity(a)
-        }
-
         // Mpris Status Update
         while (app.ipc.MprisStatusUpdate) {
             app.ipc.MprisStatusUpdate = UpdatePlaybackStatus(a);
@@ -60,7 +54,6 @@ exports.playbackStateDidChange = function () {
             if (!app.ipc.TooltipUpdate) app.ipc.TooltipUpdate = true;
             if (!app.ipc.DiscordUpdate) app.ipc.DiscordUpdate = true;
             if (!app.ipc.MprisStatusUpdate) app.ipc.MprisStatusUpdate = true;
-            if (!app.ipc.LastFMUpdate) app.ipc.LastFMUpdate = true;
         }, 500)
     });
 }
