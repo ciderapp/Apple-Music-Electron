@@ -67,7 +67,6 @@ app.on('window-all-closed', () => {
 app.on('before-quit', function () {
     app.mpris.clearActivity()
     app.discord.rpc.disconnect()
-    app.discord.rpc.clearActivity()
     console.log("[DiscordRPC] Disconnecting from Discord.")
     console.log("---------------------------------------------------------------------")
     console.log("Application Closing...")
