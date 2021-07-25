@@ -67,7 +67,10 @@
     ],
     "linux": {
       "target": [
-        "pacman"
+        "AppImage",
+        "deb",
+        "snap",
+        "rpm"
       ],
       "category": "AudioVideo",
       "icon": "./resources/icons/icon.icns",
