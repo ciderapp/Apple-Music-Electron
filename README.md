@@ -55,7 +55,7 @@ For more information surrounding configuration, compiling and other developer do
 
 ### Credits
 <center>
-<a href="https://github.com/cryptofyre/Apple-Music-Electron/graphs/contributors">
+<a href="https://github.com/Apple-Music-Electron/Apple-Music-Electron/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=cryptofyre/Apple-Music-Electron" />
 </a>
 </center>
