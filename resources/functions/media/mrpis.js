@@ -4,7 +4,7 @@ const mprisService = require('mpris-service');
 module.exports = {
     connect: function() {
         if (process.platform !== "linux") {
-            app.mpris = false;
+            app.mpris.active = false;
             return;
         }
         console.log('[Mpris][connect] Initializing Connection.')
@@ -23,6 +23,8 @@ module.exports = {
             const percentage = parseFloat(0) || 0;
             return durationInMicro * percentage;
         }
+
+        app.mpris.active = true
 
         this.clearActivity()
         this.stateHandler()
@@ -55,7 +57,7 @@ module.exports = {
     },
 
     updateActivity: function(attributes) {
-        if (!app.mpris) return;
+        if (!app.mpris.active) return;
         console.log('[Mpris][updateActivity] Updating Song Activity.')
 
         const MetaData = {
@@ -76,7 +78,7 @@ module.exports = {
     },
 
     updateState: function(attributes) {
-        if (!app.mpris) return;
+        if (!app.mpris.active) return;
         console.log('[Mpris][updateState] Updating Song Playback State.')
 
         function setPlaybackIfNeeded(status) {
@@ -100,7 +102,7 @@ module.exports = {
     },
 
     clearActivity: function() {
-        if (!app.mpris) return;
+        if (!app.mpris.active) return;
         app.mpris.service.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
         app.mpris.service.playbackStatus = 'Stopped';
     },

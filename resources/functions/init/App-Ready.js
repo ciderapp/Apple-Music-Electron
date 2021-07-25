@@ -11,7 +11,7 @@ exports.ApplicationReady = function () {
     InitializeTray()
 
     // Mpris
-    app.mpris = {canQuit: true, canControl: true, canPause: true, canPlay: true, canGoNext: true, service: {}}
+    app.mpris = {active: false, canQuit: true, canControl: true, canPause: true, canPlay: true, canGoNext: true, service: {}}
     app.mpris = require('../media/mrpis')
     app.mpris.connect()
 
