@@ -4,7 +4,7 @@ const mprisService = require('mpris-service');
 module.exports = {
     connect: function() {
         if (process.platform !== "linux") {
-            app.mpris = null;
+            app.mpris = false;
             return;
         }
         console.log('[Mpris][connect] Initializing Connection.')
