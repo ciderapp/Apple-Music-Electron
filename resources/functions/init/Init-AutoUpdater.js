@@ -10,7 +10,12 @@ exports.InitializeAutoUpdater = function () {
         autoUpdater.allowDowngrade = false
     }
     console.log("[AutoUpdater] Checking for updates...")
-    autoUpdater.checkForUpdatesAndNotify().then(r => console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}`))
+    try {
+        autoUpdater.checkForUpdatesAndNotify().then(r => console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}`))
+    } catch(err) {
+        console.log(`[AutoUpdater] Error whilst checking for Update: ${err}`)
+    }
+
 
 
 }

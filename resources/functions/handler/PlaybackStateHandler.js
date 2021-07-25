@@ -1,8 +1,6 @@
 const {app, ipcMain} = require('electron')
 const {SetThumbarButtons} = require('../win/SetThumbarButtons')
 const {SetTrayTooltip} = require('../win/SetTrayTooltip')
-const {UpdatePlaybackStatus} = require('../mpris/UpdatePlaybackStatus')
-const {UpdateRPCActivity} = require('../rpc/UpdateActivity')
 
 exports.playbackStateDidChange = function () {
     console.log('[playbackStateDidChange] Started.')
@@ -40,12 +38,17 @@ exports.playbackStateDidChange = function () {
 
         // Discord Update
         while (app.ipc.DiscordUpdate) {
-            app.ipc.DiscordUpdate = UpdateRPCActivity(a)
+            app.ipc.DiscordUpdate = app.discord.rpc.updateActivity(a)
+        }
+
+        // LastFM Update
+        while (app.ipc.LastFMUpdate) {
+            app.ipc.LastFMUpdate = app.lastfm.scrobbleSong(a)
         }
 
         // Mpris Status Update
         while (app.ipc.MprisStatusUpdate) {
-            app.ipc.MprisStatusUpdate = UpdatePlaybackStatus(a);
+            app.ipc.MprisStatusUpdate = app.mpris.updateState(a);
         }
 
         // Revert it All because This Runs too many times
@@ -54,6 +57,7 @@ exports.playbackStateDidChange = function () {
             if (!app.ipc.TooltipUpdate) app.ipc.TooltipUpdate = true;
             if (!app.ipc.DiscordUpdate) app.ipc.DiscordUpdate = true;
             if (!app.ipc.MprisStatusUpdate) app.ipc.MprisStatusUpdate = true;
+            if (!app.ipc.LastFMUpdate) app.ipc.LastFMUpdate = true;
         }, 500)
     });
 }

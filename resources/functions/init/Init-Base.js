@@ -74,9 +74,6 @@ exports.InitializeBase = function () {
         cacheNew: false,
         existingNotification: false
     };
-    app.discord = {client: false, error: false, cachedAttributes: false};
-    app.lastfm = {cachedAttributes: false, }
-    app.mpris = {}
 
     // Init
     const {InitializeAutoUpdater} = require('./Init-AutoUpdater')

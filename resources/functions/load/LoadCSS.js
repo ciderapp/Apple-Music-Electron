@@ -1,4 +1,4 @@
-const {readFile} = require('fs')
+const {readFile, chmod} = require('fs')
 const {app} = require('electron')
 const {join} = require('path')
 
@@ -16,6 +16,15 @@ exports.LoadCSS = function (path, theme) {
             app.win.webContents.insertCSS(formattedData).then(() => console.log(`[Themes] '${path}' successfully injected.`));
         } else {
             console.log(`[LoadTheme] Error while injecting: '${path}' - Error: ${error}`)
+            if (theme) {
+                try {
+                    chmod(path, 0o600, () => {
+                        console.log(`[LoadTheme][chmod] Successfully updated file permissions for ${path}`)
+                    })
+                } catch(err) {
+                    console.log(`[LoadTheme][chmod] ${err}`)
+                }
+            }
         }
     });
 }

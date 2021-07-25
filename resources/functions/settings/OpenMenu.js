@@ -58,12 +58,15 @@ exports.SettingsMenuInit = function() {
                 "preventMediaKeyHijacking": [],
                 "autoUpdaterBetaBuilds": [],
                 "menuBarVisible": [],
-                "settingsMenuKeybind": "Control+Alt+S",
                 "forceApplicationRegion": "",
                 "allowMultipleInstances": [],
                 "forceDisableWindowFrame": [],
                 "forceApplicationMode": "",
-                "backButton": []
+                "backButton": [],
+                "discordClearActivityOnPause": [
+                    true
+                ],
+                "settingsMenuKeybind": "Control+Alt+S"
             }
         },
         'sections': [{
@@ -323,7 +326,8 @@ exports.SettingsMenuInit = function() {
                                     { 'label': 'Dracula', 'value': 'dracula' },
                                     { 'label': 'Jungle', 'value': 'jungle' },
                                     { 'label': 'Spotify', 'value': 'spotify' },
-                                    { 'label': 'OLED', 'value': 'oled' }
+                                    { 'label': 'OLED', 'value': 'oled' },
+                                    { 'label': 'Nord', 'value': 'nord' }
                                 ]
                             },
                             {
@@ -658,6 +662,13 @@ exports.SettingsMenuInit = function() {
                                 'type': 'checkbox',
                                 'options': [
                                     { 'label': 'backButton', 'value': true }
+                                ]
+                            },
+                            { // Turning on discordClearActivityOnPause
+                                'key': 'discordClearActivityOnPause',
+                                'type': 'checkbox',
+                                'options': [
+                                    { 'label': 'discordClearActivityOnPause', 'value': true }
                                 ]
                             },
                             { // Setting Keybind for Opening Settings

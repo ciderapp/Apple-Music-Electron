@@ -1,12 +1,29 @@
 {
-  "author": "cryptofyre <cryptofyre@protonmail.com>",
-  "homepage": "https://github.com/cryptofyre/Apple-Music-Electron",
   "name": "apple-music-electron",
-  "applicationId": "AppleMusicElectron22",
+  "applicationId": "AppleMusicElectron",
   "productName": "Apple Music",
   "version": "2.4.0",
-  "description": "Unofficial Electron wrapper for Apple Music created by @cryptofyre",
+  "description": "A free, lightweight, open source alternative to iTunes and other Apple Music applications based on Electron 13.1.0",
   "license": "MIT",
+  "author": "cryptofyre <cryptofyre@protonmail.com> (https://cryptofyre.org)",
+  "contributors": [
+    {
+      "name": "Core",
+      "url": "https://github.com/coredev-uk"
+    },
+    {
+      "name": "child-duckling",
+      "url": "https://github.com/child-duckling"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Apple-Music-Electron/Apple-Music-Electron.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Apple-Music-Electron/Apple-Music-Electron/issues?q=is%3Aopen+is%3Aissue+label%3Abug"
+  },
+  "homepage": "https://ame.cryptofyre.org/",
   "buildResources": "resources",
   "scripts": {
     "init": "install",
@@ -16,7 +33,6 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "discord-rich-presence": "^0.0.8",
     "discord-rpc": "^3.1.4",
     "electron-log": "^4.3.5",
     "electron-preferences": "^2.3.2",
@@ -51,10 +67,7 @@
     ],
     "linux": {
       "target": [
-        "AppImage",
-        "deb",
-        "snap",
-        "rpm"
+        "pacman"
       ],
       "category": "AudioVideo",
       "icon": "./resources/icons/icon.icns",

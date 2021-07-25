@@ -59,21 +59,15 @@ app.on('ready', () => {
     setTimeout(CreateWindow, process.platform === "linux" ? 1000 : 0);
 });
 
-function ClearMPRIS() {
-    if (app.mpris) { // Reset Mpris when app is closed
-        app.mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
-        app.mpris.playbackStatus = 'Stopped';
-    }
-}
-
 app.on('window-all-closed', () => {
-    ClearMPRIS()
+    app.mpris.clearActivity()
     app.quit()
 });
 
 app.on('before-quit', function () {
-    ClearMPRIS()
-    if (app.preferences.value('general.discordRPC').includes(true) && app.discord.client) app.discord.client.disconnect
+    app.mpris.clearActivity()
+    app.discord.rpc.disconnect()
+    app.discord.rpc.clearActivity()
     console.log("[DiscordRPC] Disconnecting from Discord.")
     console.log("---------------------------------------------------------------------")
     console.log("Application Closing...")
