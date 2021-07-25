@@ -60,7 +60,7 @@ jobs:
 
     - run: |
        yarn install
-       yarn dist -w -p never --x64
+       yarn dist -m -p never
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
