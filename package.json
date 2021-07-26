@@ -43,6 +43,9 @@
     "lastfmapi": "^0.1.1",
     "mpris-service": "^2.1.2",
     "node-fetch": "^2.6.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "register-scheme": "github:devsnek/node-register-scheme",
     "source-map-support": "^0.5.16",
     "v8-compile-cache": "^2.1.1"
   },
