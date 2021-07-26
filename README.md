@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://ame.cryptofyre.org"><img src="https://i.imgur.com/jw1cUQZ.png" alt="Banner"></a>
+  <a href="https://ame.cryptofyre.org"><img src="https://cryptofyre.org/AME/assets/img/banneropen.png" alt="Banner"></a>
 </p>
 
 <p align="center"> 
