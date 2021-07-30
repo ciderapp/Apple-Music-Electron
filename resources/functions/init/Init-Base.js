@@ -60,7 +60,7 @@ exports.InitializeBase = function () {
     }
 
     // Assign Default Variables
-    app.isQuiting = !app.preferences.value('window.closeButtonMinimize');
+    app.isQuiting = !app.preferences.value('window.closeButtonMinimize').includes(true);
     app.win = '';
     app.ipc = {
         ThumbarUpdate: true,
