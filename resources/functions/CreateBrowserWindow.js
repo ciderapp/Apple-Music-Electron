@@ -52,7 +52,11 @@ exports.CreateBrowserWindow = function() {
         app.isUsingGlasstron = true
     }
 
-
+    if (!app.preferences.value('advanced.alwaysOnTop').includes(true)) {
+        win.setAlwaysOnTop(false)
+    } else {
+        win.setAlwaysOnTop(true)
+    } // Enables always on top
     if (!app.preferences.value('advanced.menuBarVisible').includes(true)) win.setMenuBarVisibility(false); // Hide that nasty menu bar
     if (!app.preferences.value('advanced.enableDevTools').includes(true)) win.setMenu(null); // Disables DevTools
 

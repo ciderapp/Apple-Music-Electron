@@ -49,6 +49,7 @@ exports.SettingsMenuInit = function() {
             },
             "advanced": {
                 "enableDevTools": [],
+                "alwaysOnTop": [],
                 "removeScrollbars": [
                     true
                 ],
@@ -600,6 +601,13 @@ exports.SettingsMenuInit = function() {
                                     { 'label': 'forceLightMode', 'value': 'light' }
                                 ],
                                 'help': 'If you want the application to be in a mode that your system is not using by default.'
+                            },
+                            {
+                                'key': 'alwaysOnTop',
+                                'type': 'checkbox',
+                                'options': [
+                                    { 'label': 'alwaysOnTop', 'value': true }
+                                ]
                             },
                             { // Turning on allowMultipleInstances
                                 'key': 'allowMultipleInstances',
