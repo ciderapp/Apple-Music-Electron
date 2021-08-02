@@ -49,6 +49,7 @@ exports.SettingsMenuInit = function() {
             },
             "advanced": {
                 "enableDevTools": [],
+                "themeDevelopment": [],
                 "alwaysOnTop": [],
                 "removeScrollbars": [
                     true
@@ -629,6 +630,14 @@ exports.SettingsMenuInit = function() {
                                 'options': [
                                     { 'label': 'enableDevTools', 'value': true }
                                 ]
+                            },
+                            { // Theme Development (Prevents copying and replacing existing themes)
+                                'key': 'themeDevelopment',
+                                'type': 'checkbox',
+                                'options': [
+                                    { 'label': 'themeDevelopment', 'value': true }
+                                ],
+                                'help': 'This prevents copying and replacing existing themes when launched.'
                             },
                             { // Turning on forceDisableWindowFrame
                                 'key': 'forceDisableWindowFrame',

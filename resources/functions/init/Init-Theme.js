@@ -34,6 +34,7 @@ exports.InitializeTheme = function () {
             });
         } else {
             try {
+                if (app.preferences.value('advanced.themeDevelopment').includes(true)) return;
                 copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
                 console.log(`[InitializeTheme] [copyThemes] Themes copied to '${app.ThemesFolderPath}'`)
             } catch(err) {
