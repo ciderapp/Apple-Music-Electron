@@ -1,7 +1,8 @@
 const {app, nativeTheme} = require('electron');
 const {resolve, join} = require('path');
 const {copySync} = require('fs-extra');
-const {chmodr} = require("chmodr");
+const fs = require('fs');
+const chmodr = require('chmodr');
 
 exports.InitializeTheme = function () {
     console.log('[InitializeTheme] Started.')
@@ -15,27 +16,29 @@ exports.InitializeTheme = function () {
         } else {
             app.preferences.value('advanced.forceApplicationMode', 'light');
         }
-
     }
 
     app.ThemesFolderPath = resolve(app.getPath('userData'), 'Themes');
-    try {
-        copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
-    } catch(err) {
-        console.log(`[InitializeTheme] [copyThemes] ${err}`)
-        try {
-            chmodr(app.ThemesFolderPath, 0o777, (err) => {
+
+    fs.access(`${app.ThemesFolderPath}/Template.css`, fs.constants.W_OK, err => {
+        if (err) { // File is not accessible
+            fs.chmodSync(app.ThemesFolderPath, '777');
+            fs.chownSync(app.ThemesFolderPath, 0, 0);
+
+            chmodr(app.ThemesFolderPath, 0o777, (e) => {
                 if (err) {
-                    console.log(`[InitializeTheme][chmodr] ${err}`)
+                    console.log(`[InitializeTheme][chmodr] ${e}`)
                 } else {
                     console.log('[InitializeTheme][chmodr] Theme folder permissions set.');
                 }
             });
-            copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
-        } catch(err) {
-            console.log(`[InitializeTheme][chmodr] ${err}`)
+        } else {
+            try {
+                copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
+                console.log(`[InitializeTheme] [copyThemes] Themes copied to '${app.ThemesFolderPath}'`)
+            } catch(err) {
+                console.log(err)
+            }
         }
-    }
-
-    console.log(`[InitializeTheme] [copyThemes] Themes copied to '${app.ThemesFolderPath}'`)
+    });
 }
