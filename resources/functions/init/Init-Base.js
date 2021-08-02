@@ -28,7 +28,7 @@ exports.InitializeBase = function () {
     if (app.preferences.value('general.authMode').includes(true)) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 
     // Media Key Hijacking
-    if (app.preferences.value('advanced.preventMediaKeyHijacking').includes(true)) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
+    if (app.preferences.value('advanced.preventMediaKeyHijacking').includes(true)) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,MediaSessionService');
 
     // Sets the ModelId (For windows notifications)
     if (process.platform === "win32") app.setAppUserModelId("Apple Music");

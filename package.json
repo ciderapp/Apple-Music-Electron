@@ -33,6 +33,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "chmodr": "^1.2.0",
     "discord-rpc": "^3.1.4",
     "electron-log": "^4.3.5",
     "electron-preferences": "^2.3.2",
