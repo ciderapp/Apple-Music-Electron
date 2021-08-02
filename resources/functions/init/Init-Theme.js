@@ -1,6 +1,7 @@
 const {app, nativeTheme} = require('electron');
 const {resolve, join} = require('path');
 const {copySync} = require('fs-extra');
+const {chmodr} = require("chmodr");
 
 exports.InitializeTheme = function () {
     console.log('[InitializeTheme] Started.')
@@ -18,6 +19,23 @@ exports.InitializeTheme = function () {
     }
 
     app.ThemesFolderPath = resolve(app.getPath('userData'), 'Themes');
-    copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
+    try {
+        copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
+    } catch(err) {
+        console.log(`[InitializeTheme] [copyThemes] ${err}`)
+        try {
+            chmodr(app.ThemesFolderPath, 0o777, (err) => {
+                if (err) {
+                    console.log(`[InitializeTheme][chmodr] ${err}`)
+                } else {
+                    console.log('[InitializeTheme][chmodr] Theme folder permissions set.');
+                }
+            });
+            copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
+        } catch(err) {
+            console.log(`[InitializeTheme][chmodr] ${err}`)
+        }
+    }
+
     console.log(`[InitializeTheme] [copyThemes] Themes copied to '${app.ThemesFolderPath}'`)
 }

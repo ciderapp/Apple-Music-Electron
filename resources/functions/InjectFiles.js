@@ -54,7 +54,7 @@ exports.InjectFiles = function () {
         }
 
         /* Load a Theme if it is Found in the Configuration File */
-        if (app.preferences.value('visual.theme') && !(app.preferences.value('visual.theme').includes('default'))) {
+        if (app.preferences.value('visual.theme') && !(app.preferences.value('visual.theme').includes('Template')) && !(app.preferences.value('visual.theme').includes('default'))) {
             LoadCSS(`${app.preferences.value('visual.theme')}.css`, true)
         }
 

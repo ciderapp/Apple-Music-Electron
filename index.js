@@ -60,7 +60,6 @@ app.on('ready', () => {
 });
 
 app.on('window-all-closed', () => {
-    app.mpris.clearActivity()
     app.quit()
 });
 
