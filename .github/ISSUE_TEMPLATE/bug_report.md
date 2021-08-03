@@ -33,5 +33,5 @@ Check your log file for any errors or the last message to be sent and post them 
 **Additional context**
 Add any other context about the problem here.
 
-**Have you followed the troubleshooting guide found [here](https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki/Troubleshooting)?**
+**Have you followed the troubleshooting guide found [here](https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki/Troubleshooting) and checked for any outstanding/pinned issues that can help?**
 Yes/No
