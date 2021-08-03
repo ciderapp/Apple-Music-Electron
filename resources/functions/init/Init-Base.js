@@ -1,4 +1,4 @@
-const {app} = require('electron')
+const {app, Notification} = require('electron')
 const {join} = require('path')
 
 exports.InitializeBase = function () {
@@ -25,10 +25,20 @@ exports.InitializeBase = function () {
     }
 
     // Disable CORS
-    if (app.preferences.value('general.authMode').includes(true)) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+    if (app.preferences.value('general.authMode').includes(true)) {
+        console.log("[Apple-Music-Electron] Application started wth disable CORS.")
+        new Notification({
+            title: "Apple Music",
+            body: `Applications has been started using authMode. Disable authMode once you have successfully logged in.`
+        }).show()
+        app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+    }
 
     // Media Key Hijacking
-    if (app.preferences.value('advanced.preventMediaKeyHijacking').includes(true)) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,MediaSessionService');
+    if (app.preferences.value('advanced.preventMediaKeyHijacking').includes(true)) {
+        console.log("[Apple-Music-Electron] Hardware Media Key Handling disabled.")
+        app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,MediaSessionService');
+    }
 
     // Sets the ModelId (For windows notifications)
     if (process.platform === "win32") app.setAppUserModelId("Apple Music");
