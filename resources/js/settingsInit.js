@@ -5,33 +5,33 @@ try {
 
     if (GetXPath('/html/body/div[4]/div[1]/div[3]/div/div[3]/div[3]/button')) {
         GetXPath('/html/body/div[4]/div[1]/div[3]/div/div[3]/div[3]/button').addEventListener('click', function () {
-                if (document.querySelector('.context-menu__option--app-settings')) {
-                    console.log("[settingsInit] Preventing second button.");
-                    return;
-                }
+            if (document.querySelector('.context-menu__option--app-settings')) {
+                console.log("[settingsInit] Preventing second button.");
+                return;
+            }
 
-                const ul = GetXPath("/html/body/div[6]/ul");
+            const ul = GetXPath("/html/body/div[6]/ul");
 
-                GetXPath('/html/body/div[6]/ul/li[2]').remove();
-                const amSettings = document.createElement("li");
-                amSettings.innerHTML = `
+            GetXPath('/html/body/div[6]/ul/li[2]').remove();
+            const amSettings = document.createElement("li");
+            amSettings.innerHTML = `
                     <span class="context-menu__option-text" tabindex="0" role="menuitem">
                         <span class="context-menu__option-text-clamp">Account Settings</span>
-                        <svg width="24" height="24" viewBox="0 0 24 24" stroke="#212b36" stroke-width="2" width="100%" height="100%" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" clip-rule="evenodd" viewBox="0 0 16 16" xml:space="preserve" class="context-menu__option-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" stroke="#212b36" stroke-width="2" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" clip-rule="evenodd" xml:space="preserve" class="context-menu__option-icon">
                             <circle cx="12" cy="8" r="5" />
                             <path d="M3,21 h18 C 21,12 3,12 3,21"/>
                         </svg>
                     </span>
                 `;
-                amSettings.classList.add("context-menu__option--am-settings");
-                amSettings.classList.add("context-menu__option");
-                amSettings.onclick = function() {
-                    window.open(`https://music.apple.com/account/settings`)
-                };
-                ul.insertBefore(amSettings, ul.childNodes[8]);
+            amSettings.classList.add("context-menu__option--am-settings");
+            amSettings.classList.add("context-menu__option");
+            amSettings.onclick = function () {
+                window.open(`https://music.apple.com/account/settings`)
+            };
+            ul.insertBefore(amSettings, ul.childNodes[8]);
 
-                const li = document.createElement("li");
-                li.innerHTML = `
+            const li = document.createElement("li");
+            li.innerHTML = `
                     <span class="context-menu__option-text" tabindex="0" role="menuitem">
                         <span class="context-menu__option-text-clamp">Preferences</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" clip-rule="evenodd" viewBox="0 0 16 16" xml:space="preserve" class="context-menu__option-icon">
@@ -40,15 +40,14 @@ try {
                     </span>
                 `;
 
-                li.classList.add("context-menu__option--app-settings");
-                li.classList.add("context-menu__option");
-                li.onclick = function() {
-                    ipcRenderer.send("showPreferences");
-                };
-                ul.insertBefore(li, ul.childNodes[9]);
+            li.classList.add("context-menu__option--app-settings");
+            li.classList.add("context-menu__option");
+            li.onclick = function () {
+                ipcRenderer.send("showPreferences");
+            };
+            ul.insertBefore(li, ul.childNodes[9]);
         });
     }
-
 
 
 } catch (e) {

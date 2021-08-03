@@ -1,7 +1,7 @@
 const {nativeImage} = require("electron");
 const {app, nativeTheme} = require('electron')
 const {join} = require('path')
-const { systemPreferences } = require('electron')
+const {systemPreferences} = require('electron')
 
 exports.SetThumbarButtons = function (state) {
 
@@ -31,7 +31,7 @@ exports.SetThumbarButtons = function (state) {
             array = [
                 {
                     tooltip: 'Previous',
-                    icon: nativeImage.createFromPath(trayicondir+`previous.png`),
+                    icon: nativeImage.createFromPath(trayicondir + `previous.png`),
                     click() {
                         console.log('[setThumbarButtons] Previous song button clicked.')
                         app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPlaying] skipToPreviousItem"))
@@ -39,7 +39,7 @@ exports.SetThumbarButtons = function (state) {
                 },
                 {
                     tooltip: 'Play',
-                    icon: nativeImage.createFromPath(trayicondir+`play.png`),
+                    icon: nativeImage.createFromPath(trayicondir + `play.png`),
                     click() {
                         console.log('[setThumbarButtons] Play song button clicked.')
                         app.win.webContents.executeJavaScript("MusicKit.getInstance().play()").then(() => console.log("[ThumbarPlaying] play"))
@@ -47,7 +47,7 @@ exports.SetThumbarButtons = function (state) {
                 },
                 {
                     tooltip: 'Next',
-                    icon: nativeImage.createFromPath(trayicondir+`next.png`),
+                    icon: nativeImage.createFromPath(trayicondir + `next.png`),
                     click() {
                         console.log('[setThumbarButtons] Pause song button clicked.')
                         app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPlaying] skipToNextItem"))
@@ -62,17 +62,20 @@ exports.SetThumbarButtons = function (state) {
             array = [
                 {
                     tooltip: 'Previous',
-                    icon: nativeImage.createFromPath(trayicondir+`previous-inactive.png`).resize({ width: 32, height: 32 }),
+                    icon: nativeImage.createFromPath(trayicondir + `previous-inactive.png`).resize({
+                        width: 32,
+                        height: 32
+                    }),
                     flags: "disabled"
                 },
                 {
                     tooltip: 'Play',
-                    icon: nativeImage.createFromPath(trayicondir+`play-inactive.png`).resize({ width: 32, height: 32 }),
+                    icon: nativeImage.createFromPath(trayicondir + `play-inactive.png`).resize({width: 32, height: 32}),
                     flags: "disabled"
                 },
                 {
                     tooltip: 'Next',
-                    icon: nativeImage.createFromPath(trayicondir+`next-inactive.png`).resize({ width: 32, height: 32 }),
+                    icon: nativeImage.createFromPath(trayicondir + `next-inactive.png`).resize({width: 32, height: 32}),
                     flags: "enabled"
                 }
             ];
@@ -84,7 +87,7 @@ exports.SetThumbarButtons = function (state) {
             array = [
                 {
                     tooltip: 'Previous',
-                    icon: nativeImage.createFromPath(trayicondir+`previous.png`).resize({ width: 32, height: 32 }),
+                    icon: nativeImage.createFromPath(trayicondir + `previous.png`).resize({width: 32, height: 32}),
                     click() {
                         console.log('[setThumbarButtons] Previous song button clicked.')
                         app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPaused] skipToPreviousItem"))
@@ -92,7 +95,7 @@ exports.SetThumbarButtons = function (state) {
                 },
                 {
                     tooltip: 'Pause',
-                    icon: nativeImage.createFromPath(trayicondir+`pause.png`).resize({ width: 32, height: 32 }),
+                    icon: nativeImage.createFromPath(trayicondir + `pause.png`).resize({width: 32, height: 32}),
                     click() {
                         console.log('[setThumbarButtons] Play song button clicked.')
                         app.win.webContents.executeJavaScript("MusicKit.getInstance().pause()").then(() => console.log("[ThumbarPaused] pause"))
@@ -100,7 +103,7 @@ exports.SetThumbarButtons = function (state) {
                 },
                 {
                     tooltip: 'Next',
-                    icon: nativeImage.createFromPath(trayicondir+`next.png`).resize({ width: 32, height: 32 }),
+                    icon: nativeImage.createFromPath(trayicondir + `next.png`).resize({width: 32, height: 32}),
                     click() {
                         console.log('[setThumbarButtons] Pause song button clicked.')
                         app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPaused] skipToNextItem"))

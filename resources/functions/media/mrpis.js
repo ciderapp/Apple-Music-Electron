@@ -2,7 +2,7 @@ const {app} = require('electron')
 const mprisService = require('mpris-service');
 
 module.exports = {
-    connect: function() {
+    connect: function () {
         if (process.platform !== "linux") {
             app.mpris.active = false;
             return;
@@ -30,7 +30,7 @@ module.exports = {
         this.stateHandler()
     },
 
-    stateHandler: function() {
+    stateHandler: function () {
         app.mpris.service.on('playpause', async () => {
             if (app.mpris.service.playbackStatus === 'Playing') {
                 await app.win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
@@ -56,7 +56,7 @@ module.exports = {
         });
     },
 
-    updateActivity: function(attributes) {
+    updateActivity: function (attributes) {
         if (!app.mpris.active) return;
         console.log('[Mpris][updateActivity] Updating Song Activity.')
 
@@ -77,7 +77,7 @@ module.exports = {
         app.mpris.service.metadata = MetaData
     },
 
-    updateState: function(attributes) {
+    updateState: function (attributes) {
         if (!app.mpris.active) return;
         console.log('[Mpris][updateState] Updating Song Playback State.')
 
@@ -101,7 +101,7 @@ module.exports = {
         }
     },
 
-    clearActivity: function() {
+    clearActivity: function () {
         if (!app.mpris.active) return;
         app.mpris.service.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
         app.mpris.service.playbackStatus = 'Stopped';

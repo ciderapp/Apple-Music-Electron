@@ -1,9 +1,8 @@
-const { app } = require('electron')
-const { GetLocale } = require('../GetLocale')
+const {app} = require('electron')
+const {GetLocale} = require('../GetLocale')
 
-exports.LoadWebsite = function() {
+exports.LoadWebsite = function () {
     console.log('[LoadWebsite] Started.')
-
 
 
     const locale = GetLocale()

@@ -8,6 +8,6 @@ try {
         document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.marginTop = '0px';
     }
 
-} catch(e) {
+} catch (e) {
     console.error("[JS] Error while trying to apply removeAppleLogo.js", e);
 }

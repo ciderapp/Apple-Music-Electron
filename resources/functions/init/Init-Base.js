@@ -62,18 +62,7 @@ exports.InitializeBase = function () {
     // Assign Default Variables
     app.isQuiting = !app.preferences.value('window.closeButtonMinimize').includes(true);
     app.win = '';
-    app.ipc = {
-        ThumbarUpdate: true,
-        TooltipUpdate: true,
-        DiscordUpdate: true,
-        MprisUpdate: true,
-        MprisStatusUpdate: true,
-        LastFMUpdate: true,
-        MediaNotification: true,
-        cache: false,
-        cacheNew: false,
-        existingNotification: false
-    };
+    app.ipc = {existingNotification: false};
 
     // Init
     const {InitializeAutoUpdater} = require('./Init-AutoUpdater')

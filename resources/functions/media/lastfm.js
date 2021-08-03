@@ -13,7 +13,7 @@ function authenticateFromFile() {
 }
 
 module.exports = {
-    authenticate: function() {
+    authenticate: function () {
         if (!app.preferences.value('general.lastfmEnabled').includes(true) || app.preferences.value('general.lastfmAuthKey') === 'Put your Auth Key here.' || !app.preferences.value('general.lastfmAuthKey')) {
             app.preferences.value('general.lastfmEnabled', [])
             return
@@ -24,7 +24,7 @@ module.exports = {
             'secret': apiCredentials.secret
         });
 
-        fs.stat(sessionPath, function(err){
+        fs.stat(sessionPath, function (err) {
             if (err) {
                 console.log("[LastFM] [Session] Session file couldn't be opened or doesn't exist,", err)
                 console.log("[LastFM] [Auth] Beginning authentication from configuration")
@@ -41,7 +41,10 @@ module.exports = {
                         else {
                             console.log("[LastFM] [fs] File was written successfully.")
                             authenticateFromFile()
-                            new Notification({ title: "Apple Music", body: "Successfully logged into LastFM using Authentication Key." }).show()
+                            new Notification({
+                                title: "Apple Music",
+                                body: "Successfully logged into LastFM using Authentication Key."
+                            }).show()
                         }
                     })
                 });
@@ -51,7 +54,7 @@ module.exports = {
         })
     },
 
-    scrobbleSong: function(attributes) {
+    scrobbleSong: function (attributes) {
         if (!app.lastfm.api || app.lastfm.cachedAttributes === attributes) {
             return
         }
@@ -82,7 +85,7 @@ module.exports = {
         }
     },
 
-    filterArtistName: function(artist) {
+    filterArtistName: function (artist) {
         if (!app.preferences.value('general.lastfmRemoveFeaturingArtists').includes(true)) return artist;
 
         artist = artist.split(' ');

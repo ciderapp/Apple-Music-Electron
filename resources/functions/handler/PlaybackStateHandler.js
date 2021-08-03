@@ -4,60 +4,35 @@ const {SetTrayTooltip} = require('../win/SetTrayTooltip')
 
 exports.playbackStateDidChange = function () {
     console.log('[playbackStateDidChange] Started.')
+    app.PreviousSongId = null;
+
     ipcMain.on('playbackStateDidChange', (_item, a) => {
         app.isPlaying = a.status;
-        if (!a || a.playParams.id === 'no-id-found' || !app.ipc.cache) return;
 
         try {
-            if (a.playParams.id !== app.ipc.cache.playParams.id) { // If it is a new song
+            if (a.playParams.id !== app.PreviousSongId) { // If it is a new song
                 a.startTime = Date.now()
                 a.endTime = Number(Math.round(a.startTime + a.durationInMillis));
             } else { // If its continuing from the same song
                 a.startTime = Date.now()
                 a.endTime = Number(Math.round(Date.now() + a.remainingTime));
             }
-        } catch(err) {
-            console.log(`[playbackStateDidChange] Error when setting endTime - ${err}`);
+        } catch (err) {
+            console.error(`[playbackStateDidChange] Error when setting endTime - ${err}`);
             a.endTime = 0;
         }
 
-        // Just incase
+        // Just in case
         if (!a.endTime) {
             a.endTime = Number(Math.round(Date.now()));
         }
 
-        // Thumbar Buttons
-        while (app.ipc.ThumbarUpdate) {
-            app.ipc.ThumbarUpdate = SetThumbarButtons(a.status)
-        }
+        SetThumbarButtons(a.status)
+        SetTrayTooltip(a)
+        app.discord.rpc.updateActivity(a)
+        app.lastfm.scrobbleSong(a)
+        app.mpris.updateState(a)
 
-        // TrayTooltipSongName
-        while (app.ipc.TooltipUpdate) {
-            app.ipc.TooltipUpdate = SetTrayTooltip(a)
-        }
-
-        // Discord Update
-        while (app.ipc.DiscordUpdate) {
-            app.ipc.DiscordUpdate = app.discord.rpc.updateActivity(a)
-        }
-
-        // LastFM Update
-        while (app.ipc.LastFMUpdate) {
-            app.ipc.LastFMUpdate = app.lastfm.scrobbleSong(a)
-        }
-
-        // Mpris Status Update
-        while (app.ipc.MprisStatusUpdate) {
-            app.ipc.MprisStatusUpdate = app.mpris.updateState(a);
-        }
-
-        // Revert it All because This Runs too many times
-        setTimeout(() => {
-            if (!app.ipc.ThumbarUpdate) app.ipc.ThumbarUpdate = true;
-            if (!app.ipc.TooltipUpdate) app.ipc.TooltipUpdate = true;
-            if (!app.ipc.DiscordUpdate) app.ipc.DiscordUpdate = true;
-            if (!app.ipc.MprisStatusUpdate) app.ipc.MprisStatusUpdate = true;
-            if (!app.ipc.LastFMUpdate) app.ipc.LastFMUpdate = true;
-        }, 500)
+        app.PreviousSongId = a.playParams.id
     });
 }

@@ -30,9 +30,7 @@ exports.InjectFiles = function () {
         }
 
         /* Create Settings Button */
-        setTimeout(function() {
-            LoadJS('settingsInit.js')
-        }, 1500)
+        LoadJS('settingsInit.js')
 
         /* Load the Emulation Files */
         if (app.preferences.value('visual.emulateMacOS').includes('left')) {

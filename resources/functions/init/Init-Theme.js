@@ -25,9 +25,9 @@ exports.InitializeTheme = function () {
             fs.chmodSync(app.ThemesFolderPath, '777');
             fs.chownSync(app.ThemesFolderPath, 0, 0);
 
-            chmodr(app.ThemesFolderPath, 0o777, (e) => {
-                if (err) {
-                    console.log(`[InitializeTheme][chmodr] ${e}`)
+            chmodr(app.ThemesFolderPath, 0o777, (_e) => {
+                if (_e) {
+                    console.error(`[InitializeTheme][chmodr] ${_e}`)
                 } else {
                     console.log('[InitializeTheme][chmodr] Theme folder permissions set.');
                 }
@@ -37,8 +37,8 @@ exports.InitializeTheme = function () {
                 if (app.preferences.value('advanced.themeDevelopment').includes(true)) return;
                 copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
                 console.log(`[InitializeTheme] [copyThemes] Themes copied to '${app.ThemesFolderPath}'`)
-            } catch(err) {
-                console.log(err)
+            } catch (_err) {
+                console.log(_err)
             }
         }
     });
