@@ -26,7 +26,7 @@ module.exports = {
 
         fs.stat(sessionPath, function (err) {
             if (err) {
-                console.log("[LastFM] [Session] Session file couldn't be opened or doesn't exist,", err)
+                console.error("[LastFM] [Session] Session file couldn't be opened or doesn't exist,", err)
                 console.log("[LastFM] [Auth] Beginning authentication from configuration")
                 app.lastfm.api.authenticate(app.preferences.value('general.lastfmAuthKey'), function (err, session) {
                     if (err) {
@@ -74,7 +74,7 @@ module.exports = {
                     'timestamp': new Date().getTime() / 1000
                 }, function (err, scrobbled) {
                     if (err) {
-                        return console.log('[LastFM] An error occurred while scrobbling', err);
+                        return console.error('[LastFM] An error occurred while scrobbling', err);
                     }
                     console.log('[LastFM] Successfully scrobbled: ', scrobbled)
                 });

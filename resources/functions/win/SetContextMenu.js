@@ -1,4 +1,4 @@
-const {app, Menu} = require('electron')
+const {app, Menu, Notification} = require('electron')
 const {autoUpdater} = require("electron-updater");
 
 exports.SetContextMenu = function (visibility) {
@@ -8,7 +8,12 @@ exports.SetContextMenu = function (visibility) {
             {
                 label: 'Check for Updates',
                 click: function () {
-                    autoUpdater.checkForUpdatesAndNotify().then(r => console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}`));
+                    autoUpdater.checkForUpdatesAndNotify().then(r => {
+                        new Notification({
+                            title: "Apple Music",
+                            body: `Latest Version is ${r.updateInfo.version}`
+                        }).show()
+                    });
                 }
             },
             {
@@ -30,7 +35,12 @@ exports.SetContextMenu = function (visibility) {
             {
                 label: 'Check for Updates',
                 click: function () {
-                    autoUpdater.checkForUpdatesAndNotify().then(r => console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}`));
+                    autoUpdater.checkForUpdatesAndNotify().then(r => {
+                        new Notification({
+                            title: "Apple Music",
+                            body: `Latest Version is ${r.updateInfo.version}`
+                        }).show()
+                    });
                 }
             },
             {

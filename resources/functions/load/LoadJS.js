@@ -11,10 +11,10 @@ exports.LoadJS = function (path) {
                 let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
                 app.win.webContents.executeJavaScript(formattedData).then(() => console.log(`[LoadJSFile] '${path}' successfully injected.`));
             } catch (err) {
-                console.log(`[LoadJSFile] Error while injecting: ${path} - Error: ${err}`)
+                console.error(`[LoadJSFile] Error while injecting: ${path} - Error: ${err}`)
             }
         } else {
-            console.log(`[LoadJSFile] Error while injecting: '${path}' - Error: ${error}`)
+            console.error(`[LoadJSFile] Error while reading: '${path}' - Error: ${error}`)
         }
     });
 
