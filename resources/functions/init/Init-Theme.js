@@ -23,7 +23,6 @@ exports.InitializeTheme = function () {
     fs.access(`${app.ThemesFolderPath}/Template.css`, fs.constants.W_OK, err => {
         if (err) { // File is not accessible
             fs.chmodSync(app.ThemesFolderPath, '777');
-            fs.chownSync(app.ThemesFolderPath, 0, 0);
 
             chmodr(app.ThemesFolderPath, 0o777, (_e) => {
                 if (_e) {
