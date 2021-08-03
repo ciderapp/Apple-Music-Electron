@@ -25,7 +25,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. Linux/Mac/Windows]
- - Version [e.g. 2.4.0]
+ - Application Version [e.g. 2.4.0]
 
 **Log File**
 Check your log file for any errors or the last message to be sent and post them here.
