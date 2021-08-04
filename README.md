@@ -29,6 +29,9 @@
   <img src="https://github.com/cryptofyre/Apple-Music-Electron/actions/workflows/build-analyze-linux.yml/badge.svg" alt="Build Analysis - Linux">
   <img src="https://github.com/cryptofyre/Apple-Music-Electron/actions/workflows/build-analyze-macos.yml/badge.svg" alt="Build Analysis - macOS">
 </p>
+<p align="center">
+<img src="https://img.shields.io/badge/aPpLe_oFfIcIaL_PrOdUcT-lightgrey.svg?style=flat&logo=apple&logoColor=black" alt="This most def a apple product, for sure">
+</p>
 
 # Install Sources
 Here are all the places that you can install Apple-Music-Electron from (excluding repo releases which can be found [here](https://github.com/cryptofyre/Apple-Music-Electron/releases/latest)):
