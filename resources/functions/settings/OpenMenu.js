@@ -713,11 +713,6 @@ exports.SettingsMenuInit = function () {
         globalShortcut.register(app.preferences.value('advanced.settingsMenuKeybind'), () => {
             app.preferences.show();
         })
-        globalShortcut.register(`CommandOrControl+Alt+H`, () => {
-            shell.openExternal("https://github.com/cryptofyre/Apple-Music-Electron/wiki") //Help
-        })
-        globalShortcut.register(`CommandOrControl+Alt+C`, () => {
-            shell.openPath(app.getPath('userData'))
-        })
+        
     })
 }
