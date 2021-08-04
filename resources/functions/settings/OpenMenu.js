@@ -1,7 +1,10 @@
 const path = require('path');
 const ElectronPreferences = require('electron-preferences');
-const {app, globalShortcut, shell} = require('electron');
+const {app, globalShortcut} = require('electron');
+const {readFile} = require('fs');
 
+// Check the Configuration File
+const ExistingConfigurationPath = path.resolve(app.getPath('userData'), 'preferences.json');
 
 exports.SettingsMenuInit = function () {
     app.preferences = new ElectronPreferences({
@@ -64,6 +67,7 @@ exports.SettingsMenuInit = function () {
                 "forceDisableWindowFrame": [],
                 "forceApplicationMode": "",
                 "backButton": [],
+                "listenNow": [],
                 "discordClearActivityOnPause": [
                     true
                 ],
@@ -680,6 +684,13 @@ exports.SettingsMenuInit = function () {
                                     {'label': 'backButton', 'value': true}
                                 ]
                             },
+                            { // Load listen-now on Startup
+                                'key': 'listenNow',
+                                'type': 'checkbox',
+                                'options': [
+                                    {'label': 'listenNow', 'value': true}
+                                ]
+                            },
                             { // Turning on discordClearActivityOnPause
                                 'key': 'discordClearActivityOnPause',
                                 'type': 'checkbox',
@@ -708,6 +719,35 @@ exports.SettingsMenuInit = function () {
             //...
         }
     });
+
+    try {
+        console.log("[OpenMenu][ConfigurationCheck] Checking for existing configuration...")
+        readFile(ExistingConfigurationPath, function (err, data) {
+            if (err) {
+                console.log()
+            } else {
+                var userConfiguration = JSON.parse(data.toString())
+                const baseConfiguration = app.preferences.defaults;
+
+                Object.keys(baseConfiguration).forEach(function (parentKey) {
+                    if (parentKey in userConfiguration) {
+                        Object.keys(baseConfiguration[parentKey]).forEach(function (childKey) {
+                            if (!userConfiguration[parentKey].hasOwnProperty(childKey)) {
+                                console.log(`[OpenMenu][ConfigurationCheck][MissingKey] ${parentKey}.${childKey} - Value found in defaults: ${(baseConfiguration[parentKey][childKey]).toString() ? baseConfiguration[parentKey][childKey].toString() : '[]'}`)
+                                app.preferences.value(`${parentKey}.${childKey}`, baseConfiguration[parentKey][childKey]);
+                            }
+                        })
+                    } else {
+                        console.log(`[OpenMenu][ConfigurationCheck][MissingKey] ${parentKey} - Value found in defaults: ${(baseConfiguration[parentKey]).toString() ? (baseConfiguration[parentKey]).toString() : '[]'}`)
+                        app.preferences.value(parentKey, baseConfiguration[parentKey]);
+                    }
+                })
+            }
+        })
+
+    } catch(err) {
+        console.log(`[OpenMenu][ConfigurationCheck] ${err}`)
+    }
 
     app.whenReady().then(() => {
         globalShortcut.register(app.preferences.value('advanced.settingsMenuKeybind'), () => {

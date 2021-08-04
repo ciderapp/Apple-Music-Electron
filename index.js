@@ -23,9 +23,6 @@ function CreateWindow() {
     const {LoadWebsite} = require('./resources/functions/load/LoadWebsite')
     LoadWebsite() // Load the Website
 
-    const {InjectFiles} = require('./resources/functions/InjectFiles')
-    InjectFiles() // Load the Website Javascript
-
     const {SettingsHandler} = require('./resources/functions/handler/SettingsHandler')
     SettingsHandler() // Handles updates to settings
 

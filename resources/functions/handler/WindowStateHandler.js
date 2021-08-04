@@ -1,6 +1,8 @@
 const {app, ipcMain, shell} = require('electron')
 const {SetContextMenu} = require('../win/SetContextMenu')
 const {SetThumbarButtons} = require('../win/SetThumbarButtons')
+const {LoadFiles} = require("../InjectFiles");
+const {dialog} = require('electron')
 
 exports.WindowStateHandler = function () {
     console.log('[WindowStateHandler] Started.')
@@ -14,13 +16,28 @@ exports.WindowStateHandler = function () {
         return {action: 'deny'}
     })
 
-    app.win.on('unresponsive', function () {
-        console.log("[WindowStateHandler] Application has become unresponsive and has been closed.")
-        app.exit();
+    app.win.webContents.on('unresponsive', async () => {
+        const { response } = await dialog.showMessageBox({
+            message: 'Apple Music has become unresponsive',
+            title: 'Do you want to try forcefully reloading the app?',
+            buttons: ['Yes', 'Quit', 'No'],
+            cancelId: 1
+        })
+        if (response === 0) {
+            app.win.contents.forcefullyCrashRenderer()
+            app.win.contents.reload()
+        } else  if (response === 1) {
+            console.log("[WindowStateHandler] Application has become unresponsive and has been closed.")
+            app.exit();
+        }
+    })
+
+    app.win.webContents.on('did-stop-loading', async () => {
+        LoadFiles()
     });
 
-
-    app.win.on('page-title-updated', function (event) { // Prevents the Window Title from being Updated
+    app.win.webContents.on('page-title-updated', function (event) { // Prevents the Window Title from being Updated
+        LoadFiles()
         event.preventDefault()
     });
 
@@ -65,10 +82,12 @@ exports.WindowStateHandler = function () {
     app.win.on('show', function () {
         SetContextMenu(true)
         SetThumbarButtons(app.isPlaying)
+        // if (app.win.StoredWebsite) app.win.loadURL(app.win.StoredWebsite)
     })
 
     app.win.on('hide', function () {
         SetContextMenu(false)
+        app.win.StoredWebsite = app.win.webContents.getURL();
     })
 
 
