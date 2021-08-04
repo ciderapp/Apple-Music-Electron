@@ -6,9 +6,10 @@ const {dialog} = require('electron')
 
 exports.WindowStateHandler = function () {
     console.log('[WindowStateHandler] Started.')
+    app.previousPage = app.win.webContents.getURL()
 
     app.win.webContents.setWindowOpenHandler(({url}) => {
-        if (url.startsWith('https://apple.com/') || url.startsWith('https://www.apple.com/') || url.startsWith('https://support.apple.com/') || url.startsWith('https://beta.music.apple.com') || url.startsWith('https://music.apple.com')) { // for security (pretty pointless ik)
+        if (url.startsWith('https://discord.gg/') || url.startsWith('https://apple.com/') || url.startsWith('https://www.apple.com/') || url.startsWith('https://support.apple.com/') || url.startsWith('https://beta.music.apple.com') || url.startsWith('https://music.apple.com')) { // for security (pretty pointless ik)
             shell.openExternal(url).then(() => console.log(`[WindowStateHandler] User has opened ${url} which has been redirected to browser.`));
             return {action: 'deny'}
         }
@@ -34,6 +35,10 @@ exports.WindowStateHandler = function () {
 
     app.win.webContents.on('did-stop-loading', async () => {
         LoadFiles()
+    });
+
+    app.win.webContents.on('did-start-loading', async () => {
+        app.previousPage = app.win.webContents.getURL()
     });
 
     app.win.webContents.on('page-title-updated', function (event) { // Prevents the Window Title from being Updated

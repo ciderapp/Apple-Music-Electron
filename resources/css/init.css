@@ -13,3 +13,53 @@
         --sidebarStandard: rgba(235, 235, 245, 0.03);
     }
 }
+
+/* Back Button CSS */
+
+#backButtonBar {
+    position: sticky;
+    width: 100%;
+    top: 0;
+    height: 40px;
+    transition: 0.2s;
+    background-color: transparent;
+    padding: 5px 10px 5px 10px;
+    z-index: 9902;
+    opacity: 0.95;
+}
+
+#backButtonBar .button-area {
+    position: inherit;
+    width: 50px;
+    height: 100%;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0);
+    /*padding: 10px 10px;*/
+    border-radius: 5px;
+    opacity: 1.0;
+}
+
+#backButtonBar .button-area:active {
+    background-color: rgba(var(--opaqueShelfBG-rgb), 0.7) !important;
+    backdrop-filter: saturate(0%) blur(25px) !important;
+
+}
+
+#backButtonBar .button-area img:active {
+    opacity: 1 !important;
+}
+
+#backButtonBar .button-area img {
+    display: block;
+    margin: auto;
+    width: auto;
+    height: 100%;
+    opacity: 1;
+    z-index: 10000;
+}
+
+@media (prefers-color-scheme: dark) {
+    #backButtonBar .button-area img {
+        filter: brightness(0) invert(1);
+    }
+}

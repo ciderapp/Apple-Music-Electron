@@ -1,6 +1,7 @@
 const {app} = require('electron')
 const {LoadJS} = require('./load/LoadJS')
 const {LoadCSS} = require('./load/LoadCSS')
+const {GetLocale} = require('./GetLocale')
 
 exports.LoadFiles = async function () {
     LoadCSS('init.css')
@@ -54,11 +55,34 @@ exports.LoadFiles = async function () {
         LoadCSS(`${app.preferences.value('visual.theme')}.css`, true)
     }
 
+    const locale = GetLocale()
+    const urlBase = (app.preferences.value('advanced.useBetaSite')) ? `https://beta.music.apple.com` : `https://music.apple.com`;
+    const backButtonBlacklist = [
+        `${urlBase}/${locale[0]}/listen-now?l=${locale[0]}`,
+        `${urlBase}/${locale[0]}/browse?l=${locale[0]}`,
+        `${urlBase}/${locale[0]}/radio?l=${locale[0]}`,
+        `${urlBase}/${locale[0]}/search?l=${locale[0]}`,
+        `${urlBase}/library/recently-added?l=${locale[0]}`,
+        `${urlBase}/library/artists?l=${locale[0]}`,
+        `${urlBase}/library/albums?l=${locale[0]}`,
+        `${urlBase}/library/songs?l=${locale[0]}`,
+        `${urlBase}/library/made-for-you?l=${locale[0]}`,
+        `${urlBase}/${locale[0]}/listen-now`,
+        `${urlBase}/${locale[0]}/browse`,
+        `${urlBase}/${locale[0]}/radio`,
+        `${urlBase}/${locale[0]}/search`,
+        `${urlBase}/library/recently-added`,
+        `${urlBase}/library/artists`,
+        `${urlBase}/library/albums`,
+        `${urlBase}/library/songs`,
+        `${urlBase}/library/made-for-you`,
+    ]
+
     /* Load Back Button */
-    if (app.win.webContents.canGoBack() && app.preferences.value('advanced.backButton').includes(true)) {
+    if (app.win.webContents.canGoBack() && app.preferences.value('advanced.backButton').includes(true) && !backButtonBlacklist.includes(app.win.webContents.getURL()) && !app.win.webContents.getURL().includes('library/artists')) {
         LoadJS('backButton.js')
     } else { /* Remove it if user cannot go back */
-        app.win.webContents.executeJavaScript(`if (document.querySelector('#backButton')) { document.getElementById('backButton').remove() };`);
+        app.win.webContents.executeJavaScript(`if (document.querySelector('#backButtonBar')) { document.getElementById('backButtonBar').remove() };`);
     }
 
     /* Remove the Scrollbar */
