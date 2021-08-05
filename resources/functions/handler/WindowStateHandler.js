@@ -9,11 +9,7 @@ exports.WindowStateHandler = function () {
     app.previousPage = app.win.webContents.getURL()
 
     app.win.webContents.setWindowOpenHandler(({url}) => {
-        if (url.startsWith('https://discord.gg/') || url.startsWith('https://apple.com/') || url.startsWith('https://www.apple.com/') || url.startsWith('https://support.apple.com/') || url.startsWith('https://beta.music.apple.com') || url.startsWith('https://music.apple.com')) { // for security (pretty pointless ik)
-            shell.openExternal(url).then(() => console.log(`[WindowStateHandler] User has opened ${url} which has been redirected to browser.`));
-            return {action: 'deny'}
-        }
-        console.log(`[WindowStateHandler] User has attempted to open ${url} which was blocked.`)
+        shell.openExternal(url).then(() => console.log(`[WindowStateHandler] User has opened ${url} which has been redirected to browser.`));
         return {action: 'deny'}
     })
 
