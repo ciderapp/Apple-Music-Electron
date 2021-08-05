@@ -1,5 +1,6 @@
 require('v8-compile-cache');
 const {app, globalShortcut, shell} = require('electron');
+const { session } = require('electron')
 
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {
@@ -38,6 +39,14 @@ function CreateWindow() {
 
 // When its Ready call it all
 app.on('ready', () => {
+
+
+    // Apple Header tomfoolery.
+    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+        details.responseHeaders['Content-Security-Policy'] = 'unsafe-inline'
+        callback({ responseHeaders: details.responseHeaders })
+    })
+
     const {InitializeLogging} = require('./resources/functions/init/Init-Logging')
     InitializeLogging()
 
