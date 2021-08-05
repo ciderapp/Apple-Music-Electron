@@ -27,7 +27,8 @@ exports.SettingsMenuInit = function () {
                 "lastfmAuthKey": "Put your Auth Key here.",
                 "lastfmRemoveFeaturingArtists": [
                     true
-                ]
+                ],
+                "startupPage": "browse"
             },
             "visual": {
                 "theme": "default",
@@ -40,6 +41,9 @@ exports.SettingsMenuInit = function () {
                     true
                 ],
                 "removeAppleLogo": [
+                    true
+                ],
+                "backButton": [
                     true
                 ]
             },
@@ -66,7 +70,6 @@ exports.SettingsMenuInit = function () {
                 "allowMultipleInstances": [],
                 "forceDisableWindowFrame": [],
                 "forceApplicationMode": "",
-                "backButton": [],
                 "listenNow": [],
                 "discordClearActivityOnPause": [
                     true
@@ -308,7 +311,22 @@ exports.SettingsMenuInit = function () {
                             'label': 'LastFM Authentication Key',
                             'key': 'lastfmAuthKey',
                             'type': 'text'
-                        }
+                        },
+                        { // startupPage
+                            'label': 'Load Page on Startup',
+                            'key': 'startupPage',
+                            'type': 'dropdown',
+                            'options': [
+                                {'label': 'Browse', 'value': 'browse'},
+                                {'label': 'Listen Now', 'value': 'listen-now'},
+                                {'label': 'Radio', 'value': 'radio'},
+                                {'label': 'Recently Added', 'value': 'library/recently-added'},
+                                {'label': 'Albums', 'value': 'library/albums'},
+                                {'label': 'Songs', 'value': 'library/songs'},
+                                {'label': 'Made for You', 'value': 'library/made-for-you'}
+                            ],
+                            'help': 'Select what page you wish to be placed on when you start the application.'
+                        },
                     ]
                 }]
             }
@@ -384,6 +402,15 @@ exports.SettingsMenuInit = function () {
                                 'type': 'checkbox',
                                 'options': [{
                                     'label': 'Removes the Apple Music Logo and moves search bar up.',
+                                    'value': true
+                                }]
+                            },
+                            { // Back Buton
+                                'label': 'Back Button',
+                                'key': 'backButton',
+                                'type': 'checkbox',
+                                'options': [{
+                                    'label': 'Display a back button when going back is possible.',
                                     'value': true
                                 }]
                             }
@@ -677,20 +704,6 @@ exports.SettingsMenuInit = function () {
                                     {'label': 'preventMediaKeyHijacking', 'value': true}
                                 ]
                             },
-                            { // Back Buton
-                                'key': 'backButton',
-                                'type': 'checkbox',
-                                'options': [
-                                    {'label': 'backButton', 'value': true}
-                                ]
-                            },
-                            { // Load listen-now on Startup
-                                'key': 'listenNow',
-                                'type': 'checkbox',
-                                'options': [
-                                    {'label': 'listenNow', 'value': true}
-                                ]
-                            },
                             { // Turning on discordClearActivityOnPause
                                 'key': 'discordClearActivityOnPause',
                                 'type': 'checkbox',
@@ -745,7 +758,7 @@ exports.SettingsMenuInit = function () {
             }
         })
 
-    } catch(err) {
+    } catch (err) {
         console.log(`[OpenMenu][ConfigurationCheck] ${err}`)
     }
 
@@ -753,6 +766,6 @@ exports.SettingsMenuInit = function () {
         globalShortcut.register(app.preferences.value('advanced.settingsMenuKeybind'), () => {
             app.preferences.show();
         })
-        
+
     })
 }

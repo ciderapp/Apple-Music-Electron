@@ -1,7 +1,7 @@
 const {app, ipcMain, shell} = require('electron')
 const {SetContextMenu} = require('../win/SetContextMenu')
 const {SetThumbarButtons} = require('../win/SetThumbarButtons')
-const {LoadFiles} = require("../InjectFiles");
+const {LoadFiles, LoadOneTimeFiles} = require("../InjectFiles");
 const {dialog} = require('electron')
 
 exports.WindowStateHandler = function () {
@@ -18,7 +18,7 @@ exports.WindowStateHandler = function () {
     })
 
     app.win.webContents.on('unresponsive', async () => {
-        const { response } = await dialog.showMessageBox({
+        const {response} = await dialog.showMessageBox({
             message: 'Apple Music has become unresponsive',
             title: 'Do you want to try forcefully reloading the app?',
             buttons: ['Yes', 'Quit', 'No'],
@@ -27,14 +27,14 @@ exports.WindowStateHandler = function () {
         if (response === 0) {
             app.win.contents.forcefullyCrashRenderer()
             app.win.contents.reload()
-        } else  if (response === 1) {
+        } else if (response === 1) {
             console.log("[WindowStateHandler] Application has become unresponsive and has been closed.")
             app.exit();
         }
     })
 
-    app.win.webContents.on('did-stop-loading', async () => {
-        LoadFiles()
+    app.win.webContents.on('did-finish-load', async () => {
+        LoadOneTimeFiles()
     });
 
     app.win.webContents.on('did-start-loading', async () => {

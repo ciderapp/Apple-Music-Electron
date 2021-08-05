@@ -13,14 +13,13 @@ try {
     }
 
 
-    document.getElementById('web-main').addEventListener('scroll', function() {
+    document.getElementById('web-main').addEventListener('scroll', function () {
         if (document.getElementById('web-main').scrollTop > 60) {
             document.getElementById('backButtonBar').style.backgroundColor = 'var(--playerBackground)';
         } else {
             document.getElementById('backButtonBar').style.backgroundColor = 'transparent';
         }
     });
-
 
 
 } catch (e) {

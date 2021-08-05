@@ -1,4 +1,8 @@
 try {
+    while (document.getElementsByClassName('locale-switcher-banner').length > 0) {
+        document.getElementsByClassName('locale-switcher-banner')[0].remove()
+    }
+
     function GetXPath(path) {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     }
@@ -68,5 +72,5 @@ try {
 
 
 } catch (e) {
-    console.error("[JS] Error while trying to apply settingsInit.js", e);
+    console.error("[JS] Error while trying to apply custom.js", e);
 }

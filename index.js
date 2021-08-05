@@ -1,6 +1,5 @@
 require('v8-compile-cache');
-const {app, globalShortcut, shell} = require('electron');
-const { session } = require('electron')
+const {app, globalShortcut, session} = require('electron');
 
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {
@@ -39,8 +38,6 @@ function CreateWindow() {
 
 // When its Ready call it all
 app.on('ready', () => {
-
-
     // Apple Header tomfoolery.
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
         details.responseHeaders['Content-Security-Policy'] = 'unsafe-inline'
@@ -63,21 +60,6 @@ app.on('ready', () => {
     console.log("[Apple-Music-Electron] Application is Ready.")
     console.log("[Apple-Music-Electron] Creating Window...")
     setTimeout(CreateWindow, process.platform === "linux" ? 1000 : 0);
-    
-    
-    
-    globalShortcut.register(`CommandOrControl+Alt+H`, () => {
-            shell.openExternal("https://github.com/cryptofyre/Apple-Music-Electron/wiki") //Help
-        })
-    globalShortcut.register(`CommandOrControl+Alt+C`, () => {
-            shell.openPath(app.getPath('userData'))
-    })
-    globalShortcut.register(`CommandOrControl+Alt+D`, () => {
-        shell.openExternal("https://discord.gg/gFr7wnsRs7")
-    })
-    globalShortcut.register(`CommandOrControl+Alt+B`, () => {
-            shell.beep() //Just for funzies
-    })
 });
 
 app.on('window-all-closed', () => {

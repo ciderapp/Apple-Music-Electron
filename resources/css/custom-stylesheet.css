@@ -1,6 +1,10 @@
-.page-container {
+/* Stop Apple from Overriding background colour */
+
+html body {
     background-color: var(--pageBG) !important;
 }
+
+/* Set the default values for sidebar standard */
 
 @media (prefers-color-scheme: dark) {
     :root {
@@ -23,7 +27,7 @@
     height: 40px;
     transition: 0.2s;
     background-color: transparent;
-    padding: 5px 10px 5px 10px;
+    padding: 5px 10px;
     z-index: 9902;
     opacity: 0.95;
 }
@@ -34,15 +38,15 @@
     height: 100%;
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0);
-    /*padding: 10px 10px;*/
-    border-radius: 5px;
+    border-radius: 7px;
     opacity: 1.0;
+    transition: 0.2s;
 }
 
 #backButtonBar .button-area:active {
-    background-color: rgba(var(--opaqueShelfBG-rgb), 0.7) !important;
+    background-color: var(--segmentedControlSelectedBG) !important;
     backdrop-filter: saturate(0%) blur(25px) !important;
-
+    box-shadow: 0 0 .5px var(--segmentedControlSelectedBorder), 0 3px 8px var(--segmentedControlSelectedShadow1), 0 3px 1px var(--segmentedControlSelectedShadow2);
 }
 
 #backButtonBar .button-area img:active {
@@ -54,8 +58,13 @@
     margin: auto;
     width: auto;
     height: 100%;
-    opacity: 1;
+    opacity: 0.50;
     z-index: 10000;
+    transition: 0.2s;
+}
+
+#backButtonBar .button-area img:hover {
+    opacity: 1;
 }
 
 @media (prefers-color-scheme: dark) {
