@@ -34,7 +34,7 @@
 </p>
 
 # Install Sources
-Here are all the places that you can install Apple-Music-Electron from (excluding repo releases which can be found [here](https://github.com/cryptofyre/Apple-Music-Electron/releases/latest)):
+Here are all the places that you can install Apple-Music-Electron from:
 
 Package Name | Source | Version | Maintainer
 ---|---|---|---
