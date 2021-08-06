@@ -37,8 +37,14 @@ module.exports = {
     },
 
     updateActivity: function (attributes) {
-        if (!app.preferences.value('general.discordRPC').includes(true) || !app.discord.connected) return;
+        if (!app.preferences.value('general.discordRPC').includes(true)) return;
+
+        if (!app.discord.connected) {
+            this.connect()
+        }
+
         console.log('[DiscordRPC][updateActivity] Updating Discord Activity.')
+        if (!app.discord.connected) return;
         if (attributes.status === true) {
             if (app.preferences.value('advanced.discordClearActivityOnPause').includes(true)) {
                 app.discord.client.setActivity({
