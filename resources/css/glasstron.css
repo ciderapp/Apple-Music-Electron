@@ -2,6 +2,10 @@
     --sidebar: var(--sidebarGlasstron) !important;
 }
 
+.page-container {
+    background-color: var(--pageBG) !important;
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         --sidebarGlasstron: #00000018;
