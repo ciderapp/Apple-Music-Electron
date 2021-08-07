@@ -1,6 +1,6 @@
 const {app, BrowserWindow} = require('electron')
 const {join} = require('path')
-const glasstron = require('glasstron');
+const acrylicwindow = require('electron-acrylic-window');
 
 exports.CreateBrowserWindow = function () {
     console.log('[CreateBrowserWindow] Initializing Browser Window Creation.')
@@ -42,13 +42,16 @@ exports.CreateBrowserWindow = function () {
         win.setBackgroundColor = '#1f1f1f00'
         app.isUsingGlasstron = false
     } else {
-        console.log('[CreateBrowserWindow] Creating Window with Glasstron')
+        console.log('[CreateBrowserWindow] Creating Window with electron-acrylic-window')
         if (process.platform === "linux") app.commandLine.appendSwitch("enable-transparent-visuals"); // Linux Append Commandline
-        win = new glasstron.BrowserWindow(options)
-        if (process.platform === "win32") win.blurType = "blurbehind"; // blurType only works on Windows
-        if (process.platform === "darwin") win.setVibrancy('under-window'); // setVibrancy only works on macOS
-
-        win.setBlur(true);
+        win = new acrylicwindow.BrowserWindow(options)
+        win.setVibrancy({
+            theme: app.preferences.value('visual.blurColor'),
+            effect: app.preferences.value('visual.blurType'),
+            useCustomWindowRefreshMethod: app.preferences.value('visual.customRefreshRate'),
+            maximumRefreshRate: app.preferences.value('visual.refreshrate'),
+            disableOnBlur: app.preferences.value('visual.disableBlur')
+        })
         app.isUsingGlasstron = true
     }
 

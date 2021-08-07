@@ -378,6 +378,32 @@ exports.SettingsMenuInit = function () {
                                 }],
                                 'help': 'This enables the transparency affect for the Apple Music UI. This can affect performance if you are using older hardware. Themes can vary in transparency.'
                             },
+                            { // Change transparency blur type
+                                'label': 'Transparency Blur Type',
+                                'key': 'blurType',
+                                'type': 'dropdown',
+                                'options': [
+                                    {'label': 'Acrylic (W10 1809+)', 'value': 'acrylic'},
+                                    {'label': 'Blur Behind', 'value': 'blur'}
+                                ],
+                                'help': 'Changes the transparency blur type to improve performance and compatibility with older hardware and systems.'
+                            },
+                            {
+                                'label': 'Transparency Blur Color',
+                                'key': 'blurColor',
+                                'type': 'text',
+                                'help': 'Changes the hue used on the transparent background. HEX Only. (Example: #00000033)'
+                            },
+                            { // Transparency on Application Focus
+                                'label': 'Disable Transparency on Unfocus',
+                                'key': 'disableBlur',
+                                'type': 'checkbox',
+                                'options': [{
+                                    'label': `Enable transparency on focus`,
+                                    'value': true
+                                }],
+                                'help': 'Enables transparency only when the application is focused.'
+                            },
                             { // Streaming Mode
                                 'label': 'Streaming Mode',
                                 'key': 'streamerMode',
@@ -386,6 +412,22 @@ exports.SettingsMenuInit = function () {
                                     'label': 'Removes certain UI elements and has unique scaling properties.',
                                     'value': true
                                 }]
+                            },
+                            { // Use custom refresh rate.
+                                'label': 'Use custom application refresh rate',
+                                'key': 'customRefreshRate',
+                                'type': 'checkbox',
+                                'options': [{
+                                    'label': 'Use custom refresh rate',
+                                    'value': true
+                                }]
+                            },
+                            {
+                                'label': 'Refresh Rate',
+                                'key': 'refreshrate',
+                                'type': 'slider',
+                                'min': 60,
+                                'max': 240
                             },
                             { // Remove Upsell
                                 'label': 'Remove Upsell',
