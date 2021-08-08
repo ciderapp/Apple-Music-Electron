@@ -350,7 +350,8 @@ exports.SettingsMenuInit = function () {
                                 {'label': 'Jungle', 'value': 'jungle'},
                                 {'label': 'Spotify', 'value': 'spotify'},
                                 {'label': 'OLED', 'value': 'oled'},
-                                {'label': 'Nord', 'value': 'nord'}
+                                {'label': 'Nord', 'value': 'nord'},
+                                {'label': 'Acrylic', 'value': 'acrylic'}
                             ]
                         },
                             {
