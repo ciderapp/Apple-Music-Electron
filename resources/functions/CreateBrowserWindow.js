@@ -1,9 +1,17 @@
 const {app, BrowserWindow} = require('electron')
 const {join} = require('path')
-const acrylicwindow = require('electron-acrylic-window');
+const os = require('os')
 
 exports.CreateBrowserWindow = function () {
     console.log('[CreateBrowserWindow] Initializing Browser Window Creation.')
+
+    function isVibrancySupported() {
+        // Windows 10 or greater
+        return (
+            process.platform === 'win32' &&
+            parseInt(os.release().split('.')[0]) >= 10
+        )
+    }
 
     let minWide, minHigh, Frame;
     if (app.preferences.value('visual.emulateMacOS').includes('left') || app.preferences.value('visual.emulateMacOS').includes('right') || app.preferences.value('advanced.forceDisableWindowFrame').includes(true)) {
@@ -35,6 +43,10 @@ exports.CreateBrowserWindow = function () {
         }
     };
 
+    if (app.preferences.value('visual.transparencyMode').includes(true) && !isVibrancySupported()) {
+        app.preferences.value('visual.transparencyMode', [])
+    }
+
     let win;
     if (!app.preferences.value('visual.transparencyMode').includes(true)) {
         console.log('[CreateBrowserWindow] Creating Window without Glasstron')
@@ -43,13 +55,13 @@ exports.CreateBrowserWindow = function () {
         app.isUsingGlasstron = false
     } else {
         console.log('[CreateBrowserWindow] Creating Window with electron-acrylic-window')
-        if (process.platform === "linux") app.commandLine.appendSwitch("enable-transparent-visuals"); // Linux Append Commandline
-        win = new acrylicwindow.BrowserWindow(options)
+        const acrylicWindow = require('electron-acrylic-window');
+        win = new acrylicWindow.BrowserWindow(options)
         win.setVibrancy({
             theme: app.preferences.value('visual.blurColor'),
             effect: app.preferences.value('visual.blurType'),
             useCustomWindowRefreshMethod: app.preferences.value('visual.customRefreshRate'),
-            maximumRefreshRate: app.preferences.value('visual.refreshrate'),
+            maximumRefreshRate: app.preferences.value('visual.refreshRate'),
             disableOnBlur: app.preferences.value('visual.disableBlur')
         })
         app.isUsingGlasstron = true
@@ -60,8 +72,11 @@ exports.CreateBrowserWindow = function () {
     } else {
         win.setAlwaysOnTop(true)
     } // Enables always on top
+
+
     if (!app.preferences.value('advanced.menuBarVisible').includes(true)) win.setMenuBarVisibility(false); // Hide that nasty menu bar
-    if (!app.preferences.value('advanced.enableDevTools').includes(true)) win.setMenu(null); // Disables DevTools
+    if (app.preferences.value('advanced.devTools') !== 'built-in') win.setMenu(null); // Disables DevTools
+    if (app.preferences.value('advanced.devTools') === 'detached') win.webContents.openDevTools({ mode: 'detach' }); // Enables Detached DevTools
 
     return win
 }

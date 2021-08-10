@@ -33,11 +33,12 @@ exports.SettingsMenuInit = function () {
             "visual": {
                 "theme": "default",
                 "emulateMacOS": "false",
-                "transparencyMode": [
-                    true
-                ],
+                "transparencyMode": [],
                 "streamerMode": [],
                 "removeUpsell": [
+                    true
+                ],
+                "removeFooter": [
                     true
                 ],
                 "removeAppleLogo": [
@@ -54,7 +55,7 @@ exports.SettingsMenuInit = function () {
                 ]
             },
             "advanced": {
-                "enableDevTools": [],
+                "devTools": "",
                 "themeDevelopment": [],
                 "alwaysOnTop": [],
                 "removeScrollbars": [
@@ -396,7 +397,7 @@ exports.SettingsMenuInit = function () {
                                 'help': 'Changes the hue used on the transparent background. HEX Only. (Example: #00000033)'
                             },
                             { // Transparency on Application Focus
-                                'label': 'Disable Transparency on Unfocus',
+                                'label': 'Disable Transparency when Unfocused',
                                 'key': 'disableBlur',
                                 'type': 'checkbox',
                                 'options': [{
@@ -425,7 +426,7 @@ exports.SettingsMenuInit = function () {
                             },
                             {
                                 'label': 'Refresh Rate',
-                                'key': 'refreshrate',
+                                'key': 'refreshRate',
                                 'type': 'slider',
                                 'min': 60,
                                 'max': 240
@@ -448,7 +449,17 @@ exports.SettingsMenuInit = function () {
                                     'value': true
                                 }]
                             },
-                            { // Back Buton
+                            { // Remove Footer
+                                'label': 'Remove Footer',
+                                'key': 'removeFooter',
+                                'type': 'checkbox',
+                                'options': [{
+                                    'label': 'Removes the Apple Music footer.',
+                                    'value': true
+                                }]
+                            },
+
+                            { // Back Button
                                 'label': 'Back Button',
                                 'key': 'backButton',
                                 'type': 'checkbox',
@@ -498,10 +509,11 @@ exports.SettingsMenuInit = function () {
                 'form': {
                     'groups': [{
                         'label': 'Advanced Settings',
-                        'fields': [{
-                            'content': "<p>Do not mess with these options unless you know what you're doing.</p>",
-                            'type': 'message'
-                        },
+                        'fields': [
+                            {
+                                'content': "<p>Do not mess with these options unless you know what you're doing.</p>",
+                                'type': 'message'
+                            },
                             { // Turning on forceApplicationRegion
                                 'label': 'forceApplicationRegion',
                                 'key': 'forceApplicationRegion',
@@ -671,8 +683,8 @@ exports.SettingsMenuInit = function () {
                                 'key': 'forceApplicationMode',
                                 'type': 'dropdown',
                                 'options': [
-                                    {'label': 'forceDarkMode', 'value': 'dark'},
-                                    {'label': 'forceLightMode', 'value': 'light'}
+                                    {'label': 'Dark Mode', 'value': 'dark'},
+                                    {'label': 'Light Mode', 'value': 'light'}
                                 ],
                                 'help': 'If you want the application to be in a mode that your system is not using by default.'
                             },
@@ -683,54 +695,11 @@ exports.SettingsMenuInit = function () {
                                     {'label': 'alwaysOnTop', 'value': true}
                                 ]
                             },
-                            { // Turning on allowMultipleInstances
-                                'key': 'allowMultipleInstances',
-                                'type': 'checkbox',
-                                'options': [
-                                    {'label': 'allowMultipleInstances', 'value': true}
-                                ]
-                            },
                             { // Turning on autoUpdaterBetaBuilds
                                 'key': 'autoUpdaterBetaBuilds',
                                 'type': 'checkbox',
                                 'options': [
                                     {'label': 'autoUpdaterBetaBuilds', 'value': true}
-                                ]
-                            },
-                            { // Turning on enableDevTools
-                                'key': 'enableDevTools',
-                                'type': 'checkbox',
-                                'options': [
-                                    {'label': 'enableDevTools', 'value': true}
-                                ]
-                            },
-                            { // Theme Development (Prevents copying and replacing existing themes)
-                                'key': 'themeDevelopment',
-                                'type': 'checkbox',
-                                'options': [
-                                    {'label': 'themeDevelopment', 'value': true}
-                                ],
-                                'help': 'This prevents copying and replacing existing themes when launched.'
-                            },
-                            { // Turning on forceDisableWindowFrame
-                                'key': 'forceDisableWindowFrame',
-                                'type': 'checkbox',
-                                'options': [
-                                    {'label': 'forceDisableWindowFrame', 'value': true}
-                                ]
-                            },
-                            { // Turning on menuBarVisible
-                                'key': 'menuBarVisible',
-                                'type': 'checkbox',
-                                'options': [
-                                    {'label': 'menuBarVisible', 'value': true}
-                                ]
-                            },
-                            { // Turning on removeScrollbars
-                                'key': 'removeScrollbars',
-                                'type': 'checkbox',
-                                'options': [
-                                    {'label': 'removeScrollbars', 'value': true}
                                 ]
                             },
                             { // Turning on useBeta
@@ -758,6 +727,62 @@ exports.SettingsMenuInit = function () {
                                 'label': 'settingsMenuKeybind',
                                 'key': 'settingsMenuKeybind',
                                 'type': 'accelerator',
+                            },
+                            { // Visual Advanced
+                                'heading': 'Visual Advanced',
+                                'content': `These are advanced features that may ruin the look of the application if you change them.`,
+                                'type': 'message'
+                            },
+                            { // Turning on forceDisableWindowFrame
+                                'key': 'forceDisableWindowFrame',
+                                'type': 'checkbox',
+                                'options': [
+                                    {'label': 'forceDisableWindowFrame', 'value': true}
+                                ],
+                                'help': 'This is for linux users who use a tiling window manager.'
+                            },
+                            { // Turning on menuBarVisible
+                                'key': 'menuBarVisible',
+                                'type': 'checkbox',
+                                'options': [
+                                    {'label': 'menuBarVisible', 'value': true}
+                                ]
+                            },
+                            { // Turning on removeScrollbars
+                                'key': 'removeScrollbars',
+                                'type': 'checkbox',
+                                'options': [
+                                    {'label': 'removeScrollbars', 'value': true}
+                                ]
+                            },
+                            { // Development Tools
+                                'heading': 'Development Tools',
+                                'content': `The following options are made for development of the application and/or themes.`,
+                                'type': 'message'
+                            },
+                            { // Turning on devTools
+                                'key': 'devTools',
+                                'type': 'dropdown',
+                                'options': [
+                                    {'label': 'Detached', 'value': 'detached'},
+                                    {'label': 'Built-in', 'value': 'built-in'}
+                                ],
+                                'help': 'This allows users to access the chrome developer tools. Find more information at https://developer.chrome.com/docs/devtools/'
+                            },
+                            { // Theme Development (Prevents copying and replacing existing themes)
+                                'key': 'themeDevelopment',
+                                'type': 'checkbox',
+                                'options': [
+                                    {'label': 'themeDevelopment', 'value': true}
+                                ],
+                                'help': 'This prevents copying and replacing existing themes when launched.'
+                            },
+                            { // Turning on allowMultipleInstances
+                                'key': 'allowMultipleInstances',
+                                'type': 'checkbox',
+                                'options': [
+                                    {'label': 'allowMultipleInstances', 'value': true}
+                                ]
                             },
                         ],
                     }]

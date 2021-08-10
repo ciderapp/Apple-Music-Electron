@@ -15,6 +15,11 @@ module.exports = {
             LoadJS('removeAppleLogo.js')
         }
 
+        /* Remove Footer */
+        if (app.preferences.value('visual.removeFooter').includes(true)) {
+            LoadJS('removeFooter.js')
+        }
+
         /* Remove Upsell */
         if (app.preferences.value('visual.removeUpsell').includes(true)) {
             LoadJS('removeUpsell.js')
