@@ -18,24 +18,35 @@ exports.InitializeTheme = function () {
         }
     }
 
+    // Set the folder
     app.ThemesFolderPath = resolve(app.getPath('userData'), 'themes');
 
-    fs.access(`${app.ThemesFolderPath}/Template.css`, fs.constants.W_OK, err => {
-        if (err) { // File is not accessible
-            fs.chmodSync(app.ThemesFolderPath, '777');
+    // Copy the Files
+    copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath)
 
-            chmodr(app.ThemesFolderPath, 0o777, (_e) => {
+    // Make sure you can access the folder with the correct permissions
+    console.log(`[InitializeTheme][access] Attempting to access '${app.ThemesFolderPath}/Template.css'`)
+    fs.access(`${app.ThemesFolderPath}/Template.css`, fs.constants.W_OK, err => {
+
+        if (err) { // File is not accessible
+            console.log(`[InitializeTheme][access] ${err}`)
+
+            chmodr(app.ThemesFolderPath, 0o777, (_e) => { // Change permissions of the folder recursively
                 if (_e) {
                     console.error(`[InitializeTheme][chmodr] ${_e}`)
                 } else {
                     console.log('[InitializeTheme][chmodr] Theme folder permissions set.');
                 }
             });
+
         } else {
+            console.log(`[InitializeTheme][access] Successfully able to access '${app.ThemesFolderPath}'`)
+
             try {
-                if (app.preferences.value('advanced.themeDevelopment').includes(true)) return;
-                copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
-                console.log(`[InitializeTheme] [copyThemes] Themes copied to '${app.ThemesFolderPath}'`)
+                if (!app.preferences.value('advanced.themeDevelopment').includes(true)) {
+                    copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
+                    console.log(`[InitializeTheme] [copyThemes] Themes copied to '${app.ThemesFolderPath}'`)
+                }
             } catch (_err) {
                 console.log(_err)
             }
