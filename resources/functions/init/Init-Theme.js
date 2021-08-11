@@ -18,7 +18,7 @@ exports.InitializeTheme = function () {
         }
     }
 
-    app.ThemesFolderPath = resolve(app.getPath('userData'), 'Themes');
+    app.ThemesFolderPath = resolve(app.getPath('userData'), 'themes');
 
     fs.access(`${app.ThemesFolderPath}/Template.css`, fs.constants.W_OK, err => {
         if (err) { // File is not accessible
