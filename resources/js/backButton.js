@@ -14,10 +14,12 @@ try {
 
 
     document.getElementById('web-main').addEventListener('scroll', function () {
-        if (document.getElementById('web-main').scrollTop > 60) {
+        if (document.getElementById('web-main').scrollTop > 80) {
             document.getElementById('backButtonBar').style.backgroundColor = 'var(--playerBackground)';
+            document.getElementById('backButtonBar').style.position = 'fixed';
         } else {
             document.getElementById('backButtonBar').style.backgroundColor = 'transparent';
+            document.getElementById('backButtonBar').style.position = 'absolute';
         }
     });
 

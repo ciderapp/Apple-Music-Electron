@@ -1,7 +1,7 @@
 /* Back Button CSS */
 
 #backButtonBar {
-    position: sticky;
+    position: absolute;
     width: 100%;
     top: 0;
     height: 40px;
@@ -10,6 +10,7 @@
     padding: 5px 10px;
     z-index: 9902;
     opacity: 0.95;
+    margin-top: 55px;
 }
 
 #backButtonBar .button-area {
@@ -37,7 +38,7 @@
     display: block;
     margin: auto;
     width: auto;
-    height: 100%;
+    height: auto;
     opacity: 0.50;
     z-index: 10000;
     transition: 0.2s;
