@@ -1,6 +1,19 @@
 require('v8-compile-cache');
 const {app, globalShortcut, session} = require('electron');
 
+// Run all the Before App is Ready Stuff
+
+const {InitializeLogging} = require('./resources/functions/init/Init-Logging')
+InitializeLogging()
+
+const {SettingsMenuInit} = require("./resources/functions/settings/OpenMenu");
+SettingsMenuInit()
+console.log('[Apple-Music-Electron] Current Configuration:')
+console.log(app.preferences._preferences)
+
+const {InitializeBase} = require('./resources/functions/init/Init-Base')
+InitializeBase()
+
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {
     console.log('[CreateWindow] Started.')
@@ -43,17 +56,6 @@ app.on('ready', () => {
         details.responseHeaders['Content-Security-Policy'] = 'unsafe-inline'
         callback({ responseHeaders: details.responseHeaders })
     })
-
-    const {InitializeLogging} = require('./resources/functions/init/Init-Logging')
-    InitializeLogging()
-
-    const {SettingsMenuInit} = require("./resources/functions/settings/OpenMenu");
-    SettingsMenuInit()
-    console.log('[Apple-Music-Electron] Current Configuration:')
-    console.log(app.preferences._preferences)
-
-    const {InitializeBase} = require('./resources/functions/init/Init-Base')
-    InitializeBase()
 
     const {ApplicationReady} = require('./resources/functions/init/App-Ready')
     ApplicationReady()

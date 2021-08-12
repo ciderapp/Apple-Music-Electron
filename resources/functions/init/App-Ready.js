@@ -1,7 +1,7 @@
 const {SetTaskList} = require('../win/SetTaskList')
 const {InitializeTheme} = require('./Init-Theme')
 const {InitializeTray} = require('./Init-Tray')
-const {app} = require('electron')
+const {app, Notification} = require('electron')
 const Sentry = require('@sentry/electron');
 if (app.preferences.value('general.analyticsEnabled').includes(true)) {
     Sentry.init({ dsn: "https://20e1c34b19d54dfcb8231e3ef7975240@o954055.ingest.sentry.io/5903033" });
@@ -13,6 +13,59 @@ exports.ApplicationReady = function () {
     SetTaskList()
     InitializeTheme()
     InitializeTray()
+
+    // Detects if the application has been opened with --force-quit
+    if (app.commandLine.hasSwitch('force-quit')) {
+        console.log("[Apple-Music-Electron] User has closed the application via --force-quit")
+        app.quit()
+    }
+
+    // Detect if the application has been opened with --minimized
+    if (app.commandLine.hasSwitch('minimized')) {
+        console.log("[Apple-Music-Electron] Application opened with --minimized");
+        app.win.minimize();
+    }
+
+    // Detect if the application has been opened with --hidden
+    if (app.commandLine.hasSwitch('hidden')) {
+        console.log("[Apple-Music-Electron] Application opened with --hidden");
+        app.win.hide();
+    }
+
+    // AuthMode Warning Notification
+    if (app.preferences.value('general.authMode').includes(true)) {
+        new Notification({
+            title: "Apple Music",
+            body: `Applications has been started using authMode. Disable authMode once you have successfully logged in.`
+        }).show()
+    }
+
+    // Startup
+    if (app.preferences.value('window.appStartupBehavior').includes('hidden')) {
+        app.setLoginItemSettings({
+            openAtLogin: true,
+            args: [
+                '--process-start-args', `"--hidden"`
+            ]
+        })
+    } else if (app.preferences.value('window.appStartupBehavior').includes('minimized')) {
+        app.setLoginItemSettings({
+            openAtLogin: true,
+            args: [
+                '--process-start-args', `"--minimized"`
+            ]
+        })
+    } else if (app.preferences.value('window.appStartupBehavior').includes('true')) {
+        app.setLoginItemSettings({
+            openAtLogin: true,
+            args: []
+        })
+    } else {
+        app.setLoginItemSettings({
+            openAtLogin: false,
+            args: []
+        })
+    }
 
     // Mpris
     app.mpris = {

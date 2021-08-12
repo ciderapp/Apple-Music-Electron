@@ -26,7 +26,6 @@ exports.SettingsMenuInit = function () {
                     true
                 ],
                 "startupPage": "browse",
-                "mprisEnabled": [],
                 "analyticsEnabled": [
                     true
                 ],
@@ -328,16 +327,6 @@ exports.SettingsMenuInit = function () {
                                 {'label': 'Made for You', 'value': 'library/made-for-you'}
                             ],
                             'help': 'Select what page you wish to be placed on when you start the application.'
-                        },
-                        { // Mpris
-                            'label': 'MPRIS (Media Player Remote Interfacing Specification)',
-                            'key': 'mprisEnabled',
-                            'type': 'checkbox',
-                            'options': [{
-                                'label': 'Enable MPRIS audio instance. ',
-                                'value': true
-                            }],
-                            'help': `MPRIS is a standard D-Bus interface which aims to provide a common programmatic API for controlling media players. Made to be used on linux. See more at https://wiki.archlinux.org/title/MPRIS`
                         },
                         { // Analytics
                             'label': 'Analytics',

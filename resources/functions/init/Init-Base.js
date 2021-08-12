@@ -1,4 +1,4 @@
-const {app, Notification} = require('electron')
+const {app} = require('electron')
 const {join} = require('path')
 const Sentry = require('@sentry/electron');
 if (app.preferences.value('general.analyticsEnabled').includes(true)) {
@@ -7,34 +7,13 @@ if (app.preferences.value('general.analyticsEnabled').includes(true)) {
 
 exports.InitializeBase = function () {
     console.log('[InitializeBase] Started.')
+
     // Set proper cache folder
     app.setPath("userData", join(app.getPath("cache"), app.name))
-
-    // Detects if the application has been opened with --force-quit
-    if (app.commandLine.hasSwitch('force-quit')) {
-        console.log("[Apple-Music-Electron] User has closed the application via --force-quit")
-        app.quit()
-    }
-
-    // Detect if the application has been opened with --minimized
-    if (app.commandLine.hasSwitch('minimized')) {
-        console.log("[Apple-Music-Electron] Application opened with --minimized");
-        app.win.minimize();
-    }
-
-    // Detect if the application has been opened with --hidden
-    if (app.commandLine.hasSwitch('hidden')) {
-        console.log("[Apple-Music-Electron] Application opened with --hidden");
-        app.win.hide();
-    }
 
     // Disable CORS
     if (app.preferences.value('general.authMode').includes(true)) {
         console.log("[Apple-Music-Electron] Application started wth disable CORS.")
-        new Notification({
-            title: "Apple Music",
-            body: `Applications has been started using authMode. Disable authMode once you have successfully logged in.`
-        }).show()
         app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
     }
 
@@ -47,31 +26,8 @@ exports.InitializeBase = function () {
     // Sets the ModelId (For windows notifications)
     if (process.platform === "win32") app.setAppUserModelId("Apple Music");
 
-    if (app.preferences.value('window.appStartupBehavior').includes('hidden')) {
-        app.setLoginItemSettings({
-            openAtLogin: true,
-            args: [
-                '--process-start-args', `"--hidden"`
-            ]
-        })
-    } else if (app.preferences.value('window.appStartupBehavior').includes('minimized')) {
-        app.setLoginItemSettings({
-            openAtLogin: true,
-            args: [
-                '--process-start-args', `"--minimized"`
-            ]
-        })
-    } else if (app.preferences.value('window.appStartupBehavior').includes('true')) {
-        app.setLoginItemSettings({
-            openAtLogin: true,
-            args: []
-        })
-    } else {
-        app.setLoginItemSettings({
-            openAtLogin: false,
-            args: []
-        })
-    }
+    // Disable the Media Session to allow MPRIS to be the primary service
+    if (process.platform === "linux") app.commandLine.appendSwitch('disable-features', 'MediaSessionService');
 
     // Assign Default Variables
     app.isQuiting = !app.preferences.value('window.closeButtonMinimize').includes(true);

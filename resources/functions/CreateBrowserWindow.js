@@ -29,6 +29,10 @@ exports.CreateBrowserWindow = function () {
         minHigh = app.preferences.value('visual.streamerMode').includes(true) ? 115 : 300;
     }
 
+    const InsecureContent = !app.preferences.value('general.authMode').includes(true)
+    const webSecurityEnabled = app.preferences.value('general.authMode').includes(true)
+    console.log(`[CreateBrowserWindow] Creating window with insecure content: ${InsecureContent} and web security: ${webSecurityEnabled}`)
+
     const options = {
         icon: join(__dirname, `../icons/icon.ico`),
         width: 1024,
@@ -41,9 +45,9 @@ exports.CreateBrowserWindow = function () {
         webPreferences: {
             plugins: true,
             preload: join(__dirname, '../js/MusicKitInterop.js'),
-            allowRunningInsecureContent: !app.preferences.value('general.authMode').includes(true),
+            allowRunningInsecureContent: InsecureContent,
             contextIsolation: false,
-            webSecurity: app.preferences.value('general.authMode').includes(true),
+            webSecurity: webSecurityEnabled,
             sandbox: true
         }
     };

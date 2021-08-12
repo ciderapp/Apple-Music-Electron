@@ -7,15 +7,15 @@ if (app.preferences.value('general.analyticsEnabled').includes(true)) {
 
 module.exports = {
     connect: function () {
-        if (process.platform !== "linux" || !app.preferences.value('general.mprisEnabled').includes(true)) {
+        if (process.platform !== "linux") {
             app.mpris.active = false;
             return;
         }
         console.log('[MPRIS][connect] Initializing Connection.')
 
         app.mpris.service = mprisService({
-            name: 'AppleMusicElectron',
-            identity: 'Apple Music Electron',
+            name: 'AppleMusic',
+            identity: 'Apple Music',
             supportedUriSchemes: [],
             supportedMimeTypes: [],
             supportedInterfaces: ['player']
