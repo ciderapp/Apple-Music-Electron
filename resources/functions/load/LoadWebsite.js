@@ -7,19 +7,19 @@ if (app.preferences.value('general.analyticsEnabled').includes(true)) {
 }
 
 exports.LoadWebsite = function () {
-    const locale = GetLocale()
-    app.locale = locale
-    const urlBase = (app.preferences.value('advanced.useBetaSite')) ? `https://beta.music.apple.com/${locale[0]}` : `https://music.apple.com/${locale[0]}`;
-    const urlFallback = `https://music.apple.com/${locale[0]}?l=${locale[1]}`;
-    const urlLanguage = `${urlBase}?l=${locale[1]}`;
+    const [region, language] = GetLocale()
+    app.locale = [region, language]
+    const urlBase = (app.preferences.value('advanced.useBetaSite').includes(true)) ? `https://beta.music.apple.com/${region}` : `https://music.apple.com/${region}`;
+    const urlFallback = `https://music.apple.com/${region}?l=${language}`;
+    const urlLanguage = `${urlBase}?l=${language}`;
     console.log(`[LoadWebsite] Attempting to load '${urlLanguage}'`)
 
     app.win.loadURL(urlLanguage).then(() => {
         if (app.preferences.value('general.startupPage') !== "browse") {
             LoadJS('CheckAuth.js')
-            ipcMain.on('authorized', (e, args) => {
+            ipcMain.once('authorized', (e, args) => {
                 app.win.webContents.clearHistory()
-                console.log(`[LoadWebsite] User is authenticated. Loading listen-now page (${args}).`)
+                console.log(`[LoadWebsite] User is authenticated. Loading '${app.preferences.value('general.startupPage')}'. (${args}).`)
             })
         } else {
             console.log(`[LoadWebsite] Loaded '${urlLanguage}'`)

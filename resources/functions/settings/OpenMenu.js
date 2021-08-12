@@ -64,9 +64,7 @@ exports.SettingsMenuInit = function () {
                 "removeScrollbars": [
                     true
                 ],
-                "useBetaSite": [
-                    true
-                ],
+                "useBetaSite": [],
                 "preventMediaKeyHijacking": [],
                 "autoUpdaterBetaBuilds": [],
                 "menuBarVisible": [],
@@ -590,7 +588,6 @@ exports.SettingsMenuInit = function () {
                                     {'label': 'Fiji', 'value': 'fj'},
                                     {'label': 'Federated States of Micronesia', 'value': 'fm'},
                                     {'label': 'France', 'value': 'fr'},
-                                    {'label': 'Great Britain', 'value': 'gb'},
                                     {'label': 'Grenada', 'value': 'gd'},
                                     {'label': 'Ghana', 'value': 'gh'},
                                     {'label': 'Gambia', 'value': 'gm'},
@@ -689,6 +686,7 @@ exports.SettingsMenuInit = function () {
                                     {'label': 'Ukraine', 'value': 'ua'},
                                     {'label': 'Uganda', 'value': 'ug'},
                                     {'label': 'United States of America', 'value': 'us'},
+                                    {'label': 'United Kingdom', 'value': 'gb'},
                                     {'label': 'Uruguay', 'value': 'uy'},
                                     {'label': 'Uzbekistan', 'value': 'uz'},
                                     {'label': 'Saint Vincent and the Grenadines', 'value': 'vc'},

@@ -13,10 +13,12 @@ exports.SetContextMenu = function (visibility) {
                 label: 'Check for Updates',
                 click: function () {
                     autoUpdater.checkForUpdatesAndNotify().then(r => {
-                        new Notification({
-                            title: "Apple Music",
-                            body: `Latest Version is ${r.updateInfo.version}`
-                        }).show()
+                        if (r) {
+                            new Notification({
+                                title: "Apple Music",
+                                body: `Latest Version is ${r.updateInfo.version}`
+                            }).show()
+                        }
                     });
                 }
             },
@@ -40,10 +42,12 @@ exports.SetContextMenu = function (visibility) {
                 label: 'Check for Updates',
                 click: function () {
                     autoUpdater.checkForUpdatesAndNotify().then(r => {
-                        new Notification({
-                            title: "Apple Music",
-                            body: `Latest Version is ${r.updateInfo.version}`
-                        }).show()
+                        if (r) {
+                            new Notification({
+                                title: "Apple Music",
+                                body: `Latest Version is ${r.updateInfo.version}`
+                            }).show()
+                        }
                     });
                 }
             },

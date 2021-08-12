@@ -15,7 +15,11 @@ exports.InitializeAutoUpdater = function () {
     }
     console.log("[AutoUpdater] Checking for updates...")
     try {
-        autoUpdater.checkForUpdatesAndNotify().then(r => console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}`))
+        autoUpdater.checkForUpdatesAndNotify().then(r => {
+            if (r) {
+                console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}`)
+            }
+        })
     } catch (err) {
         console.error(`[AutoUpdater] Error whilst checking for Update: ${err}`)
     }
