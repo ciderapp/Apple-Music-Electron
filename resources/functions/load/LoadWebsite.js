@@ -17,10 +17,10 @@ exports.LoadWebsite = function () {
                 console.log(`[LoadWebsite] User is authenticated. Loading listen-now page (${args}).`)
             })
         } else {
-            console.log(`[LoadWebsite] Loaded ${urlLanguage}`)
+            console.log(`[LoadWebsite] Loaded $'{urlLanguage}'`)
         }
 
     }).catch((err) => {
-        app.win.loadURL(urlFallback).then(() => console.error(`[LoadWebsite] ${urlLanguage} was unavailable, falling back to ${urlFallback} | ${err}`))
+        app.win.loadURL(urlFallback).then(() => console.error(`[LoadWebsite] '${urlLanguage}' was unavailable, falling back to '${urlFallback}' | ${err}`))
     })
 }

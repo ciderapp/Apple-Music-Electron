@@ -3,11 +3,11 @@ const mprisService = require('mpris-service');
 
 module.exports = {
     connect: function () {
-        if (process.platform !== "linux") {
+        if (process.platform !== "linux" || !app.preferences.value('general.mprisEnabled').includes(true)) {
             app.mpris.active = false;
             return;
         }
-        console.log('[Mpris][connect] Initializing Connection.')
+        console.log('[MPRIS][connect] Initializing Connection.')
 
         app.mpris.service = mprisService({
             name: 'AppleMusicElectron',
@@ -58,7 +58,7 @@ module.exports = {
 
     updateActivity: function (attributes) {
         if (!app.mpris.active) return;
-        console.log('[Mpris][updateActivity] Updating Song Activity.')
+        console.log('[MPRIS][updateActivity] Updating Song Activity.')
 
         const MetaData = {
             'mpris:trackid': app.mpris.service.objectPath(`track/${attributes.playParams.id.replace(/[.]+/g, "")}`),
@@ -79,7 +79,7 @@ module.exports = {
 
     updateState: function (attributes) {
         if (!app.mpris.active) return;
-        console.log('[Mpris][updateState] Updating Song Playback State.')
+        console.log('[MPRIS][updateState] Updating Song Playback State.')
 
         function setPlaybackIfNeeded(status) {
             if (app.mpris.service.playbackStatus === status) {

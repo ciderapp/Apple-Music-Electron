@@ -20,7 +20,7 @@ exports.ApplicationReady = function () {
         canGoNext: true,
         service: {}
     }
-    app.mpris = require('../media/mrpis')
+    app.mpris = require('../media/mpris')
     app.mpris.connect()
 
     // LastFM

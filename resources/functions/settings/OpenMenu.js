@@ -1,10 +1,7 @@
 const path = require('path');
 const ElectronPreferences = require('electron-preferences');
 const {app, globalShortcut} = require('electron');
-const {readFile} = require('fs');
-
-// Check the Configuration File
-const ExistingConfigurationPath = path.resolve(app.getPath('userData'), 'preferences.json');
+const fs = require('fs');
 
 exports.SettingsMenuInit = function () {
     app.preferences = new ElectronPreferences({
@@ -28,7 +25,8 @@ exports.SettingsMenuInit = function () {
                 "lastfmRemoveFeaturingArtists": [
                     true
                 ],
-                "startupPage": "browse"
+                "startupPage": "browse",
+                "mprisEnabled": [],
             },
             "visual": {
                 "theme": "default",
@@ -327,6 +325,16 @@ exports.SettingsMenuInit = function () {
                                 {'label': 'Made for You', 'value': 'library/made-for-you'}
                             ],
                             'help': 'Select what page you wish to be placed on when you start the application.'
+                        },
+                        { // Mpris
+                            'label': 'MPRIS (Media Player Remote Interfacing Specification)',
+                            'key': 'mprisEnabled',
+                            'type': 'checkbox',
+                            'options': [{
+                                'label': 'Enable MPRIS audio instance. ',
+                                'value': true
+                            }],
+                            'help': `MPRIS is a standard D-Bus interface which aims to provide a common programmatic API for controlling media players. Made to be used on linux. See more at https://wiki.archlinux.org/title/MPRIS`
                         },
                     ]
                 }]
@@ -801,31 +809,32 @@ exports.SettingsMenuInit = function () {
         }
     });
 
+    // Check the Configuration File
+    const ExistingConfigurationPath = path.resolve(app.getPath('userData'), 'preferences.json');
+
+    // Update the configuration
     try {
-        console.log("[OpenMenu][ConfigurationCheck] Checking for existing configuration...")
-        readFile(ExistingConfigurationPath, function (err, data) {
-            if (err) {
-                console.log()
-            } else {
-                var userConfiguration = JSON.parse(data.toString())
-                const baseConfiguration = app.preferences.defaults;
+        console.log(`[OpenMenu][ConfigurationCheck] Checking for existing configuration at '${ExistingConfigurationPath}'`)
+        if (fs.existsSync(ExistingConfigurationPath)) {
+            console.log(`[OpenMenu][ConfigurationCheck] '${ExistingConfigurationPath}' exists!`)
+            const data = fs.readFileSync(ExistingConfigurationPath, {encoding:'utf8', flag:'r'});
+            const userConfiguration = JSON.parse(data.toString())
+            const baseConfiguration = app.preferences.defaults;
 
-                Object.keys(baseConfiguration).forEach(function (parentKey) {
-                    if (parentKey in userConfiguration) {
-                        Object.keys(baseConfiguration[parentKey]).forEach(function (childKey) {
-                            if (!userConfiguration[parentKey].hasOwnProperty(childKey)) {
-                                console.log(`[OpenMenu][ConfigurationCheck][MissingKey] ${parentKey}.${childKey} - Value found in defaults: ${(baseConfiguration[parentKey][childKey]).toString() ? baseConfiguration[parentKey][childKey].toString() : '[]'}`)
-                                app.preferences.value(`${parentKey}.${childKey}`, baseConfiguration[parentKey][childKey]);
-                            }
-                        })
-                    } else {
-                        console.log(`[OpenMenu][ConfigurationCheck][MissingKey] ${parentKey} - Value found in defaults: ${(baseConfiguration[parentKey]).toString() ? (baseConfiguration[parentKey]).toString() : '[]'}`)
-                        app.preferences.value(parentKey, baseConfiguration[parentKey]);
-                    }
-                })
-            }
-        })
-
+            Object.keys(baseConfiguration).forEach(function (parentKey) {
+                if (parentKey in userConfiguration) {
+                    Object.keys(baseConfiguration[parentKey]).forEach(function (childKey) {
+                        if (!userConfiguration[parentKey].hasOwnProperty(childKey)) {
+                            console.log(`[OpenMenu][ConfigurationCheck][MissingKey] ${parentKey}.${childKey} - Value found in defaults: ${(baseConfiguration[parentKey][childKey]).toString() ? baseConfiguration[parentKey][childKey].toString() : '[]'}`)
+                            app.preferences.value(`${parentKey}.${childKey}`, baseConfiguration[parentKey][childKey]);
+                        }
+                    })
+                } else {
+                    console.log(`[OpenMenu][ConfigurationCheck][MissingKey] ${parentKey} - Value found in defaults: ${(baseConfiguration[parentKey]).toString() ? (baseConfiguration[parentKey]).toString() : '[]'}`)
+                    app.preferences.value(parentKey, baseConfiguration[parentKey]);
+                }
+            })
+        }
     } catch (err) {
         console.log(`[OpenMenu][ConfigurationCheck] ${err}`)
     }
