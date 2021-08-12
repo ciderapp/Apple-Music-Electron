@@ -81,4 +81,7 @@ exports.InitializeBase = function () {
     // Init
     const {InitializeAutoUpdater} = require('./Init-AutoUpdater')
     InitializeAutoUpdater()
+
+    // Set Max Listener
+    require('events').EventEmitter.defaultMaxListeners = Infinity;
 }
