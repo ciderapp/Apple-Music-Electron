@@ -27,6 +27,9 @@ exports.SettingsMenuInit = function () {
                 ],
                 "startupPage": "browse",
                 "mprisEnabled": [],
+                "analyticsEnabled": [
+                    true
+                ],
             },
             "visual": {
                 "theme": "default",
@@ -44,7 +47,9 @@ exports.SettingsMenuInit = function () {
                 ],
                 "backButton": [
                     true
-                ]
+                ],
+                "blurColor": "#0f0f0f00",
+                "disableBlur": "true",
             },
             "window": {
                 "appStartupBehavior": "false",
@@ -336,6 +341,16 @@ exports.SettingsMenuInit = function () {
                             }],
                             'help': `MPRIS is a standard D-Bus interface which aims to provide a common programmatic API for controlling media players. Made to be used on linux. See more at https://wiki.archlinux.org/title/MPRIS`
                         },
+                        { // Analytics
+                            'label': 'Analytics',
+                            'key': 'analyticsEnabled',
+                            'type': 'checkbox',
+                            'options': [{
+                                'label': 'Allow Crash Analytics and Error Collection.',
+                                'value': true
+                            }],
+                            'help': `These logs when enabled allow us to fix bugs and errors that may occur during your listening sessions to better improve the application. We understand if your not comfortable with them on but it helps us out immensely in figuring out wide spread issues. (Note: We do not gather personal information, only stuff that shows to you as a error in the code.)`
+                        },
                     ]
                 }]
             }
@@ -402,7 +417,7 @@ exports.SettingsMenuInit = function () {
                                 'label': 'Transparency Blur Color',
                                 'key': 'blurColor',
                                 'type': 'text',
-                                'help': 'Changes the hue used on the transparent background. HEX Only. (Example: #00000033)'
+                                'help': 'Changes the hue used on the transparent background. HEX Only. (Example: #0f0f0f00)'
                             },
                             { // Transparency on Application Focus
                                 'label': 'Disable Transparency when Unfocused',
