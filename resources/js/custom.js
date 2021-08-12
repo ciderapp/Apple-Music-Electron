@@ -7,8 +7,8 @@ try {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     }
 
-    if (GetXPath('/html/body/div[4]/div[1]/div[3]/div/div[3]/div[3]/button')) {
-        GetXPath('/html/body/div[4]/div[1]/div[3]/div/div[3]/div[3]/button').addEventListener('click', function () {
+    if (GetXPath('//*[@id="web-main"]/div[3]/div/div[3]/div[3]/button')) {
+        GetXPath('//*[@id="web-main"]/div[3]/div/div[3]/div[3]/button').addEventListener('click', function () {
             if (document.querySelector('.context-menu__option--app-settings')) {
                 console.log("[settingsInit] Preventing second button.");
                 return;

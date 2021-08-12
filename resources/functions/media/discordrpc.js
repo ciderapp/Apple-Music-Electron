@@ -49,45 +49,51 @@ module.exports = {
 
         console.log('[DiscordRPC][updateActivity] Updating Discord Activity.')
         if (!app.discord.connected) return;
-        if (attributes.status === true) {
+
+        let ActivityObject = {
+            details: attributes.name,
+            state: `by ${attributes.artistName}`,
+            startTimestamp: attributes.startTime,
+            endTimestamp: attributes.endTime,
+            largeImageKey: 'apple',
+            largeImageText: attributes.albumName,
+            smallImageKey: 'play',
+            smallImageText: 'Playing',
+            instance: false,
+        };
+
+        if (!((new Date(attributes.endTime)).getTime() > 0)) {
+            delete ActivityObject.startTimestamp
+            delete ActivityObject.endTimestamp
+        }
+
+        if (!attributes.artistName) {
+            delete ActivityObject.state
+        }
+
+        if (!attributes.albumName) {
+            delete ActivityObject.largeImageText
+        }
+
+        if (attributes.status) {
             if (app.preferences.value('advanced.discordClearActivityOnPause').includes(true)) {
-                app.discord.client.setActivity({
-                    details: attributes.name,
-                    state: `by ${attributes.artistName}`,
-                    startTimestamp: attributes.startTime,
-                    endTimestamp: attributes.endTime,
-                    largeImageKey: 'apple',
-                    largeImageText: attributes.albumName,
-                    instance: false,
-                }).catch((e) => console.error(`[DiscordRPC][setActivity] ${e}`));
-            } else {
-                app.discord.client.setActivity({
-                    details: attributes.name,
-                    state: `by ${attributes.artistName}`,
-                    startTimestamp: attributes.startTime,
-                    endTimestamp: attributes.endTime,
-                    largeImageKey: 'apple',
-                    largeImageText: attributes.albumName,
-                    smallImageKey: 'play',
-                    smallImageText: 'Playing',
-                    instance: false,
-                }).catch((e) => console.error(`[DiscordRPC][setActivity] ${e}`));
+                delete ActivityObject.smallImageKey
+                delete ActivityObject.smallImageText
             }
         } else {
             if (app.preferences.value('advanced.discordClearActivityOnPause').includes(true)) {
                 app.discord.client.clearActivity().catch((e) => console.error(`[DiscordRPC][clearActivity] ${e}`));
+                ActivityObject = null
             } else {
-                app.discord.client.setActivity({
-                    details: attributes.name,
-                    state: `by ${attributes.artistName}`,
-                    largeImageKey: 'apple',
-                    largeImageText: attributes.albumName,
-                    smallImageKey: 'pause',
-                    smallImageText: 'Paused',
-                    instance: false,
-                }).catch((e) => console.error(`[DiscordRPC][setActivity] ${e}`));
+                delete ActivityObject.startTimestamp
+                delete ActivityObject.endTimestamp
+                ActivityObject.smallImageKey = 'pause'
+                ActivityObject.smallImageText = 'Paused'
             }
+        }
 
+        if (ActivityObject) {
+            app.discord.client.setActivity(ActivityObject)
         }
     },
 }
