@@ -811,7 +811,7 @@ exports.SettingsMenuInit = function () {
                             'fields': [
                                 {
                                     'heading': 'Major thanks to',
-                                    'content': `<p style="size='8px'">This application was made possible by the <a style="color: #227bff !important" target="_blank" href='https://github.com/Apple-Music-Electron/'>Apple Music Electron Team.</a></p>`,
+                                    'content': `<p style="size='12px'"><a style="color: #227bff !important" target="_blank" href='https://github.com/Apple-Music-Electron/'>The Apple Music Electron Team.</a></p>`,
                                     'type': 'message'
                                 },
                                 {
@@ -853,7 +853,7 @@ exports.SettingsMenuInit = function () {
                                     'heading': '',
                                     'content': `<p style="size='8px'">Donations are completely optional, however if you do end up donating it means a lot to us and this project and allows us to continue pushing updates and features.</p>`,
                                     'type': 'message'
-                                }
+                                },
                             ]
                         }
                     ]
