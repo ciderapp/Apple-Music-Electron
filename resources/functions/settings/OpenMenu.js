@@ -63,7 +63,9 @@ exports.SettingsMenuInit = function () {
                 "removeScrollbars": [
                     true
                 ],
-                "useBetaSite": [],
+                "useBetaSite": [
+                    true
+                ],
                 "preventMediaKeyHijacking": [],
                 "autoUpdaterBetaBuilds": [],
                 "menuBarVisible": [],

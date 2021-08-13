@@ -23,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/Apple-Music-Electron/Apple-Music-Electron/issues?q=is%3Aopen+is%3Aissue+label%3Abug"
   },
-  "homepage": "https://ame.cryptofyre.org/",
+  "homepage": "https://applemusicelectron.com/",
   "buildResources": "resources",
   "scripts": {
     "init": "install",
