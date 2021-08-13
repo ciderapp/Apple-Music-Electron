@@ -1,10 +1,8 @@
 const {app} = require('electron')
 const {LoadJS} = require('./load/LoadJS')
 const {LoadCSS} = require('./load/LoadCSS')
-const Sentry = require('@sentry/electron');
-if (app.preferences.value('general.analyticsEnabled').includes(true)) {
-    Sentry.init({ dsn: "https://20e1c34b19d54dfcb8231e3ef7975240@o954055.ingest.sentry.io/5903033" });
-}
+const {Analytics} = require("./analytics/sentry");
+Analytics.init()
 
 module.exports = {
     LoadFiles: async function () {
