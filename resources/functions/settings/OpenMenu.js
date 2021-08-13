@@ -799,8 +799,67 @@ exports.SettingsMenuInit = function () {
                         ],
                     }]
                 }
+            },
+            {
+                'id': 'Credits',
+                'label': 'Credits',
+                'icon': 'multiple-11',
+                'form': {
+                    'groups': [
+                        {
+                            'label': 'Credits',
+                            'fields': [
+                                {
+                                    'heading': 'Major thanks to',
+                                    'content': `<p style="size='8px'">This application was made possible by the <a style="color: #227bff !important" target="_blank" href='https://github.com/Apple-Music-Electron/'>Apple Music Electron Team.</a></p>`,
+                                    'type': 'message'
+                                },
+                                {
+                                    'heading': '',
+                                    'content': `<p style="size='8px'">cryptofyre - Owner/Developer | <a style="color: #227bff !important" target="_blank" href='https://github.com/cryptofyre'>GitHub </a>| <a style="color: #227bff !important" target="_blank" href='https://twitter.com/cryptofyre'>Twitter </a>| <a style="color: #227bff !important" target="_blank" href='https://cryptofyre.org'>Website</a></p>`,
+                                    'type': 'message'
+                                },
+                                {
+                                    'heading': '',
+                                    'content': `<p style="size='8px'">Core - Developer/Maintainer | <a style="color: #227bff !important" target="_blank" href='https://github.com/coredev-uk'>GitHub </a>| <a style="color: #227bff !important" target="_blank" href='https://twitter.com/core_hdd'>Twitter </a>| <a style="color: #227bff !important" target="_blank" href='https://c0r3.uk/'>Website</a></p>`,
+                                    'type': 'message'
+                                },
+                                {
+                                    'heading': '',
+                                    'content': `<p style="size='8px'">Quacksire - Developer | <a style="color: #227bff !important" target="_blank" href='https://github.com/child-duckling'>GitHub </a>| <a style="color: #227bff !important" target="_blank" href='https://twitter.com/childquack'>Twitter </a>| <a style="color: #227bff !important" target="_blank" href='https://child.duckling.pw/'>Website</a></p>`,
+                                    'type': 'message'
+                                },
+                                {
+                                    'heading': '',
+                                    'content': `<p style="size='8px'">GiantDwarf - Maintainer | <a style="color: #227bff !important" target="_blank" href='https://github.com/17hoehbr'>GitHub</p>`,
+                                    'type': 'message'
+                                },
+                                {
+                                    'heading': '',
+                                    'content': `<p style="size='8px'">Void - Social Comms | <a style="color: #227bff !important" target="_blank" href='https://www.reddit.com/user/Frensident/'>Reddit</p>`,
+                                    'type': 'message'
+                                },
+                                {
+                                    'heading': '',
+                                    'content': `<p style="size='8px'">And all of our wonderful <a style="color: #227bff !important" target="_blank" href='https://github.com/Apple-Music-Electron/Apple-Music-Electron/graphs/contributors'>Contributors.</p>`,
+                                    'type': 'message'
+                                },
+                                {
+                                    'heading': 'Donations',
+                                    'content': `<p style="size='8px'">We accept donations <a style="color: #227bff !important" target="_blank" href='https://ko-fi.com/cryptofyre'>here!</a></p>`,
+                                    'type': 'message'
+                                },
+                                {
+                                    'heading': '',
+                                    'content': `<p style="size='8px'">Donations are completely optional, however if you do end up donating it means a lot to us and this project and allows us to continue pushing updates and features.</p>`,
+                                    'type': 'message'
+                                }
+                            ]
+                        }
+                    ]
+                }
             }
-        ],
+            ],
         browserWindowOpts: {
             'title': 'App Settings',
             'width': 900,
