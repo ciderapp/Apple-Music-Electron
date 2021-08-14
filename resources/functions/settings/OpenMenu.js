@@ -11,7 +11,6 @@ exports.SettingsMenuInit = function () {
          */
         'defaults': {
             "general": {
-                "authMode": [],
                 "language": "",
                 "discordRPC": [
                     true
@@ -88,16 +87,7 @@ exports.SettingsMenuInit = function () {
                 'groups': [{
                     // General Settings
                     'label': 'General Settings',
-                    'fields': [{ // Auth Mode
-                        'label': 'Authentication Mode',
-                        'key': 'authMode',
-                        'type': 'checkbox',
-                        'options': [{
-                            'label': 'Authentication mode allows certain users to resolve issues when logging in',
-                            'value': true
-                        }],
-                        'help': 'This should be disabled after logging in.'
-                    },
+                    'fields': [
                         { // Language
                             'label': 'Language',
                             'key': 'language',
