@@ -83,7 +83,8 @@ exports.CreateBrowserWindow = function () {
             nodeIntegrationInWorker: false,
             contextIsolation: false,
             webSecurity: true,
-            sandbox: false
+            sandbox: false,
+            nativeWindowOpen: false
         }
     };
 
