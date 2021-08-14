@@ -10,10 +10,7 @@ exports.InitializeBase = function () {
     app.setPath("userData", join(app.getPath("cache"), app.name))
 
     // Disable CORS
-    if (app.preferences.value('general.authMode').includes(true)) {
-        console.log("[Apple-Music-Electron] Application started wth disable CORS.")
-        app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
-    }
+    app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
 
     // Media Key Hijacking
     if (app.preferences.value('advanced.preventMediaKeyHijacking').includes(true)) {

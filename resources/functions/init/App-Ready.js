@@ -1,7 +1,7 @@
 const {SetTaskList} = require('../win/SetTaskList')
 const {InitializeTheme} = require('./Init-Theme')
 const {InitializeTray} = require('./Init-Tray')
-const {app, Notification} = require('electron')
+const {app} = require('electron')
 const {Analytics} = require("../analytics/sentry");
 Analytics.init()
 
@@ -28,14 +28,6 @@ exports.ApplicationReady = function () {
     if (app.commandLine.hasSwitch('hidden')) {
         console.log("[Apple-Music-Electron] Application opened with --hidden");
         app.win.hide();
-    }
-
-    // AuthMode Warning Notification
-    if (app.preferences.value('general.authMode').includes(true)) {
-        new Notification({
-            title: "Apple Music",
-            body: `Applications has been started using authMode. Disable authMode once you have successfully logged in.`
-        }).show()
     }
 
     // Startup
