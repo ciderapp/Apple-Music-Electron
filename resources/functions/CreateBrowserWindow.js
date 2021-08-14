@@ -87,8 +87,9 @@ exports.CreateBrowserWindow = function () {
         }
     };
 
+
     // Set the Transparency Options
-    if (app.preferences.value('visual.transparencyEffect') && app.preferences.value('visual.transparencyEffect') !== 'disabled') {
+    if (app.preferences.value('visual.transparencyEffect') && app.preferences.value('visual.transparencyEffect') !== 'disabled' && process.platform !== "linux") {
 
         // If a Custom Theme is being used
         if (app.preferences.value('visual.transparencyTheme') === 'appearance-based') {
@@ -120,7 +121,6 @@ exports.CreateBrowserWindow = function () {
 
         app.transparency = true
     } else { app.transparency = false }
-
 
     // BrowserWindow Creation
     if (app.transparency) {
