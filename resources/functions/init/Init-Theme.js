@@ -27,8 +27,8 @@ exports.InitializeTheme = function () {
     copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath)
 
     // Make sure you can access the folder with the correct permissions
-    console.log(`[InitializeTheme][access] Attempting to access '${app.ThemesFolderPath}/Template.css'`)
-    fs.access(`${app.ThemesFolderPath}/Template.css`, fs.constants.W_OK, err => {
+    console.log(`[InitializeTheme][access] Attempting to access '${join(app.ThemesFolderPath, 'Template.css')}'`)
+    fs.access(join(app.ThemesFolderPath, 'Template.css'), fs.constants.W_OK, err => {
 
         if (err) { // File is not accessible
             console.log(`[InitializeTheme][access] ${err}`)

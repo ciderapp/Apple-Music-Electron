@@ -6,12 +6,6 @@ Analytics.init()
 
 module.exports = {
     LoadFiles: async function () {
-        /* Custom UWP Window Frame (WIP) */
-        /*if (app.preferences.value('visual.emulateMacOS').includes(false)) {
-            LoadCSS('uwpWindowFrame.css')
-            LoadJS('uwpWindowFrame.js')
-        }*/
-
         /* Remove Apple Music Logo */
         if (app.preferences.value('visual.removeAppleLogo').includes(true)) {
             LoadJS('removeAppleLogo.js')
@@ -57,11 +51,11 @@ module.exports = {
         // Inject the custom stylesheet
         LoadCSS('custom-stylesheet.css')
 
-        // Load the appropriate css file for glasstron
-        if (app.preferences.value('visual.transparencyMode').includes(true)) {
-            LoadCSS('glasstron.css')
+        // Load the appropriate css file for transparency
+        if (app.transparency) {
+            LoadCSS('transparency.css')
         } else {
-            LoadCSS('glasstronDisabled.css')
+            LoadCSS('transparencyDisabled.css')
         }
 
         // Set the settings variables if needed

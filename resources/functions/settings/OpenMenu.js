@@ -27,11 +27,11 @@ exports.SettingsMenuInit = function () {
                 "startupPage": "browse",
                 "analyticsEnabled": [
                     true
-                ],
+                ]
             },
             "visual": {
                 "theme": "default",
-                "emulateMacOS": "false",
+                "emulateMacOS": "",
                 "transparencyMode": [],
                 "streamerMode": [],
                 "removeUpsell": [
@@ -46,8 +46,12 @@ exports.SettingsMenuInit = function () {
                 "backButton": [
                     true
                 ],
-                "blurColor": "#0f0f0f00",
-                "disableBlur": "true",
+                "transparencyEffect": "",
+                "transparencyTheme": "appearance-based",
+                "transparencyDisableBlur": [
+                    true
+                ],
+                "transparencyMaximumRefreshRate": ""
             },
             "window": {
                 "appStartupBehavior": "false",
@@ -342,71 +346,85 @@ exports.SettingsMenuInit = function () {
                     'groups': [{
                         // Visual Settings
                         'label': 'Visual Settings',
-                        'fields': [{ // Setting Your Theme
-                            'label': 'Themes:',
-                            'key': 'theme',
-                            'type': 'dropdown',
-                            'options': [
-                                {'label': 'Default', 'value': 'default'},
-                                {'label': 'Blurple', 'value': 'blurple'},
-                                {'label': 'Dracula', 'value': 'dracula'},
-                                {'label': 'Jungle', 'value': 'jungle'},
-                                {'label': 'Spotify', 'value': 'spotify'},
-                                {'label': 'OLED', 'value': 'oled'},
-                                {'label': 'Nord', 'value': 'nord'},
-                                {'label': 'Acrylic', 'value': 'acrylic'}
-                            ]
-                        },
+                        'fields': [
+                            { // Setting Your Theme
+                                'label': 'Themes:',
+                                'key': 'theme',
+                                'type': 'dropdown',
+                                'options': [
+                                    {'label': 'Default', 'value': 'default'},
+                                    {'label': 'Blurple', 'value': 'blurple'},
+                                    {'label': 'Dracula', 'value': 'dracula'},
+                                    {'label': 'Jungle', 'value': 'jungle'},
+                                    {'label': 'Spotify', 'value': 'spotify'},
+                                    {'label': 'OLED', 'value': 'oled'},
+                                    {'label': 'Nord', 'value': 'nord'},
+                                    {'label': 'Acrylic', 'value': 'acrylic'}
+                                ]
+                            },
                             {
                                 'content': '<p>You can preview all the themes <a style="color: #227bff !important" target="_blank" href="https://github.com/cryptofyre/Apple-Music-Electron/wiki/Theme-Preview-Images">here</a>.</p>',
                                 'type': 'message'
                             },
                             { // MacOS Application Emulation
-                                'label': 'MacOS Music Emulation',
+                                'label': 'macOS Music Emulation',
                                 'key': 'emulateMacOS',
                                 'type': 'dropdown',
                                 'options': [
                                     {'label': 'Left (Default)', 'value': 'left'},
-                                    {'label': 'Right (Like Windows)', 'value': 'right'},
-                                    {'label': 'Disabled', 'value': false}
+                                    {'label': 'Right (Like Windows)', 'value': 'right'}
                                 ],
                                 'help': 'This enables various adjustments that make the Apple Music interface look like the MacOS Apple Music UI. Here it allows you to select a side that you would like to align the MacOS Window Controls.'
                             },
-                            { // Turning on transparency
-                                'label': 'Transparency',
-                                'key': 'transparencyMode',
-                                'type': 'checkbox',
-                                'options': [{
-                                    'label': `Creates a 'glass-blur' affect on the UI, with slight transparency.`,
-                                    'value': true
-                                }],
-                                'help': 'This enables the transparency affect for the Apple Music UI. This can affect performance if you are using older hardware. Themes can vary in transparency.'
+                            { // Transparency
+                                'heading': 'Transparency Configuration',
+                                'content': `Here you can configure the transparency options for the window. Transparency only works on certain systems, so read the descriptions of each setting. It is not advised to use transparency on platforms other than Windows or macOS. It is also highly recommended that you enable macOS Music Emulation as the default frame with transparency is not polished.`,
+                                'type': 'message'
                             },
-                            { // Change transparency blur type
-                                'label': 'Transparency Blur Type',
-                                'key': 'blurType',
+                            { // Turning on Transparency and settings the effect
+                                'label': 'Transparency Effect',
+                                'key': 'transparencyEffect',
                                 'type': 'dropdown',
                                 'options': [
                                     {'label': 'Acrylic (W10 1809+)', 'value': 'acrylic'},
                                     {'label': 'Blur Behind', 'value': 'blur'}
                                 ],
-                                'help': 'Changes the transparency blur type to improve performance and compatibility with older hardware and systems.'
+                                'help': `Sets the type of Windows transparency effect, either 'acrylic', 'blur' or leave it empty to disable it. Changing the transparency blur type can improve performance and compatibility with older hardware and systems.`
                             },
-                            {
-                                'label': 'Transparency Blur Color',
-                                'key': 'blurColor',
+                            { // Transparency Theme
+                                'label': 'Transparency Theme',
+                                'key': 'transparencyTheme',
                                 'type': 'text',
-                                'help': 'Changes the hue used on the transparent background. HEX Only. (Example: #0f0f0f00)'
+                                'help': `Sets color of acrylic effect. Can be 'light', 'dark', 'appearance-based' or a hex color code with alpha ('#0f0f0f00').`
                             },
                             { // Transparency on Application Focus
-                                'label': 'Disable Transparency when Unfocused',
-                                'key': 'disableBlur',
+                                'label': 'Disable Transparency when Unfocused (Acrylic)',
+                                'key': 'transparencyDisableBlur',
                                 'type': 'checkbox',
                                 'options': [{
                                     'label': `Enable transparency on focus`,
                                     'value': true
                                 }],
-                                'help': 'Enables transparency only when the application is focused.'
+                                'help': 'If enabled, acrylic effect will be disabled when the window loses focus, to mimic the behaviour of normal UWP apps.'
+                            },
+                            { // Custom Refresh Rate
+                                'label': 'Use Custom Window Refresh Rate',
+                                'key': 'transparencyMaximumRefreshRate',
+                                'type': 'dropdown',
+                                'options': [
+                                    {'label': '30', 'value': 30},
+                                    {'label': '60', 'value': 60},
+                                    {'label': '144', 'value': 144},
+                                    {'label': '175', 'value': 175},
+                                    {'label': '240', 'value': 240},
+                                    {'label': '360', 'value': 360},
+                                ],
+                                'help': 'Use custom window resize/move handler for performance. You can set the maximum refresh rate that the application uses.'
+                            },
+                            { // Miscellaneous
+                                'heading': 'Miscellaneous Options',
+                                'content': `Various options allowing you to adjust the user interface to your preference.`,
+                                'type': 'message'
                             },
                             { // Streaming Mode
                                 'label': 'Streaming Mode',
@@ -416,22 +434,6 @@ exports.SettingsMenuInit = function () {
                                     'label': 'Removes certain UI elements and has unique scaling properties.',
                                     'value': true
                                 }]
-                            },
-                            { // Use custom refresh rate.
-                                'label': 'Use custom application refresh rate',
-                                'key': 'customRefreshRate',
-                                'type': 'checkbox',
-                                'options': [{
-                                    'label': 'Use custom refresh rate',
-                                    'value': true
-                                }]
-                            },
-                            {
-                                'label': 'Refresh Rate',
-                                'key': 'refreshRate',
-                                'type': 'slider',
-                                'min': 60,
-                                'max': 240
                             },
                             { // Remove Upsell
                                 'label': 'Remove Upsell',

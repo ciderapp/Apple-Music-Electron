@@ -1,12 +1,14 @@
 try {
-    while (document.getElementsByClassName('locale-switcher-banner').length > 0) {
-        document.getElementsByClassName('locale-switcher-banner')[0].remove()
-    }
-
     function GetXPath(path) {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     }
 
+    /* Remove the Region Banner */
+    while (document.getElementsByClassName('locale-switcher-banner').length > 0) {
+        document.getElementsByClassName('locale-switcher-banner')[0].remove()
+    }
+
+    /* Create the Settings / Discord buttons */
     if (GetXPath('//*[@id="web-main"]/div[3]/div/div[3]/div[3]/button')) {
         GetXPath('//*[@id="web-main"]/div[3]/div/div[3]/div[3]/button').addEventListener('click', function () {
             if (document.querySelector('.context-menu__option--app-settings')) {

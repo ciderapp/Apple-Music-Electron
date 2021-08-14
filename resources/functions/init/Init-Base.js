@@ -33,6 +33,12 @@ exports.InitializeBase = function () {
     const {InitializeAutoUpdater} = require('./Init-AutoUpdater')
     InitializeAutoUpdater()
 
+    // Detects if the application has been opened with --force-quit
+    if (app.commandLine.hasSwitch('force-quit')) {
+        console.log("[Apple-Music-Electron] User has closed the application via --force-quit")
+        app.quit()
+    }
+
     // Set Max Listener
     require('events').EventEmitter.defaultMaxListeners = Infinity;
 }

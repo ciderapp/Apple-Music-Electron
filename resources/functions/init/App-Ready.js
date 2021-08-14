@@ -12,24 +12,6 @@ exports.ApplicationReady = function () {
     InitializeTheme()
     InitializeTray()
 
-    // Detects if the application has been opened with --force-quit
-    if (app.commandLine.hasSwitch('force-quit')) {
-        console.log("[Apple-Music-Electron] User has closed the application via --force-quit")
-        app.quit()
-    }
-
-    // Detect if the application has been opened with --minimized
-    if (app.commandLine.hasSwitch('minimized')) {
-        console.log("[Apple-Music-Electron] Application opened with --minimized");
-        app.win.minimize();
-    }
-
-    // Detect if the application has been opened with --hidden
-    if (app.commandLine.hasSwitch('hidden')) {
-        console.log("[Apple-Music-Electron] Application opened with --hidden");
-        app.win.hide();
-    }
-
     // Startup
     if (app.preferences.value('window.appStartupBehavior').includes('hidden')) {
         app.setLoginItemSettings({
