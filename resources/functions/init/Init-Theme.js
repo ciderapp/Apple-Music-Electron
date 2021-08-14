@@ -24,7 +24,10 @@ exports.InitializeTheme = function () {
     app.ThemesFolderPath = resolve(app.getPath('userData'), 'themes');
 
     // Copy the Files
-    copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath)
+    if (!app.preferences.value('advanced.themeDevelopment').includes(true)) {
+        copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
+        console.log(`[InitializeTheme] [copyThemes] Themes copied to '${app.ThemesFolderPath}'`)
+    }
 
     // Make sure you can access the folder with the correct permissions
     console.log(`[InitializeTheme][access] Attempting to access '${join(app.ThemesFolderPath, 'Template.css')}'`)
