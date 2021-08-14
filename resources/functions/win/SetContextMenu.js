@@ -1,6 +1,6 @@
-const {app, Menu, Notification} = require('electron')
-const {autoUpdater} = require("electron-updater");
+const {app, Menu} = require('electron')
 const {Analytics} = require("../analytics/sentry");
+const {checkUpdates} = require("../update/update");
 Analytics.init()
 
 exports.SetContextMenu = function (visibility) {
@@ -10,14 +10,7 @@ exports.SetContextMenu = function (visibility) {
             {
                 label: 'Check for Updates',
                 click: function () {
-                    autoUpdater.checkForUpdatesAndNotify().then(r => {
-                        if (r) {
-                            new Notification({
-                                title: "Apple Music",
-                                body: `Latest Version is ${r.updateInfo.version}`
-                            }).show()
-                        }
-                    });
+                    checkUpdates(true)
                 }
             },
             {
@@ -39,14 +32,7 @@ exports.SetContextMenu = function (visibility) {
             {
                 label: 'Check for Updates',
                 click: function () {
-                    autoUpdater.checkForUpdatesAndNotify().then(r => {
-                        if (r) {
-                            new Notification({
-                                title: "Apple Music",
-                                body: `Latest Version is ${r.updateInfo.version}`
-                            }).show()
-                        }
-                    });
+                    checkUpdates(true)
                 }
             },
             {

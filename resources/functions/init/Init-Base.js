@@ -30,8 +30,8 @@ exports.InitializeBase = function () {
     app.ipc = {existingNotification: false};
 
     // Init
-    const {InitializeAutoUpdater} = require('./Init-AutoUpdater')
-    InitializeAutoUpdater()
+    const {checkUpdates} = require('../update/update')
+    checkUpdates()
 
     // Detects if the application has been opened with --force-quit
     if (app.commandLine.hasSwitch('force-quit')) {
