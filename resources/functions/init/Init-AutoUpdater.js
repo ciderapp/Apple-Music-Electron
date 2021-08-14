@@ -15,7 +15,7 @@ exports.InitializeAutoUpdater = function () {
     try {
         autoUpdater.checkForUpdatesAndNotify().then(r => {
             if (r) {
-                console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}`)
+                console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}. Current Version: ${process.env.npm_package_version}`)
             }
         })
     } catch (err) {

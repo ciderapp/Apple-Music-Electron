@@ -10,6 +10,7 @@ const {SettingsMenuInit} = require("./resources/functions/settings/OpenMenu");
 SettingsMenuInit()
 console.log('[Apple-Music-Electron] Current Configuration:')
 console.log(app.preferences._preferences)
+console.log("---------------------------------------------------------------------")
 
 const {InitializeBase} = require('./resources/functions/init/Init-Base')
 InitializeBase()
@@ -47,6 +48,8 @@ function CreateWindow() {
 
     const {mediaItemStateDidChange} = require('./resources/functions/handler/MediaStateHandler')
     mediaItemStateDidChange() // IPCMain
+
+    app.win.show()
 }
 
 // When its Ready call it all
@@ -61,12 +64,18 @@ app.on('ready', () => {
     ApplicationReady()
     console.log("[Apple-Music-Electron] Application is Ready.")
     console.log("[Apple-Music-Electron] Creating Window...")
-    setTimeout(CreateWindow, process.platform === "linux" ? 1000 : 0);
+    CreateWindow()
 });
 
 app.on('window-all-closed', () => {
-    app.quit()
+    if (process.platform !== 'darwin') app.quit()
 });
+
+app.on('activate', () => {
+    if (window === null) {
+        CreateWindow()
+    }
+})
 
 app.on('before-quit', function () {
     app.mpris.clearActivity()

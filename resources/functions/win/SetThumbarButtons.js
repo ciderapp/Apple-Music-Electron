@@ -16,8 +16,6 @@ exports.SetThumbarButtons = function (state) {
         trayIconDir = join(__dirname, `./media/dark/`);
     }
 
-    console.log(`[SetThumbarButtons] Updating thumbar to ${state}`)
-
     if (!Images) {
         Images = {
             next: nativeImage.createFromPath(trayIconDir + `next.png`).resize({width: 32, height: 32}),
@@ -40,6 +38,7 @@ exports.SetThumbarButtons = function (state) {
         // Paused
         case false:
         case "paused":
+            console.log('[setThumbarButtons] Thumbar has been set to false/paused.')
             array = [
                 {
                     tooltip: 'Previous',
@@ -71,6 +70,7 @@ exports.SetThumbarButtons = function (state) {
         // Inactive
         default:
         case "inactive":
+            console.log('[setThumbarButtons] Thumbar has been set to default/inactive.')
             array = [
                 {
                     tooltip: 'Previous',
@@ -93,6 +93,7 @@ exports.SetThumbarButtons = function (state) {
         // Playing
         case true:
         case "playing":
+            console.log('[setThumbarButtons] Thumbar has been set to true/playing.')
             array = [
                 {
                     tooltip: 'Previous',
