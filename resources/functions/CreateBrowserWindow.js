@@ -43,10 +43,12 @@ exports.CreateBrowserWindow = function () {
         webPreferences: {
             plugins: true,
             preload: join(__dirname, '../js/MusicKitInterop.js'),
-            allowRunningInsecureContent: InsecureContent,
+            allowRunningInsecureContent: true,
+            nodeIntegration: false,
+            nodeIntegrationInWorker: false,
             contextIsolation: false,
-            webSecurity: webSecurityEnabled,
-            sandbox: true
+            webSecurity: true,
+            sandbox: false
         }
     };
 
