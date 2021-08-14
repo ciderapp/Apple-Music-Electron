@@ -1,5 +1,6 @@
 const {app} = require('electron')
 const {autoUpdater} = require("electron-updater");
+const pjson = require('../../../package.json')
 autoUpdater.logger = require("electron-log");
 const {Analytics} = require("../analytics/sentry");
 Analytics.init()
@@ -15,7 +16,7 @@ exports.InitializeAutoUpdater = function () {
     try {
         autoUpdater.checkForUpdatesAndNotify().then(r => {
             if (r) {
-                console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}. Current Version: ${process.env.npm_package_version}`)
+                console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}. Current Version: ${pjson.version}`)
             }
         })
     } catch (err) {
