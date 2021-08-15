@@ -22,7 +22,7 @@ exports.checkUpdates = function (manual) {
 
     autoUpdater.on('update-not-available', () => {
         if (manual === true) {
-            let bodyVer = "You are on the latest version. " + `(v${pjson.version})`
+            let bodyVer = `You are on the latest version. (v${pjson.version})`
             new Notification({title: "Apple Music", body: bodyVer}).show()
         }
     })
