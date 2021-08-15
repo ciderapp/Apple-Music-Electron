@@ -74,6 +74,8 @@ exports.CreateBrowserWindow = function () {
         minHeight: minHigh,
         frame: Frame,
         title: "Apple Music",
+        useContentSize: true,
+        resizable: true,
         // Enables DRM
         webPreferences: {
             plugins: true,
@@ -144,6 +146,7 @@ exports.CreateBrowserWindow = function () {
         win.setAlwaysOnTop(true)
     }
 
+    win.on('will-move', (_e) => { win.setSize(win.width, win.height) });
 
     if (!app.preferences.value('advanced.menuBarVisible').includes(true)) win.setMenuBarVisibility(false); // Hide that nasty menu bar
     if (app.preferences.value('advanced.devTools') !== 'built-in') win.setMenu(null); // Disables DevTools
