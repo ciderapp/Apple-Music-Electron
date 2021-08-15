@@ -14,7 +14,11 @@ exports.checkUpdates = function (manual) {
         autoUpdater.allowDowngrade = false
     }
 
-    autoUpdater.checkForUpdates()
+    try {
+        autoUpdater.checkForUpdates()
+    } catch (err) {
+	console.log("An error occurred while checking for updates: "+err)
+    }
 
     autoUpdater.on('update-not-available', () => {
         if (manual === true) {
