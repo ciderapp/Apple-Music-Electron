@@ -23,7 +23,7 @@ exports.CreateBrowserWindow = function () {
 
         const file = fs.readFileSync(join(app.ThemesFolderPath, `${fileName.toLowerCase()}.css`), "utf8");
         file.split(/\r?\n/).forEach((line)=> {
-            if(line.includes("--sidebarTransparency")){
+            if(line.includes("--transparency")){
                 hex_codes.push(line.match(/[a-f0-9]{8}/gi)); // Fetches all the hex codes
             }
         });

@@ -4,7 +4,15 @@
     background-color: var(--pageBG) !important;
 }
 
+html body {
+    background-color: transparent !important;
+}
+
 /* Make the search box transparent */
+
+#web-navigation-container {
+    background-color: transparent !important;
+}
 
 .dt-search-box__input {
     opacity: 0.5 !important;
@@ -14,14 +22,12 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --sidebar: transparent !important;
         --transparency: #0f0f0f1A;
     }
 }
 
 @media (prefers-color-scheme: light) {
     :root {
-        --sidebar: transparent !important;
         --transparency: #ffffff1A;
     }
 }
