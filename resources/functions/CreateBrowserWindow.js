@@ -112,8 +112,13 @@ exports.CreateBrowserWindow = function () {
         }
 
         if (isVibrancySupported()) {
-            if (app.preferences.value('visual.transparencyEffect') === 'acrylic' && app.preferences.value('visual.transparencyDisableBlur')) {
-                transparencyOptions.disableOnBlur = JSON.parse(app.preferences.value('visual.transparencyDisableBlur'))
+            if (app.preferences.value('visual.transparencyEffect') === 'acrylic') {
+                transparencyOptions.disableOnBlur = !!app.preferences.value('visual.transparencyDisableBlur').includes(true);
+            }
+        } else {
+            if (app.preferences.value('visual.transparencyEffect') === 'acrylic') {
+                app.preferences.value('visual.transparencyEffect', 'blur')
+                transparencyOptions.effect = 'blur'
             }
         }
 
