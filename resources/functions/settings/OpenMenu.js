@@ -264,7 +264,8 @@ exports.SettingsMenuInit = function () {
                                 {'label': 'Automatic (Default)', 'value': 'auto'},
                                 {'label': 'High (256kbps)', 'value': 'high'},
                                 {'label': 'Normal (64kbps)', 'value': 'normal'}
-                            ]
+                            ],
+                            'help': `Allows the user to select a preferred audio bitrate for music playback. NOTE: This may not work on all songs.`
                         },
                         { // Discord Rich Presence
                             'label': 'Discord Rich Presence',
