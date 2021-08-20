@@ -51,7 +51,7 @@ function CreateWindow() {
 
     const {audioQuality} = require('./resources/functions/audioQuality')
     app.win.webContents.on('did-finish-load', () => {
-        audioQuality.set() // Set audio quality based on user preference.
+        audioQuality() // Set audio quality based on user preference.
     })
 }
 
