@@ -21,22 +21,28 @@ exports.InitializeTheme = function () {
     }
 
     // Set the folder
-    app.ThemesFolderPath = resolve(app.getPath('userData'), 'themes');
-
-    // Copy the Files
-    if (!app.preferences.value('advanced.themeDevelopment').includes(true)) {
-        copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
-        console.log(`[InitializeTheme] [copyThemes] Themes copied to '${app.ThemesFolderPath}'`)
-    }
+    app.userThemesPath = resolve(app.getPath('userData'), 'themes');
+    app.themesPath = join(__dirname, '../../themes/')
+    console.log('---------------------------------------------------------------------')
+    console.log(`User Themes Path: '${app.userThemesPath}'`)
+    console.log(`Application Themes Path: '${app.themesPath}'`)
+    console.log('---------------------------------------------------------------------')
 
     // Make sure you can access the folder with the correct permissions
-    console.log(`[InitializeTheme][access] Attempting to access '${join(app.ThemesFolderPath, 'Template.css')}'`)
-    fs.access(join(app.ThemesFolderPath, 'Template.css'), fs.constants.W_OK, err => {
+    console.log(`[InitializeTheme][access] Attempting to access '${app.userThemesPath}'`)
+    fs.access(app.userThemesPath, fs.constants.W_OK, err => {
 
         if (err) { // File is not accessible
+
+            // Copy the Files
+            if (!app.preferences.value('advanced.themeDevelopment').includes(true)) {
+                copySync(app.themesPath, app.userThemesPath)
+                console.log(`[InitializeTheme] [copyThemes] Themes copied to '${app.userThemesPath}'`)
+            }
+
             console.log(`[InitializeTheme][access] ${err}`)
 
-            chmodr(app.ThemesFolderPath, 0o777, (_e) => { // Change permissions of the folder recursively
+            chmodr(app.userThemesPath, 0o777, (_e) => { // Change permissions of the folder recursively
                 if (_e) {
                     console.error(`[InitializeTheme][chmodr] ${_e}`)
                 } else {
@@ -45,12 +51,12 @@ exports.InitializeTheme = function () {
             });
 
         } else {
-            console.log(`[InitializeTheme][access] Successfully able to access '${app.ThemesFolderPath}'`)
+            console.log(`[InitializeTheme][access] Successfully able to access '${app.userThemesPath}'`)
 
             try {
                 if (!app.preferences.value('advanced.themeDevelopment').includes(true)) {
-                    copySync(join(__dirname, '../../themes/'), app.ThemesFolderPath, {overwrite: true})
-                    console.log(`[InitializeTheme] [copyThemes] Themes copied to '${app.ThemesFolderPath}'`)
+                    copySync(app.themesPath, app.userThemesPath, {overwrite: true})
+                    console.log(`[InitializeTheme] [copyThemes] Themes copied to '${app.userThemesPath}'`)
                 }
             } catch (_err) {
                 console.log(_err)

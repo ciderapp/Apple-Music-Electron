@@ -11,13 +11,17 @@ module.exports = {
         }
         console.log('[MPRIS][connect] Initializing Connection.')
 
-        app.mpris.service = mprisService({
-            name: 'AppleMusic',
-            identity: 'Apple Music',
-            supportedUriSchemes: [],
-            supportedMimeTypes: [],
-            supportedInterfaces: ['player']
-        });
+        try {
+            app.mpris.service = mprisService({
+                name: 'AppleMusic',
+                identity: 'Apple Music',
+                supportedUriSchemes: [],
+                supportedMimeTypes: [],
+                supportedInterfaces: ['player']
+            });
+        } catch(err) {
+            console.error(`[MPRIS][connect] ${err}`)
+        }
 
         let pos_atr = {durationInMillis: 0};
         app.mpris.service.getPosition = function () {

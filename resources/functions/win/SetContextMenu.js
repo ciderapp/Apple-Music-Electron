@@ -16,7 +16,9 @@ exports.SetContextMenu = function (visibility) {
             {
                 label: 'Minimize to Tray',
                 click: function () {
-                    app.win.hide();
+                    if (app.win !== null) {
+                        app.win.hide();
+                    }
                 }
             },
             {
@@ -38,7 +40,9 @@ exports.SetContextMenu = function (visibility) {
             {
                 label: 'Show Apple Music',
                 click: function () {
-                    app.win.show();
+                    if (app.win !== null) {
+                        app.win.show();
+                    }
                 }
             },
             {

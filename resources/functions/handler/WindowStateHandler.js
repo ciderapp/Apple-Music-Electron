@@ -47,15 +47,21 @@ exports.WindowStateHandler = function () {
     app.win.on('close', function (event) { // Hide the App if isQuitting is not true
         if (!app.isQuiting) {
             event.preventDefault();
-            app.win.hide();
+            if (app.win !== null) {
+                app.win.hide();
+            }
         } else {
             event.preventDefault();
-            app.win.destroy();
+            if (app.win !== null) {
+                app.win.destroy();
+            }
         }
     });
 
     ipcMain.on('minimize', () => { // listen for minimize event
-        app.win.minimize()
+        if (app.win !== null) {
+            app.win.minimize()
+        }
     })
 
     ipcMain.on('back', () => { // listen for back event

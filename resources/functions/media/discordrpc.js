@@ -35,7 +35,11 @@ module.exports = {
     disconnect: function () {
         if (!app.preferences.value('general.discordRPC').includes(true)) return;
         console.log('[DiscordRPC][disconnect] Disconnecting from discord.')
-        app.discord.client.destroy().catch((e) => console.error(`[DiscordRPC][disconnect] ${e}`));
+        try {
+            app.discord.client.destroy().catch((e) => console.error(`[DiscordRPC][disconnect] ${e}`));
+        } catch(err) {
+            console.error(err)
+        }
     },
 
     updateActivity: function (attributes) {
@@ -91,7 +95,12 @@ module.exports = {
         }
 
         if (ActivityObject) {
-            app.discord.client.setActivity(ActivityObject)
+            try {
+                app.discord.client.setActivity(ActivityObject)
+            } catch(err) {
+                console.error(`[DiscordRPC][setActivity] ${err}`)
+            }
+
         }
     },
 }

@@ -6,7 +6,7 @@ Analytics.init()
 
 exports.LoadCSS = function (path, theme) {
     if (theme) {
-        path = join(app.ThemesFolderPath, path.toLowerCase());
+        path = join(app.userThemesPath, path.toLowerCase());
     } else {
         path = join(join(__dirname, '../../css/'), path)
     }
@@ -15,9 +15,15 @@ exports.LoadCSS = function (path, theme) {
     readFile(path, "utf-8", function (error, data) {
         if (!error) {
             let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
-            app.win.webContents.insertCSS(formattedData).then(() => console.log(`[Themes] '${path}' successfully injected.`));
+            app.win.webContents.insertCSS(formattedData).then(() => {
+                if (theme) {
+                    console.log(`[Themes] '${path}' successfully injected.`)
+                } else {
+                    console.log(`[CSS] '${path}' successfully injected.`)
+                }
+            });
         } else {
-            console.error(`[LoadTheme] Error while injecting: '${path}' - Error: ${error}`)
+            console.error(`[LoadCSS] Error while injecting: '${path}' - Error: ${error}`)
         }
     });
 }

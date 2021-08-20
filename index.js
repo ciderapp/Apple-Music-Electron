@@ -48,8 +48,6 @@ function CreateWindow() {
 
     const {mediaItemStateDidChange} = require('./resources/functions/handler/MediaStateHandler')
     mediaItemStateDidChange() // IPCMain
-
-    app.win.show()
 }
 
 // When its Ready call it all

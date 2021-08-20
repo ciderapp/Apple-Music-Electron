@@ -20,13 +20,17 @@ exports.CreateBrowserWindow = function () {
     function fetchTransparencyColor(fileName) {
         console.log(`[fetchTransparencyColor] Fetching color from ${fileName}`)
         let hex_codes = []
+        fileName = join(app.userThemesPath, `${fileName.toLowerCase()}.css`)
 
-        const file = fs.readFileSync(join(app.ThemesFolderPath, `${fileName.toLowerCase()}.css`), "utf8");
-        file.split(/\r?\n/).forEach((line)=> {
-            if(line.includes("--transparency")){
-                hex_codes.push(line.match(/[a-f0-9]{8}/gi)); // Fetches all the hex codes
-            }
-        });
+        if (fs.existsSync(fileName)) {
+            const file = fs.readFileSync(fileName, "utf8");
+            file.split(/\r?\n/).forEach((line)=> {
+                if(line.includes("--transparency")){
+                    hex_codes.push(line.match(/[a-f0-9]{8}/gi)); // Fetches all the hex codes
+                }
+            });
+        }
+
 
         if (hex_codes.length > 1) {
             if (nativeTheme.themeSource === 'dark') {
@@ -158,13 +162,17 @@ exports.CreateBrowserWindow = function () {
     // Detect if the application has been opened with --minimized
     if (app.commandLine.hasSwitch('minimized')) {
         console.log("[Apple-Music-Electron] Application opened with --minimized");
-        win.minimize();
+        if (win !== null) {
+            win.minimize();
+        }
     }
 
     // Detect if the application has been opened with --hidden
     if (app.commandLine.hasSwitch('hidden')) {
         console.log("[Apple-Music-Electron] Application opened with --hidden");
-        win.hide();
+        if (win !== null) {
+            win.hide();
+        }
     }
 
     return win

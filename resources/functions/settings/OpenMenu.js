@@ -285,7 +285,7 @@ exports.SettingsMenuInit = function () {
                                 {'label': 'High (256kbps)', 'value': 'high'},
                                 {'label': 'Normal (192kbps)', 'value': 'normal'}
                             ]
-                        }
+                        },
                         { // Turning on trayTooltipSongName
                             'label': 'Show Song Name as Tray Icon Tooltip',
                             'key': 'trayTooltipSongName',
