@@ -48,6 +48,11 @@ function CreateWindow() {
 
     const {mediaItemStateDidChange} = require('./resources/functions/handler/MediaStateHandler')
     mediaItemStateDidChange() // IPCMain
+
+    const {audioQuality} = require('./resources/functions/audioQuality')
+    app.win.webContents.on('did-finish-load', () => {
+        audioQuality.set() // Set audio quality based on user preference.
+    })
 }
 
 // When its Ready call it all

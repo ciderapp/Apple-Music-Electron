@@ -27,11 +27,12 @@ exports.SettingsMenuInit = function () {
                 "startupPage": "browse",
                 "analyticsEnabled": [
                     true
-                ]
+                ],
+                "audioQuality": "auto",
             },
             "visual": {
                 "theme": "default",
-                "emulateMacOS": "",
+                "emulateMacOS": "left",
                 "transparencyMode": [],
                 "streamerMode": [],
                 "removeUpsell": [
@@ -255,6 +256,16 @@ exports.SettingsMenuInit = function () {
                             ],
                             'help': 'You will need to restart the application for language settings to apply.'
                         },
+                        {
+                            'label': 'Sound Quality',
+                            'key': 'audioQuality',
+                            'type': 'dropdown',
+                            'options': [
+                                {'label': 'Automatic (Default)', 'value': 'auto'},
+                                {'label': 'High (256kbps)', 'value': 'high'},
+                                {'label': 'Normal (64kbps)', 'value': 'normal'}
+                            ]
+                        },
                         { // Discord Rich Presence
                             'label': 'Discord Rich Presence',
                             'key': 'discordRPC',
@@ -275,16 +286,6 @@ exports.SettingsMenuInit = function () {
                                 {'label': 'Minimized', 'value': 'minimized'}
                             ],
                             'help': 'Enabling this means you will get notifications when you change song. The minimized option forces notifications to only appear if the app is hidden / minimized.'
-                        },
-                        {
-                            'label': 'Sound Quality',
-                            'key': 'audioQuality',
-                            'type': 'dropdown',
-                            'options': [
-                                {'label': 'Automatic (Default)', 'value': 'auto'},
-                                {'label': 'High (256kbps)', 'value': 'high'},
-                                {'label': 'Normal (192kbps)', 'value': 'normal'}
-                            ]
                         },
                         { // Turning on trayTooltipSongName
                             'label': 'Show Song Name as Tray Icon Tooltip',
