@@ -1,4 +1,4 @@
-const {readFile} = require('fs')
+const fs = require('fs')
 const {app} = require('electron')
 const {join} = require('path')
 const {Analytics} = require("../analytics/sentry");
@@ -12,8 +12,11 @@ exports.LoadCSS = function (path, theme) {
     }
 
 
-    readFile(path, "utf-8", function (error, data) {
-        if (!error) {
+    fs.readFile(path, "utf-8", function (error, data) {
+        if (error) {
+            console.error(`[LoadCSS] Error while injecting: '${path}' - ${error}`)
+            fs.chmodSync(path, fs.constants.S_IRUSR | fs.constants.S_IWUSR);
+        } else {
             let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
             app.win.webContents.insertCSS(formattedData).then(() => {
                 if (theme) {
@@ -22,8 +25,6 @@ exports.LoadCSS = function (path, theme) {
                     console.log(`[CSS] '${path}' successfully injected.`)
                 }
             });
-        } else {
-            console.error(`[LoadCSS] Error while injecting: '${path}' - Error: ${error}`)
         }
     });
 }
