@@ -65,9 +65,6 @@ module.exports = {
             LoadJS('removeUpsell.js')
         }
 
-        /* Volume Scroll */
-        LoadJS('scrollVol.js')
-
         /* Load the Emulation Files */
         if (app.preferences.value('visual.emulateMacOS').includes('left')) {
             LoadJS('emulateMacOS.js')

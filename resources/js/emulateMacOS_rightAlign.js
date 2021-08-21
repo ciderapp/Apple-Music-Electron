@@ -4,23 +4,6 @@
  *
  */
 try {
-
-
-    /* Remove Apple */
-    while (document.getElementsByClassName('web-navigation__header web-navigation__header--logo').length > 0) {
-        document.getElementsByClassName('web-navigation__header web-navigation__header--logo')[0].remove();
-    }
-
-    if (document.getElementsByClassName('search-box dt-search-box web-navigation__search-box').length > 0) {
-        document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.gridArea = "auto";
-        document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.marginTop = '7px';
-    }
-
-    /* Remove Upsell */
-    while (document.getElementsByClassName('web-navigation__native-upsell').length > 0) {
-        document.getElementsByClassName('web-navigation__native-upsell')[0].remove();
-    }
-
     if (document.getElementsByClassName('web-chrome').length > 0 && !document.querySelector('.dragDiv')) {
 
         /*
@@ -52,14 +35,12 @@ try {
 
 
         /* Give it Space */
-        document.head.insertAdjacentHTML("beforeend", "<style>.web-chrome { top: 32px; }</style>");
+        document.head.insertAdjacentHTML("beforeend", "<style>.web-chrome { top: 25px; }</style>");
 
         /* Add the Stoplights! */
-        document.body.insertAdjacentHTML('afterbegin', `
-            <div class="dragDiv" style="display: flex">
-                <div class="sidebarDragDiv" style="top: 0; -webkit-app-region: drag; background-color: var(--sidebar) !important; -webkit-user-select: none; width: var(--web-navigation-width); height: 32px;">
-                </div>
-                <div class="mainDragDiv" style="background-color: var(--playerBackground); top: 0; -webkit-app-region: drag; -webkit-user-select: none; flex-grow: 1; height: 32px;">
+        document.getElementById('web-main').insertAdjacentHTML('afterbegin', `
+            <div style="backdrop-filter: saturate(50%) blur(20px); z-index: 9999; display: flex; -webkit-user-select: none; -webkit-app-region: no-drag; background-color: var(--playerBackground) !important; width: calc(100vw - var(--web-navigation-width)); height: 25px; position: fixed; top: 0; padding-top: 3px; padding-right: 3px;">
+                <div class="dragDiv right-aligned" style="width: 100%; height: auto; -webkit-app-region: drag;">
                     <span id="red" onmouseover="dimButton('red')" onmouseleave="brightenButton('red')" onclick="${redStoplightOnClick}" style="${redStoplightStyle}"></span>
                     <span id="green" onmouseover="dimButton('green')" onmouseleave="brightenButton('green')" onclick="${greenStoplightOnClick}" style="${greenStoplightStyle}"></span>
                     <span id="yellow" onmouseover="dimButton('yellow')" onmouseleave="brightenButton('yellow')" onclick="${yellowStoplightOnClick}" style="${yellowStoplightStyle}"></span>

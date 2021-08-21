@@ -1,5 +1,4 @@
 try {
-
     if (!document.querySelector('#backButtonBar')) {
         if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.getElementById('web-main').insertAdjacentHTML("afterbegin", `
@@ -12,6 +11,9 @@ try {
         }
     }
 
+    if (document.getElementsByClassName('dragDiv right-aligned').length > 0) {
+        document.getElementById('backButtonBar').style.top = '25px'
+    }
 
     document.getElementById('web-main').addEventListener('scroll', function () {
         if (document.getElementById('web-main').scrollTop > 80) {

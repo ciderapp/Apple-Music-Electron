@@ -1,4 +1,6 @@
 try {
+    const preferences = ipcRenderer.sendSync('getPreferences');
+
     function GetXPath(path) {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     }
@@ -8,9 +10,16 @@ try {
         document.getElementsByClassName('locale-switcher-banner')[0].remove()
     }
 
+    let buttonPath;
+    if (preferences.visual.emulateMacOS === 'right') {
+        buttonPath = '//*[@id="web-main"]/div[4]/div/div[3]/div[3]/button'
+    } else {
+        buttonPath = '//*[@id="web-main"]/div[3]/div/div[3]/div[3]/button'
+    }
+
     /* Create the Settings / Discord buttons */
-    if (GetXPath('//*[@id="web-main"]/div[3]/div/div[3]/div[3]/button')) {
-        GetXPath('//*[@id="web-main"]/div[3]/div/div[3]/div[3]/button').addEventListener('click', function () {
+    if (GetXPath(buttonPath)) {
+        GetXPath(buttonPath).addEventListener('click', function () {
             if (document.querySelector('.context-menu__option--app-settings')) {
                 console.log("[settingsInit] Preventing second button.");
                 return;
@@ -72,6 +81,39 @@ try {
         });
     }
 
+    /* Scroll Volume */
+    if (!multiplier && document.querySelector('.web-chrome-playback-lcd__volume')) {
+        document.getElementsByClassName('web-chrome-playback-lcd__volume')[0].addEventListener('wheel', volumeChange);
+        var multiplier = 0.05;
+
+        function volumeChange(event) {
+            if (checkScrollDirectionIsUp(event)) {
+                if (MusicKit.getInstance().volume <= 1) {
+                    if ((MusicKit.getInstance().volume + multiplier) > 1) {
+                        MusicKit.getInstance().volume = 1
+                    } else {
+                        MusicKit.getInstance().volume = MusicKit.getInstance().volume + multiplier
+                    }
+                }
+            } else {
+                if (MusicKit.getInstance().volume >= 0) {
+                    if ((MusicKit.getInstance().volume - multiplier) < 0) {
+                        MusicKit.getInstance().volume = 0
+                    } else {
+                        MusicKit.getInstance().volume = MusicKit.getInstance().volume - multiplier
+                    }
+                }
+            }
+        }
+
+        function checkScrollDirectionIsUp(event) {
+            if (event.wheelDelta) {
+                return event.wheelDelta > 0;
+            }
+            return event.deltaY < 0;
+        }
+
+    }
 
 } catch (e) {
     console.error("[JS] Error while trying to apply custom.js", e);
