@@ -3,6 +3,12 @@ const {Analytics} = require("./analytics/sentry");
 Analytics.init()
 
 exports.audioQuality = function() {
+        // Check for incognito mode
+        if (app.preferences.value('general.incognitoMode').includes(true)) {
+            app.win.webContents.executeJavaScript("MusicKit.privateEnabled = true")
+        }
+
+        // Audio Quality
         if (app.preferences.value('general.audioQuality') === 'auto') {
             console.log("[Audio] Audio Quality has been set to automatic.")
         } else if (app.preferences.value('general.audioQuality') === 'high') {

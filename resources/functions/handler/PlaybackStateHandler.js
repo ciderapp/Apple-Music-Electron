@@ -31,9 +31,14 @@ exports.playbackStateDidChange = function () {
 
         SetThumbarButtons(a.status)
         SetTrayTooltip(a)
-        app.discord.rpc.updateActivity(a)
-        app.lastfm.scrobbleSong(a)
-        app.mpris.updateState(a)
+
+        if (app.preferences.value('general.incognitoMode').includes(true)) {
+            console.log("[Incognito] Incognito Mode enabled. Ignoring PS.")
+        } else {
+            app.discord.rpc.updateActivity(a)
+            app.lastfm.scrobbleSong(a)
+            app.mpris.updateState(a)
+        }
 
         app.PreviousSongId = a.playParams.id
     });

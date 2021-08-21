@@ -12,6 +12,7 @@ exports.SettingsMenuInit = function () {
         'defaults': {
             "general": {
                 "language": "",
+                "incognitoMode": [],
                 "discordRPC": [
                     true
                 ],
@@ -267,6 +268,16 @@ exports.SettingsMenuInit = function () {
                                 {'label': 'Normal (64kbps)', 'value': 'normal'}
                             ],
                             'help': `Allows the user to select a preferred audio bitrate for music playback. NOTE: This may not work on all songs.`
+                        },
+                        { // Incognito Mode
+                            'label': 'Incognito Mode',
+                            'key': 'incognitoMode',
+                            'type': 'checkbox',
+                            'options': [{
+                                'label': 'Incognito Mode',
+                                'value': true
+                            }],
+                            'help': `When enabled AME will hide all song details and information from all receivers. (Discord RPC, LastFM, Apple)`
                         },
                         { // Discord Rich Presence
                             'label': 'Discord Rich Presence',

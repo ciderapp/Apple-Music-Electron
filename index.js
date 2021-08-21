@@ -1,5 +1,5 @@
 require('v8-compile-cache');
-const {app, globalShortcut, session} = require('electron');
+const {app, globalShortcut, session, Notification} = require('electron');
 
 // Run all the Before App is Ready Stuff
 
@@ -53,6 +53,12 @@ function CreateWindow() {
     app.win.webContents.on('did-finish-load', () => {
         audioQuality() // Set audio quality based on user preference.
     })
+
+    if (app.preferences.value('general.incognitoMode').includes(true)) {
+        let bodyVer = `Incognito Mode enabled. Song Info Receivers will be disabled.`
+        new Notification({title: "Incognito Mode", body: bodyVer}).show()
+        console.log("[Incognito] Incognito Mode enabled. Turning off Discord RPC, LastFM, MPRIS.")
+    }
 }
 
 // When its Ready call it all
