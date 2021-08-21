@@ -78,6 +78,7 @@ exports.SettingsMenuInit = function () {
                 "forceDisableWindowFrame": [],
                 "forceApplicationMode": "",
                 "listenNow": [],
+                "verboseLogging": [],
                 "discordClearActivityOnPause": [
                     true
                 ],
@@ -703,6 +704,16 @@ exports.SettingsMenuInit = function () {
                                     {'label': 'Light Mode', 'value': 'light'}
                                 ],
                                 'help': 'If you want the application to be in a mode that your system is not using by default.'
+                            },
+                            { // Verbose Logging
+                                'label': 'Verbose Logging',
+                                'key': 'verboseLogging',
+                                'type': 'checkbox',
+                                'options': [{
+                                    'label': 'Enable Verbose Logging',
+                                    'value': true
+                                }],
+                                'help': 'This toggle enables more advanced logging for debugging purposes.'
                             },
                             {
                                 'key': 'alwaysOnTop',

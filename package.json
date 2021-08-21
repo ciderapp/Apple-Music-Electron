@@ -60,7 +60,7 @@
   "build": {
     "electronVersion": "13.1.5",
     "electronDownload": {
-      "version": "14.0.0-wvvmp-beta.21",
+      "version": "14.0.0-wvvmp-beta.23",
       "mirror": "https://github.com/castlabs/electron-releases/releases/download/v"
     },
     "appId": "apple-music",
