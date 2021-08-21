@@ -57,11 +57,14 @@ module.exports = {
             state: `by ${attributes.artistName}`,
             startTimestamp: attributes.startTime,
             endTimestamp: attributes.endTime,
-            largeImageKey: 'apple',
+            largeImageKey: 'logo',
             largeImageText: attributes.albumName,
             smallImageKey: 'play',
             smallImageText: 'Playing',
-            instance: false,
+            instance: true,
+            buttons: [
+                { label: "Download", url: "https://github.com/Apple-Music-Electron/Apple-Music-Electron" },
+            ]
         };
 
         if (!((new Date(attributes.endTime)).getTime() > 0)) {
