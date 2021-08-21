@@ -40,7 +40,7 @@ exports.InitializeTheme = function () {
     }
 
     // Copy the Files
-    if (app.preferences.value('advanced.themeDevelopment').includes(true)) {
+    if (!app.preferences.value('advanced.themeDevelopment').includes(true)) {
         copySync(app.themesPath, app.userThemesPath, {overwrite: true})
         console.log(`[InitializeTheme] [copyThemes] Themes overwritten at '${app.userThemesPath}'`)
     }

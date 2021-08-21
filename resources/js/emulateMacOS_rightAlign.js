@@ -48,6 +48,10 @@ try {
             </div>
         `);
     }
+
+    if (document.getElementsByClassName('search-scope-bar search__scope-bar search-scope-bar--desktop-search').length > 0) {
+        document.getElementsByClassName('search-scope-bar search__scope-bar search-scope-bar--desktop-search')[0].style.top = '25px'
+    }
 } catch (e) {
     console.error("[JS] Error while trying to apply emulateMacOS_rightAlign.js", e);
 }
