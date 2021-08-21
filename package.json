@@ -27,7 +27,7 @@
   "buildResources": "resources",
   "scripts": {
     "init": "install",
-    "start": "electron --enable-accelerated-mjpeg-decode --enable-accelerated-video --ignore-gpu-blacklist --enable-native-gpu-memory-buffers --enable-gpu-rasterization .",
+    "start": "electron --enable-accelerated-mjpeg-decode --enable-accelerated-video --disable-gpu-driver-bug-workarounds --ignore-gpu-blacklist --enable-native-gpu-memory-buffers .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps"
