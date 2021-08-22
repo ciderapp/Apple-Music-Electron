@@ -6,7 +6,9 @@ exports.SetTrayTooltip = function (attributes) {
 
     if (!app.preferences.value('general.trayTooltipSongName').includes(true)) return;
 
-    console.log(`[UpdateTooltip] Updating Tooltip for ${attributes.name} to ${attributes.status}`)
+    if (app.preferences.value('advanced.verboseLogging').includes(true)) {
+        console.log(`[UpdateTooltip] Updating Tooltip for ${attributes.name} to ${attributes.status}`)
+    }
 
     if (attributes.status === true) {
         app.tray.setToolTip(`Playing ${attributes.name} by ${attributes.artistName} on ${attributes.albumName}`);

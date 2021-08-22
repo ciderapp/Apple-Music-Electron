@@ -10,8 +10,9 @@ exports.CreateNotification = function (attributes) {
         return;
     }
 
-
-    console.log(`[CreateNotification] Notification Generating | Function Parameters: SongName: ${attributes.name} | Artist: ${attributes.artistName} | Album: ${attributes.albumName}`)
+    if (app.preferences.value('advanced.verboseLogging').includes(true)) {
+        console.log(`[CreateNotification] Notification Generating | Function Parameters: SongName: ${attributes.name} | Artist: ${attributes.artistName} | Album: ${attributes.albumName}`)
+    }
 
     if (app.ipc.existingNotification) {
         console.log("[CreateNotification] Existing Notification Found - Removing. ")

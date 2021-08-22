@@ -49,8 +49,11 @@ module.exports = {
             this.connect()
         }
 
-        console.log('[DiscordRPC][updateActivity] Updating Discord Activity.')
         if (!app.discord.connected) return;
+
+        if (app.preferences.value('advanced.verboseLogging').includes(true)) {
+            console.log('[DiscordRPC][updateActivity] Updating Discord Activity.')
+        }
 
         let ActivityObject = {
             details: attributes.name,
