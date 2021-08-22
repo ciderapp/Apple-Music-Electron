@@ -51,6 +51,7 @@
     "v8-compile-cache": "^2.1.1"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^1.0.0-beta.9",
     "electron": "https://github.com/castlabs/electron-releases.git",
     "electron-builder": "^22.7.0",
     "electron-webpack": "^2.7.4",
