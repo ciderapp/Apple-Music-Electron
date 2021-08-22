@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@sentry/electron": "^2.5.1",
+    "@tauri-apps/api": "^1.0.0-beta.6",
     "discord-rpc": "^3.1.4",
     "electron-acrylic-window": "^0.5.8",
     "electron-log": "^4.3.5",
