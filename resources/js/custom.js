@@ -1,5 +1,7 @@
 try {
-    const preferences = ipcRenderer.sendSync('getPreferences');
+    if (!preferences) {
+        var preferences = ipcRenderer.sendSync('getPreferences');
+    }
 
     function GetXPath(path) {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -10,6 +12,7 @@ try {
         document.getElementsByClassName('locale-switcher-banner')[0].remove()
     }
 
+    /* Get the Button Path */
     let buttonPath;
     if (preferences.visual.emulateMacOS === 'right') {
         buttonPath = '//*[@id="web-main"]/div[4]/div/div[3]/div[3]/button'
@@ -81,25 +84,26 @@ try {
     }
 
     /* Scroll Volume */
-    if (!multiplier && document.querySelector('.web-chrome-playback-lcd__volume')) {
+    if (document.querySelector('.web-chrome-playback-lcd__volume') && typeof volumeChange == "undefined" && typeof checkScrollDirectionIsUp == "undefined") {
         document.getElementsByClassName('web-chrome-playback-lcd__volume')[0].addEventListener('wheel', volumeChange);
-        var multiplier = 0.05;
+        let volume = MusicKit.getInstance().volume;
+        let multiplier = 0.05;
 
         function volumeChange(event) {
             if (checkScrollDirectionIsUp(event)) {
-                if (MusicKit.getInstance().volume <= 1) {
-                    if ((MusicKit.getInstance().volume + multiplier) > 1) {
-                        MusicKit.getInstance().volume = 1
+                if (volume <= 1) {
+                    if ((volume + multiplier) > 1) {
+                        volume = 1
                     } else {
-                        MusicKit.getInstance().volume = MusicKit.getInstance().volume + multiplier
+                        volume = volume + multiplier
                     }
                 }
             } else {
-                if (MusicKit.getInstance().volume >= 0) {
-                    if ((MusicKit.getInstance().volume - multiplier) < 0) {
-                        MusicKit.getInstance().volume = 0
+                if (volume >= 0) {
+                    if ((volume - multiplier) < 0) {
+                        volume = 0
                     } else {
-                        MusicKit.getInstance().volume = MusicKit.getInstance().volume - multiplier
+                        volume = volume - multiplier
                     }
                 }
             }
@@ -111,7 +115,24 @@ try {
             }
             return event.deltaY < 0;
         }
+    }
 
+    /* Audio Quality Selector */
+    if (preferences.general.audioQuality === 'auto') {
+        console.log("[JS] AudioQuality set to auto, dynamically setting bitrate between 64 and 256.");
+    } else if (preferences.general.audioQuality === 'high') {
+        console.log("[JS] AudioQuality set to high, forcing bitrate to 256.");
+        MusicKit.PlaybackBitrate = 256;
+        MusicKit.getInstance().bitrate = 256;
+    } else if (preferences.general.audioQuality === 'standard') {
+        console.log("[JS] AudioQuality set to standard, forcing bitrate to 64.");
+        MusicKit.PlaybackBitrate = 64;
+        MusicKit.getInstance().bitrate = 64;
+    }
+
+    /* Incognito Mode */
+    if (preferences.general.incognitoMode.includes(true)) {
+        MusicKit.privateEnabled = true
     }
 
 } catch (e) {

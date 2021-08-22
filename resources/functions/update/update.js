@@ -15,7 +15,9 @@ exports.checkUpdates = function (manual) {
     }
 
     try {
-        autoUpdater.checkForUpdates()
+        if (app.isPackaged) {
+            autoUpdater.checkForUpdates()
+        }
     } catch (err) {
 	console.log("An error occurred while checking for updates: "+err)
     }

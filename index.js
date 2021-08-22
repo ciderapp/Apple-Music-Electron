@@ -49,14 +49,8 @@ function CreateWindow() {
     const {mediaItemStateDidChange} = require('./resources/functions/handler/MediaStateHandler')
     mediaItemStateDidChange() // IPCMain
 
-    const {audioQuality} = require('./resources/functions/audioQuality')
-    app.win.webContents.on('did-finish-load', () => {
-        audioQuality() // Set audio quality based on user preference.
-    })
-
     if (app.preferences.value('general.incognitoMode').includes(true)) {
-        let bodyVer = `Incognito Mode enabled. Song Info Receivers will be disabled.`
-        new Notification({title: "Incognito Mode", body: bodyVer}).show()
+        new Notification({title: "Incognito Mode", body: `Incognito Mode enabled. Song Info Receivers will be disabled.`}).show()
         console.log("[Incognito] Incognito Mode enabled. Turning off Discord RPC, LastFM, MPRIS.")
     }
 }

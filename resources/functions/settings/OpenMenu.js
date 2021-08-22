@@ -265,7 +265,7 @@ exports.SettingsMenuInit = function () {
                             'options': [
                                 {'label': 'Automatic (Default)', 'value': 'auto'},
                                 {'label': 'High (256kbps)', 'value': 'high'},
-                                {'label': 'Normal (64kbps)', 'value': 'normal'}
+                                {'label': 'Standard (64kbps)', 'value': 'standard'}
                             ],
                             'help': `Allows the user to select a preferred audio bitrate for music playback. NOTE: This may not work on all songs.`
                         },
@@ -887,7 +887,7 @@ exports.SettingsMenuInit = function () {
             }
             ],
         browserWindowOpts: {
-            'title': 'App Settings',
+            'title': 'Preferences',
             'width': 900,
             'maxWidth': 1000,
             'height': 700,

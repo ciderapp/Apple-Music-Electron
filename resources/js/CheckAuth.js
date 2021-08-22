@@ -1,5 +1,5 @@
 try {
-    if (MusicKit.getInstance().authorizationStatus === 3) {
+    if (MusicKit.getInstance().isAuthorized) {
 
         let urlToLoad = window.location.href;
         const preferences = ipcRenderer.sendSync('getPreferences');
