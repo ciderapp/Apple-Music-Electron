@@ -14,8 +14,6 @@ To start a Webview:
 RUST_DEBUG=1 yarn tauri dev
 ```
 
-To view
-
 <p align="center">
   <a href="https://ame.cryptofyre.org"><img src="https://cryptofyre.org/AME/assets/img/banneropen.png" alt="Banner"></a>
 </p>
