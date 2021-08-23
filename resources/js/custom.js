@@ -84,7 +84,7 @@ try {
     }
 
     /* Scroll Volume */
-    if (document.querySelector('.web-chrome-playback-lcd__volume')) {
+    if (document.querySelector('.web-chrome-playback-lcd__volume') && typeof volumeChange === 'undefined') {
         document.getElementsByClassName('web-chrome-playback-lcd__volume')[0].addEventListener('wheel', volumeChange);
 
         function volumeChange(event) {
