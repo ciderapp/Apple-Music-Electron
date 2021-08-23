@@ -84,26 +84,25 @@ try {
     }
 
     /* Scroll Volume */
-    if (document.querySelector('.web-chrome-playback-lcd__volume') && typeof volumeChange == "undefined" && typeof checkScrollDirectionIsUp == "undefined") {
+    if (document.querySelector('.web-chrome-playback-lcd__volume')) {
         document.getElementsByClassName('web-chrome-playback-lcd__volume')[0].addEventListener('wheel', volumeChange);
-        let volume = MusicKit.getInstance().volume;
-        let multiplier = 0.05;
 
         function volumeChange(event) {
+            console.log(event);
             if (checkScrollDirectionIsUp(event)) {
-                if (volume <= 1) {
-                    if ((volume + multiplier) > 1) {
-                        volume = 1
+                if (MusicKit.getInstance().volume <= 1) {
+                    if ((MusicKit.getInstance().volume + 0.05) > 1) {
+                        MusicKit.getInstance().volume = 1
                     } else {
-                        volume = volume + multiplier
+                        MusicKit.getInstance().volume = MusicKit.getInstance().volume + 0.05
                     }
                 }
             } else {
-                if (volume >= 0) {
-                    if ((volume - multiplier) < 0) {
-                        volume = 0
+                if (MusicKit.getInstance().volume >= 0) {
+                    if ((MusicKit.getInstance().volume - 0.05) < 0) {
+                        MusicKit.getInstance().volume = 0
                     } else {
-                        volume = volume - multiplier
+                        MusicKit.getInstance().volume = MusicKit.getInstance().volume - 0.05
                     }
                 }
             }
