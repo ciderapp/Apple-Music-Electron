@@ -7,8 +7,6 @@ exports.mediaItemStateDidChange = function () {
     console.log('[mediaItemStateDidChange] Started.')
     ipcMain.on('mediaItemStateDidChange', (_item, a) => {
         CreateNotification(a)
-        if (app.preferences.value('general.incognitoMode').includes(true)) {
-            app.mpris.updateActivity(a);
-        }
+        app.mpris.updateActivity(a);
     });
 }
