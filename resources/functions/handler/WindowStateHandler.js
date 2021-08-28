@@ -47,19 +47,19 @@ exports.WindowStateHandler = function () {
     app.win.on('close', function (event) { // Hide the App if isQuitting is not true
         if (!app.isQuiting) {
             event.preventDefault();
-            if (app.win !== null) {
+            if (typeof app.win.hide === 'function') {
                 app.win.hide();
             }
         } else {
             event.preventDefault();
-            if (app.win !== null) {
+            if (typeof app.win.destroy === 'function') {
                 app.win.destroy();
             }
         }
     });
 
     ipcMain.on('minimize', () => { // listen for minimize event
-        if (app.win !== null) {
+        if (typeof app.win.minimize === 'function') {
             app.win.minimize()
         }
     })
@@ -91,12 +91,15 @@ exports.WindowStateHandler = function () {
     app.win.on('show', function () {
         SetContextMenu(true)
         SetThumbarButtons(app.isPlaying)
+        if (app.win.isVisible()) {
+            app.win.focus()
+        }
         // if (app.win.StoredWebsite) app.win.loadURL(app.win.StoredWebsite)
     })
 
     app.win.on('hide', function () {
         SetContextMenu(false)
-        app.win.StoredWebsite = app.win.webContents.getURL();
+        // app.win.StoredWebsite = app.win.webContents.getURL();
     })
 
 

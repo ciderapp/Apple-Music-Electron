@@ -33,7 +33,7 @@ exports.InitializeTheme = function () {
     // Checks if the Folder is readable
     try {
         fs.accessSync(app.userThemesPath, fs.constants.F_OK)
-    } catch(err) {
+    } catch (err) {
         console.error(err)
         copySync(app.themesPath, app.userThemesPath)
         console.log(`[InitializeTheme] [copyThemes] Themes copied to '${app.userThemesPath}'`)

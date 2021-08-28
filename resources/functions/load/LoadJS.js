@@ -11,9 +11,10 @@ exports.LoadJS = function (path) {
         if (!error) {
             try {
                 let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
-                app.win.webContents.executeJavaScript(formattedData).then(() => { if (app.preferences.value('advanced.verboseLogging').includes(true)) {
-                    console.log(`[LoadJSFile] '${path}' successfully injected.`)
-                }
+                app.win.webContents.executeJavaScript(formattedData).then(() => {
+                    if (app.preferences.value('advanced.verboseLogging').includes(true)) {
+                        console.log(`[LoadJSFile] '${path}' successfully injected.`)
+                    }
                 });
             } catch (err) {
                 console.error(`[LoadJSFile] Error while injecting: ${path} - Error: ${err}`)

@@ -885,7 +885,7 @@ exports.SettingsMenuInit = function () {
                     ]
                 }
             }
-            ],
+        ],
         browserWindowOpts: {
             'title': 'Preferences',
             'width': 900,
@@ -906,7 +906,7 @@ exports.SettingsMenuInit = function () {
         console.log(`[OpenMenu][ConfigurationCheck] Checking for existing configuration at '${ExistingConfigurationPath}'`)
         if (fs.existsSync(ExistingConfigurationPath)) {
             console.log(`[OpenMenu][ConfigurationCheck] '${ExistingConfigurationPath}' exists!`)
-            const data = fs.readFileSync(ExistingConfigurationPath, {encoding:'utf8', flag:'r'});
+            const data = fs.readFileSync(ExistingConfigurationPath, {encoding: 'utf8', flag: 'r'});
             const userConfiguration = JSON.parse(data.toString())
             const baseConfiguration = app.preferences.defaults;
 

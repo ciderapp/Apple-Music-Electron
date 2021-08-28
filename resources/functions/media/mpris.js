@@ -19,7 +19,7 @@ module.exports = {
                 supportedMimeTypes: [],
                 supportedInterfaces: ['player']
             });
-        } catch(err) {
+        } catch (err) {
             console.error(`[MPRIS][connect] ${err}`)
         }
 

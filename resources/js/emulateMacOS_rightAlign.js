@@ -18,7 +18,7 @@ try {
         /* Green - Maximize */
         const greenStoplightStyle = "height: 11px; width: 11px; background-color: rgb(0, 202, 86); border-radius: 50%; display: inline-block; float: right; top: 0px; margin: 10px 4px 10px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;";
         const greenStoplightOnClick = "ipcRenderer.send('maximize');";
-        
+
         /* Yellow - Minimize */
         const yellowStoplightStyle = "height: 11px; width: 11px; background-color: rgb(255, 189, 76); border-radius: 50%; display: inline-block; float: right; top: 0px; margin: 10px 4px; color: rgb(130, 0, 5); fill: rgb(130, 0, 5); -webkit-app-region: no-drag;";
         const yellowStoplightOnClick = "ipcRenderer.send('minimize');";
@@ -32,7 +32,6 @@ try {
         function brightenButton(id) {
             document.getElementById(id).style.filter = "brightness(100%)";
         }
-
 
         /* Give it Space */
         document.head.insertAdjacentHTML("beforeend", "<style>.web-chrome { top: 25px; }</style>");

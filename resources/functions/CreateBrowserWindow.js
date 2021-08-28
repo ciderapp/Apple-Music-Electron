@@ -3,6 +3,7 @@ const {join} = require('path')
 const os = require('os')
 const fs = require('fs')
 const {Analytics} = require("./analytics/sentry");
+const {SetContextMenu} = require('./win/SetContextMenu')
 let win, transparencyOptions, transparencyTheme, acrylicWindow;
 Analytics.init()
 
@@ -24,8 +25,8 @@ exports.CreateBrowserWindow = function () {
 
         if (fs.existsSync(fileName)) {
             const file = fs.readFileSync(fileName, "utf8");
-            file.split(/\r?\n/).forEach((line)=> {
-                if(line.includes("--transparency")){
+            file.split(/\r?\n/).forEach((line) => {
+                if (line.includes("--transparency")) {
                     hex_codes.push(line.match(/[a-f0-9]{8}/gi)); // Fetches all the hex codes
                 }
             });
@@ -132,7 +133,9 @@ exports.CreateBrowserWindow = function () {
         }
 
         app.transparency = true
-    } else { app.transparency = false }
+    } else {
+        app.transparency = false
+    }
 
     // BrowserWindow Creation
     if (app.transparency) {
@@ -157,12 +160,12 @@ exports.CreateBrowserWindow = function () {
 
     if (!app.preferences.value('advanced.menuBarVisible').includes(true)) win.setMenuBarVisibility(false); // Hide that nasty menu bar
     if (app.preferences.value('advanced.devTools') !== 'built-in') win.setMenu(null); // Disables DevTools
-    if (app.preferences.value('advanced.devTools') === 'detached') win.webContents.openDevTools({ mode: 'detach' }); // Enables Detached DevTools
+    if (app.preferences.value('advanced.devTools') === 'detached') win.webContents.openDevTools({mode: 'detach'}); // Enables Detached DevTools
 
     // Detect if the application has been opened with --minimized
     if (app.commandLine.hasSwitch('minimized')) {
         console.log("[Apple-Music-Electron] Application opened with --minimized");
-        if (win !== null) {
+        if (typeof win.minimize === 'function') {
             win.minimize();
         }
     }
@@ -170,8 +173,9 @@ exports.CreateBrowserWindow = function () {
     // Detect if the application has been opened with --hidden
     if (app.commandLine.hasSwitch('hidden')) {
         console.log("[Apple-Music-Electron] Application opened with --hidden");
-        if (win !== null) {
+        if (typeof win.hide === 'function') {
             win.hide();
+            SetContextMenu()
         }
     }
 

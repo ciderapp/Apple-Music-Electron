@@ -9,7 +9,7 @@ try {
 
     /* Fetch Error */
     if (document.querySelector('.classname')) {
-    //    do stuff
+        //    do stuff
     }
 
 

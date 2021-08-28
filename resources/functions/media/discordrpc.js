@@ -37,7 +37,7 @@ module.exports = {
         console.log('[DiscordRPC][disconnect] Disconnecting from discord.')
         try {
             app.discord.client.destroy().catch((e) => console.error(`[DiscordRPC][disconnect] ${e}`));
-        } catch(err) {
+        } catch (err) {
             console.error(err)
         }
     },
@@ -66,7 +66,7 @@ module.exports = {
             smallImageText: 'Playing',
             instance: true,
             buttons: [
-                { label: "Download", url: "https://github.com/Apple-Music-Electron/Apple-Music-Electron" },
+                {label: "Download", url: "https://github.com/Apple-Music-Electron/Apple-Music-Electron"},
             ]
         };
 
@@ -103,7 +103,7 @@ module.exports = {
         if (ActivityObject) {
             try {
                 app.discord.client.setActivity(ActivityObject)
-            } catch(err) {
+            } catch (err) {
                 console.error(`[DiscordRPC][setActivity] ${err}`)
             }
 

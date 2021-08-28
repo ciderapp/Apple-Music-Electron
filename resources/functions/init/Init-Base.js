@@ -29,10 +29,6 @@ exports.InitializeBase = function () {
     app.win = '';
     app.ipc = {existingNotification: false};
 
-    // Init
-    const {checkUpdates} = require('../update/update')
-    checkUpdates()
-
     // Detects if the application has been opened with --force-quit
     if (app.commandLine.hasSwitch('force-quit')) {
         console.log("[Apple-Music-Electron] User has closed the application via --force-quit")
