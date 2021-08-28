@@ -24,7 +24,13 @@ exports.InitializeTray = function () {
     SetContextMenu(true);
 
     app.tray.on('double-click', () => {
-        app.win.show()
+        if (typeof app.win.show === 'function') {
+            if (app.win.isVisible()) {
+                app.win.focus()
+            } else {
+                app.win.show()
+            }
+        }
     })
 
 
