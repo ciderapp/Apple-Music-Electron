@@ -20,9 +20,7 @@ const backButtonBlacklist = [
     `${urlBase}/${app.locale[0]}/radio`,
 
     `${urlBase}/${app.locale[0]}/search`,
-    `${urlBase}/${app.locale[0]}/search?l=${app.locale[0]}`,
-    `${urlBase}/${app.locale[0]}/search?l=${app.locale[0]}&term=*`,
-    `${urlBase}/${app.locale[0]}/search?term=*`,
+    `${urlBase}/${app.locale[0]}/search?*`,
 
     `${urlBase}/library/recently-added?l=${app.locale[0]}`,
     `${urlBase}/library/albums?l=${app.locale[0]}`,
