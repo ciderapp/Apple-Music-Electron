@@ -45,24 +45,25 @@ exports.SetThumbarButtons = function (state) {
                     tooltip: 'Previous',
                     icon: Images.previous,
                     click() {
-                        console.log('[setThumbarButtons] Previous song button clicked.')
-                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPlaying] skipToPreviousItem"))
+                        if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Previous song button clicked.') }
+                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").catch((err) => console.error(err))
                     }
                 },
                 {
                     tooltip: 'Play',
                     icon: Images.play,
                     click() {
-                        console.log('[setThumbarButtons] Play song button clicked.')
-                        app.win.webContents.executeJavaScript("MusicKit.getInstance().play()").then(() => console.log("[ThumbarPlaying] play"))
+                        if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Play song button clicked.') }
+
+                        app.win.webContents.executeJavaScript("MusicKit.getInstance().play()").catch((err) => console.error(err))
                     }
                 },
                 {
                     tooltip: 'Next',
                     icon: Images.next,
                     click() {
-                        console.log('[setThumbarButtons] Pause song button clicked.')
-                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPlaying] skipToNextItem"))
+                        if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Pause song button clicked.') }
+                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").catch((err) => console.error(err))
                     }
                 }
             ];
@@ -71,7 +72,7 @@ exports.SetThumbarButtons = function (state) {
         // Inactive
         default:
         case "inactive":
-            console.log('[setThumbarButtons] Thumbar has been set to default/inactive.')
+            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Thumbar has been set to default/inactive.') }
             array = [
                 {
                     tooltip: 'Previous',
@@ -94,30 +95,30 @@ exports.SetThumbarButtons = function (state) {
         // Playing
         case true:
         case "playing":
-            console.log('[setThumbarButtons] Thumbar has been set to true/playing.')
+            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Thumbar has been set to true/playing.') }
             array = [
                 {
                     tooltip: 'Previous',
                     icon: Images.previous,
                     click() {
-                        console.log('[setThumbarButtons] Previous song button clicked.')
-                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPaused] skipToPreviousItem"))
+                        if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Previous song button clicked.') }
+                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").catch((err) => console.error(err))
                     }
                 },
                 {
                     tooltip: 'Pause',
                     icon: Images.pause,
                     click() {
-                        console.log('[setThumbarButtons] Play song button clicked.')
-                        app.win.webContents.executeJavaScript("MusicKit.getInstance().pause()").then(() => console.log("[ThumbarPaused] pause"))
+                        if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Play song button clicked.') }
+                        app.win.webContents.executeJavaScript("MusicKit.getInstance().pause()").catch((err) => console.error(err))
                     }
                 },
                 {
                     tooltip: 'Next',
                     icon: Images.next,
                     click() {
-                        console.log('[setThumbarButtons] Pause song button clicked.')
-                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPaused] skipToNextItem"))
+                        if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Pause song button clicked.') }
+                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").catch((err) => console.error(err))
                     }
                 }
             ]
