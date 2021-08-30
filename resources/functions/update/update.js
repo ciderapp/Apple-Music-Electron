@@ -39,7 +39,7 @@ exports.checkUpdates = function (manual) {
         app.win.setProgressBar(convertedProgress)
     })
 
-    autoUpdater.on('update-downloaded', () => {
+    autoUpdater.on('update-downloaded', (_e, _releaseNotes, _releaseName, _releaseDate, _updateURL) => {
         console.log('[checkUpdates] New version downloaded. Starting user prompt.');
 
         if (process.env.NODE_ENV === 'production') {
