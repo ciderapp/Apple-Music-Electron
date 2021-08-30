@@ -65,6 +65,16 @@
       "mirror": "https://github.com/castlabs/electron-releases/releases/download/v"
     },
     "appId": "apple-music",
+    "protocols": {
+      "name": "Apple Music Electron Opener/Queuer",
+      "schemes": [
+        "ame",
+        "itms",
+        "itmss",
+        "musics",
+        "music"
+      ]
+    },
     "extends": null,
     "files": [
       "**/*",

@@ -18,7 +18,7 @@ InitializeBase()
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {
     console.log('[CreateWindow] Started.')
-    const {InstanceHandler} = require('./resources/functions/handler/InstanceHandler')
+    const InstanceHandler = require('./resources/functions/handler/handler').InstanceHandler
     const ExistingInstance = InstanceHandler()
     if (ExistingInstance === true) {
         console.log('[Apple-Music-Electron] [InstanceHandler] Existing Instance Found. Terminating.')
@@ -28,6 +28,9 @@ function CreateWindow() {
         console.log('[Apple-Music-Electron] [InstanceHandler] No existing instances found.')
     }
 
+    const {LinkHandler} = require('./resources/functions/handler/handler')
+    LinkHandler() // Testing
+
     const {CreateBrowserWindow} = require('./resources/functions/CreateBrowserWindow')
     app.win = CreateBrowserWindow() // Create the Browser Window
     app.win.show()
@@ -35,17 +38,17 @@ function CreateWindow() {
     const {LoadWebsite} = require('./resources/functions/load/LoadWebsite')
     LoadWebsite() // Load the Website
 
-    const {SettingsHandler} = require('./resources/functions/handler/SettingsHandler')
+    const {SettingsHandler} = require('./resources/functions/handler/handler')
     SettingsHandler() // Handles updates to settings
 
-    const {WindowStateHandler} = require('./resources/functions/handler/WindowStateHandler')
+    const {WindowStateHandler} = require('./resources/functions/handler/handler')
     WindowStateHandler() // Handling the Window
 
-    const {playbackStateDidChange} = require('./resources/functions/handler/PlaybackStateHandler')
-    playbackStateDidChange() // IPCMain
+    const {PlaybackStateHandler} = require('./resources/functions/handler/handler')
+    PlaybackStateHandler() // IPCMain
 
-    const {mediaItemStateDidChange} = require('./resources/functions/handler/MediaStateHandler')
-    mediaItemStateDidChange() // IPCMain
+    const {MediaStateHandler} = require('./resources/functions/handler/handler')
+    MediaStateHandler() // IPCMain
 
     const {SetThumbarButtons} = require('./resources/functions/win/SetThumbarButtons')
     SetThumbarButtons() // Set Inactive Thumbar Icons

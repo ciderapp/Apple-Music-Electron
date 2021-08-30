@@ -4,48 +4,6 @@ const {LoadCSS} = require('./load/LoadCSS')
 const {Analytics} = require("./analytics/sentry");
 Analytics.init()
 
-function matchRuleShort(str, rule) {
-    var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-    return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
-}
-
-const urlBase = (app.preferences.value('advanced.useBetaSite')) ? `https://beta.music.apple.com` : `https://music.apple.com`;
-const backButtonBlacklist = [
-    `${urlBase}/${app.locale[0]}/listen-now?l=${app.locale[0]}`,
-    `${urlBase}/${app.locale[0]}/browse?l=${app.locale[0]}`,
-    `${urlBase}/${app.locale[0]}/radio?l=${app.locale[0]}`,
-
-    `${urlBase}/${app.locale[0]}/listen-now`,
-    `${urlBase}/${app.locale[0]}/browse`,
-    `${urlBase}/${app.locale[0]}/radio`,
-
-    `${urlBase}/${app.locale[0]}/search`,
-    `${urlBase}/${app.locale[0]}/search?*`,
-
-    `${urlBase}/library/recently-added?l=${app.locale[0]}`,
-    `${urlBase}/library/albums?l=${app.locale[0]}`,
-    `${urlBase}/library/songs?l=${app.locale[0]}`,
-    `${urlBase}/library/made-for-you?l=${app.locale[0]}`,
-
-    `${urlBase}/library/recently-added`,
-    `${urlBase}/library/albums`,
-    `${urlBase}/library/songs`,
-    `${urlBase}/library/made-for-you`,
-    `${urlBase}/library/artists/*`,
-    `${urlBase}/library/playlist/*`
-];
-
-function backButtonChecks() {
-    let returnVal = false
-    backButtonBlacklist.forEach(function (item) {
-        if (matchRuleShort(app.win.webContents.getURL(), item) || app.win.webContents.getURL() === item) {
-            returnVal = true
-        }
-    });
-    return returnVal
-}
-
-
 module.exports = {
     LoadFiles: async function () {
         /* Remove Apple Music Logo */
@@ -71,6 +29,47 @@ module.exports = {
         }
 
         LoadJS('custom.js')
+
+        function matchRuleShort(str, rule) {
+            var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+            return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
+        }
+
+        const urlBase = (app.preferences.value('advanced.useBetaSite')) ? `https://beta.music.apple.com` : `https://music.apple.com`;
+        const backButtonBlacklist = [
+            `${urlBase}/${app.locale[0]}/listen-now?l=${app.locale[1]}`,
+            `${urlBase}/${app.locale[0]}/browse?l=${app.locale[1]}`,
+            `${urlBase}/${app.locale[0]}/radio?l=${app.locale[1]}`,
+
+            `${urlBase}/${app.locale[0]}/listen-now`,
+            `${urlBase}/${app.locale[0]}/browse`,
+            `${urlBase}/${app.locale[0]}/radio`,
+
+            `${urlBase}/${app.locale[0]}/search`,
+            `${urlBase}/${app.locale[0]}/search?*`,
+
+            `${urlBase}/library/recently-added?l=${app.locale[1]}`,
+            `${urlBase}/library/albums?l=${app.locale[1]}`,
+            `${urlBase}/library/songs?l=${app.locale[1]}`,
+            `${urlBase}/library/made-for-you?l=${app.locale[1]}`,
+
+            `${urlBase}/library/recently-added`,
+            `${urlBase}/library/albums`,
+            `${urlBase}/library/songs`,
+            `${urlBase}/library/made-for-you`,
+            `${urlBase}/library/artists/*`,
+            `${urlBase}/library/playlist/*`
+        ];
+
+        function backButtonChecks() {
+            let returnVal = false
+            backButtonBlacklist.forEach(function (item) {
+                if (matchRuleShort(app.win.webContents.getURL(), item) || app.win.webContents.getURL() === item) {
+                    returnVal = true
+                }
+            });
+            return returnVal
+        }
 
         /* Load Back Button */
         if (app.preferences.value('visual.backButton').includes(true) && !backButtonChecks() && app.win.webContents.canGoBack()) {
