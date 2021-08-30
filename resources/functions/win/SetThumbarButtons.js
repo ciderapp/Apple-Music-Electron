@@ -1,31 +1,37 @@
-const {nativeImage} = require("electron");
-const {app} = require('electron')
+const {app, nativeTheme} = require('electron')
+const nativeImage = require('electron').nativeImage
 const {join} = require('path')
-const { systemPreferences } = require('electron')
+const {Analytics} = require("../analytics/sentry");
+Analytics.init()
+
+let Images;
 
 exports.SetThumbarButtons = function (state) {
-
-    let trayicondir;
     if (process.platform !== "win32") return;
 
-    let preferredtheme = app.config.systemTheme
+    let trayIconDir;
 
-    if (preferredtheme === "") {
-        if (systemPreferences.isDarkMode()) {
-            trayicondir = join(__dirname, `./media/light/`);
-        } else {
-            trayicondir = join(__dirname, `./media/dark/`);
-        }
-    } else if (preferredtheme === "dark") {
-        trayicondir = join(__dirname, `./media/light/`);
+    if (nativeTheme.shouldUseDarkColors) {
+        trayIconDir = join(__dirname, `./media/light/`);
     } else {
-        trayicondir = join(__dirname, `./media/dark/`);
+        trayIconDir = join(__dirname, `./media/dark/`);
     }
 
+    if (!Images) {
+        Images = {
+            next: nativeImage.createFromPath(trayIconDir + `next.png`).resize({width: 32, height: 32}),
+            nextInactive: nativeImage.createFromPath(trayIconDir + `next-inactive.png`).resize({width: 32, height: 32}),
 
+            pause: nativeImage.createFromPath(trayIconDir + `pause.png`).resize({width: 32, height: 32}),
+            pauseInactive: nativeImage.createFromPath(trayIconDir + `pause-inactive.png`).resize({width: 32, height: 32}),
 
-    console.log(trayicondir)
-    // please dont add this again.
+            play: nativeImage.createFromPath(trayIconDir + `play.png`).resize({width: 32, height: 32}),
+            playInactive: nativeImage.createFromPath(trayIconDir + `play-inactive.png`).resize({width: 32, height: 32}),
+
+            previous: nativeImage.createFromPath(trayIconDir + `previous.png`).resize({width: 32, height: 32}),
+            previousInactive: nativeImage.createFromPath(trayIconDir + `previous-inactive.png`).resize({width: 32, height: 32}),
+        }
+    }
 
     let array;
     switch (state) {
@@ -33,29 +39,31 @@ exports.SetThumbarButtons = function (state) {
         // Paused
         case false:
         case "paused":
+            console.log('[setThumbarButtons] Thumbar has been set to false/paused.')
             array = [
                 {
                     tooltip: 'Previous',
-                    icon: nativeImage.createFromPath(trayicondir+`previous.png`),
+                    icon: Images.previous,
                     click() {
-                        console.log('[setThumbarButtons] Previous song button clicked.')
-                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPlaying] skipToPreviousItem"))
+                        if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Previous song button clicked.') }
+                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").catch((err) => console.error(err))
                     }
                 },
                 {
                     tooltip: 'Play',
-                    icon: nativeImage.createFromPath(trayicondir+`play.png`),
+                    icon: Images.play,
                     click() {
-                        console.log('[setThumbarButtons] Play song button clicked.')
-                        app.win.webContents.executeJavaScript("MusicKit.getInstance().play()").then(() => console.log("[ThumbarPlaying] play"))
+                        if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Play song button clicked.') }
+
+                        app.win.webContents.executeJavaScript("MusicKit.getInstance().play()").catch((err) => console.error(err))
                     }
                 },
                 {
                     tooltip: 'Next',
-                    icon: nativeImage.createFromPath(trayicondir+`next.png`),
+                    icon: Images.next,
                     click() {
-                        console.log('[setThumbarButtons] Pause song button clicked.')
-                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPlaying] skipToNextItem"))
+                        if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Pause song button clicked.') }
+                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").catch((err) => console.error(err))
                     }
                 }
             ];
@@ -64,21 +72,22 @@ exports.SetThumbarButtons = function (state) {
         // Inactive
         default:
         case "inactive":
+            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Thumbar has been set to default/inactive.') }
             array = [
                 {
                     tooltip: 'Previous',
-                    icon: nativeImage.createFromPath(trayicondir+`previous-inactive.png`).resize({ width: 32, height: 32 }),
-                    flags: "disabled"
+                    icon: Images.previousInactive,
+                    flags: ["disabled"]
                 },
                 {
                     tooltip: 'Play',
-                    icon: nativeImage.createFromPath(trayicondir+`play-inactive.png`).resize({ width: 32, height: 32 }),
-                    flags: "disabled"
+                    icon: Images.playInactive,
+                    flags: ["disabled"]
                 },
                 {
                     tooltip: 'Next',
-                    icon: nativeImage.createFromPath(trayicondir+`next-inactive.png`).resize({ width: 32, height: 32 }),
-                    flags: "enabled"
+                    icon: Images.nextInactive,
+                    flags: ["disabled"]
                 }
             ];
             break;
@@ -86,33 +95,35 @@ exports.SetThumbarButtons = function (state) {
         // Playing
         case true:
         case "playing":
+            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Thumbar has been set to true/playing.') }
             array = [
                 {
                     tooltip: 'Previous',
-                    icon: nativeImage.createFromPath(trayicondir+`previous.png`).resize({ width: 32, height: 32 }),
+                    icon: Images.previous,
                     click() {
-                        console.log('[setThumbarButtons] Previous song button clicked.')
-                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").then(() => console.log("[ThumbarPaused] skipToPreviousItem"))
+                        if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Previous song button clicked.') }
+                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").catch((err) => console.error(err))
                     }
                 },
                 {
                     tooltip: 'Pause',
-                    icon: nativeImage.createFromPath(trayicondir+`pause.png`).resize({ width: 32, height: 32 }),
+                    icon: Images.pause,
                     click() {
-                        console.log('[setThumbarButtons] Play song button clicked.')
-                        app.win.webContents.executeJavaScript("MusicKit.getInstance().pause()").then(() => console.log("[ThumbarPaused] pause"))
+                        if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Play song button clicked.') }
+                        app.win.webContents.executeJavaScript("MusicKit.getInstance().pause()").catch((err) => console.error(err))
                     }
                 },
                 {
                     tooltip: 'Next',
-                    icon: nativeImage.createFromPath(trayicondir+`next.png`).resize({ width: 32, height: 32 }),
+                    icon: Images.next,
                     click() {
-                        console.log('[setThumbarButtons] Pause song button clicked.')
-                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[ThumbarPaused] skipToNextItem"))
+                        if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Pause song button clicked.') }
+                        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").catch((err) => console.error(err))
                     }
                 }
             ]
             break;
     }
-    app.win.setThumbarButtons(array)
+
+    console.log((app.win.setThumbarButtons(array) ? '[setThumbarButtons] Thumbar Buttons Set.' : '[setThumbarButtons] Thumbar Buttons Failed to be set.'))
 }

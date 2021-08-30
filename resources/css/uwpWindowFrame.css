@@ -1,0 +1,69 @@
+:root {
+    --frameColor: var(--sidebar);
+}
+
+/* Titlebar CSS */
+
+#titleBar {
+    display: block;
+    position: fixed;
+    height: 32px;
+    width: calc(100% - 2px);
+    color: #FFF;
+    -webkit-user-select: none;
+    background-color: var(--frameColor);
+    border-bottom: 4px solid #343B48;
+}
+
+#titleBar #dragDiv {
+    width: 100%;
+    height: 100%;
+    -webkit-app-region: drag;
+}
+
+/* TitleBar Buttons */
+.dragDiv > .titleBarBtns {
+    float: right;
+    width: 120px;
+    height: 32px;
+}
+
+.titleBarBtns > .topBtn {
+    width: 20px;
+    height: 20px;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+/* Button CSS */
+
+.titleBarBtns > .topBtn:hover {
+    background-color: #272C36;
+}
+
+.titleBarBtns > .topBtn:active {
+    background-color: #4F9FEE;
+}
+
+/* Button Images */
+
+.titleBarBtns > .minimizeBtn {
+    background-image: url('https://raw.githubusercontent.com/binaryfunt/electron-seamless-titlebar-tutorial/master/src/icons/min-w-30.png');
+}
+
+.titleBarBtns > .maximizeBtn {
+    background-image: url('https://raw.githubusercontent.com/binaryfunt/electron-seamless-titlebar-tutorial/master/src/icons/max-w-30.png');
+}
+
+.titleBarBtns > .restoreBtn {
+    background-image: url('https://raw.githubusercontent.com/binaryfunt/electron-seamless-titlebar-tutorial/master/src/icons/restore-w-30.png');
+}
+
+.titleBarBtns > .closeBtn {
+    background-image: url('https://raw.githubusercontent.com/binaryfunt/electron-seamless-titlebar-tutorial/master/src/icons/close-w-30.png');
+}

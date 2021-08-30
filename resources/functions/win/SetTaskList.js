@@ -1,4 +1,6 @@
 const {app} = require('electron')
+const {Analytics} = require("../analytics/sentry");
+Analytics.init()
 
 exports.SetTaskList = function () {
 

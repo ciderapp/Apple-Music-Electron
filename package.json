@@ -1,45 +1,68 @@
 {
-  "author": "cryptofyre <cryptofyre@protonmail.com>",
-  "homepage": "https://github.com/cryptofyre/Apple-Music-Electron",
   "name": "apple-music-electron",
   "applicationId": "AppleMusicElectron",
   "productName": "Apple Music",
-  "version": "2.3.0",
-  "description": "Unofficial Electron wrapper for Apple Music created by @cryptofyre",
+  "version": "2.5.0",
+  "description": "A free, lightweight, open source alternative to iTunes and other Apple Music applications based on Electron 13.1.0",
   "license": "MIT",
+  "author": "cryptofyre <cryptofyre@protonmail.com> (https://cryptofyre.org)",
+  "contributors": [
+    {
+      "name": "Core",
+      "url": "https://github.com/coredev-uk"
+    },
+    {
+      "name": "child-duckling",
+      "url": "https://github.com/child-duckling"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Apple-Music-Electron/Apple-Music-Electron.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Apple-Music-Electron/Apple-Music-Electron/issues?q=is%3Aopen+is%3Aissue+label%3Abug"
+  },
+  "homepage": "https://applemusicelectron.com/",
   "buildResources": "resources",
   "scripts": {
     "init": "install",
-    "start": "electron --enable-accelerated-mjpeg-decode --enable-accelerated-video --ignore-gpu-blacklist --enable-native-gpu-memory-buffers --enable-gpu-rasterization .",
+    "start": "electron --enable-accelerated-mjpeg-decode --enable-accelerated-video --disable-gpu-driver-bug-workarounds --ignore-gpu-blacklist --enable-native-gpu-memory-buffers .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "discord-rich-presence": "^0.0.8",
+    "@sentry/electron": "^2.5.1",
+    "chmodr": "^1.2.0",
     "discord-rpc": "^3.1.4",
+    "electron-acrylic-window": "^0.5.8",
     "electron-log": "^4.3.5",
+    "electron-preferences": "^2.3.2",
     "electron-updater": "^4.3.9",
     "fs-extra": "^10.0.0",
-    "glasstron": "^0.0.7",
     "is-reachable": "^5.0.0",
+    "lastfmapi": "^0.1.1",
     "mpris-service": "^2.1.2",
     "node-fetch": "^2.6.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "register-scheme": "github:devsnek/node-register-scheme",
     "source-map-support": "^0.5.16",
     "v8-compile-cache": "^2.1.1"
   },
   "devDependencies": {
-    "electron": "https://github.com/cryptofyre/castlabs-electron12.git",
+    "electron": "https://github.com/castlabs/electron-releases.git",
     "electron-builder": "^22.7.0",
     "electron-webpack": "^2.7.4",
     "musickit-typescript": "^1.2.4",
     "webpack": "~4.42.1"
   },
   "build": {
-    "electronVersion": "13.1.0",
+    "electronVersion": "13.1.5",
     "electronDownload": {
-      "version": "13.1.0-wvvmp",
-      "mirror": "https://github.com/cryptofyre/castlabs-electron12/releases/download/v"
+      "version": "14.0.0-wvvmp-beta.23",
+      "mirror": "https://github.com/castlabs/electron-releases/releases/download/v"
     },
     "appId": "apple-music",
     "extends": null,

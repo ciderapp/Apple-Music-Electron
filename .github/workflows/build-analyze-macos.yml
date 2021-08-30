@@ -14,6 +14,12 @@ name: "CodeQL macOS"
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+    - 'README.md'
+    - 'SECURITY.md'
+    - '.gitmodules'
+    - '.gitignore'
+    - 'LICENSE'
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ master ]
@@ -40,6 +46,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+      with: 
+        submodules: true
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -60,7 +68,7 @@ jobs:
 
     - run: |
        yarn install
-       yarn dist -w -p never --x64
+       yarn dist -m -p never
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1

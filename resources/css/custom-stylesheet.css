@@ -1,0 +1,55 @@
+/* Back Button CSS */
+
+#backButtonBar {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    height: 40px;
+    transition: 0.2s;
+    background-color: transparent;
+    padding: 5px 10px;
+    z-index: 9902;
+    opacity: 0.95;
+    margin-top: 55px;
+}
+
+#backButtonBar .button-area {
+    position: inherit;
+    width: 50px;
+    height: 30px;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 7px;
+    opacity: 1.0;
+    transition: 0.2s;
+}
+
+#backButtonBar .button-area:active {
+    background-color: var(--segmentedControlSelectedBG) !important;
+    backdrop-filter: saturate(0%) blur(25px) !important;
+    box-shadow: 0 0 .5px var(--segmentedControlSelectedBorder), 0 3px 8px var(--segmentedControlSelectedShadow1), 0 3px 1px var(--segmentedControlSelectedShadow2);
+}
+
+#backButtonBar .button-area img:active {
+    opacity: 1 !important;
+}
+
+#backButtonBar .button-area img {
+    display: block;
+    margin: auto;
+    width: auto;
+    height: auto;
+    opacity: 0.50;
+    z-index: 10000;
+    transition: 0.2s;
+}
+
+#backButtonBar .button-area img:hover {
+    opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+    #backButtonBar .button-area img {
+        filter: brightness(0) invert(1);
+    }
+}

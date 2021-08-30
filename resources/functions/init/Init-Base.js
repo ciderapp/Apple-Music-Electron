@@ -1,13 +1,33 @@
 const {app} = require('electron')
 const {join} = require('path')
-const {InitializeAutoUpdater} = require('./Init-AutoUpdater')
-
-
+const {Analytics} = require("../analytics/sentry");
+Analytics.init()
 
 exports.InitializeBase = function () {
     console.log('[InitializeBase] Started.')
+
     // Set proper cache folder
     app.setPath("userData", join(app.getPath("cache"), app.name))
+
+    // Disable CORS
+    app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
+
+    // Media Key Hijacking
+    if (app.preferences.value('advanced.preventMediaKeyHijacking').includes(true)) {
+        console.log("[Apple-Music-Electron] Hardware Media Key Handling disabled.")
+        app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,MediaSessionService');
+    }
+
+    // Sets the ModelId (For windows notifications)
+    if (process.platform === "win32") app.setAppUserModelId("Apple Music");
+
+    // Disable the Media Session to allow MPRIS to be the primary service
+    if (process.platform === "linux") app.commandLine.appendSwitch('disable-features', 'MediaSessionService');
+
+    // Assign Default Variables
+    app.isQuiting = !app.preferences.value('window.closeButtonMinimize').includes(true);
+    app.win = '';
+    app.ipc = {existingNotification: false};
 
     // Detects if the application has been opened with --force-quit
     if (app.commandLine.hasSwitch('force-quit')) {
@@ -15,34 +35,6 @@ exports.InitializeBase = function () {
         app.quit()
     }
 
-    // Disable CORS (NO LONGER REQUIRED Thanks Apple ❤️)
-    if (app.config.advanced.disableCORS) app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
-
-    // Media Key Hijacking
-    if (app.config.advanced.preventMediaKeyHijacking) app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling');
-
-    // Sets the ModelId (For windows notifications)
-    if (process.platform === "win32") app.setAppUserModelId("Apple Music");
-
-    // Assign Default Variables
-    app.isQuiting = !app.config.preferences.closeButtonMinimize;
-    app.config.css.glasstron = app.config.preferences.cssTheme.toLowerCase().split('-').includes('glasstron');
-    app.win = '';
-    app.ipc = {
-        ThumbarUpdate: true,
-        TooltipUpdate: true,
-        DiscordUpdate: true,
-        MprisUpdate: true,
-        MprisStatusUpdate: true,
-        MediaNotification: true,
-        cache: false,
-        cacheNew: false,
-        existingNotification: false
-    };
-    app.discord = {client: false, error: false, cachedAttributes: false};
-    app.mpris = {}
-
-
-    // Init
-    InitializeAutoUpdater()
+    // Set Max Listener
+    require('events').EventEmitter.defaultMaxListeners = Infinity;
 }

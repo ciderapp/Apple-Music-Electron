@@ -1,5 +1,7 @@
 const {app, Menu} = require('electron')
-const {autoUpdater} = require("electron-updater");
+const {Analytics} = require("../analytics/sentry");
+const {checkUpdates} = require("../update/update");
+Analytics.init()
 
 exports.SetContextMenu = function (visibility) {
 
@@ -8,13 +10,15 @@ exports.SetContextMenu = function (visibility) {
             {
                 label: 'Check for Updates',
                 click: function () {
-                    autoUpdater.checkForUpdatesAndNotify().then(r => console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}`));
+                    checkUpdates(true)
                 }
             },
             {
                 label: 'Minimize to Tray',
                 click: function () {
-                    app.win.hide();
+                    if (typeof app.win.hide === 'function') {
+                        app.win.hide();
+                    }
                 }
             },
             {
@@ -30,13 +34,15 @@ exports.SetContextMenu = function (visibility) {
             {
                 label: 'Check for Updates',
                 click: function () {
-                    autoUpdater.checkForUpdatesAndNotify().then(r => console.log(`[AutoUpdater] Latest Version is ${r.updateInfo.version}`));
+                    checkUpdates(true)
                 }
             },
             {
                 label: 'Show Apple Music',
                 click: function () {
-                    app.win.show();
+                    if (typeof app.win.show === 'function') {
+                        app.win.show();
+                    }
                 }
             },
             {

@@ -3,5 +3,5 @@ try {
         document.getElementsByClassName('web-navigation__native-upsell')[0].remove();
     }
 } catch (e) {
-    console.error("[CSS] Error while trying to apply removeUpsell.js", e);
+    console.error("[JS] Error while trying to apply removeUpsell.js", e);
 }

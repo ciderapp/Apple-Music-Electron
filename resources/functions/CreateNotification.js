@@ -1,27 +1,18 @@
 const {app, Notification} = require('electron')
 const {join} = require('path')
+const {Analytics} = require("./analytics/sentry");
+Analytics.init()
 
 exports.CreateNotification = function (attributes) {
-    console.log(`[CreateNotification] Attempting to CreateNotification with parameters:`)
-    console.log(`[CreateNotification] Config Option: ${app.config.preferences.playbackNotifications}`)
-    console.log(`[CreateNotification] Notification Supported: ${Notification.isSupported()}`)
-    if (!app.config.preferences.playbackNotifications || !Notification.isSupported()) return;
+    if (!Notification.isSupported() || !(app.preferences.value('general.playbackNotifications').includes(true) || app.preferences.value('general.playbackNotifications').includes('minimized'))) return;
 
-
-    if (app.config.preferences.notificationsMinimized) {
-        const isAppHidden = !app.win.isVisible()
-        console.log(`[CreateNotification] [notificationsMinimized] Config Notification Minimized: ${app.config.preferences.notificationsMinimized}`)
-        console.log(`[CreateNotification] [notificationsMinimized] App Minimized: ${app.win.isMinimized()}`)
-        console.log(`[CreateNotification] [notificationsMinimized] App Hidden: ${isAppHidden}`)
-        if (isAppHidden || app.win.isMinimized()) {
-
-        } else {
-            return;
-        }
+    if (app.preferences.value('general.playbackNotifications').includes("minimized") && !(!app.win.isVisible() || app.win.isMinimized())) {
+        return;
     }
 
-
-    console.log(`[CreateNotification] Notification Generating | Function Parameters: SongName: ${attributes.name} | Artist: ${attributes.artistName} | Album: ${attributes.albumName}`)
+    if (app.preferences.value('advanced.verboseLogging').includes(true)) {
+        console.log(`[CreateNotification] Notification Generating | Function Parameters: SongName: ${attributes.name} | Artist: ${attributes.artistName} | Album: ${attributes.albumName}`)
+    }
 
     if (app.ipc.existingNotification) {
         console.log("[CreateNotification] Existing Notification Found - Removing. ")
@@ -39,7 +30,7 @@ exports.CreateNotification = function (attributes) {
 
     if (process.platform === "darwin") {
         NOTIFICATION_OBJECT.actions = {
-            actions: [ {
+            actions: [{
                 type: 'button',
                 text: 'Skip'
             }]
@@ -50,7 +41,7 @@ exports.CreateNotification = function (attributes) {
     app.ipc.existingNotification.show()
 
     if (process.platform === "darwin") {
-        app.ipc.existingNotification.addListener('action', (_event, index) => {
+        app.ipc.existingNotification.addListener('action', (_event) => {
             app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[CreateNotification] skipToNextItem"))
         });
     }

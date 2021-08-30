@@ -1,20 +1,26 @@
-const { app } = require('electron')
+const {app} = require('electron')
+const {Analytics} = require("../analytics/sentry");
+Analytics.init()
 
 exports.InstanceHandler = function () {
     console.log('[InstanceHandler] Started.')
     const gotTheLock = app.requestSingleInstanceLock();
 
-    if (!gotTheLock && !app.config.advanced.allowMultipleInstances) {
-        console.log("[Apple-Music-Electron] Existing Instance is Blocking Second Instance.")
+    if (!gotTheLock && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) {
+        console.log("[InstanceHandler] Existing Instance is Blocking Second Instance.")
         app.quit();
         return true
     } else {
         app.on('second-instance', (_e, argv) => {
-            if (argv.indexOf("--force-quit") > -1) {
+            console.log(`[InstanceHandler] Second Instance Started with args: ${argv}`)
+            if (argv.includes("--force-quit")) {
+                console.log('[InstanceHandler] Force Quit found. Quitting App.')
                 app.quit()
                 return true
-            } else if (app.win && !app.config.advanced.allowMultipleInstances) {
+            } else if (app.win && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) {
+                console.log('[InstanceHandler] Showing window.')
                 app.win.show()
+                app.win.focus()
             }
         })
     }
