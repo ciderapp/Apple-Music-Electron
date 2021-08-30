@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://applemusicelectron.com/"><img src="https://cryptofyre.org/AME/assets/img/banneropen.png" alt="Banner"></a>
+  <a href="https://applemusicelectron.com/"><img src="./.github/25.gif" alt="Banner"></a>
 </p>
 
 <p align="center"> 
