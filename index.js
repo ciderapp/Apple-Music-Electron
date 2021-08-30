@@ -30,9 +30,7 @@ function CreateWindow() {
 
     const {CreateBrowserWindow} = require('./resources/functions/CreateBrowserWindow')
     app.win = CreateBrowserWindow() // Create the Browser Window
-
-    const {SetThumbarButtons} = require('./resources/functions/win/SetThumbarButtons')
-    SetThumbarButtons() // Set Inactive Thumbar Icons
+    app.win.show()
 
     const {LoadWebsite} = require('./resources/functions/load/LoadWebsite')
     LoadWebsite() // Load the Website
@@ -48,6 +46,9 @@ function CreateWindow() {
 
     const {mediaItemStateDidChange} = require('./resources/functions/handler/MediaStateHandler')
     mediaItemStateDidChange() // IPCMain
+
+    const {SetThumbarButtons} = require('./resources/functions/win/SetThumbarButtons')
+    SetThumbarButtons() // Set Inactive Thumbar Icons
 
     if (app.preferences.value('general.incognitoMode').includes(true)) {
         new Notification({title: "Incognito Mode", body: `Incognito Mode enabled. Song Info Receivers will be disabled.`}).show()

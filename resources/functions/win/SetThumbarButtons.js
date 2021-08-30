@@ -1,4 +1,5 @@
-const {app, nativeTheme, nativeImage} = require('electron')
+const {app, nativeTheme} = require('electron')
+const nativeImage = require('electron').nativeImage
 const {join} = require('path')
 const {Analytics} = require("../analytics/sentry");
 Analytics.init()
@@ -75,17 +76,17 @@ exports.SetThumbarButtons = function (state) {
                 {
                     tooltip: 'Previous',
                     icon: Images.previousInactive,
-                    flags: "disabled"
+                    flags: ["disabled"]
                 },
                 {
                     tooltip: 'Play',
                     icon: Images.playInactive,
-                    flags: "disabled"
+                    flags: ["disabled"]
                 },
                 {
                     tooltip: 'Next',
                     icon: Images.nextInactive,
-                    flags: "enabled"
+                    flags: ["disabled"]
                 }
             ];
             break;
@@ -122,5 +123,6 @@ exports.SetThumbarButtons = function (state) {
             ]
             break;
     }
-    app.win.setThumbarButtons(array)
+
+    console.log((app.win.setThumbarButtons(array) ? '[setThumbarButtons] Thumbar Buttons Set.' : '[setThumbarButtons] Thumbar Buttons Failed to be set.'))
 }
