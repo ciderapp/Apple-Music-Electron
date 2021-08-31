@@ -63,7 +63,7 @@ exports.SettingsMenuInit = function () {
             },
             "advanced": {
                 "devTools": "",
-                "themeDevelopment": [],
+                "overwriteThemes": [],
                 "alwaysOnTop": [],
                 "removeScrollbars": [
                     true
@@ -807,13 +807,13 @@ exports.SettingsMenuInit = function () {
                                 ],
                                 'help': 'This allows users to access the chrome developer tools. Find more information at https://developer.chrome.com/docs/devtools/'
                             },
-                            { // Theme Development (Prevents copying and replacing existing themes)
-                                'key': 'themeDevelopment',
+                            { // overwriteThemes (Prevents copying and replacing existing themes)
+                                'key': 'overwriteThemes',
                                 'type': 'checkbox',
                                 'options': [
-                                    {'label': 'themeDevelopment', 'value': true}
+                                    {'label': 'overwriteThemes', 'value': true}
                                 ],
-                                'help': 'This prevents copying and replacing existing themes when launched.'
+                                'help': 'Enable this to fetch the latest themes from GitHub on the next launch.'
                             },
                             { // Turning on allowMultipleInstances
                                 'key': 'allowMultipleInstances',

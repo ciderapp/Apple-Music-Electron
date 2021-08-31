@@ -1,6 +1,6 @@
 const {app, ipcMain, shell, dialog} = require('electron')
 const {Analytics} = require("./sentry");
-const {LoadOneTimeFiles, LoadFiles} = require("./InjectFiles");
+const {LoadOneTimeFiles, LoadFiles} = require("./load");
 Analytics.init()
 
 const handler = {
@@ -15,7 +15,6 @@ const handler = {
         } else {
             app.on('second-instance', (_e, argv) => {
                 console.log(`[InstanceHandler] Second Instance Started with args: [${argv.join(', ')}]`)
-
                 if (argv.includes("--force-quit")) {
                     console.log('[InstanceHandler] Force Quit found. Quitting App.')
                     app.quit()
