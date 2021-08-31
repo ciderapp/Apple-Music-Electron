@@ -3,7 +3,7 @@ const {resolve, join} = require('path');
 const {copySync} = require('fs-extra');
 const chmodr = require('chmodr');
 const fs = require('fs');
-const {Analytics} = require("../analytics/sentry");
+const {Analytics} = require("../sentry");
 Analytics.init()
 
 exports.InitializeTheme = function () {

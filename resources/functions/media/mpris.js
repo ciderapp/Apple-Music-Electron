@@ -1,6 +1,6 @@
 const {app} = require('electron')
 const mprisService = require('mpris-service');
-const {Analytics} = require("../analytics/sentry");
+const {Analytics} = require("../sentry");
 Analytics.init()
 
 module.exports = {

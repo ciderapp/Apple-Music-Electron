@@ -89,7 +89,7 @@
       ],
       "category": "AudioVideo",
       "icon": "./resources/icons/icon.icns",
-      "desktop": "./apple-music-electron.desktop"
+      "desktop": "./resources/apple-music-electron.desktop"
     },
     "win": {
       "target": [

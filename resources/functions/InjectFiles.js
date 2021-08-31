@@ -1,34 +1,32 @@
 const {app} = require('electron')
-const {LoadJS} = require('./load/LoadJS')
-const {LoadCSS} = require('./load/LoadCSS')
-const {Analytics} = require("./analytics/sentry");
+const {Analytics} = require("./sentry");
 Analytics.init()
 
 module.exports = {
     LoadFiles: async function () {
         /* Remove Apple Music Logo */
         if (app.preferences.value('visual.removeAppleLogo').includes(true)) {
-            LoadJS('removeAppleLogo.js')
+            app.funcs.LoadJS('removeAppleLogo.js')
         }
 
         /* Remove Footer */
         if (app.preferences.value('visual.removeFooter').includes(true)) {
-            LoadJS('removeFooter.js')
+            app.funcs.LoadJS('removeFooter.js')
         }
 
         /* Remove Upsell */
         if (app.preferences.value('visual.removeUpsell').includes(true)) {
-            LoadJS('removeUpsell.js')
+            app.funcs.LoadJS('removeUpsell.js')
         }
 
         /* Load the Emulation Files */
         if (app.preferences.value('visual.emulateMacOS').includes('left')) {
-            LoadJS('emulateMacOS.js')
+            app.funcs.LoadJS('emulateMacOS.js')
         } else if (app.preferences.value('visual.emulateMacOS').includes('right')) {
-            LoadJS('emulateMacOS_rightAlign.js')
+            app.funcs.LoadJS('emulateMacOS_rightAlign.js')
         }
 
-        LoadJS('custom.js')
+        app.funcs.LoadJS('custom.js')
 
         function matchRuleShort(str, rule) {
             var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
@@ -73,7 +71,7 @@ module.exports = {
 
         /* Load Back Button */
         if (app.preferences.value('visual.backButton').includes(true) && !backButtonChecks() && app.win.webContents.canGoBack()) {
-            LoadJS('backButton.js')
+            app.funcs.LoadJS('backButton.js')
         } else { /* Remove it if user cannot go back */
             await app.win.webContents.executeJavaScript(`if (document.querySelector('#backButtonBar')) { document.getElementById('backButtonBar').remove() };`);
         }
@@ -87,13 +85,13 @@ module.exports = {
 
     LoadOneTimeFiles: function () {
         // Inject the custom stylesheet
-        LoadCSS('custom-stylesheet.css')
+        app.funcs.LoadCSS('custom-stylesheet.css')
 
         // Load the appropriate css file for transparency
         if (app.transparency) {
-            LoadCSS('transparency.css')
+            app.funcs.LoadCSS('transparency.css')
         } else {
-            LoadCSS('transparencyDisabled.css')
+            app.funcs.LoadCSS('transparencyDisabled.css')
         }
 
         // Set the settings variables if needed
@@ -104,12 +102,12 @@ module.exports = {
 
         // Streamer Mode
         if (app.preferences.value('visual.streamerMode').includes(true)) {
-            LoadCSS('streamerMode.css')
+            app.funcs.LoadCSS('streamerMode.css')
         }
 
         // Load Themes
         if (app.preferences.value('visual.theme') && !(app.preferences.value('visual.theme').includes('Template')) && !(app.preferences.value('visual.theme').includes('default'))) {
-            LoadCSS(`${app.preferences.value('visual.theme')}.css`, true)
+            app.funcs.LoadCSS(`${app.preferences.value('visual.theme')}.css`, true)
         }
 
 

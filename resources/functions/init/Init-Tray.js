@@ -1,7 +1,6 @@
 const {app, Tray, nativeImage} = require('electron');
 const {join} = require('path');
-const {SetContextMenu} = require('../win/SetContextMenu')
-const {Analytics} = require("../analytics/sentry");
+const {Analytics} = require("../sentry");
 Analytics.init()
 
 exports.InitializeTray = function () {
@@ -21,7 +20,7 @@ exports.InitializeTray = function () {
 
     app.tray = new Tray(trayIcon)
     app.tray.setToolTip('Apple Music');
-    SetContextMenu(true);
+    app.funcs.SetContextMenu(true);
 
     app.tray.on('double-click', () => {
         if (typeof app.win.show === 'function') {

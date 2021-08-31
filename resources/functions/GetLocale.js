@@ -1,6 +1,6 @@
 const {app} = require('electron')
 const languages = require('../languages.json')
-const {Analytics} = require("./analytics/sentry");
+const {Analytics} = require("./sentry");
 Analytics.init()
 
 

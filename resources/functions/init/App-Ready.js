@@ -1,14 +1,13 @@
-const {SetTaskList} = require('../win/SetTaskList')
 const {InitializeTheme} = require('./Init-Theme')
 const {InitializeTray} = require('./Init-Tray')
 const {app} = require('electron')
-const {Analytics} = require("../analytics/sentry");
+const {Analytics} = require("../sentry");
 Analytics.init()
 
 exports.ApplicationReady = function () {
     console.log('[ApplicationReady] Started.')
     // Run the Functions
-    SetTaskList()
+    app.funcs.SetTaskList()
     InitializeTheme()
     InitializeTray()
 
@@ -40,7 +39,7 @@ exports.ApplicationReady = function () {
     }
 
     // Init
-    const {checkUpdates} = require('../update/update')
+    const {checkUpdates} = require('../update')
     checkUpdates()
 
     // Mpris

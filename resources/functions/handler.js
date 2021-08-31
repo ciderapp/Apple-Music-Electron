@@ -1,10 +1,6 @@
 const {app, ipcMain, shell, dialog} = require('electron')
-const {SetThumbarButtons} = require('../win/SetThumbarButtons')
-const {SetTrayTooltip} = require('../win/SetTrayTooltip')
-const {Analytics} = require("../analytics/sentry");
-const {CreateNotification} = require("../CreateNotification");
-const {LoadOneTimeFiles, LoadFiles} = require("../InjectFiles");
-const {SetContextMenu} = require("../win/SetContextMenu");
+const {Analytics} = require("./sentry");
+const {LoadOneTimeFiles, LoadFiles} = require("./InjectFiles");
 Analytics.init()
 
 const handler = {
@@ -67,8 +63,8 @@ const handler = {
                 a.endTime = Number(Math.round(Date.now()));
             }
 
-            SetThumbarButtons(a.status)
-            SetTrayTooltip(a)
+            app.funcs.SetThumbarButtons(a.status)
+            app.funcs.SetTrayTooltip(a)
 
             if (app.preferences.value('general.incognitoMode').includes(true)) {
                 console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
@@ -86,7 +82,7 @@ const handler = {
     MediaStateHandler: function () {
         console.log('[mediaItemStateDidChange] Started.')
         ipcMain.on('mediaItemStateDidChange', (_item, a) => {
-            CreateNotification(a)
+            app.funcs.CreateNotification(a)
             app.mpris.updateActivity(a);
         });
     },
@@ -174,8 +170,8 @@ const handler = {
         })
 
         app.win.on('show', function () {
-            SetContextMenu(true)
-            SetThumbarButtons(app.isPlaying)
+            app.funcs.SetContextMenu(true)
+            app.funcs.SetThumbarButtons(app.isPlaying)
             if (app.win.isVisible()) {
                 app.win.focus()
             }
@@ -183,7 +179,7 @@ const handler = {
         })
 
         app.win.on('hide', function () {
-            SetContextMenu(false)
+            app.funcs.SetContextMenu(false)
             // app.win.StoredWebsite = app.win.webContents.getURL();
         })
     },

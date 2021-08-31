@@ -1,7 +1,7 @@
 const {autoUpdater} = require('electron-updater')
 const {app, dialog, Notification} = require('electron')
-const pjson = require('../../../package.json')
-const {Analytics} = require("../analytics/sentry");
+const pjson = require('../../package.json')
+const {Analytics} = require("./sentry");
 Analytics.init()
 
 autoUpdater.logger = require("electron-log");

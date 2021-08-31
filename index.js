@@ -21,10 +21,14 @@ console.log("-------------------------------------------------------------------
 const {InitializeBase} = require('./resources/functions/init/Init-Base')
 InitializeBase()
 
+const winFuncs = require('./resources/functions/win')
+const loadFuncs = require('./resources/functions/load')
+app.funcs = Object.assign(winFuncs, loadFuncs)
+
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {
     console.log('[CreateWindow] Started.')
-    const InstanceHandler = require('./resources/functions/handler/handler').InstanceHandler
+    const InstanceHandler = require('./resources/functions/handler').InstanceHandler
     const ExistingInstance = InstanceHandler()
     if (ExistingInstance === true) {
         console.log('[Apple-Music-Electron] [InstanceHandler] Existing Instance Found. Terminating.')
@@ -34,30 +38,28 @@ function CreateWindow() {
         console.log('[Apple-Music-Electron] [InstanceHandler] No existing instances found.')
     }
 
-    const {LinkHandler} = require('./resources/functions/handler/handler')
+    const {LinkHandler} = require('./resources/functions/handler')
     LinkHandler() // Testing
 
     const {CreateBrowserWindow} = require('./resources/functions/CreateBrowserWindow')
     app.win = CreateBrowserWindow() // Create the Browser Window
     app.win.show()
 
-    const {LoadWebsite} = require('./resources/functions/load/LoadWebsite')
-    LoadWebsite() // Load the Website
+    app.funcs.LoadWebsite() // Load the Website
 
-    const {SettingsHandler} = require('./resources/functions/handler/handler')
+    const {SettingsHandler} = require('./resources/functions/handler')
     SettingsHandler() // Handles updates to settings
 
-    const {WindowStateHandler} = require('./resources/functions/handler/handler')
+    const {WindowStateHandler} = require('./resources/functions/handler')
     WindowStateHandler() // Handling the Window
 
-    const {PlaybackStateHandler} = require('./resources/functions/handler/handler')
+    const {PlaybackStateHandler} = require('./resources/functions/handler')
     PlaybackStateHandler() // IPCMain
 
-    const {MediaStateHandler} = require('./resources/functions/handler/handler')
+    const {MediaStateHandler} = require('./resources/functions/handler')
     MediaStateHandler() // IPCMain
 
-    const {SetThumbarButtons} = require('./resources/functions/win/SetThumbarButtons')
-    SetThumbarButtons() // Set Inactive Thumbar Icons
+    app.funcs.SetThumbarButtons() // Set Inactive Thumbar Icons
 
     if (app.preferences.value('general.incognitoMode').includes(true)) {
         new Notification({title: "Incognito Mode", body: `Incognito Mode enabled. Song Info Receivers will be disabled.`}).show()

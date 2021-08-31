@@ -2,8 +2,7 @@ const {app, BrowserWindow, nativeTheme} = require('electron')
 const {join} = require('path')
 const os = require('os')
 const fs = require('fs')
-const {Analytics} = require("./analytics/sentry");
-const {SetContextMenu} = require('./win/SetContextMenu')
+const {Analytics} = require("./sentry");
 let win, acrylicWindow;
 Analytics.init()
 
@@ -182,12 +181,12 @@ const BrowserWindowCreation = {
             console.log("[Apple-Music-Electron] Application opened with --hidden");
             if (typeof win.hide === 'function') {
                 win.hide();
-                SetContextMenu()
+                app.funcs.SetContextMenu()
             }
         }
 
         return win
-    }
+    },
 
 }
 

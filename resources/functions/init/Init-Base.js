@@ -1,6 +1,6 @@
 const {app} = require('electron')
 const {join} = require('path')
-const {Analytics} = require("../analytics/sentry");
+const {Analytics} = require("../sentry");
 Analytics.init()
 
 exports.InitializeBase = function () {
