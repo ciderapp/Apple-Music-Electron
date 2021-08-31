@@ -24,7 +24,7 @@ try {
     if (GetXPath(buttonPath)) {
         GetXPath(buttonPath).addEventListener('click', function () {
             if (document.querySelector('.context-menu__option--app-settings')) {
-                console.log("[settingsInit] Preventing second button.");
+                if (preferences.advanced.verboseLogging.includes(true)) console.log("[settingsInit] Preventing second button.");
                 return;
             }
 
@@ -88,7 +88,7 @@ try {
         document.getElementsByClassName('web-chrome-playback-lcd__volume')[0].addEventListener('wheel', volumeChange);
 
         function volumeChange(event) {
-            console.log(event);
+            if (preferences.advanced.verboseLogging.includes(true)) console.log(event);
             if (checkScrollDirectionIsUp(event)) {
                 if (MusicKit.getInstance().volume <= 1) {
                     if ((MusicKit.getInstance().volume + 0.05) > 1) {
@@ -118,13 +118,13 @@ try {
 
     /* Audio Quality Selector */
     if (preferences.general.audioQuality === 'auto') {
-        console.log("[JS] AudioQuality set to auto, dynamically setting bitrate between 64 and 256.");
+        if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to auto, dynamically setting bitrate between 64 and 256.");
     } else if (preferences.general.audioQuality === 'high') {
-        console.log("[JS] AudioQuality set to high, forcing bitrate to 256.");
+        if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to high, forcing bitrate to 256.");
         MusicKit.PlaybackBitrate = 256;
         MusicKit.getInstance().bitrate = 256;
     } else if (preferences.general.audioQuality === 'standard') {
-        console.log("[JS] AudioQuality set to standard, forcing bitrate to 64.");
+        if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to standard, forcing bitrate to 64.");
         MusicKit.PlaybackBitrate = 64;
         MusicKit.getInstance().bitrate = 64;
     }
