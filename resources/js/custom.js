@@ -117,20 +117,20 @@ try {
     }
 
     /* Audio Quality Selector */
-    if (preferences.general.audioQuality === 'auto') {
+    if (preferences.audio.audioQuality === 'auto') {
         if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to auto, dynamically setting bitrate between 64 and 256.");
-    } else if (preferences.general.audioQuality === 'high') {
+    } else if (preferences.audio.audioQuality === 'high') {
         if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to high, forcing bitrate to 256.");
         MusicKit.PlaybackBitrate = 256;
         MusicKit.getInstance().bitrate = 256;
-    } else if (preferences.general.audioQuality === 'standard') {
+    } else if (preferences.audio.audioQuality === 'standard') {
         if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to standard, forcing bitrate to 64.");
         MusicKit.PlaybackBitrate = 64;
         MusicKit.getInstance().bitrate = 64;
     }
 
     /* Gapless Playback */
-    if (preferences.general.gaplessEnabled === true) {
+    if (preferences.audio.gaplessEnabled === true) {
         if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] Gapless Playback enabled, songs will now preload before ending reducing load times.");
         MusicKit.getInstance()._bag.features["enable-gapless"] = true;
     }
