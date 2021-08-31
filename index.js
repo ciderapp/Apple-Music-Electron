@@ -9,8 +9,8 @@ if (app.commandLine.hasSwitch('version') || app.commandLine.hasSwitch('v') ) {
 }
 
 // Run all the Before App is Ready Stuff
-const {InitializeLogging} = require('./resources/functions/init/Init-Logging')
-InitializeLogging()
+const {LoggingInit} = require('./resources/functions/init')
+LoggingInit()
 
 const {SettingsMenuInit} = require("./resources/functions/settings/OpenMenu");
 SettingsMenuInit()
@@ -18,8 +18,8 @@ console.log('[Apple-Music-Electron] Current Configuration:')
 console.log(app.preferences._preferences)
 console.log("---------------------------------------------------------------------")
 
-const {InitializeBase} = require('./resources/functions/init/Init-Base')
-InitializeBase()
+const {BaseInit} = require('./resources/functions/init')
+BaseInit()
 
 const winFuncs = require('./resources/functions/win')
 const loadFuncs = require('./resources/functions/load')
@@ -75,8 +75,8 @@ app.on('ready', () => {
         callback({ responseHeaders: details.responseHeaders })
     })
 
-    const {ApplicationReady} = require('./resources/functions/init/App-Ready')
-    ApplicationReady()
+    const {AppReady} = require('./resources/functions/init')
+    AppReady()
     console.log("[Apple-Music-Electron] Application is Ready.")
     console.log("[Apple-Music-Electron] Creating Window...")
     CreateWindow()

@@ -39,7 +39,7 @@ Here are all the places that you can install Apple-Music-Electron from:
 Package Name | Source | Version | Maintainer
 ---|---|---|---
 [Apple Music Electron](https://applemusicelectron.com/) | [GitHub](https://github.com/Apple-Music-Electron/Apple-Music-Electron/) | [![Build Version](https://img.shields.io/github/release/Apple-Music-Electron/Apple-Music-Electron?style=flat)](https://github.com/Apple-Music-Electron/Apple-Music-Electron/releases) | AME Team
-[apple-music-electron-git](https://aur.archlinux.org/packages/apple-music-electron-git) | [Arch User Repository](https://aur.archlinux.org/) | [![Build Version](https://img.shields.io/aur/version/apple-music-electron-git?style=flat)](https://aur.archlinux.org/cgit/aur.git/log/?h=apple-music-electron-git) | [coredev-uk](https://github.com/coredev-uk)
+[`apple-music-electron-git`](https://aur.archlinux.org/packages/apple-music-electron-git) | [Arch User Repository](https://aur.archlinux.org/) | [![Build Version](https://img.shields.io/aur/version/apple-music-electron-git?style=flat)](https://aur.archlinux.org/cgit/aur.git/log/?h=apple-music-electron-git) | [coredev-uk](https://github.com/coredev-uk)
 [Apple Music Electron](https://snapcraft.io/apple-music-electron) | [Snapcraft](https://snapcraft.io/) | [![Snapcraft](https://snapcraft.io/apple-music-electron/badge.svg)](https://snapcraft.io/apple-music-electron) | [cryptofyre](https://github.com/cryptofyre)
 `cryptofyre.AppleMusicElectron` | [Windows Package Manager](https://github.com/microsoft/winget-cli/) | ![Windows Package Manager](https://img.shields.io/badge/winget-v2.5.0-blue?style=flat&logo=microsoft) | [cryptofyre](https://github.com/cryptofyre)
 

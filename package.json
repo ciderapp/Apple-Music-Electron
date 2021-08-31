@@ -40,7 +40,7 @@
     "electron-log": "^4.3.5",
     "electron-preferences": "^2.3.2",
     "electron-updater": "^4.3.9",
-    "fs-extra": "^10.0.0",
+    "git-pull-or-clone": "^2.0.1",
     "is-reachable": "^5.0.0",
     "lastfmapi": "^0.1.1",
     "mpris-service": "^2.1.2",

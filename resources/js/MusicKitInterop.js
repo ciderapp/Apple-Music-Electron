@@ -10,7 +10,7 @@ const MusicKitInterop = {
         MusicKit.getInstance().addEventListener(MusicKit.Events.playbackStateDidChange, () => {
             if (MusicKitInterop.getAttributes().title !== "No Title Found" && MusicKitInterop.getAttributes().playParams.id !== "no-id-found" && CachedStatus !== MusicKit.getInstance().isPlaying) {
                 if (((MusicKit.getInstance().isPlaying === false) && CachedTime !== MusicKit.getInstance().currentPlaybackTimeRemaining) || (MusicKit.getInstance().isPlaying === true && CachedTime === MusicKit.getInstance().currentPlaybackTimeRemaining)) {
-                    console.log(`[MusicKitInterop] Sending playbackStateDidChange (${MusicKit.getInstance().isPlaying ? 'Is Playing' : 'Is not Playing'})`)
+                    if (preferences.advanced.verboseLogging.includes(true)) console.log(`[MusicKitInterop] Sending playbackStateDidChange (${MusicKit.getInstance().isPlaying ? 'Is Playing' : 'Is not Playing'})`);
                     global.ipcRenderer.send('playbackStateDidChange', MusicKitInterop.getAttributes())
                 }
             }
@@ -21,7 +21,7 @@ const MusicKitInterop = {
         MusicKit.getInstance().addEventListener(MusicKit.Events.mediaItemStateDidChange, () => {
             if (MusicKitInterop.getAttributes().title !== "No Title Found" && MusicKitInterop.getAttributes().playParams.id !== "no-id-found") {
                 if (CachedAttributes.playParams.id !== MusicKitInterop.getAttributes().playParams.id) {
-                    console.log('[MusicKitInterop] Sending mediaItemStateDidChange')
+                    if (preferences.advanced.verboseLogging.includes(true)) console.log('[MusicKitInterop] Sending mediaItemStateDidChange');
                     global.ipcRenderer.send('mediaItemStateDidChange', MusicKitInterop.getAttributes())
                 }
             }

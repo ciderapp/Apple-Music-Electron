@@ -29,7 +29,6 @@ exports.SettingsMenuInit = function () {
                 "analyticsEnabled": [
                     true
                 ],
-                "audioQuality": "auto",
             },
             "visual": {
                 "theme": "default",
@@ -55,6 +54,12 @@ exports.SettingsMenuInit = function () {
                 ],
                 "transparencyMaximumRefreshRate": ""
             },
+            "audio": {
+                "audioQuality": "auto",
+                "gaplessEnabled": [
+                    true
+                ],
+            },
             "window": {
                 "appStartupBehavior": "false",
                 "closeButtonMinimize": [
@@ -63,7 +68,7 @@ exports.SettingsMenuInit = function () {
             },
             "advanced": {
                 "devTools": "",
-                "themeDevelopment": [],
+                "overwriteThemes": [],
                 "alwaysOnTop": [],
                 "removeScrollbars": [
                     true
@@ -257,17 +262,6 @@ exports.SettingsMenuInit = function () {
                                 {'label': 'Zimbabwe', 'value': 'zw'}
                             ],
                             'help': 'You will need to restart the application for language settings to apply.'
-                        },
-                        {
-                            'label': 'Sound Quality',
-                            'key': 'audioQuality',
-                            'type': 'dropdown',
-                            'options': [
-                                {'label': 'Automatic (Default)', 'value': 'auto'},
-                                {'label': 'High (256kbps)', 'value': 'high'},
-                                {'label': 'Standard (64kbps)', 'value': 'standard'}
-                            ],
-                            'help': `Allows the user to select a preferred audio bitrate for music playback. NOTE: This may not work on all songs.`
                         },
                         { // Incognito Mode
                             'label': 'Incognito Mode',
@@ -497,6 +491,39 @@ exports.SettingsMenuInit = function () {
                                 }]
                             }
                         ]
+                    }]
+                }
+            },
+            {
+                'id': 'audio',
+                'label': 'Audio Settings',
+                'icon': 'dashboard-level',
+                'form': {
+                    'groups': [{
+                        // Audio Settings
+                        'label': 'Audio Settings',
+                        'fields': [
+                            { // Sound Quality
+                                'label': 'Sound Quality',
+                                'key': 'audioQuality',
+                                'type': 'dropdown',
+                                'options': [
+                                    {'label': 'Automatic (Default)', 'value': 'auto'},
+                                    {'label': 'High (256kbps)', 'value': 'high'},
+                                    {'label': 'Standard (64kbps)', 'value': 'standard'}
+                                ],
+                                'help': `Allows the user to select a preferred audio bitrate for music playback. NOTE: This may not work on all songs.`
+                            },
+                            { // Gapless Playback
+                                'key': 'gaplessEnabled',
+                                'type': 'checkbox',
+                                'options': [{
+                                    'label': 'Gapless Playback',
+                                    'value': true
+                                }],
+                                'help': `Reduces or completely removes the delay between songs providing a smooth audio experience.`
+                            },
+                        ],
                     }]
                 }
             },
@@ -807,13 +834,13 @@ exports.SettingsMenuInit = function () {
                                 ],
                                 'help': 'This allows users to access the chrome developer tools. Find more information at https://developer.chrome.com/docs/devtools/'
                             },
-                            { // Theme Development (Prevents copying and replacing existing themes)
-                                'key': 'themeDevelopment',
+                            { // overwriteThemes (Prevents copying and replacing existing themes)
+                                'key': 'overwriteThemes',
                                 'type': 'checkbox',
                                 'options': [
-                                    {'label': 'themeDevelopment', 'value': true}
+                                    {'label': 'overwriteThemes', 'value': true}
                                 ],
-                                'help': 'This prevents copying and replacing existing themes when launched.'
+                                'help': 'Enable this to fetch the latest themes from GitHub on the next launch.'
                             },
                             { // Turning on allowMultipleInstances
                                 'key': 'allowMultipleInstances',
