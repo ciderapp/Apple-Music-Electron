@@ -1,8 +1,14 @@
 require('v8-compile-cache');
 const {app, globalShortcut, session, Notification} = require('electron');
 
-// Run all the Before App is Ready Stuff
+// Version Fetch
+if (app.commandLine.hasSwitch('version') || app.commandLine.hasSwitch('v') ) {
+    const pjson = require('./package.json')
+    console.log(pjson.version)
+    app.exit()
+}
 
+// Run all the Before App is Ready Stuff
 const {InitializeLogging} = require('./resources/functions/init/Init-Logging')
 InitializeLogging()
 
