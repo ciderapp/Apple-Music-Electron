@@ -129,6 +129,12 @@ try {
         MusicKit.getInstance().bitrate = 64;
     }
 
+    /* Gapless Playback */
+    if (preferences.general.gaplessEnabled === true) {
+        if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] Gapless Playback enabled, songs will now preload before ending reducing load times.");
+        MusicKit.getInstance()._bag.features["enable-gapless"] = true;
+    }
+
     /* Incognito Mode */
     if (preferences.general.incognitoMode.includes(true)) {
         MusicKit.privateEnabled = true
