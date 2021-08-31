@@ -206,9 +206,9 @@ const init = {
     TrayInit: function () {
         console.log('[InitializeTray] Started.')
 
-        const winTray = nativeImage.createFromPath(join(__dirname, `../../icons/icon.ico`)).resize({width: 32, height: 32})
-        const macTray = nativeImage.createFromPath(join(__dirname, `../../icons/icon.png`)).resize({width: 32, height: 32})
-        const linuxTray = nativeImage.createFromPath(join(__dirname, `../../icons/icon.png`)).resize({width: 32, height: 32})
+        const winTray = nativeImage.createFromPath(join(__dirname, `../icons/icon.ico`)).resize({width: 32, height: 32})
+        const macTray = nativeImage.createFromPath(join(__dirname, `../icons/icon.png`)).resize({width: 32, height: 32})
+        const linuxTray = nativeImage.createFromPath(join(__dirname, `../icons/icon.png`)).resize({width: 32, height: 32})
         let trayIcon;
         if (process.platform === "win32") {
             trayIcon = winTray

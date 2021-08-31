@@ -5,7 +5,7 @@ const {join} = require("path");
 const {Analytics} = require("./sentry");
 Analytics.init()
 
-const trayIconDir = (nativeTheme.shouldUseDarkColors ? join(__dirname, `../../icons/media/light/`) : join(__dirname, `../../icons/media/dark/`));
+const trayIconDir = (nativeTheme.shouldUseDarkColors ? join(__dirname, `../icons/media/light/`) : join(__dirname, `../icons/media/dark/`));
 const Images = {
     next: nativeImage.createFromPath(join(trayIconDir, `next.png`)).resize({width: 32, height: 32}),
     nextInactive: nativeImage.createFromPath(join(trayIconDir, `next-inactive.png`)).resize({width: 32, height: 32}),
