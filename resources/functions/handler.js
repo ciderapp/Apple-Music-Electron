@@ -204,10 +204,12 @@ const handler = {
         });
     },
 
-    LinkHandler: function (url) {
-        if (!url) return;
-        console.log(url)
-    //    we need to do stuff here and its gonna be horrible
+    LinkHandler: function (songid) {
+        if (!songid) return;
+        let formattedsongid = songid.replace(/\D+/g, '');
+        console.log("[LinkHandler] Attempting to load song id: "+formattedsongid)
+        // Someone look into why playMediaItem doesn't work thanks - cryptofyre
+        app.win.webContents.executeJavaScript("MusicKit.getInstance().changeToMediaItem('"+formattedsongid+"')")
     }
 }
 

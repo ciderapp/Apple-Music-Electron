@@ -130,7 +130,7 @@ try {
     }
 
     /* Gapless Playback */
-    if (preferences.audio.gaplessEnabled === true) {
+    if (preferences.audio.gaplessEnabled.includes(true)) {
         if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] Gapless Playback enabled, songs will now preload before ending reducing load times.");
         MusicKit.getInstance()._bag.features["enable-gapless"] = true;
     }

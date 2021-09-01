@@ -55,6 +55,8 @@ module.exports = {
             console.log('[DiscordRPC][updateActivity] Updating Discord Activity.')
         }
 
+        let listenurl = "https://applemusicelectron.com/p?id="+attributes.playParams.id
+
         let ActivityObject = {
             details: attributes.name,
             state: `by ${attributes.artistName}`,
@@ -66,9 +68,12 @@ module.exports = {
             smallImageText: 'Playing',
             instance: true,
             buttons: [
+                {label: "Listen", url: listenurl},
                 {label: "Download", url: "https://github.com/Apple-Music-Electron/Apple-Music-Electron"},
             ]
         };
+
+        console.log("[LinkHandler] Listening URL has been set to: "+listenurl)
 
         if (!((new Date(attributes.endTime)).getTime() > 0)) {
             delete ActivityObject.startTimestamp
