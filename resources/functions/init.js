@@ -139,12 +139,15 @@ const init = {
         init.ThemeInstallation()
         init.TrayInit()
 
-        // Set the Protocols
-        app.setAsDefaultProtocolClient('ame') // Custom AME Protocol
-        app.setAsDefaultProtocolClient('itms') // iTunes HTTP
-        app.setAsDefaultProtocolClient('itmss') // iTunes HTTPS
-        app.setAsDefaultProtocolClient('musics') // macOS Client
-        app.setAsDefaultProtocolClient('music') // macOS Client
+        // Set the Protocols - Doesnt work on linux :(
+        if (process.platform !== "linux") {
+            app.setAsDefaultProtocolClient('ame') // Custom AME Protocol
+            app.setAsDefaultProtocolClient('itms') // iTunes HTTP
+            app.setAsDefaultProtocolClient('itmss') // iTunes HTTPS
+            app.setAsDefaultProtocolClient('musics') // macOS Client
+            app.setAsDefaultProtocolClient('music') // macOS Client
+        }
+
 
         // Startup
         if (app.preferences.value('window.appStartupBehavior').includes('hidden')) {

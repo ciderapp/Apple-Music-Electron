@@ -34,6 +34,14 @@ const handler = {
             app.quit()
         }
 
+        // For macOS
+        app.on('open-url', function(event, url) {
+            event.preventDefault()
+            if (url.includes('ame://') || url.includes('itms://') || url.includes('itmss://') || url.includes('musics://') || url.includes('music://')) {
+                handler.LinkHandler(url)
+            }
+        })
+
     },
 
     InstanceHandler: function () {

@@ -81,8 +81,16 @@
       "description": "Electron wrapper for the Apple Music Web Application using Electron 14.0.0 and several other modules to expand the usability.",
       "category": "AudioVideo",
       "icon": "./resources/icons/icon.icns",
-      "mimeTypes": ["x-scheme-handler/apple-music-elctron"],
-      "desktop": "./resources/apple-music-electron.desktop"
+      "executableName": "apple-music-electron",
+      "desktop": {
+        "Type": "Application",
+        "Encoding": "UTF-8",
+        "Name": "Apple Music",
+        "Comment": "Apple Music Electron",
+        "MimeType": "x-scheme-handler/apple-music-electron;",
+        "Terminal": "False",
+        "Categories": "AudioVideo"
+      }
     },
     "win": {
       "target": [
