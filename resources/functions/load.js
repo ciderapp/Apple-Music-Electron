@@ -68,6 +68,7 @@ module.exports = {
                 ipcMain.once('authorized', (e, args) => {
                     app.win.webContents.clearHistory()
                     console.log(`[LoadWebsite] User is authenticated. Loading '${app.preferences.value('general.startupPage')}'. (${args}).`)
+                    app.isAuthorized = true
                 })
             } else {
                 console.log(`[LoadWebsite] Loaded '${urlLanguage}'`)

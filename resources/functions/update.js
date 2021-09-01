@@ -1,6 +1,5 @@
 const {autoUpdater} = require('electron-updater')
 const {app, dialog, Notification} = require('electron')
-const pjson = require('../../package.json')
 const {Analytics} = require("./sentry");
 Analytics.init()
 
@@ -18,18 +17,15 @@ exports.checkUpdates = function (manual) {
         if (app.isPackaged) {
             autoUpdater.checkForUpdates()
         } else {
-            new Notification({
-                title: "Apple Music",
-                body: "Application not packed. Check for Updates unavailable."
-            }).show()
+            console.warn('[checkUpdates] Application not packed. Check for Updates Unavailable.')
         }
     } catch (err) {
-        console.log(`[checkUpdates] An error occurred while checking for updates: ${err}`)
+        console.error(`[checkUpdates] An error occurred while checking for updates: ${err}`)
     }
 
     autoUpdater.on('update-not-available', () => {
         if (manual === true) {
-            let bodyVer = `You are on the latest version. (v${pjson.version})`
+            let bodyVer = `You are on the latest version. (v${app.getVersion()})`
             new Notification({title: "Apple Music", body: bodyVer}).show()
         }
     })

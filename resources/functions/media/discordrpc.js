@@ -1,42 +1,45 @@
 const {app} = require('electron')
-const {Client} = require('discord-rpc');
+const DiscordRPC = require('discord-rpc');
 const {Analytics} = require("../sentry");
 Analytics.init()
 
 module.exports = {
     connect: function (clientId) {
         if (!app.preferences.value('general.discordRPC').includes(true)) return;
-        app.discord.client = new Client({
-            transport: "ipc",
-        });
+
+        DiscordRPC.register(clientId) // Apparently needed for ask to join, join, spectate etc.
+        const client = new DiscordRPC.Client({ transport: "ipc" });
+        app.discord = Object.assign(client,{error: false, activityCache: null, isConnected: false});
 
         // Login to Discord
-        app.discord.client.login({clientId})
+        app.discord.login({ clientId })
             .then(() => {
-                console.log("[DiscordRPC][connect] Successfully Connected to Discord!");
-                app.discord.connected = true;
-
-                if (app.discord.activityCache) {
-                    app.discord.client.setActivity(app.discord.activityCache).catch((e) => console.error(e));
-                    app.discord.activityCache = null;
-                }
+                app.discord.isConnected = true;
             })
             .catch((e) => console.error(`[DiscordRPC][connect] ${e}`));
 
+        app.discord.on('ready', () => {
+            console.log(`[DiscordRPC][connect] Successfully Connected to Discord. Authed for user: ${client.user.username} (${client.user.id})`);
+
+            if (app.discord.activityCache) {
+                client.setActivity(app.discord.activityCache).catch((e) => console.error(e));
+                app.discord.activityCache = null;
+            }
+        })
+
         // Handles Errors
-        app.discord.client.on('error', err => {
-            console.error(`[DiscordRPC][connect] Error: ${err}`);
-            console.error(`[DiscordRPC][connect] Disconnecting from Discord.`)
+        app.discord.on('error', err => {
+            console.error(`[DiscordRPC] ${err}`);
             this.disconnect()
-            app.discord.client = false;
+            app.discord.isConnected = false;
         });
     },
 
     disconnect: function () {
-        if (!app.preferences.value('general.discordRPC').includes(true)) return;
+        if (!app.preferences.value('general.discordRPC').includes(true) || !app.discord.isConnected) return;
         console.log('[DiscordRPC][disconnect] Disconnecting from discord.')
         try {
-            app.discord.client.destroy().catch((e) => console.error(`[DiscordRPC][disconnect] ${e}`));
+            app.discord.destroy().catch((e) => console.error(`[DiscordRPC][disconnect] ${e}`));
         } catch (err) {
             console.error(err)
         }
@@ -45,17 +48,17 @@ module.exports = {
     updateActivity: function (attributes) {
         if (!app.preferences.value('general.discordRPC').includes(true)) return;
 
-        if (!app.discord.connected) {
+        if (!app.discord.isConnected) {
             this.connect()
         }
 
-        if (!app.discord.connected) return;
+        if (!app.discord.isConnected) return;
 
         if (app.preferences.value('advanced.verboseLogging').includes(true)) {
             console.log('[DiscordRPC][updateActivity] Updating Discord Activity.')
         }
 
-        let listenurl = "https://applemusicelectron.com/p?id="+attributes.playParams.id
+        let listenURL = "https://applemusicelectron.com/p?id="+attributes.playParams.id
 
         let ActivityObject = {
             details: attributes.name,
@@ -68,12 +71,12 @@ module.exports = {
             smallImageText: 'Playing',
             instance: true,
             buttons: [
-                {label: "Listen", url: listenurl},
+                {label: "Listen", url: listenURL},
                 {label: "Download", url: "https://github.com/Apple-Music-Electron/Apple-Music-Electron"},
             ]
         };
 
-        console.log("[LinkHandler] Listening URL has been set to: "+listenurl)
+        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log(`[LinkHandler] Listening URL has been set to: ${listenURL}`);
 
         if (!((new Date(attributes.endTime)).getTime() > 0)) {
             delete ActivityObject.startTimestamp
@@ -95,7 +98,7 @@ module.exports = {
             }
         } else {
             if (app.preferences.value('advanced.discordClearActivityOnPause').includes(true)) {
-                app.discord.client.clearActivity().catch((e) => console.error(`[DiscordRPC][clearActivity] ${e}`));
+                app.discord.clearActivity().catch((e) => console.error(`[DiscordRPC][clearActivity] ${e}`));
                 ActivityObject = null
             } else {
                 delete ActivityObject.startTimestamp
@@ -107,7 +110,7 @@ module.exports = {
 
         if (ActivityObject) {
             try {
-                app.discord.client.setActivity(ActivityObject)
+                app.discord.setActivity(ActivityObject)
             } catch (err) {
                 console.error(`[DiscordRPC][setActivity] ${err}`)
             }

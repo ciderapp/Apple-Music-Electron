@@ -8,30 +8,32 @@ const {app, Notification} = require('electron'),
 const {Analytics} = require("../sentry");
 Analytics.init()
 
-function authenticateFromFile() {
-    let sessionData = require(sessionPath)
-    console.log("[LastFM][authenticateFromFile] Logging in with Session Info.")
-    app.lastfm.api.setSessionCredentials(sessionData.name, sessionData.key)
-    console.log("[LastFM][authenticateFromFile] Logged in.")
-}
+const lfm = {
+    authenticateFromFile: function () {
+        let sessionData = require(sessionPath)
+        console.log("[LastFM][authenticateFromFile] Logging in with Session Info.")
+        app.lastfm.setSessionCredentials(sessionData.name, sessionData.key)
+        console.log("[LastFM][authenticateFromFile] Logged in.")
+    },
 
-module.exports = {
     authenticate: function () {
         if (!app.preferences.value('general.lastfmEnabled').includes(true) || app.preferences.value('general.lastfmAuthKey') === 'Put your Auth Key here.' || !app.preferences.value('general.lastfmAuthKey')) {
             app.preferences.value('general.lastfmEnabled', [])
             return
         }
 
-        app.lastfm.api = new LastfmAPI({
+        const lfmAPI = new LastfmAPI({
             'api_key': apiCredentials.key,
             'secret': apiCredentials.secret
         });
+
+        app.lastfm = Object.assign(lfmAPI, {cachedAttributes: false})
 
         fs.stat(sessionPath, function (err) {
             if (err) {
                 console.error("[LastFM] [Session] Session file couldn't be opened or doesn't exist,", err)
                 console.log("[LastFM] [Auth] Beginning authentication from configuration")
-                app.lastfm.api.authenticate(app.preferences.value('general.lastfmAuthKey'), function (err, session) {
+                app.lastfm.authenticate(app.preferences.value('general.lastfmAuthKey'), function (err, session) {
                     if (err) {
                         throw err;
                     }
@@ -43,7 +45,7 @@ module.exports = {
                             console.log("[LastFM] [fs]", err)
                         else {
                             console.log("[LastFM] [fs] File was written successfully.")
-                            authenticateFromFile()
+                            lfm.authenticateFromFile()
                             new Notification({
                                 title: "Apple Music",
                                 body: "Successfully logged into LastFM using Authentication Key."
@@ -52,13 +54,13 @@ module.exports = {
                     })
                 });
             } else {
-                authenticateFromFile()
+                lfm.authenticateFromFile()
             }
         })
     },
 
     scrobbleSong: function (attributes) {
-        if (!app.lastfm.api || app.lastfm.cachedAttributes === attributes) {
+        if (!app.lastfm || app.lastfm.cachedAttributes === attributes) {
             return
         }
 
@@ -69,8 +71,8 @@ module.exports = {
         if (fs.existsSync(sessionPath)) {
             // Scrobble playing song.
             if (attributes.status === true) {
-                app.lastfm.api.track.scrobble({
-                    'artist': this.filterArtistName(attributes.artistName),
+                app.lastfm.track.scrobble({
+                    'artist': lfm.filterArtistName(attributes.artistName),
                     'track': attributes.name,
                     'album': attributes.albumName,
                     'albumArtist': this.filterArtistName(attributes.artistName),
@@ -106,3 +108,5 @@ module.exports = {
         return artist.charAt(0).toUpperCase() + artist.slice(1);
     }
 }
+
+module.exports = lfm;

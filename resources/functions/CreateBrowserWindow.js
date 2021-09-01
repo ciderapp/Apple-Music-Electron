@@ -60,10 +60,10 @@ const BrowserWindowCreation = {
 
     fetchTransparencyOptions: function () {
         let transparencyOptions, transparencyTheme;
-        console.log('[fetchTransparencyOptions] Fetching Transparency Options')
 
         // Set the Transparency Options
         if (app.preferences.value('visual.transparencyEffect') && app.preferences.value('visual.transparencyEffect') !== 'disabled' && process.platform !== "linux") {
+            console.log('[fetchTransparencyOptions] Fetching Transparency Options')
 
             // If a Custom Theme is being used
             if (app.preferences.value('visual.transparencyTheme') === 'appearance-based') {
@@ -97,6 +97,7 @@ const BrowserWindowCreation = {
             app.transparency = true
         } else {
             app.transparency = false
+            return false
         }
 
         console.log(`[fetchTransparencyOptions] Returning: ${transparencyOptions}`)

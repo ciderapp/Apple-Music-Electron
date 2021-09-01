@@ -1,44 +1,80 @@
-const {app, ipcMain, shell, dialog} = require('electron')
+const {app, ipcMain, shell, dialog, Notification} = require('electron')
 const {Analytics} = require("./sentry");
 const {LoadOneTimeFiles, LoadFiles} = require("./load");
+const {join} = require("path");
 Analytics.init()
 
 const handler = {
+    LaunchHandler: function () {
+
+        // Check for Protocols
+        process.argv.forEach((value) => {
+            if (value.includes('ame://') || value.includes('itms://') || value.includes('itmss://') || value.includes('musics://') || value.includes('music://')) {
+                if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[InstanceHandler] Preventing application creation as args include protocol.');
+                app.quit()
+                return true
+            }
+        })
+
+        // Version Fetch
+        if (app.commandLine.hasSwitch('version') || app.commandLine.hasSwitch('v') ) {
+            console.log(app.getVersion())
+            app.exit()
+        }
+
+        // Log File Location
+        if (app.commandLine.hasSwitch('log') || app.commandLine.hasSwitch('l') ) {
+            console.log(join(app.getPath('userData'), 'logs'))
+            app.exit()
+        }
+
+        // Detects if the application has been opened with --force-quit
+        if (app.commandLine.hasSwitch('force-quit')) {
+            if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log("[Apple-Music-Electron] User has closed the application via --force-quit");
+            app.quit()
+        }
+
+    },
+
     InstanceHandler: function () {
-        console.log('[InstanceHandler] Started.')
+        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[InstanceHandler] Started.')
         const gotTheLock = app.requestSingleInstanceLock();
+        let returnVal = false
 
         if (!gotTheLock && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) {
-            console.log("[InstanceHandler] Existing Instance is Blocking Second Instance.")
+            if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn("[InstanceHandler] Existing Instance is Blocking Second Instance.");
             app.quit();
             return true
         } else {
             app.on('second-instance', (_e, argv) => {
                 console.log(`[InstanceHandler] Second Instance Started with args: [${argv.join(', ')}]`)
+
                 if (argv.includes("--force-quit")) {
-                    console.log('[InstanceHandler] Force Quit found. Quitting App.')
+                    if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn('[InstanceHandler] Force Quit found. Quitting App.');
                     app.quit()
-                    return true
-                } else if (app.win && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) {
-                    console.log('[InstanceHandler] Showing window.')
+                    returnVal = true
+                } else if (app.win && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) { // If a Second Instance has Been Started
+                    if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn('[InstanceHandler] Showing window.');
                     app.win.show()
                     app.win.focus()
                 }
 
-                if (app.win !== null) {
+                // Checks if first instance is authorized and if second instance has protocol args
+                if (app.win && app.isAuthorized) {
                     argv.forEach((value) => {
                         if (value.includes('ame://') || value.includes('itms://') || value.includes('itmss://') || value.includes('musics://') || value.includes('music://')) {
                             handler.LinkHandler(value)
+                            if (app.preferences.value('advanced.allowMultipleInstances').includes(true)) returnVal = true;
                         }
                     })
                 }
             })
         }
-        return false
+        return returnVal
     },
 
     PlaybackStateHandler: function () {
-        console.log('[playbackStateDidChange] Started.')
+        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[playbackStateDidChange] Started.');
         app.PreviousSongId = null;
 
         ipcMain.on('playbackStateDidChange', (_item, a) => {
@@ -68,26 +104,26 @@ const handler = {
             if (app.preferences.value('general.incognitoMode').includes(true)) {
                 console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
             } else {
-                app.discord.rpc.updateActivity(a)
-                app.lastfm.scrobbleSong(a)
+                app.funcs.discord.updateActivity(a)
+                app.funcs.lastfm.scrobbleSong(a)
             }
 
-            app.mpris.updateState(a)
+            app.funcs.mpris.updateState(a)
 
             app.PreviousSongId = a.playParams.id
         });
     },
 
     MediaStateHandler: function () {
-        console.log('[mediaItemStateDidChange] Started.')
+        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[mediaItemStateDidChange] Started.');
         ipcMain.on('mediaItemStateDidChange', (_item, a) => {
             app.funcs.CreateNotification(a)
-            app.mpris.updateActivity(a);
+            app.funcs.mpris.updateActivity(a);
         });
     },
 
     WindowStateHandler: function () {
-        console.log('[WindowStateHandler] Started.')
+        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[WindowStateHandler] Started.');
         app.previousPage = app.win.webContents.getURL()
 
         app.win.webContents.setWindowOpenHandler(({url}) => {
@@ -113,6 +149,11 @@ const handler = {
 
         app.win.webContents.on('did-finish-load', async () => {
             LoadOneTimeFiles()
+
+            if (app.preferences.value('general.incognitoMode').includes(true)) {
+                new Notification({title: 'Incognito Mode', body: `Incognito Mode enabled. DiscordRPC and LastFM are disabled.`}).show()
+                if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[Incognito] Incognito Mode enabled for Apple Music Website. [DiscordRPC and LastFM are disabled].');
+            }
         });
 
         app.win.webContents.on('did-start-loading', async () => {
@@ -184,7 +225,7 @@ const handler = {
     },
 
     SettingsHandler: function () {
-        console.log('[InstanceHandler] Started.')
+        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[InstanceHandler] Started.');
         let DialogMessage;
 
         app.preferences.on('save', (_preferences) => {
@@ -204,12 +245,12 @@ const handler = {
         });
     },
 
-    LinkHandler: function (songid) {
-        if (!songid) return;
-        let formattedsongid = songid.replace(/\D+/g, '');
-        console.log("[LinkHandler] Attempting to load song id: "+formattedsongid)
+    LinkHandler: function (songId) {
+        if (!songId) return;
+        let formattedSongID = songId.replace(/\D+/g, '');
+        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn(`[LinkHandler] Attempting to load song id: ${formattedSongID}`);
         // Someone look into why playMediaItem doesn't work thanks - cryptofyre
-        app.win.webContents.executeJavaScript("MusicKit.getInstance().changeToMediaItem('"+formattedsongid+"')")
+        app.win.webContents.executeJavaScript(`MusicKit.getInstance().changeToMediaItem('${formattedSongID}')`)
     }
 }
 

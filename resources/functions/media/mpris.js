@@ -1,30 +1,33 @@
 const {app} = require('electron')
-const mprisService = require('mpris-service');
+const Player = require('mpris-service');
 const {Analytics} = require("../sentry");
 Analytics.init()
 
 module.exports = {
     connect: function () {
         if (process.platform !== "linux") {
-            app.mpris.active = false;
+            app.mpris.active = false
             return;
         }
         console.log('[MPRIS][connect] Initializing Connection.')
 
         try {
-            app.mpris.service = mprisService({
+            app.mpris = Player({
                 name: 'AppleMusic',
                 identity: 'Apple Music',
                 supportedUriSchemes: [],
                 supportedMimeTypes: [],
                 supportedInterfaces: ['player']
             });
+            app.mpris = Object.assign(app.mpris, { active: false, canQuit: true, canControl: true, canPause: true, canPlay: true, canGoNext: true })
         } catch (err) {
+            app.mpris.active = false
             console.error(`[MPRIS][connect] ${err}`)
+            return
         }
 
         let pos_atr = {durationInMillis: 0};
-        app.mpris.service.getPosition = function () {
+        app.mpris.getPosition = function () {
             const durationInMicro = pos_atr.durationInMillis * 1000;
             const percentage = parseFloat(0) || 0;
             return durationInMicro * percentage;
@@ -37,27 +40,27 @@ module.exports = {
     },
 
     stateHandler: function () {
-        app.mpris.service.on('playpause', async () => {
-            if (app.mpris.service.playbackStatus === 'Playing') {
+        app.mpris.on('playpause', async () => {
+            if (app.mpris.playbackStatus === 'Playing') {
                 await app.win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
             } else {
                 await app.win.webContents.executeJavaScript('MusicKit.getInstance().play()')
             }
         });
 
-        app.mpris.service.on('play', async () => {
+        app.mpris.on('play', async () => {
             await app.win.webContents.executeJavaScript('MusicKit.getInstance().play()')
         });
 
-        app.mpris.service.on('pause', async () => {
+        app.mpris.on('pause', async () => {
             await app.win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
         });
 
-        app.mpris.service.on('next', async () => {
+        app.mpris.on('next', async () => {
             await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToNextItem()')
         });
 
-        app.mpris.service.on('previous', async () => {
+        app.mpris.on('previous', async () => {
             await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToPreviousItem()')
         });
     },
@@ -70,7 +73,7 @@ module.exports = {
         }
 
         const MetaData = {
-            'mpris:trackid': app.mpris.service.objectPath(`track/${attributes.playParams.id.replace(/[.]+/g, "")}`),
+            'mpris:trackid': app.mpris.objectPath(`track/${attributes.playParams.id.replace(/[.]+/g, "")}`),
             'mpris:length': attributes.durationInMillis * 1000, // In microseconds
             'mpris:artUrl': (attributes.artwork.url.replace('/{w}x{h}bb', '/35x35bb')).replace('/2000x2000bb', '/35x35bb'),
             'xesam:title': `${attributes.name}`,
@@ -79,11 +82,11 @@ module.exports = {
             'xesam:genre': attributes.genreNames
         }
 
-        if (app.mpris.service.metadata["mpris:trackid"] === MetaData["mpris:trackid"]) {
+        if (app.mpris.metadata["mpris:trackid"] === MetaData["mpris:trackid"]) {
             return
         }
 
-        app.mpris.service.metadata = MetaData
+        app.mpris.metadata = MetaData
     },
 
     updateState: function (attributes) {
@@ -94,10 +97,10 @@ module.exports = {
         }
 
         function setPlaybackIfNeeded(status) {
-            if (app.mpris.service.playbackStatus === status) {
+            if (app.mpris.playbackStatus === status) {
                 return
             }
-            app.mpris.service.playbackStatus = status;
+            app.mpris.playbackStatus = status;
         }
 
         switch (attributes.status) {
@@ -115,7 +118,7 @@ module.exports = {
 
     clearActivity: function () {
         if (!app.mpris.active) return;
-        app.mpris.service.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
-        app.mpris.service.playbackStatus = 'Stopped';
+        app.mpris.metadata = {'mpris:trackid': '/org/mpris/MediaPlayer2/TrackList/NoTrack'}
+        app.mpris.playbackStatus = 'Stopped';
     },
 }

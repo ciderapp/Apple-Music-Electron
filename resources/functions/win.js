@@ -1,6 +1,5 @@
 const {app, Menu, nativeTheme, Notification} = require("electron");
 const nativeImage = require('electron').nativeImage
-const {checkUpdates} = require("./update");
 const {join} = require("path");
 const {Analytics} = require("./sentry");
 Analytics.init()
@@ -29,7 +28,7 @@ module.exports = {
                 {
                     label: 'Check for Updates',
                     click: function () {
-                        checkUpdates(true)
+                        app.checkUpdates(true)
                     }
                 },
                 {
@@ -53,7 +52,7 @@ module.exports = {
                 {
                     label: 'Check for Updates',
                     click: function () {
-                        checkUpdates(true)
+                        app.checkUpdates(true)
                     }
                 },
                 {
