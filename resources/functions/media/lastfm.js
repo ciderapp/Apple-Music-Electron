@@ -31,8 +31,8 @@ const lfm = {
 
         fs.stat(sessionPath, function (err) {
             if (err) {
-                console.error("[LastFM] [Session] Session file couldn't be opened or doesn't exist,", err)
-                console.log("[LastFM] [Auth] Beginning authentication from configuration")
+                console.error("[LastFM][Session] Session file couldn't be opened or doesn't exist,", err)
+                console.log("[LastFM][Auth] Beginning authentication from configuration")
                 app.lastfm.authenticate(app.preferences.value('general.lastfmAuthKey'), function (err, session) {
                     if (err) {
                         throw err;
@@ -42,9 +42,9 @@ const lfm = {
                     let tempData = JSON.stringify(session)
                     fs.writeFile(sessionPath, tempData, (err) => {
                         if (err)
-                            console.log("[LastFM] [fs]", err)
+                            console.log("[LastFM][fs]", err)
                         else {
-                            console.log("[LastFM] [fs] File was written successfully.")
+                            console.log("[LastFM][fs] File was written successfully.")
                             lfm.authenticateFromFile()
                             new Notification({
                                 title: "Apple Music",
@@ -81,7 +81,11 @@ const lfm = {
                     if (err) {
                         return console.error('[LastFM] An error occurred while scrobbling', err);
                     }
-                    console.log('[LastFM] Successfully scrobbled: ', scrobbled)
+                    if (app.preferences.value('advanced.verboseLogging').includes(true)) {
+                        console.log('[LastFM] Successfully scrobbled: ', scrobbled);
+                    } else {
+                        console.log(`[LastFM] Successfully scrobbled ${attributes.name}`);
+                    }
                 });
                 app.lastfm.cachedAttributes = attributes
             }
