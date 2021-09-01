@@ -38,6 +38,10 @@ const init = {
             app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,MediaSessionService');
         }
 
+        // Scaling Fixes
+        app.commandLine.appendSwitch('high-dpi-support', 1)
+        app.commandLine.appendSwitch('force-device-scale-factor', 1)
+
         // Sets the ModelId (For windows notifications)
         if (process.platform === "win32") app.setAppUserModelId("Apple Music");
 

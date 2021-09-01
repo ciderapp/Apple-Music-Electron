@@ -255,6 +255,7 @@ const handler = {
 
     LinkHandler: function (songId) {
         if (!songId) return;
+        console.log(songId)
         let formattedSongID = songId.replace(/\D+/g, '');
         if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn(`[LinkHandler] Attempting to load song id: ${formattedSongID}`);
         // Someone look into why playMediaItem doesn't work thanks - cryptofyre
