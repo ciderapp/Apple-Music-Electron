@@ -86,8 +86,7 @@
         "Type": "Application",
         "Encoding": "UTF-8",
         "Name": "Apple Music",
-        "Comment": "Apple Music Electron",
-        "MimeType": "x-scheme-handler/apple-music-electron;",
+        "MimeType": "x-scheme-handler/ame;x-scheme-handler/itms;x-scheme-handler/itmss;x-scheme-handler/musics;x-scheme-handler/music;",
         "Terminal": "False",
         "Categories": "AudioVideo"
       }
