@@ -6,7 +6,7 @@ Analytics.init()
 module.exports = {
     connect: function () {
         if (process.platform !== "linux") {
-            app.mpris.active = false
+            app.mpris = {active: false}
             return;
         }
         console.log('[MPRIS][connect] Initializing Connection.')
