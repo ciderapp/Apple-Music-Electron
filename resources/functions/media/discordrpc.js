@@ -58,8 +58,7 @@ module.exports = {
             console.log('[DiscordRPC][updateActivity] Updating Discord Activity.')
         }
 
-        let listenURL = "https://applemusicelectron.com/p?id="+attributes.playParams.id
-
+        const listenURL = `https://applemusicelectron.com/p?id=${attributes.playParams.id}`
         let ActivityObject = {
             details: attributes.name,
             state: `by ${attributes.artistName}`,

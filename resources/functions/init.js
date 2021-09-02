@@ -26,9 +26,6 @@ const init = {
 
         app.isAuthorized = false
 
-        // Set proper cache folder
-        app.setPath("userData", join(app.getPath("cache"), app.name))
-
         // Disable CORS
         app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
 
@@ -152,7 +149,11 @@ const init = {
             app.setAsDefaultProtocolClient('music') // macOS Client
         }
 
-
+        if (app.preferences.value('storedVersion') !== app.getVersion()) {
+            if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log(`[ApplicationReady] Updating Stored Version to ${app.getVersion()} (Was ${app.preferences.value('storedVersion')}).`);
+            app.preferences.value('storedVersion', app.getVersion())
+        }
+        
         // Startup
         if (app.preferences.value('window.appStartupBehavior').includes('hidden')) {
             app.setLoginItemSettings({
@@ -294,6 +295,7 @@ const init = {
             'dataStore': resolve(app.getPath('userData'), 'preferences.json'),
             /* Default Values */
             'defaults': {
+                'storedVersion': undefined,
                 "general": {
                     "language": "",
                     "incognitoMode": [],

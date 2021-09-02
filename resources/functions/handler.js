@@ -1,7 +1,8 @@
 const {app, ipcMain, shell, dialog, Notification} = require('electron')
-const {Analytics} = require("./sentry");
-const {LoadOneTimeFiles, LoadFiles} = require("./load");
-const {join} = require("path");
+const {Analytics} = require('./sentry');
+const {LoadOneTimeFiles, LoadFiles} = require('./load');
+const {join, resolve} = require('path');
+const rimraf = require('rimraf')
 Analytics.init()
 
 const handler = {
@@ -42,6 +43,14 @@ const handler = {
             }
         })
 
+    },
+
+    VersionHandler: function () {
+        if (!app.preferences.value('storedVersion') || app.preferences.value('storedVersion') === undefined || app.preferences.value('storedVersion') !== app.getVersion()) {
+            rimraf(resolve(app.getPath('userData'), 'Cache'), [], () => {
+                if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn(`[VersionHandler] Outdated / No Version Store Found. Clearing Application Cache. ('${resolve(app.getPath('userData'), 'Cache')}')`)
+            })
+        }
     },
 
     InstanceHandler: function () {
@@ -117,7 +126,6 @@ const handler = {
             }
 
             app.funcs.mpris.updateState(a)
-
             app.PreviousSongId = a.playParams.id
         });
     },

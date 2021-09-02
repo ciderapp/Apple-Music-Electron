@@ -1,5 +1,7 @@
 require('v8-compile-cache');
 const {app, globalShortcut, session} = require('electron');
+const {join} = require('path')
+app.setPath("userData", join(app.getPath("cache"), app.name)) // Set proper cache folder
 
 // Run all the Before App is Ready Stuff
 const {PreferencesInit} = require('./resources/functions/init');
@@ -21,17 +23,20 @@ app.funcs.discord = require('./resources/functions/media/discordrpc')
 app.funcs.lastfm = require('./resources/functions/media/lastfm')
 app.funcs.mpris = require('./resources/functions/media/mpris')
 
+const {VersionHandler} = require('./resources/functions/handler')
+VersionHandler()
+
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {
     if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[CreateWindow] Started.');
     const InstanceHandler = require('./resources/functions/handler').InstanceHandler
     const ExistingInstance = InstanceHandler()
     if (ExistingInstance === true) {
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn('[Apple-Music-Electron] [InstanceHandler] Existing Instance Found. Terminating.');
+        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn('[Apple-Music-Electron][InstanceHandler] Existing Instance Found. Terminating.');
         app.quit()
         return;
     } else {
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn('[Apple-Music-Electron] [InstanceHandler] No existing instances found.');
+        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn('[Apple-Music-Electron][InstanceHandler] No existing instances found.');
     }
 
     const {LinkHandler} = require('./resources/functions/handler')
