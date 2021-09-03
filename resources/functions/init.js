@@ -291,7 +291,7 @@ const init = {
             'dataStore': resolve(app.getPath('userData'), 'preferences.json'),
             /* Default Values */
             'defaults': {
-                'storedVersion': undefined,
+                'storedVersion': "",
                 "general": {
                     "language": "",
                     "incognitoMode": [],
