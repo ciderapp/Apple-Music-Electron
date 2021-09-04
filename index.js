@@ -1,7 +1,5 @@
 require('v8-compile-cache');
 const {app, globalShortcut, session} = require('electron');
-const {join} = require('path')
-app.setPath("userData", join(app.getPath("cache"), app.name)) // Set proper cache folder
 
 // Run all the Before App is Ready Stuff
 const {PreferencesInit} = require('./resources/functions/init');

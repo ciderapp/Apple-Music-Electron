@@ -73,10 +73,7 @@
     ],
     "linux": {
       "target": [
-        "AppImage",
-        "deb",
-        "snap",
-        "rpm"
+        "pacman"
       ],
       "synopsis": "Electron wrapper for Apple Music Web App.",
       "description": "Electron wrapper for the Apple Music Web Application using Electron 14.0.0 and several other modules to expand the usability.",

@@ -1,9 +1,13 @@
 const {autoUpdater} = require('electron-updater')
 const {app, dialog, Notification} = require('electron')
 const {Analytics} = require("./sentry");
+const {join} = require("path");
 Analytics.init()
 
 autoUpdater.logger = require("electron-log");
+autoUpdater.logger.transports.file.resolvePath = (vars) => {
+    return join(app.getPath('userData'), 'logs', vars.fileName);
+}
 autoUpdater.logger.transports.file.level = "info";
 
 exports.checkUpdates = function (manual) {

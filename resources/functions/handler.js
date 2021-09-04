@@ -241,14 +241,14 @@ const handler = {
     },
 
     SettingsHandler: function () {
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[InstanceHandler] Started.');
-        let DialogMessage;
+        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[SettingsHandler] Started.');
+        let DialogMessage, cachedPreferences = app.preferences._preferences;
 
-        app.preferences.on('save', (_preferences) => {
+        app.preferences.on('save', (updatedPreferences) => {
             if (!DialogMessage) {
                 DialogMessage = dialog.showMessageBox(app.win, {
                     title: "Restart Required",
-                    message: "A restart is required.",
+                    message: "A restart is required in order for the settings you have changed to apply.",
                     type: "warning",
                     buttons: ['Relaunch Now', 'Relaunch Later']
                 }).then(({response}) => {
@@ -258,6 +258,8 @@ const handler = {
                     }
                 })
             }
+
+            cachedPreferences = updatedPreferences
         });
     },
 

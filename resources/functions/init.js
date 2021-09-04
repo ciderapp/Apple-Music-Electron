@@ -1,12 +1,9 @@
 const {app, nativeTheme, dialog, nativeImage, Tray, globalShortcut} = require("electron");
 const {join, resolve} = require("path");
-const log = require("electron-log");
 const os = require("os");
 const fs = require("fs");
-const gitPullOrClone = require("git-pull-or-clone");
 const chmodr = require("chmodr");
 const languages = require("../languages.json");
-const ElectronPreferences = require("electron-preferences");
 
 const init = {
 
@@ -51,10 +48,13 @@ const init = {
     },
 
     LoggingInit: function () {
-        console.log = log.log;
-        console.error = log.error;
-        console.warn = log.warn;
-        console.debug = log.debug;
+        const log = require("electron-log");
+
+        log.transports.file.resolvePath = (vars) => {
+            return join(app.getPath('userData'), 'logs', vars.fileName);
+        }
+
+        Object.assign(console, log.functions);
     },
 
     SetApplicationTheme: function () {
@@ -73,6 +73,8 @@ const init = {
     },
 
     ThemeInstallation: function () {
+        const gitPullOrClone = require("git-pull-or-clone");
+
         init.SetApplicationTheme()
 
         // Set the folder
@@ -118,7 +120,7 @@ const init = {
         try {
             console.log(`[InitializeTheme] Files found in Themes Directory: [${fs.readdirSync(app.userThemesPath).join(', ')}]`)
         } catch (err) {
-            console.error(err)
+            console.error(`[InitializeTheme][readdirSync] ${err} (Usually happens on first launch)`)
         }
 
         if (app.preferences.value('advanced.overwriteThemes').includes(true)) {
@@ -287,6 +289,9 @@ const init = {
     },
 
     PreferencesInit: function () {
+        app.setPath("userData", join(app.getPath("cache"), app.name.replace(/\s/g, ''))) // Set Linux to use .cache instead of .config and remove the space as its annoying
+
+        const ElectronPreferences = require("electron-preferences");
         app.preferences = new ElectronPreferences({
             'dataStore': resolve(app.getPath('userData'), 'preferences.json'),
             /* Default Values */
