@@ -35,7 +35,7 @@
   "dependencies": {
     "@sentry/electron": "^2.5.1",
     "chmodr": "^1.2.0",
-    "discord-rpc": "^3.1.4",
+    "discord-rpc": "^4.0.1",
     "electron-acrylic-window": "^0.5.8",
     "electron-log": "^4.3.5",
     "electron-preferences": "^2.3.2",
