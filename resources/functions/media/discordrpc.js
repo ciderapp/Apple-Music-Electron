@@ -70,8 +70,7 @@ module.exports = {
             smallImageText: 'Playing',
             instance: true,
             buttons: [
-                {label: "Listen", url: listenURL},
-                {label: "Download", url: "https://github.com/Apple-Music-Electron/Apple-Music-Electron"},
+                {label: "Open in AME", url: listenURL},
             ]
         };
 

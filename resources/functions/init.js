@@ -797,6 +797,7 @@ const init = {
                                     'key': 'audioQuality',
                                     'type': 'dropdown',
                                     'options': [
+                                        {'label': 'Extreme (990kbps)', 'value': 'extreme'},
                                         {'label': 'Automatic (Default)', 'value': 'auto'},
                                         {'label': 'High (256kbps)', 'value': 'high'},
                                         {'label': 'Standard (64kbps)', 'value': 'standard'}

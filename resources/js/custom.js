@@ -119,6 +119,10 @@ try {
     /* Audio Quality Selector */
     if (preferences.audio.audioQuality === 'auto') {
         if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to auto, dynamically setting bitrate between 64 and 256.");
+    } else if (preferences.audio.audioQuality === 'extreme') {
+        if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to extreme, forcing bitrate to 990..");
+        MusicKit.PlaybackBitrate = 990;
+        MusicKit.getInstance().bitrate = 990;
     } else if (preferences.audio.audioQuality === 'high') {
         if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to high, forcing bitrate to 256.");
         MusicKit.PlaybackBitrate = 256;
