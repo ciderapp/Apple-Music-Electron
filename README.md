@@ -20,6 +20,7 @@
   <img src="https://img.shields.io/github/forks/Apple-Music-Electron/Apple-Music-Electron" alt="Forks">
   <img src="https://img.shields.io/github/license/Apple-Music-Electron/Apple-Music-Electron" alt="MIT">
   <img src="https://img.shields.io/github/downloads/Apple-Music-Electron/Apple-Music-Electron/total.svg?style=flat" alt="Downloads">
+  <img src="https://badges.depfu.com/badges/121fff86821ca5a2bf9741f80b8f0a68/overview.svg" alt="Dependencies">
   <a href="https://github.com/Apple-Music-Electron/Apple-Music-Electron/releases/latest"><img src="https://img.shields.io/github/release/Apple-Music-Electron/Apple-Music-Electron.svg?style=flat" alt="Release"></a>
   <span class="badge-buymeacoffee">
     <a href="https://ko-fi.com/cryptofyre" title="Donate to this project using Buy Me A Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee donate button" /></a>
