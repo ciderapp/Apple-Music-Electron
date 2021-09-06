@@ -150,13 +150,11 @@ const BrowserWindowCreation = {
             console.log('[CreateBrowserWindow] Creating BrowserWindow with electron vibrancy..')
             win = new BrowserWindow(options);
             win.setBackgroundColor = '#1f1f1f00'
-            app.transparency = false
           } else { // Create using Acrylic Window
-            console.log('[CreateBrowserWindow] Creating BrowserWindow with transparency.')
+            console.log(`[CreateBrowserWindow] Creating BrowserWindow with transparency. Transparency Options: ${JSON.stringify(transparencyOptions)}`)
             const acrylicWindow = require("electron-acrylic-window");
+            options.vibrancy = transparencyOptions
             win = new acrylicWindow.BrowserWindow(options)
-            console.log(`[CreateBrowserWindow] Settings transparency options to ${JSON.stringify(transparencyOptions)} `)
-            win.setVibrancy(transparencyOptions)
           }
         } else { // With transparency disabled
           console.log('[CreateBrowserWindow] Creating BrowserWindow.')
