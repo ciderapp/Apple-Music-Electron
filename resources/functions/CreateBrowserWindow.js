@@ -3,7 +3,7 @@ const {join} = require('path')
 const os = require('os')
 const fs = require('fs')
 const {Analytics} = require("./sentry");
-let win, acrylicWindow;
+let win;
 Analytics.init()
 
 const BrowserWindowCreation = {
@@ -100,7 +100,7 @@ const BrowserWindowCreation = {
             return false
         }
 
-        console.log(`[fetchTransparencyOptions] Returning: ${transparencyOptions}`)
+        console.log(`[fetchTransparencyOptions] Returning: ${JSON.stringify(transparencyOptions)}`)
         return transparencyOptions
     },
 
@@ -146,17 +146,23 @@ const BrowserWindowCreation = {
 
         // BrowserWindow Creation
         if (app.transparency) {
-            acrylicWindow = require("electron-acrylic-window");
-            console.log('[CreateBrowserWindow] Creating BrowserWindow with transparency. Transparency Options:')
-            console.log(transparencyOptions)
-            options.vibrancy = transparencyOptions
-            win = new acrylicWindow.BrowserWindow(options)
-        } else {
-            console.log('[CreateBrowserWindow] Creating BrowserWindow.')
+          if (process.platform === "darwin") { // Create using electron's setVibrancy function
+            console.log('[CreateBrowserWindow] Creating BrowserWindow with electron vibrancy..')
             win = new BrowserWindow(options);
             win.setBackgroundColor = '#1f1f1f00'
+            app.transparency = false
+          } else { // Create using Acrylic Window
+            console.log('[CreateBrowserWindow] Creating BrowserWindow with transparency.')
+            const acrylicWindow = require("electron-acrylic-window");
+            win = new acrylicWindow.BrowserWindow(options)
+            console.log(`[CreateBrowserWindow] Settings transparency options to ${JSON.stringify(transparencyOptions)} `)
+            win.setVibrancy(transparencyOptions)
+          }
+        } else { // With transparency disabled
+          console.log('[CreateBrowserWindow] Creating BrowserWindow.')
+          win = new BrowserWindow(options);
+          win.setBackgroundColor = '#1f1f1f00'
         }
-
 
         // alwaysOnTop
         if (!app.preferences.value('advanced.alwaysOnTop').includes(true)) {
@@ -184,6 +190,11 @@ const BrowserWindowCreation = {
                 win.hide();
                 app.funcs.SetContextMenu()
             }
+        }
+
+        // Checks if transparency is turned on to show window (work around for thumbar issues)
+        if (app.transparency) {
+          app.win.show()
         }
 
         return win

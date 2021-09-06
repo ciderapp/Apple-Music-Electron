@@ -42,7 +42,6 @@ function CreateWindow() {
 
     const {CreateBrowserWindow} = require('./resources/functions/CreateBrowserWindow')
     app.win = CreateBrowserWindow() // Create the Browser Window
-    app.win.show()
 
     app.funcs.LoadWebsite() // Load the Website
 

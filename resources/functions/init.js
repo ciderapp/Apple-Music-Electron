@@ -192,7 +192,7 @@ const init = {
         if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[InitializeTray] Started.');
 
         const winTray = nativeImage.createFromPath(join(__dirname, `../icons/icon.ico`)).resize({width: 32, height: 32})
-        const macTray = nativeImage.createFromPath(join(__dirname, `../icons/icon.png`)).resize({width: 32, height: 32})
+        const macTray = nativeImage.createFromPath(join(__dirname, `../icons/icon.png`)).resize({width: 20, height: 20})
         const linuxTray = nativeImage.createFromPath(join(__dirname, `../icons/icon.png`)).resize({width: 32, height: 32})
         let trayIcon;
         if (process.platform === "win32") {
@@ -375,7 +375,7 @@ const init = {
                     "discordClearActivityOnPause": [
                         true
                     ],
-                    "settingsMenuKeybind": "Control+Alt+S"
+                    "settingsMenuKeybind": ""
                 }
             },
             /* Settings Menu */
@@ -1215,11 +1215,18 @@ const init = {
             }
         });
 
+        if (!app.preferences.value("advanced.settingsMenuKeybind")) {
+          if (process.platform === "darwin") {
+            app.preferences.value("advanced.settingsMenuKeybind", "Control+Command+S")
+          } else {
+            app.preferences.value("advanced.settingsMenuKeybind", "Control+Alt+S")
+          }
+        }
+        
         app.whenReady().then(() => {
-            globalShortcut.register(app.preferences.value('advanced.settingsMenuKeybind'), () => {
-                app.preferences.show();
-            })
-
+          globalShortcut.register(app.preferences.value('advanced.settingsMenuKeybind'), () => {
+              app.preferences.show();
+          })
         })
     }
 }
