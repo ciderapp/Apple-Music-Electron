@@ -3,6 +3,9 @@ const Player = require('mpris-service');
 const {Analytics} = require("../sentry");
 Analytics.init()
 
+// Remember to use playerctl when debugging this.
+// I'm just putting this here as I keep forgetting the command.
+
 module.exports = {
     connect: function () {
         if (process.platform !== "linux") {
