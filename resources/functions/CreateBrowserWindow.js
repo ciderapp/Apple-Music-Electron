@@ -104,7 +104,7 @@ const BrowserWindowCreation = {
         return transparencyOptions
     },
 
-    CreateBrowserWindow: function() {
+    CreateBrowserWindow: function () {
         console.log('[CreateBrowserWindow] Initializing Browser Window Creation.')
 
         let minWide, minHigh, Frame;
@@ -146,20 +146,21 @@ const BrowserWindowCreation = {
 
         // BrowserWindow Creation
         if (app.transparency) {
-          if (process.platform === "darwin") { // Create using electron's setVibrancy function
-            console.log('[CreateBrowserWindow] Creating BrowserWindow with electron vibrancy..')
+            if (process.platform === "darwin") { // Create using electron's setVibrancy function
+                console.log('[CreateBrowserWindow] Creating BrowserWindow with electron vibrancy..')
+                win = new BrowserWindow(options);
+                win.setBackgroundColor = '#1f1f1f00'
+            } else { // Create using Acrylic Window
+                console.log(`[CreateBrowserWindow] Creating BrowserWindow with transparency.`)
+                const acrylicWindow = require("electron-acrylic-window");
+                win = new acrylicWindow.BrowserWindow(options)
+                console.log(`[CreateBrowserWindow] Settings transparency options to ${JSON.stringify(transparencyOptions)}`)
+                win.setVibrancy(transparencyOptions)
+            }
+        } else { // With transparency disabled
+            console.log('[CreateBrowserWindow] Creating BrowserWindow.')
             win = new BrowserWindow(options);
             win.setBackgroundColor = '#1f1f1f00'
-          } else { // Create using Acrylic Window
-            console.log(`[CreateBrowserWindow] Creating BrowserWindow with transparency. Transparency Options: ${JSON.stringify(transparencyOptions)}`)
-            const acrylicWindow = require("electron-acrylic-window");
-            options.vibrancy = transparencyOptions
-            win = new acrylicWindow.BrowserWindow(options)
-          }
-        } else { // With transparency disabled
-          console.log('[CreateBrowserWindow] Creating BrowserWindow.')
-          win = new BrowserWindow(options);
-          win.setBackgroundColor = '#1f1f1f00'
         }
 
         // alwaysOnTop
@@ -192,7 +193,7 @@ const BrowserWindowCreation = {
 
         // Checks if transparency is turned on to show window (work around for thumbar issues)
         if (app.transparency) {
-          app.win.show()
+            win.show()
         }
 
         return win
