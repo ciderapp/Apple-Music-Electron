@@ -145,13 +145,13 @@ const BrowserWindowCreation = {
         const transparencyOptions = BrowserWindowCreation.fetchTransparencyOptions()
 
         // BrowserWindow Creation
-        if (app.transparency) {
+        if (app.transparency && transparencyOptions) {
             if (process.platform === "darwin") { // Create using electron's setVibrancy function
-                console.log('[CreateBrowserWindow] Creating BrowserWindow with electron vibrancy..')
-                win = new BrowserWindow(options);
-                win.setBackgroundColor = '#1f1f1f00'
+                console.log('[CreateBrowserWindow] Creating BrowserWindow with electron vibrancy.')
+                win = new BrowserWindow(options)
+                win.setVibrancy('dark')
             } else { // Create using Acrylic Window
-                console.log(`[CreateBrowserWindow] Creating BrowserWindow with transparency.`)
+                console.log(`[CreateBrowserWindow] Creating Acrylic BrowserWindow.`)
                 const acrylicWindow = require("electron-acrylic-window");
                 win = new acrylicWindow.BrowserWindow(options)
                 console.log(`[CreateBrowserWindow] Settings transparency options to ${JSON.stringify(transparencyOptions)}`)
