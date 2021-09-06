@@ -64,7 +64,7 @@ module.exports = {
             state: `by ${attributes.artistName}`,
             startTimestamp: attributes.startTime,
             endTimestamp: attributes.endTime,
-            largeImageKey: 'logo',
+            largeImageKey: 'nightly', // Change this on dev/stable releases (keys: nightly, logo)
             largeImageText: attributes.albumName,
             smallImageKey: 'play',
             smallImageText: 'Playing',
