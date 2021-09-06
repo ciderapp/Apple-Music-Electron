@@ -797,12 +797,12 @@ const init = {
                                     'key': 'audioQuality',
                                     'type': 'dropdown',
                                     'options': [
-                                        {'label': 'Extreme (990kbps)', 'value': 'extreme'},
                                         {'label': 'Automatic (Default)', 'value': 'auto'},
+                                        {'label': 'Extreme (990kbps)', 'value': 'extreme'},
                                         {'label': 'High (256kbps)', 'value': 'high'},
                                         {'label': 'Standard (64kbps)', 'value': 'standard'}
                                     ],
-                                    'help': `Allows the user to select a preferred audio bitrate for music playback. NOTE: This may not work on all songs.`
+                                    'help': `Allows the user to select a preferred audio bitrate for music playback. NOTE: This may not work on all songs. Extreme mode can have the side effects of high CPU Usage.`
                                 },
                                 { // Gapless Playback
                                     'key': 'gaplessEnabled',
