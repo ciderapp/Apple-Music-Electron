@@ -85,7 +85,7 @@ module.exports = {
             delete ActivityObject.state
         }
 
-        if (!attributes.albumName) {
+        if (!attributes.albumName || Array.from(attributes.albumName).length > 2) {
             delete ActivityObject.largeImageText
         }
 
