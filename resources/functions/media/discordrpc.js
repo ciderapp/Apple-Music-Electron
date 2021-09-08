@@ -64,8 +64,8 @@ module.exports = {
             state: `by ${attributes.artistName}`,
             startTimestamp: attributes.startTime,
             endTimestamp: attributes.endTime,
-            largeImageKey: 'nightly', // Change this on dev/stable releases (keys: nightly, logo)
-            largeImageText: attributes.albumName,
+            largeImageKey: 'logo',
+            largeImageText: `Apple Music Electron v${app.getVersion()}`,
             smallImageKey: 'play',
             smallImageText: 'Playing',
             instance: true,
@@ -76,6 +76,10 @@ module.exports = {
 
         if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log(`[LinkHandler] Listening URL has been set to: ${listenURL}`);
 
+        if (app.getVersion().includes('nightly')) {
+            ActivityObject.largeImageKey = 'nightly'
+        }
+
         if (!((new Date(attributes.endTime)).getTime() > 0)) {
             delete ActivityObject.startTimestamp
             delete ActivityObject.endTimestamp
@@ -85,7 +89,7 @@ module.exports = {
             delete ActivityObject.state
         }
 
-        if (!attributes.albumName || Array.from(attributes.albumName).length > 2) {
+        if (!ActivityObject.largeImageText || Array.from(ActivityObject.largeImageText).length < 2) {
             delete ActivityObject.largeImageText
         }
 
@@ -108,6 +112,7 @@ module.exports = {
 
         if (ActivityObject) {
             try {
+                if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log(`[DiscordRPC][setActivity] Setting activity to ${JSON.stringify(ActivityObject)}`);
                 app.discord.setActivity(ActivityObject)
             } catch (err) {
                 console.error(`[DiscordRPC][setActivity] ${err}`)
