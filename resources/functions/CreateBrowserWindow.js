@@ -172,6 +172,11 @@ const BrowserWindowCreation = {
             win.setBackgroundColor = '#1f1f1f00'
         }
 
+        win.setTrafficLightPosition && win.setTrafficLightPosition({
+          x: 20,
+          y: 20
+      })
+
         // alwaysOnTop
         if (!app.preferences.value('advanced.alwaysOnTop').includes(true)) {
             win.setAlwaysOnTop(false)

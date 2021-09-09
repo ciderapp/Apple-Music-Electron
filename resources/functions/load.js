@@ -102,6 +102,10 @@ module.exports = {
             app.funcs.LoadJS('emulateMacOS_rightAlign.js')
         }
 
+        if (process.platform === 'darwin') {
+          app.funcs.LoadJS('macOS.js')
+        }
+
         app.funcs.LoadJS('custom.js')
 
         function matchRuleShort(str, rule) {
@@ -162,10 +166,6 @@ module.exports = {
     LoadOneTimeFiles: function () {
         // Inject the custom stylesheet
         app.funcs.LoadCSS('custom-stylesheet.css')
-
-        if (process.platform === 'darwin') {
-          app.win.webContents.insertCSS(`#web-navigation-search-box { margin-top: 40px !important; };`)
-        }
 
         // Load the appropriate css file for transparency
         if (app.transparency) {
