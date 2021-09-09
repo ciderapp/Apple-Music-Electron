@@ -142,14 +142,23 @@ const BrowserWindowCreation = {
             }
         };
 
+        if (process.platform === 'darwin') { // macOS Frame
+          options.titleBarStyle = 'hidden'
+          options.titleBarOverlay = true
+          options.frame = true
+          app.preferences.value('visual.removeUpsell', [true]);
+          app.preferences.value('visual.removeAppleLogo', [true]);
+          if (app.preferences.value('visual.emulateMacOS')) app.preferences.value('visual.emulateMacOS', '')
+        };
+
         const transparencyOptions = BrowserWindowCreation.fetchTransparencyOptions()
 
         // BrowserWindow Creation
         if (app.transparency && transparencyOptions) {
             if (process.platform === "darwin") { // Create using electron's setVibrancy function
                 console.log('[CreateBrowserWindow] Creating BrowserWindow with electron vibrancy.')
+                options.vibrancy = 'fullscreen-ui'
                 win = new BrowserWindow(options)
-                win.setVibrancy('dark')
             } else { // Create using Acrylic Window
                 console.log(`[CreateBrowserWindow] Creating Acrylic BrowserWindow.`)
                 const acrylicWindow = require("electron-acrylic-window");

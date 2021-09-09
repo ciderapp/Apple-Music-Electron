@@ -163,6 +163,10 @@ module.exports = {
         // Inject the custom stylesheet
         app.funcs.LoadCSS('custom-stylesheet.css')
 
+        if (process.platform === 'darwin') {
+          app.win.webContents.insertCSS(`#web-navigation-search-box { margin-top: 40px !important; };`)
+        }
+
         // Load the appropriate css file for transparency
         if (app.transparency) {
             app.funcs.LoadCSS('transparency.css')

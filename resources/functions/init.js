@@ -139,13 +139,11 @@ const init = {
         init.TrayInit()
 
         // Set the Protocols - Doesnt work on linux :(
-        if (process.platform !== "linux") {
-            app.setAsDefaultProtocolClient('ame') // Custom AME Protocol
-            app.setAsDefaultProtocolClient('itms') // iTunes HTTP
-            app.setAsDefaultProtocolClient('itmss') // iTunes HTTPS
-            app.setAsDefaultProtocolClient('musics') // macOS Client
-            app.setAsDefaultProtocolClient('music') // macOS Client
-        }
+        app.setAsDefaultProtocolClient('ame') // Custom AME Protocol
+        app.setAsDefaultProtocolClient('itms') // iTunes HTTP
+        app.setAsDefaultProtocolClient('itmss') // iTunes HTTPS
+        app.setAsDefaultProtocolClient('musics') // macOS Client
+        app.setAsDefaultProtocolClient('music') // macOS Client
 
         if (app.preferences.value('storedVersion') !== app.getVersion()) {
             if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log(`[ApplicationReady] Updating Stored Version to ${app.getVersion()} (Was ${app.preferences.value('storedVersion')}).`);
@@ -300,9 +298,7 @@ const init = {
                 "general": {
                     "language": "",
                     "incognitoMode": [],
-                    "discordRPC": [
-                        true
-                    ],
+                    "discordRPC": "clearOnPause",
                     "playbackNotifications": "minimized",
                     "trayTooltipSongName": [
                         true
@@ -372,9 +368,6 @@ const init = {
                     "forceApplicationMode": "",
                     "listenNow": [],
                     "verboseLogging": [],
-                    "discordClearActivityOnPause": [
-                        true
-                    ],
                     "settingsMenuKeybind": ""
                 }
             },
@@ -567,9 +560,8 @@ const init = {
                                     'key': 'discordRPC',
                                     'type': 'dropdown',
                                     'options': [
-                                        {'label': 'Enabled (Clear Activity on Pause)', 'value': 'clearActivity'},
-                                        {'label': 'Enabled (Display Status when Paused)', 'value': 'displayStatus'},
-                                        {'label': 'Disabled', 'value': false}
+                                        {'label': 'Enabled (Clear Activity on Pause)', 'value': 'clearOnPause'},
+                                        {'label': 'Enabled (Display Status when Paused)', 'value': true}
                                     ],
                                     'help': `Display your current song as your Discord Game activity. In order for this to appear, you must have 'Display current activity as status message.' turned on.`
                                 },
@@ -579,8 +571,7 @@ const init = {
                                     'type': 'dropdown',
                                     'options': [
                                         {'label': 'Enabled', 'value': true},
-                                        {'label': 'Enabled (Notifications when Minimized)', 'value': 'minimized'},
-                                        {'label': 'Disabled', 'value': false}
+                                        {'label': 'Enabled (Notifications when Minimized)', 'value': 'minimized'}
                                     ],
                                     'help': 'Enabling this means you will get notifications when you change song. The minimized option forces notifications to only appear if the app is hidden / minimized.'
                                 },
@@ -593,6 +584,21 @@ const init = {
                                     ],
                                     'help': 'Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.'
                                 },
+                                { // startupPage
+                                  'label': 'Load Page on Startup',
+                                  'key': 'startupPage',
+                                  'type': 'dropdown',
+                                  'options': [
+                                      {'label': 'Browse', 'value': 'browse'},
+                                      {'label': 'Listen Now', 'value': 'listen-now'},
+                                      {'label': 'Radio', 'value': 'radio'},
+                                      {'label': 'Recently Added', 'value': 'library/recently-added'},
+                                      {'label': 'Albums', 'value': 'library/albums'},
+                                      {'label': 'Songs', 'value': 'library/songs'},
+                                      {'label': 'Made for You', 'value': 'library/made-for-you'}
+                                  ],
+                                  'help': 'Select what page you wish to be placed on when you start the application.'
+                              },
                                 { // LastFM
                                     'heading': 'LastFM Notice',
                                     'content': `<p style="size='8px'">For information regarding this section, read the wiki post found <a style="color: #227bff !important" target="_blank" href='https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM'>here</a>.</p>`,
@@ -603,7 +609,8 @@ const init = {
                                     'type': 'checkbox',
                                     'options': [
                                         {'label': 'Scrobble LastFM on Song Change', 'value': true}
-                                    ]
+                                    ],
+                                    'help': ''
                                 },
                                 { // LastFM Remove Featuring Artists
                                     'key': 'lastfmRemoveFeaturingArtists',
@@ -616,21 +623,6 @@ const init = {
                                     'label': 'LastFM Authentication Key',
                                     'key': 'lastfmAuthKey',
                                     'type': 'text'
-                                },
-                                { // startupPage
-                                    'label': 'Load Page on Startup',
-                                    'key': 'startupPage',
-                                    'type': 'dropdown',
-                                    'options': [
-                                        {'label': 'Browse', 'value': 'browse'},
-                                        {'label': 'Listen Now', 'value': 'listen-now'},
-                                        {'label': 'Radio', 'value': 'radio'},
-                                        {'label': 'Recently Added', 'value': 'library/recently-added'},
-                                        {'label': 'Albums', 'value': 'library/albums'},
-                                        {'label': 'Songs', 'value': 'library/songs'},
-                                        {'label': 'Made for You', 'value': 'library/made-for-you'}
-                                    ],
-                                    'help': 'Select what page you wish to be placed on when you start the application.'
                                 },
                                 { // Analytics
                                     'label': 'Analytics',
@@ -667,7 +659,9 @@ const init = {
                                         {'label': 'Spotify', 'value': 'spotify'},
                                         {'label': 'OLED', 'value': 'oled'},
                                         {'label': 'Nord', 'value': 'nord'},
-                                        {'label': 'Acrylic', 'value': 'acrylic'}
+                                        {'label': 'Acrylic', 'value': 'acrylic'},
+                                        {'label': 'iTunes (macOS)', 'value': 'itunes_macos'},
+                                        {'label': 'iTunes (Windows)', 'value': 'itunes_windows'}
                                     ]
                                 },
                                 {
@@ -1071,13 +1065,6 @@ const init = {
                                     'type': 'checkbox',
                                     'options': [
                                         {'label': 'preventMediaKeyHijacking', 'value': true}
-                                    ]
-                                },
-                                { // Turning on discordClearActivityOnPause
-                                    'key': 'discordClearActivityOnPause',
-                                    'type': 'checkbox',
-                                    'options': [
-                                        {'label': 'discordClearActivityOnPause', 'value': true}
                                     ]
                                 },
                                 { // Setting Keybind for Opening Settings

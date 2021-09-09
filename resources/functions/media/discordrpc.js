@@ -5,7 +5,7 @@ Analytics.init()
 
 module.exports = {
     connect: function (clientId) {
-        if (!app.preferences.value('general.discordRPC').includes(true)) return;
+        if (!app.preferences.value('general.discordRPC')) return;
 
         DiscordRPC.register(clientId) // Apparently needed for ask to join, join, spectate etc.
         const client = new DiscordRPC.Client({ transport: "ipc" });
@@ -36,7 +36,7 @@ module.exports = {
     },
 
     disconnect: function () {
-        if (!app.preferences.value('general.discordRPC').includes(true) || !app.discord.isConnected) return;
+        if (!app.preferences.value('general.discordRPC') || !app.discord.isConnected) return;
         console.log('[DiscordRPC][disconnect] Disconnecting from discord.')
         try {
             app.discord.destroy().catch((e) => console.error(`[DiscordRPC][disconnect] ${e}`));
@@ -46,7 +46,7 @@ module.exports = {
     },
 
     updateActivity: function (attributes) {
-        if (!app.preferences.value('general.discordRPC').includes(true)) return;
+        if (!app.preferences.value('general.discordRPC')) return;
 
         if (!app.discord.isConnected) {
             this.connect()
@@ -94,12 +94,12 @@ module.exports = {
         }
 
         if (attributes.status) {
-            if (app.preferences.value('advanced.discordClearActivityOnPause').includes(true)) {
+            if (app.preferences.value('general.discordRPC') === 'clearOnPause') {
                 delete ActivityObject.smallImageKey
                 delete ActivityObject.smallImageText
             }
         } else {
-            if (app.preferences.value('advanced.discordClearActivityOnPause').includes(true)) {
+            if (app.preferences.value('general.discordRPC') === 'clearOnPause') {
                 app.discord.clearActivity().catch((e) => console.error(`[DiscordRPC][clearActivity] ${e}`));
                 ActivityObject = null
             } else {
