@@ -565,21 +565,22 @@ const init = {
                                 { // Discord Rich Presence
                                     'label': 'Discord Rich Presence',
                                     'key': 'discordRPC',
-                                    'type': 'checkbox',
-                                    'options': [{
-                                        'label': 'Display your current song as your Discord Game activity',
-                                        'value': true
-                                    }],
-                                    'help': `In order for this to appear, you must have 'Display current activity as status message.' turned on.`
+                                    'type': 'dropdown',
+                                    'options': [
+                                        {'label': 'Enabled (Clear Activity on Pause)', 'value': 'clearActivity'},
+                                        {'label': 'Enabled (Display Status when Paused)', 'value': 'displayStatus'},
+                                        {'label': 'Disabled', 'value': false}
+                                    ],
+                                    'help': `Display your current song as your Discord Game activity. In order for this to appear, you must have 'Display current activity as status message.' turned on.`
                                 },
                                 { // Turning on playbackNotifications
                                     'label': 'Notifications on Song Change',
                                     'key': 'playbackNotifications',
                                     'type': 'dropdown',
                                     'options': [
-                                        {'label': 'Yes', 'value': true},
-                                        {'label': 'No', 'value': false},
-                                        {'label': 'Minimized', 'value': 'minimized'}
+                                        {'label': 'Enabled', 'value': true},
+                                        {'label': 'Enabled (Notifications when Minimized)', 'value': 'minimized'},
+                                        {'label': 'Disabled', 'value': false}
                                     ],
                                     'help': 'Enabling this means you will get notifications when you change song. The minimized option forces notifications to only appear if the app is hidden / minimized.'
                                 },
@@ -1055,7 +1056,8 @@ const init = {
                                     'type': 'checkbox',
                                     'options': [
                                         {'label': 'autoUpdaterBetaBuilds', 'value': true}
-                                    ]
+                                    ],
+                                    'help': 'Turn this on if you want to live on the bleeding edge and get auto updates from the pre-release branch on GitHub.'
                                 },
                                 { // Turning on useBeta
                                     'key': 'useBetaSite',
