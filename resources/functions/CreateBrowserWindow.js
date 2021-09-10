@@ -143,13 +143,13 @@ const BrowserWindowCreation = {
         };
 
         if (process.platform === 'darwin') { // macOS Frame
-          options.titleBarStyle = 'hidden'
-          options.titleBarOverlay = true
-          options.frame = true
-          app.preferences.value('visual.removeUpsell', [true]);
-          app.preferences.value('visual.removeAppleLogo', [true]);
-          if (app.preferences.value('visual.emulateMacOS')) app.preferences.value('visual.emulateMacOS', '')
-        };
+            options.titleBarStyle = 'hidden'
+            options.titleBarOverlay = true
+            options.frame = true
+            app.preferences.value('visual.removeUpsell', [true]);
+            app.preferences.value('visual.removeAppleLogo', [true]);
+            if (app.preferences.value('visual.emulateMacOS')) app.preferences.value('visual.emulateMacOS', '')
+        }
 
         const transparencyOptions = BrowserWindowCreation.fetchTransparencyOptions()
 
@@ -173,9 +173,9 @@ const BrowserWindowCreation = {
         }
 
         win.setTrafficLightPosition && win.setTrafficLightPosition({
-          x: 20,
-          y: 20
-      })
+            x: 20,
+            y: 20
+        })
 
         // alwaysOnTop
         if (!app.preferences.value('advanced.alwaysOnTop').includes(true)) {

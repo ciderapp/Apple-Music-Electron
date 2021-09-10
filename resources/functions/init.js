@@ -85,7 +85,7 @@ const init = {
         console.log(`[InitializeTheme] Checking if user themes directory exists.`)
 
         // Checks if the folder exists and create themes if it doesnt
-        if (fs.existsSync(app.userThemesPath) && fs.existsSync(join(app.userThemesPath, 'blurple.css'))) {
+        if (fs.existsSync(app.userThemesPath)) {
             console.log("[InitializeTheme][existsSync] Folder exists!")
         } else {
             gitPullOrClone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, (err) => {
@@ -93,28 +93,27 @@ const init = {
             })
         }
 
-        fs.access(join(app.userThemesPath, 'blurple.css'), fs.constants.R_OK | fs.constants.W_OK, (err) => {
-            if (err) { // Set Permissions of Themes Directory
-                console.error(`[InitializeTheme][access] ${err} - blurple.css could not be read. Attempting to change permissions.`)
-                chmodr(app.userThemesPath, 0o777, (err) => {
-                    if (err) {
-                        console.error(`[InitializeTheme][chmodr] ${err} - Theme set to default to prevent application launch halt.`);
-                        app.preferences.value('visual.theme', 'default')
-                        if (err.toString().includes('permission denied') && process.platform === 'linux') { // Just gonna use this for now
-                            dialog.showMessageBox(undefined, {
-                                title: "Permission Change Needed!",
-                                message: `In order for you to be able to use Themes, you will need to manually change the permissions of the directory: '${app.userThemesPath}'. This is caused because the application does not have sufficient permissions to set the folder permissions. You can run the following command to set permissions: \n\nsudo chmod 777 -R '${app.userThemesPath}'`,
-                                type: "warning"
-                            })
-                        }
-                    } else {
-                        console.log('[InitializeTheme][chmodr] Folder permissions successfully set.');
+        try {
+            fs.accessSync(join(app.userThemesPath, 'README.md'), fs.constants.R_OK | fs.constants.W_OK);
+            if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log(`[InitializeTheme][access] 'README.md' was found and can be read and written.`);
+        } catch (err) {
+            console.error(`[InitializeTheme][access] ${err} - README.md could not be read. Attempting to change permissions.`)
+            chmodr(app.userThemesPath, 0o777, (err) => {
+                if (err) {
+                    console.error(`[InitializeTheme][chmodr] ${err} - Theme set to default to prevent application launch halt.`);
+                    app.preferences.value('visual.theme', 'default')
+                    if (err.toString().includes('permission denied') && process.platform === 'linux') { // Just gonna use this for now
+                        dialog.showMessageBox(undefined, {
+                            title: "Permission Change Needed!",
+                            message: `In order for you to be able to use Themes, you will need to manually change the permissions of the directory: '${app.userThemesPath}'. This is caused because the application does not have sufficient permissions to set the folder permissions. You can run the following command to set permissions: \n\nsudo chmod 777 -R '${app.userThemesPath}'`,
+                            type: "warning"
+                        })
                     }
-                });
-            } else { // File is Accessible
-                if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log(`[InitializeTheme][access] 'blurple.css' was found and can be read and written to.`);
-            }
-        })
+                } else {
+                    console.log('[InitializeTheme][chmodr] Folder permissions successfully set.');
+                }
+            });
+        }
 
         // Save all the file names to array and log it
         try {
@@ -124,10 +123,15 @@ const init = {
         }
 
         if (app.preferences.value('advanced.overwriteThemes').includes(true)) {
-            gitPullOrClone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, (err) => {
-                console.log(`[InitializeTheme][gitPullOrClone] ${err ? err : `Pulled Themes.`}`)
+            const rimraf = require('rimraf')
+            rimraf(app.userThemesPath, [], () => {
+                if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn(`[InitializeTheme] Clearing themes directory for fresh clone. ('${app.userThemesPath}')`)
+                gitPullOrClone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, (err) => {
+                    console.log(`[InitializeTheme][gitPullOrClone] ${err ? err : `Pulled Themes.`}`)
+                    app.preferences.value('advanced.overwriteThemes', [])
+                    app.preferences.value('visual.theme', '')
+                })
             })
-            app.preferences.value('advanced.overwriteThemes', [])
         }
     },
 
@@ -149,7 +153,7 @@ const init = {
             if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log(`[ApplicationReady] Updating Stored Version to ${app.getVersion()} (Was ${app.preferences.value('storedVersion')}).`);
             app.preferences.value('storedVersion', app.getVersion())
         }
-        
+
         // Startup
         if (app.preferences.value('window.appStartupBehavior').includes('hidden')) {
             app.setLoginItemSettings({
@@ -191,7 +195,10 @@ const init = {
 
         const winTray = nativeImage.createFromPath(join(__dirname, `../icons/icon.ico`)).resize({width: 32, height: 32})
         const macTray = nativeImage.createFromPath(join(__dirname, `../icons/icon.png`)).resize({width: 20, height: 20})
-        const linuxTray = nativeImage.createFromPath(join(__dirname, `../icons/icon.png`)).resize({width: 32, height: 32})
+        const linuxTray = nativeImage.createFromPath(join(__dirname, `../icons/icon.png`)).resize({
+            width: 32,
+            height: 32
+        })
         let trayIcon;
         if (process.platform === "win32") {
             trayIcon = winTray
@@ -585,20 +592,20 @@ const init = {
                                     'help': 'Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.'
                                 },
                                 { // startupPage
-                                  'label': 'Load Page on Startup',
-                                  'key': 'startupPage',
-                                  'type': 'dropdown',
-                                  'options': [
-                                      {'label': 'Browse', 'value': 'browse'},
-                                      {'label': 'Listen Now', 'value': 'listen-now'},
-                                      {'label': 'Radio', 'value': 'radio'},
-                                      {'label': 'Recently Added', 'value': 'library/recently-added'},
-                                      {'label': 'Albums', 'value': 'library/albums'},
-                                      {'label': 'Songs', 'value': 'library/songs'},
-                                      {'label': 'Made for You', 'value': 'library/made-for-you'}
-                                  ],
-                                  'help': 'Select what page you wish to be placed on when you start the application.'
-                              },
+                                    'label': 'Load Page on Startup',
+                                    'key': 'startupPage',
+                                    'type': 'dropdown',
+                                    'options': [
+                                        {'label': 'Browse', 'value': 'browse'},
+                                        {'label': 'Listen Now', 'value': 'listen-now'},
+                                        {'label': 'Radio', 'value': 'radio'},
+                                        {'label': 'Recently Added', 'value': 'library/recently-added'},
+                                        {'label': 'Albums', 'value': 'library/albums'},
+                                        {'label': 'Songs', 'value': 'library/songs'},
+                                        {'label': 'Made for You', 'value': 'library/made-for-you'}
+                                    ],
+                                    'help': 'Select what page you wish to be placed on when you start the application.'
+                                },
                                 { // LastFM
                                     'heading': 'LastFM Notice',
                                     'content': `<p style="size='8px'">For information regarding this section, read the wiki post found <a style="color: #227bff !important" target="_blank" href='https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM'>here</a>.</p>`,
@@ -1119,7 +1126,7 @@ const init = {
                                     'options': [
                                         {'label': 'overwriteThemes', 'value': true}
                                     ],
-                                    'help': 'Enable this to fetch the latest themes from GitHub on the next launch.'
+                                    'help': 'Enable this to fetch the latest themes from GitHub on the next launch. (This will disable any active theme to prevent issues)'
                                 },
                                 { // Turning on allowMultipleInstances
                                     'key': 'allowMultipleInstances',
@@ -1205,17 +1212,17 @@ const init = {
         });
 
         if (!app.preferences.value("advanced.settingsMenuKeybind")) {
-          if (process.platform === "darwin") {
-            app.preferences.value("advanced.settingsMenuKeybind", "Control+Command+S")
-          } else {
-            app.preferences.value("advanced.settingsMenuKeybind", "Control+Alt+S")
-          }
+            if (process.platform === "darwin") {
+                app.preferences.value("advanced.settingsMenuKeybind", "Control+Command+S")
+            } else {
+                app.preferences.value("advanced.settingsMenuKeybind", "Control+Alt+S")
+            }
         }
-        
+
         app.whenReady().then(() => {
-          globalShortcut.register(app.preferences.value('advanced.settingsMenuKeybind'), () => {
-              app.preferences.show();
-          })
+            globalShortcut.register(app.preferences.value('advanced.settingsMenuKeybind'), () => {
+                app.preferences.show();
+            })
         })
     }
 }

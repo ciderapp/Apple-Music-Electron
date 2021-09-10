@@ -225,25 +225,18 @@ module.exports = {
             body: `${attributes.artistName} - ${attributes.albumName}`,
             silent: true,
             icon: join(__dirname, '../icons/icon.png'),
-            actions: []
-        }
-
-        if (process.platform === "darwin") {
-            NOTIFICATION_OBJECT.actions = {
-                actions: [{
-                    type: 'button',
-                    text: 'Skip'
-                }]
-            }
+            actions: [{
+                type: 'button',
+                text: 'Skip'
+            }]
         }
 
         app.ipc.existingNotification = new Notification(NOTIFICATION_OBJECT)
         app.ipc.existingNotification.show()
 
-        if (process.platform === "darwin") {
-            app.ipc.existingNotification.addListener('action', (_event) => {
-                app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[CreateNotification] skipToNextItem"))
-            });
-        }
+
+        app.ipc.existingNotification.addListener('action', (_event) => {
+            app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[CreateNotification] skipToNextItem"))
+        });
     }
 }
