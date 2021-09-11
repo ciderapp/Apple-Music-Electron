@@ -100,7 +100,7 @@ module.exports = {
             // Paused
             case false:
             case "paused":
-                console.log('[setThumbarButtons] Thumbar has been set to false/paused.')
+                if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Thumbar has been set to false/paused.') }
                 array = [
                     {
                         tooltip: 'Previous',
@@ -186,7 +186,7 @@ module.exports = {
                 break;
         }
 
-        console.log((app.win.setThumbarButtons(array) ? '[setThumbarButtons] Thumbar Buttons Set.' : '[setThumbarButtons] Thumbar Buttons Failed to be set.'))
+        if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] ' + (app.win.setThumbarButtons(array) ? 'Thumbar Buttons Set.' : 'Thumbar Buttons Failed to be set.')) }
     },
 
     SetTrayTooltip: function (attributes) {
