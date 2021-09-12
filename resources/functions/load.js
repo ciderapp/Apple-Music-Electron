@@ -156,9 +156,6 @@ module.exports = {
             await app.win.webContents.executeJavaScript(`if (document.querySelector('#backButtonBar')) { document.getElementById('backButtonBar').remove() };`);
         }
 
-        /* Remove the Scrollbar */
-        if (app.preferences.value('advanced.removeScrollbars').includes(true)) app.win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
-
         /* Inject the MusicKitInterop file */
         await app.win.webContents.executeJavaScript('MusicKitInterop.init()');
     },
@@ -190,6 +187,11 @@ module.exports = {
             app.funcs.LoadCSS(`${app.preferences.value('visual.theme')}.css`, true)
         }
 
-
+        /* Remove the Scrollbar */
+        if (app.preferences.value('advanced.removeScrollbars').includes(true)) {
+            app.win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
+        } else {
+            app.funcs.LoadCSS('macosScrollbar.css')
+        }
     }
 }
