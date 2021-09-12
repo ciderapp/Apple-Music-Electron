@@ -9,11 +9,19 @@ const init = {
 
     BaseInit: function () {
         init.SettingsInit()
+        let simplifiedOs;
+        if (os.type().includes('Windows')) {
+            if (parseFloat(os.release()) >= parseFloat('10.0.22000')) {
+                simplifiedOs = 'win11'
+            } else if (parseFloat(os.release()) < parseFloat('10.0.22000') && parseFloat(os.release()) >= parseFloat('10.0.10240')) {
+                simplifiedOs = 'win10'
+            }
+        }
 
         console.log('---------------------------------------------------------------------')
         console.log(`${app.getName()} has started.`);
         console.log(`Version: ${app.getVersion()} | Electron Version: ${process.versions.electron}`)
-        console.log(`Type: ${os.type} | Release: ${os.release()} | Platform: ${os.platform()}`)
+        console.log(`Type: ${os.type} | Release: ${os.release()} ${simplifiedOs ? `(${simplifiedOs}) ` : ''}| Platform: ${os.platform()}`)
         console.log(`User Data Path: '${app.getPath('userData')}'`)
         console.log("---------------------------------------------------------------------")
         console.log('[Apple-Music-Electron] Current Configuration:')
@@ -187,7 +195,7 @@ const init = {
 
         app.funcs.mpris.connect() // Mpris
         app.funcs.lastfm.authenticate() // LastFM
-        app.funcs.discord.connect('749317071145533440') // Discord
+        app.funcs.discord.connect(app.preferences.value('general.discordRPC') === 'ame-title' ? '749317071145533440' : '886578863147192350') // Discord
     },
 
     TrayInit: function () {
@@ -305,7 +313,10 @@ const init = {
                 "general": {
                     "language": "",
                     "incognitoMode": [],
-                    "discordRPC": "clearOnPause",
+                    "discordRPC": "ame-title",
+                    "discordClearActivityOnPause": [
+                        true
+                    ],
                     "playbackNotifications": "minimized",
                     "trayTooltipSongName": [
                         true
@@ -562,16 +573,6 @@ const init = {
                                     }],
                                     'help': `When enabled AME will hide all song details and information from all receivers. (Discord RPC, LastFM, Apple)`
                                 },
-                                { // Discord Rich Presence
-                                    'label': 'Discord Rich Presence',
-                                    'key': 'discordRPC',
-                                    'type': 'dropdown',
-                                    'options': [
-                                        {'label': 'Enabled (Clear Activity on Pause)', 'value': 'clearOnPause'},
-                                        {'label': 'Enabled (Display Status when Paused)', 'value': true}
-                                    ],
-                                    'help': `Display your current song as your Discord Game activity. In order for this to appear, you must have 'Display current activity as status message.' turned on.`
-                                },
                                 { // Turning on playbackNotifications
                                     'label': 'Notifications on Song Change',
                                     'key': 'playbackNotifications',
@@ -605,6 +606,29 @@ const init = {
                                         {'label': 'Made for You', 'value': 'library/made-for-you'}
                                     ],
                                     'help': 'Select what page you wish to be placed on when you start the application.'
+                                },
+                                { // Discord Rich Presence
+                                    'heading': 'Discord Rich Presence',
+                                    'content': `These settings are for managing how you display your status on Discord. You must have 'Display current activity as status message.' turned on in your Discord settings for the song to be shown.`,
+                                    'type': 'message'
+                                },
+                                { // Turning on DiscordRPC
+                                    'label': 'Display Song as Game Activity on Discord',
+                                    'key': 'discordRPC',
+                                    'type': 'dropdown',
+                                    'options': [
+                                        {'label': "Enabled (Display 'Apple Music' as title)", 'value': 'am-title'},
+                                        {'label': "Enabled (Display 'Apple Music Electron' as title)", 'value': 'ame-title'}
+                                    ],
+                                    'help': `Display your current song as your Discord Game activity.`
+                                },
+                                { // Clear Activity
+                                    'key': 'discordClearActivityOnPause',
+                                    'type': 'checkbox',
+                                    'options': [
+                                        {'label': 'Clear Activity on Pause', 'value': true}
+                                    ],
+                                    'help': `With this disabled your status will show a Pause/Play icon whenever you are playing or have a song paused. When you enable this, it is replaced with a branch icon (Nighly / Stable) and a version title when you hover.`
                                 },
                                 { // LastFM
                                     'heading': 'LastFM Notice',

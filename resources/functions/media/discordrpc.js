@@ -73,33 +73,35 @@ module.exports = {
                 {label: "Open in AME", url: listenURL},
             ]
         };
-
         if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log(`[LinkHandler] Listening URL has been set to: ${listenURL}`);
 
-        if (app.getVersion().includes('nightly')) {
-            ActivityObject.largeImageKey = 'nightly'
+        // clear Activity Values
+        if (app.preferences.value('general.discordClearActivityOnPause').includes(true)) {
+            ActivityObject.largeImageKey = 'apple'
+            ActivityObject.largeImageText = attributes.albumName
+            ActivityObject.smallImageKey = app.getVersion().includes('nightly') ? 'nightlylarge' : 'logo'
+            ActivityObject.smallImageText = `Apple Music Electron v${app.getVersion()}`
+        } else {
+            if (app.getVersion().includes('nightly')) {
+                ActivityObject.largeImageKey = 'nightly'
+            }
         }
 
+        // Check all the values work
         if (!((new Date(attributes.endTime)).getTime() > 0)) {
             delete ActivityObject.startTimestamp
             delete ActivityObject.endTimestamp
         }
-
         if (!attributes.artistName) {
             delete ActivityObject.state
         }
-
         if (!ActivityObject.largeImageText || Array.from(ActivityObject.largeImageText).length < 2) {
             delete ActivityObject.largeImageText
         }
 
-        if (attributes.status) {
-            if (app.preferences.value('general.discordRPC') === 'clearOnPause') {
-                delete ActivityObject.smallImageKey
-                delete ActivityObject.smallImageText
-            }
-        } else {
-            if (app.preferences.value('general.discordRPC') === 'clearOnPause') {
+        // Clear if if needed
+        if (!attributes.status) {
+            if (app.preferences.value('general.discordClearActivityOnPause').includes(true)) {
                 app.discord.clearActivity().catch((e) => console.error(`[DiscordRPC][clearActivity] ${e}`));
                 ActivityObject = null
             } else {

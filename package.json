@@ -60,7 +60,7 @@
     "webpack": "~5.52.0"
   },
   "build": {
-    "electronVersion": "13.1.5",
+    "electronVersion": "14.0.0",
     "electronDownload": {
       "version": "15.0.0-wvvmp-beta.2",
       "mirror": "https://github.com/castlabs/electron-releases/releases/download/v"
