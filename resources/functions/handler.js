@@ -95,6 +95,7 @@ const handler = {
         app.PreviousSongId = null;
 
         ipcMain.on('playbackStateDidChange', (_item, a) => {
+            if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn('[handler] playbackStateDidChange received.')
             app.isPlaying = a.status;
 
             try {
@@ -133,8 +134,39 @@ const handler = {
     MediaStateHandler: function () {
         if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[mediaItemStateDidChange] Started.');
         ipcMain.on('mediaItemStateDidChange', (_item, a) => {
+            if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn('[handler] mediaItemStateDidChange received.')
             app.funcs.CreateNotification(a)
             app.funcs.mpris.updateActivity(a);
+
+            if (app.preferences.value('audio.gaplessEnabled').includes(true)) {
+                try {
+                    if (a.playParams.id !== app.PreviousSongId) { // If it is a new song
+                        a.startTime = Date.now()
+                        a.endTime = Number(Math.round(a.startTime + a.durationInMillis));
+                    } else { // If its continuing from the same song
+                        a.startTime = Date.now()
+                        a.endTime = Number(Math.round(Date.now() + a.remainingTime));
+                    }
+                } catch (err) {
+                    console.error(`[playbackStateDidChange] Error when setting endTime - ${err}`);
+                    a.endTime = 0;
+                }
+
+                // Just in case
+                if (!a.endTime) {
+                    a.endTime = Number(Math.round(Date.now()));
+                }
+
+                app.funcs.SetThumbarButtons(a.status)
+                app.funcs.SetTrayTooltip(a)
+
+                if (app.preferences.value('general.incognitoMode').includes(true)) {
+                    console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
+                } else {
+                    app.funcs.discord.updateActivity(a)
+                    app.funcs.lastfm.scrobbleSong(a)
+                }
+            }
         });
     },
 

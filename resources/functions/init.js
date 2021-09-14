@@ -658,15 +658,6 @@ const init = {
                 'type': 'dropdown',
                 'options': [
                     { 'label': 'Default', 'value': 'default' },
-                    { 'label': 'Blurple', 'value': 'blurple' },
-                    { 'label': 'Dracula', 'value': 'dracula' },
-                    { 'label': 'Jungle', 'value': 'jungle' },
-                    { 'label': 'Spotify', 'value': 'spotify' },
-                    { 'label': 'OLED', 'value': 'oled' },
-                    { 'label': 'Nord', 'value': 'nord' },
-                    { 'label': 'Acrylic', 'value': 'acrylic' },
-                    { 'label': 'iTunes (macOS)', 'value': 'itunes_macos' },
-                    { 'label': 'iTunes (Windows)', 'value': 'itunes_windows' }
                 ]
             },
             {
@@ -1096,6 +1087,7 @@ const init = {
                 ]
             }
         ]
+
         function RemoveDP(x) {
             return x.replace(/\./g, "").replace(',', '.');
         }
@@ -1119,7 +1111,27 @@ const init = {
                 }
             })
         }
-        // console.log(ThemesList)
+
+        function fetchThemeName (fileName) {
+            fileName = join(app.userThemesPath, `${fileName.toLowerCase()}.css`)
+            let found = false;
+            if (fs.existsSync(fileName)) {
+                const file = fs.readFileSync(fileName, "utf8");
+                file.split(/\r?\n/).forEach((line) => {
+                    if (line.includes("@name")) {
+                        found = (line.split('@name')[1]).trim()
+                    }
+                })
+            }
+            return found
+        }
+
+        // Get the Info
+        ThemesList.forEach((themeFileName) => {
+            const themeName = fetchThemeName(themeFileName)
+            if (!themeName) return;
+            fields.visual[0].options.push({ label: themeName, value: themeFileName },)
+        })
 
         const ElectronPreferences = require("electron-preferences");
         app.preferences = new ElectronPreferences({
