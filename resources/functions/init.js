@@ -1,8 +1,10 @@
-const { app, nativeTheme, dialog, nativeImage, Tray, globalShortcut } = require("electron");
+const { app, nativeTheme, nativeImage, Tray, globalShortcut } = require("electron");
 const { join, resolve } = require("path");
 const os = require("os");
 const fs = require("fs");
 const chmodr = require("chmodr");
+const clone = require('git-clone');
+const rimraf = require('rimraf')
 const languages = require("../languages.json");
 
 const init = {
@@ -23,9 +25,7 @@ const init = {
         console.log(`Version: ${app.getVersion()} | Electron Version: ${process.versions.electron}`)
         console.log(`Type: ${os.type} | Release: ${os.release()} ${simplifiedOs ? `(${simplifiedOs}) ` : ''}| Platform: ${os.platform()}`)
         console.log(`User Data Path: '${app.getPath('userData')}'`)
-        console.log("---------------------------------------------------------------------")
-        console.log('[Apple-Music-Electron] Current Configuration:')
-        console.log(app.preferences._preferences)
+        console.log(`Current Configuration: ${JSON.stringify(app.preferences._preferences)}`)
         console.log("---------------------------------------------------------------------")
         if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[InitializeBase] Started.');
 
@@ -81,8 +81,6 @@ const init = {
     },
 
     ThemeInstallation: function () {
-        const gitPullOrClone = require("git-pull-or-clone");
-
         init.SetApplicationTheme()
 
         // Set the folder
@@ -95,8 +93,8 @@ const init = {
         if (fs.existsSync(app.userThemesPath)) {
             console.log("[InitializeTheme][existsSync] Folder exists!")
         } else {
-            gitPullOrClone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, (err) => {
-                console.log(`[InitializeTheme][gitPullOrClone] ${err ? err : `Initial Themes have been cloned to '${app.userThemesPath}'`}`)
+            clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
+                console.log(`[InitializeTheme][GitClone] ${err ? err : `Initial Themes have been cloned to '${app.userThemesPath}'`}`)
             })
         }
 
@@ -109,13 +107,7 @@ const init = {
                 if (err) {
                     console.error(`[InitializeTheme][chmodr] ${err} - Theme set to default to prevent application launch halt.`);
                     app.preferences.value('visual.theme', 'default')
-                    if (err.toString().includes('permission denied') && process.platform === 'linux') { // Just gonna use this for now
-                        dialog.showMessageBox(undefined, {
-                            title: "Permission Change Needed!",
-                            message: `In order for you to be able to use Themes, you will need to manually change the permissions of the directory: '${app.userThemesPath}'. This is caused because the application does not have sufficient permissions to set the folder permissions. You can run the following command to set permissions: \n\nsudo chmod 777 -R '${app.userThemesPath}'`,
-                            type: "warning"
-                        })
-                    }
+                    throw err
                 } else {
                     console.log('[InitializeTheme][chmodr] Folder permissions successfully set.');
                 }
@@ -130,13 +122,12 @@ const init = {
         }
 
         if (app.preferences.value('advanced.overwriteThemes').includes(true)) {
-            const rimraf = require('rimraf')
             rimraf(app.userThemesPath, [], () => {
                 if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn(`[InitializeTheme] Clearing themes directory for fresh clone. ('${app.userThemesPath}')`)
-                gitPullOrClone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, (err) => {
-                    console.log(`[InitializeTheme][gitPullOrClone] ${err ? err : `Pulled Themes.`}`)
+                clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
+                    console.log(`[InitializeTheme][GitClone] ${err ? err : `Pulled Themes.`}`)
                     app.preferences.value('advanced.overwriteThemes', [])
-                    app.preferences.value('visual.theme', '')
+                    app.preferences.value('visual.theme', 'default')
                 })
             })
         }

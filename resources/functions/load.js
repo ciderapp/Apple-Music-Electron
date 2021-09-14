@@ -17,7 +17,12 @@ module.exports = {
         readFile(path, "utf-8", function (error, data) {
             if (error) {
                 console.error(`[LoadCSS] Error while injecting: '${path}' - ${error}`)
-                chmodSync(path, constants.S_IRUSR | constants.S_IWUSR);
+                try {
+                    chmodSync(path, constants.S_IRUSR | constants.S_IWUSR);
+                } catch(err) {
+                    console.error(`[LoadCSS] ${err}`)
+                }
+
             } else {
                 let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
                 app.win.webContents.insertCSS(formattedData).then(() => {
