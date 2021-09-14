@@ -14,7 +14,7 @@ try {
 
     /* Get the Button Path */
     let buttonPath;
-    if (preferences.visual.emulateMacOS === 'right') {
+    if (preferences.visual.frameType === 'mac-right') {
         buttonPath = '//*[@id="web-main"]/div[4]/div/div[3]/div[3]/button'
     } else {
         buttonPath = '//*[@id="web-main"]/div[3]/div/div[3]/div[3]/button'

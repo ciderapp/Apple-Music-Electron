@@ -96,13 +96,13 @@ module.exports = {
         }
 
         /* Load the Emulation Files */
-        if (app.preferences.value('visual.emulateMacOS').includes('left')) {
+        if (app.preferences.value('visual.frameType') === 'mac') {
             app.funcs.LoadJS('emulateMacOS.js')
-        } else if (app.preferences.value('visual.emulateMacOS').includes('right')) {
+        } else if (app.preferences.value('visual.frameType') === 'mac-right') {
             app.funcs.LoadJS('emulateMacOS_rightAlign.js')
         }
 
-        if (process.platform === 'darwin') {
+        if (process.platform === 'darwin' && !app.preferences.value('visual.frameType').includes('mac')) {
           app.funcs.LoadJS('macOS.js')
         }
 
@@ -172,7 +172,7 @@ module.exports = {
         }
 
         // Set the settings variables if needed
-        if (app.preferences.value('visual.emulateMacOS').includes('left') || app.preferences.value('visual.emulateMacOS').includes('right')) {
+        if (app.preferences.value('visual.frameType').includes('mac')) {
             app.preferences.value('visual.removeUpsell', [true]);
             app.preferences.value('visual.removeAppleLogo', [true]);
         }

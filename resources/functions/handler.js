@@ -211,12 +211,12 @@ const handler = {
           app.win.setSimpleFullScreen()
             if (app.win.isMaximized()) {
                 app.win.restore()
-                /*if (app.preferences.value('visual.emulateMacOS').includes(false)) {
+                /*if (app.preferences.value('visual.frameType').includes('mac')) {
                     app.win.webContents.executeJavaScript(`document.getElementById('maxResBtn').title = 'Maximize'; document.getElementById('maxResBtn').classList.remove('restoreBtn'); document.getElementById('maxResBtn').classList.add('maximizeBtn');`)
                 }*/
             } else {
                 app.win.maximize()
-                /*if (app.preferences.value('visual.emulateMacOS').includes(false)) {
+                /*if (app.preferences.value('visual.frameType').includes('mac')) {
                     app.win.webContents.executeJavaScript(`document.getElementById('maxResBtn').title = 'Restore'; document.getElementById('maxResBtn').classList.remove('maximizeBtn'); document.getElementById('maxResBtn').classList.add('restoreBtn');`)
                 }*/
             }

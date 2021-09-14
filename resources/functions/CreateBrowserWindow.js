@@ -107,24 +107,13 @@ const BrowserWindowCreation = {
     CreateBrowserWindow: function () {
         console.log('[CreateBrowserWindow] Initializing Browser Window Creation.')
 
-        let minWide, minHigh, Frame;
-        if (app.preferences.value('visual.emulateMacOS').includes('left') || app.preferences.value('visual.emulateMacOS').includes('right') || app.preferences.value('advanced.forceDisableWindowFrame').includes(true)) {
-            Frame = false;
-            minWide = app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300;
-            minHigh = app.preferences.value('visual.streamerMode').includes(true) ? 55 : 300;
-        } else {
-            Frame = true;
-            minWide = app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300;
-            minHigh = app.preferences.value('visual.streamerMode').includes(true) ? 115 : 300;
-        }
-
         const options = {
             icon: join(__dirname, `../icons/icon.ico`),
             width: 1024,
             height: 600,
-            minWidth: minWide,
-            minHeight: minHigh,
-            frame: Frame,
+            minWidth: (app.preferences.value('visual.frameType').includes('mac') ? (app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300) : (app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300)),
+            minHeight: (app.preferences.value('visual.frameType').includes('mac') ? (app.preferences.value('visual.streamerMode').includes(true) ? 55 : 300) : (app.preferences.value('visual.streamerMode').includes(true) ? 115 : 300)),
+            frame: (app.preferences.value('visual.frameType').includes('mac') ? false : true),
             title: "Apple Music",
             useContentSize: true,
             resizable: true,
@@ -142,13 +131,12 @@ const BrowserWindowCreation = {
             }
         };
 
-        if (process.platform === 'darwin') { // macOS Frame
+        if (process.platform === 'darwin' && !app.preferences.value('visual.frameType').includes('mac')) { // macOS Frame
             options.titleBarStyle = 'hidden'
             options.titleBarOverlay = true
             options.frame = true
             app.preferences.value('visual.removeUpsell', [true]);
             app.preferences.value('visual.removeAppleLogo', [true]);
-            if (app.preferences.value('visual.emulateMacOS')) app.preferences.value('visual.emulateMacOS', '')
         }
 
         const transparencyOptions = BrowserWindowCreation.fetchTransparencyOptions()
