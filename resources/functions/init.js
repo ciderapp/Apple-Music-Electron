@@ -1096,9 +1096,12 @@ const init = {
                 ]
             }
         ]
+        function RemoveDP(x) {
+            return x.replace(/\./g, "").replace(',', '.');
+        }
 
         // Remove the Transparency Option for Acrylic if it is not supported
-        if (!os.type().includes('Windows') || parseFloat(os.release()) <= parseFloat('10.0.17763')) {
+        if (!os.type().includes('Windows') || parseFloat(RemoveDP(os.release())) <= parseFloat(RemoveDP('10.0.17763'))) {
             for (var key in fields.visual) {
                 if (fields.visual[key].key === 'transparencyEffect') {
                     fields.visual[key].options.shift()
@@ -1116,7 +1119,7 @@ const init = {
                 }
             })
         }
-        console.log(ThemesList)
+        // console.log(ThemesList)
 
         const ElectronPreferences = require("electron-preferences");
         app.preferences = new ElectronPreferences({
