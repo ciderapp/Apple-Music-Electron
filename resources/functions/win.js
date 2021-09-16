@@ -1,25 +1,60 @@
-const {app, Menu, nativeTheme, Notification} = require("electron");
+const { app, Menu, nativeTheme, Notification } = require("electron");
 const nativeImage = require('electron').nativeImage
-const {join} = require("path");
-const {Analytics} = require("./sentry");
+const { join } = require("path");
+const { Analytics } = require("./sentry");
 Analytics.init()
 
 const trayIconDir = (nativeTheme.shouldUseDarkColors ? join(__dirname, `../icons/media/light/`) : join(__dirname, `../icons/media/dark/`));
 const Images = {
-    next: nativeImage.createFromPath(join(trayIconDir, `next.png`)).resize({width: 32, height: 32}),
-    nextInactive: nativeImage.createFromPath(join(trayIconDir, `next-inactive.png`)).resize({width: 32, height: 32}),
+    next: nativeImage.createFromPath(join(trayIconDir, `next.png`)).resize({ width: 32, height: 32 }),
+    nextInactive: nativeImage.createFromPath(join(trayIconDir, `next-inactive.png`)).resize({ width: 32, height: 32 }),
 
-    pause: nativeImage.createFromPath(join(trayIconDir, `pause.png`)).resize({width: 32, height: 32}),
-    pauseInactive: nativeImage.createFromPath(join(trayIconDir, `pause-inactive.png`)).resize({width: 32, height: 32}),
+    pause: nativeImage.createFromPath(join(trayIconDir, `pause.png`)).resize({ width: 32, height: 32 }),
+    pauseInactive: nativeImage.createFromPath(join(trayIconDir, `pause-inactive.png`)).resize({ width: 32, height: 32 }),
 
-    play: nativeImage.createFromPath(join(trayIconDir, `play.png`)).resize({width: 32, height: 32}),
-    playInactive: nativeImage.createFromPath(join(trayIconDir, `play-inactive.png`)).resize({width: 32, height: 32}),
+    play: nativeImage.createFromPath(join(trayIconDir, `play.png`)).resize({ width: 32, height: 32 }),
+    playInactive: nativeImage.createFromPath(join(trayIconDir, `play-inactive.png`)).resize({ width: 32, height: 32 }),
 
-    previous: nativeImage.createFromPath(join(trayIconDir, `previous.png`)).resize({width: 32, height: 32}),
-    previousInactive: nativeImage.createFromPath(join(trayIconDir, `previous-inactive.png`)).resize({width: 32, height: 32}),
+    previous: nativeImage.createFromPath(join(trayIconDir, `previous.png`)).resize({ width: 32, height: 32 }),
+    previousInactive: nativeImage.createFromPath(join(trayIconDir, `previous-inactive.png`)).resize({ width: 32, height: 32 }),
 }
 
 module.exports = {
+
+    SetDockMenu: function () {
+        if (process.platform !== 'darwin') return;
+
+        app.dock.setMenu(Menu.buildFromTemplate([
+            {
+                label: 'Show Preferences',
+                click() { app.preferences.show() }
+            }
+        ]))
+
+    },
+
+    SetApplicationMenu: function () {
+        Menu.setApplicationMenu(Menu.buildFromTemplate([
+            {
+                label: 'Help',
+                submenu: [
+                    {
+                        label: 'Show Preferences',
+                        accelerator: 'CommandOrControl+Alt+S',
+                        click() {
+                            app.preferences.show()
+                        }
+                    },
+                    {
+                        label: 'Discord',
+                        click() {
+                            require("shell").openExternal("https://discord.gg/CezHYdXHEM")
+                        }
+                    }
+                ]
+            }
+        ]));
+    },
 
     SetContextMenu: function (visibility) {
 

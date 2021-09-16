@@ -21,7 +21,7 @@ app.funcs.discord = require('./resources/functions/media/discordrpc')
 app.funcs.lastfm = require('./resources/functions/media/lastfm')
 app.funcs.mpris = require('./resources/functions/media/mpris')
 
-const {VersionHandler} = require('./resources/functions/handler')
+const {VersionHandler} = require('./resources/functions/handler');
 VersionHandler()
 
 // Creating the Application Window and Calling all the Functions
@@ -58,6 +58,8 @@ function CreateWindow() {
     MediaStateHandler() // IPCMain
 
     app.funcs.SetThumbarButtons(null) // Set Inactive Thumbnail Toolbar Icons
+    app.funcs.SetDockMenu() // Set the Dock for macOS
+    // app.funcs.SetApplicationMenu() // Set the Menu for OS's that use it (Mainly macOS)
 }
 
 // When its Ready call it all
