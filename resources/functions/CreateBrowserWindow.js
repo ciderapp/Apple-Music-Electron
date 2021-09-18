@@ -145,8 +145,8 @@ const BrowserWindowCreation = {
         if (app.transparency && transparencyOptions) {
             if (process.platform === "darwin") { // Create using electron's setVibrancy function
                 console.log('[CreateBrowserWindow] Creating BrowserWindow with electron vibrancy.')
-                options.vibrancy = 'fullscreen-ui'
                 win = new BrowserWindow(options)
+                win.setVibrancy('fullscreen-ui')
             } else { // Create using Acrylic Window
                 console.log(`[CreateBrowserWindow] Creating Acrylic BrowserWindow.`)
                 const acrylicWindow = require("electron-acrylic-window");
