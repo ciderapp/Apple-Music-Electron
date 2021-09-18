@@ -240,7 +240,6 @@ const handler = {
         })
 
         ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
-          app.win.setSimpleFullScreen()
             if (app.win.isMaximized()) {
                 app.win.restore()
                 /*if (app.preferences.value('visual.frameType').includes('mac')) {
