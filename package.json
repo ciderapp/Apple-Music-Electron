@@ -25,7 +25,7 @@
     "discord-rpc": "^4.0.1",
     "electron-acrylic-window": "^0.5.9",
     "electron-log": "^4.3.5",
-    "electron-preferences": "^2.3.2",
+    "electron-preferences": "2.5.0",
     "electron-updater": "^4.3.9",
     "git-clone": "^0.1.0",
     "lastfmapi": "^0.1.1",
