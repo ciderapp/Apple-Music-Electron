@@ -31,7 +31,7 @@
   <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-macos.yml/badge.svg" alt="Build Analysis - macOS">
 </p>
 <p align="center">
-<img src="https://img.shields.io/badge/aPpLe_oFfIcIaL_PrOdUcT-lightgrey.svg?style=flat&logo=apple&logoColor=black" alt="This most def a apple product, for sure">
+<!-- <img src="https://img.shields.io/badge/aPpLe_oFfIcIaL_PrOdUcT-lightgrey.svg?style=flat&logo=apple&logoColor=black" alt="This most def a apple product, for sure"> -->
 </p>
 
 # Install Sources
