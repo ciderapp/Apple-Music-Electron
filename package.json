@@ -56,7 +56,7 @@
     "electron-builder": "^22.7.0",
     "electron-webpack": "^2.7.4",
     "musickit-typescript": "^1.2.4",
-    "webpack": "~5.52.0"
+    "webpack": "~5.53.0"
   },
   "build": {
     "electronVersion": "14.0.0",
