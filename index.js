@@ -91,7 +91,7 @@ app.on('widevine-ready', (version, lastVersion) => {
     if (null !== lastVersion) {
         console.log('[Apple-Music-Electron][Widevine] Widevine ' + version + ', upgraded from ' + lastVersion + ', is ready to be used!')
     } else {
-        console.log('Widevine ' + version + ' is ready to be used!')
+        console.log('[Apple-Music-Electron][Widevine] Widevine ' + version + ' is ready to be used!')
     }
 })
 

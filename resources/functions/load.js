@@ -111,8 +111,6 @@ module.exports = {
           app.funcs.LoadJS('macOS.js')
         }
 
-        app.funcs.LoadJS("addContextMenu.js")
-
         app.funcs.LoadJS('custom.js')
 
         function matchRuleShort(str, rule) {

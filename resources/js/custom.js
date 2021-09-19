@@ -144,6 +144,37 @@ try {
         MusicKit.privateEnabled = true
     }
 
+    /* Contact Menu Creation (From PR #221 by @SiverDX) */
+    function simulateClick(element, clientX, clientY) {
+        let event = new MouseEvent('click', {
+            clientX: clientX,
+            clientY: clientY
+        });
+
+        element.dispatchEvent(event);
+    }
+
+    /* Check if the user is on the library song list or on playlist/album */
+    let clickRegion;
+    if (document.getElementsByClassName("songs-list-row").length === 0) {
+        clickRegion = document.getElementsByClassName("library-track")
+    } else {
+        clickRegion = document.getElementsByClassName("songs-list-row")
+    }
+
+    /* Loop through each row/song and add event listener */
+    for (let area of clickRegion) {
+        area.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+
+            let control = area.getElementsByClassName("context-menu__overflow ")[0];
+
+            if (control) {
+                simulateClick(control, event.clientX, event.clientY);
+            }
+        });
+    }
+
 } catch (e) {
     console.error("[JS] Error while trying to apply custom.js", e);
 }
