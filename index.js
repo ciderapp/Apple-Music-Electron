@@ -87,6 +87,23 @@ app.on('activate', () => {
     }
 })
 
+app.on('widevine-ready', (version, lastVersion) => {
+    if (null !== lastVersion) {
+        console.log('[Apple-Music-Electron][Widevine] Widevine ' + version + ', upgraded from ' + lastVersion + ', is ready to be used!')
+    } else {
+        console.log('Widevine ' + version + ' is ready to be used!')
+    }
+})
+
+app.on('widevine-update-pending', (currentVersion, pendingVersion) => {
+    console.log('[Apple-Music-Electron][Widevine] Widevine ' + currentVersion + ' is ready to be upgraded to ' + pendingVersion + '!')
+})
+
+app.on('widevine-error', (error) => {
+    console.log('[Apple-Music-Electron][Widevine] Widevine installation encountered an error: ' + error)
+    process.exit(1)
+})
+
 app.on('before-quit', function () {
     app.funcs.mpris.clearActivity()
     app.funcs.discord.disconnect()
