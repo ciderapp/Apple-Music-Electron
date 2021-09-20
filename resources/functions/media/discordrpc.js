@@ -59,14 +59,15 @@ module.exports = {
         }
 
         const listenURL = `https://applemusicelectron.com/p?id=${attributes.playParams.id}`
+
         let ActivityObject = {
             details: attributes.name,
             state: `by ${attributes.artistName}`,
             startTimestamp: attributes.startTime,
             endTimestamp: attributes.endTime,
             largeImageKey: 'logo',
-            largeImageText: `Apple Music Electron v${app.getVersion()}`,
-            smallImageKey: 'play',
+            largeImageText: attributes.albumName,
+            smallImageKey: 'nightly',
             smallImageText: 'Playing',
             instance: true,
             buttons: [

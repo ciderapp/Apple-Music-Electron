@@ -2,6 +2,7 @@ const {app, BrowserWindow, nativeTheme} = require('electron')
 const {join} = require('path')
 const os = require('os')
 const fs = require('fs')
+const windowStateKeeper = require('electron-window-state');
 const {Analytics} = require("./sentry");
 let win;
 Analytics.init()
@@ -106,14 +107,21 @@ const BrowserWindowCreation = {
 
     CreateBrowserWindow: function () {
         console.log('[CreateBrowserWindow] Initializing Browser Window Creation.')
+        // Set default window sizes
+        let mainWindowState = windowStateKeeper({
+            defaultWidth: 1024,
+            defaultHeight: 600
+        });
 
         const options = {
             icon: join(__dirname, `../icons/icon.ico`),
-            width: 1024,
-            height: 600,
+            width: mainWindowState.width,
+            height: mainWindowState.height,
+            x: mainWindowState.x,
+            y: mainWindowState.y,
             minWidth: (app.preferences.value('visual.frameType').includes('mac') ? (app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300) : (app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300)),
             minHeight: (app.preferences.value('visual.frameType').includes('mac') ? (app.preferences.value('visual.streamerMode').includes(true) ? 55 : 300) : (app.preferences.value('visual.streamerMode').includes(true) ? 115 : 300)),
-            frame: (app.preferences.value('visual.frameType').includes('mac') ? false : true),
+            frame: (!app.preferences.value('visual.frameType').includes('mac')),
             title: "Apple Music",
             useContentSize: true,
             resizable: true,
@@ -197,6 +205,9 @@ const BrowserWindowCreation = {
         if (app.transparency) {
             win.show()
         }
+
+        // Register listeners on Window to track size and position of the Window.
+        mainWindowState.manage(win);
 
         return win
     },
