@@ -111,6 +111,10 @@ module.exports = {
           app.funcs.LoadJS('macOS.js')
         }
 
+        if (process.platform === 'win32' && !app.preferences.value('visual.frameType').includes('mac')) {
+            app.funcs.LoadJS('windowsFrame.js')
+        }
+
         app.funcs.LoadJS('custom.js')
 
         function matchRuleShort(str, rule) {
@@ -168,6 +172,10 @@ module.exports = {
     LoadOneTimeFiles: function () {
         // Inject the custom stylesheet
         app.funcs.LoadCSS('custom-stylesheet.css')
+
+        if (process.platform === 'win32' && !app.preferences.value('visual.frameType').includes('mac')) {
+            app.funcs.LoadCSS('windowsFrame.css')
+        }
 
         // Load the appropriate css file for transparency
         if (app.transparency) {

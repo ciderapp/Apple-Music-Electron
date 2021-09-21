@@ -320,7 +320,7 @@ const init = {
             },
             "visual": {
                 "theme": "default",
-                "frameType": "mac",
+                "frameType": false,
                 "transparencyMode": [],
                 "streamerMode": [],
                 "removeUpsell": [
