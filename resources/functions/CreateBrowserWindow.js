@@ -143,8 +143,7 @@ const BrowserWindowCreation = {
             options.titleBarStyle = 'hidden'
             options.titleBarOverlay = true
             options.frame = true
-            app.preferences.value('visual.removeUpsell', [true]);
-            app.preferences.value('visual.removeAppleLogo', [true]);
+            options.trafficLightPosition = {x: 20, y: 20}
         }
 
         const transparencyOptions = BrowserWindowCreation.fetchTransparencyOptions()
@@ -153,8 +152,9 @@ const BrowserWindowCreation = {
         if (app.transparency && transparencyOptions) {
             if (process.platform === "darwin") { // Create using electron's setVibrancy function
                 console.log('[CreateBrowserWindow] Creating BrowserWindow with electron vibrancy.')
+                options.vibrancy = 'fullscreen-ui'
+                options.transparent = true
                 win = new BrowserWindow(options)
-                win.setVibrancy('fullscreen-ui')
             } else { // Create using Acrylic Window
                 console.log(`[CreateBrowserWindow] Creating Acrylic BrowserWindow.`)
                 const acrylicWindow = require("electron-acrylic-window");
@@ -167,11 +167,6 @@ const BrowserWindowCreation = {
             win = new BrowserWindow(options);
             win.setBackgroundColor = '#1f1f1f00'
         }
-
-        win.setTrafficLightPosition && win.setTrafficLightPosition({
-            x: 20,
-            y: 20
-        })
 
         // alwaysOnTop
         if (!app.preferences.value('advanced.alwaysOnTop').includes(true)) {
