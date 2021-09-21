@@ -88,6 +88,14 @@ module.exports = {
         /* Remove Apple Music Logo */
         if (app.preferences.value('visual.removeAppleLogo').includes(true)) {
             app.funcs.LoadJS('removeAppleLogo.js')
+            app.win.webContents.insertCSS(`
+            @media only screen and (max-width: 483px) {
+                .web-navigation__nav-list {
+                        margin-top: 50px;
+                    }
+                }
+            }
+            `)
         }
 
         /* Remove Footer */

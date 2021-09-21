@@ -10,8 +10,10 @@ html body {
 
 /* Make the search box transparent */
 
-#web-navigation-container {
-    background-color: transparent !important;
+@media only screen and (min-width: 483px) {
+    #web-navigation-container {
+        background-color: transparent !important;
+    }
 }
 
 .dt-search-box__input {

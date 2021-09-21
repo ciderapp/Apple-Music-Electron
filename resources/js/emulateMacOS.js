@@ -43,7 +43,16 @@ try {
             </div>
         </div>
 
-        `)
+        `);
+
+        if (document.getElementById('web-navigation-search-box')) {
+            document.getElementById('web-navigation-search-box').style.gridArea = "auto !important";
+            document.getElementById('web-navigation-search-box').style.marginTop = '0px !important';
+        }
+
+        if (document.getElementById('web-navigation-container')) {
+            document.getElementById('web-navigation-container').style.gridTemplateRows = '55px auto 1fr auto !important'
+        }
 
     }
 } catch (e) {

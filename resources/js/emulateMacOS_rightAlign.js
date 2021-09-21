@@ -48,8 +48,12 @@ try {
         `);
     }
 
-    if (document.getElementsByClassName('search-scope-bar search__scope-bar search-scope-bar--desktop-search').length > 0) {
-        document.getElementsByClassName('search-scope-bar search__scope-bar search-scope-bar--desktop-search')[0].style.top = '25px'
+    if (document.getElementsByClassName('search-box dt-search-box web-navigation__search-box').length > 0) {
+        document.getElementsByClassName('search-box dt-search-box web-navigation__search-box')[0].style.marginTop = '15px';
+    }
+
+    if (document.getElementById('web-navigation-container')) {
+        document.getElementById('web-navigation-container').style.gridTemplateRows = 'auto auto 1fr auto'
     }
 } catch (e) {
     console.error("[JS] Error while trying to apply emulateMacOS_rightAlign.js", e);
