@@ -242,12 +242,18 @@ const handler = {
         ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
             if (app.win.isMaximized()) {
                 app.win.restore()
-                /*if (app.preferences.value('visual.frameType').includes('mac')) {
+                /*if (process.platform === 'win32' && !app.preferences.value('visual.frameType').includes('mac')) {
+                    app.win.webContents.insertCSS(`.web-nav-window-controls #maximize { background-image: var(--gfx-maxedBtn) !important; };`).catch((e) => console.error(e))
+                }
+                if (app.preferences.value('visual.frameType').includes('mac')) {
                     app.win.webContents.executeJavaScript(`document.getElementById('maxResBtn').title = 'Maximize'; document.getElementById('maxResBtn').classList.remove('restoreBtn'); document.getElementById('maxResBtn').classList.add('maximizeBtn');`)
                 }*/
             } else {
                 app.win.maximize()
-                /*if (app.preferences.value('visual.frameType').includes('mac')) {
+                /*if (process.platform === 'win32' && !app.preferences.value('visual.frameType').includes('mac')) {
+                    app.win.webContents.insertCSS(`.web-nav-window-controls #maximize { background-image: var(--gfx-maxBtn) !important; };`).catch((e) => console.error(e))
+                }
+                if (app.preferences.value('visual.frameType').includes('mac')) {
                     app.win.webContents.executeJavaScript(`document.getElementById('maxResBtn').title = 'Restore'; document.getElementById('maxResBtn').classList.remove('maximizeBtn'); document.getElementById('maxResBtn').classList.add('restoreBtn');`)
                 }*/
             }

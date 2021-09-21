@@ -649,7 +649,8 @@ const init = {
                 'type': 'dropdown',
                 'options': [
                     { 'label': 'Default', 'value': 'default' },
-                ]
+                ],
+                'help': 'You will need to restart the application in order for the default themes to be populated.'
             },
             {
                 'content': '<p>You can preview all the themes <a style="color: #227bff !important" target="_blank" href="https://github.com/cryptofyre/Apple-Music-Electron/wiki/Theme-Preview-Images">here</a>.</p>',
