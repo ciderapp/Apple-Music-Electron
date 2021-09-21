@@ -121,7 +121,7 @@ const BrowserWindowCreation = {
             y: mainWindowState.y,
             minWidth: (app.preferences.value('visual.frameType').includes('mac') ? (app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300) : (app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300)),
             minHeight: (app.preferences.value('visual.frameType').includes('mac') ? (app.preferences.value('visual.streamerMode').includes(true) ? 55 : 300) : (app.preferences.value('visual.streamerMode').includes(true) ? 115 : 300)),
-            frame: false,
+            frame: process.platform !== 'win32',
             title: "Apple Music",
             useContentSize: true,
             resizable: true,
