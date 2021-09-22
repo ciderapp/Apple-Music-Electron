@@ -26,13 +26,7 @@ module.exports = {
             } else {
                 let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
                 app.win.webContents.insertCSS(formattedData).then(() => {
-                    if (app.preferences.value('advanced.verboseLogging').includes(true)) {
-                        if (theme) {
-                            console.log(`[LoadTheme] '${path}' successfully injected.`)
-                        } else {
-                            console.log(`[LoadCSS] '${path}' successfully injected.`)
-                        }
-                    }
+                    console.verbose(`[${theme ? 'LoadTheme' : 'LoadCSS'}] '${path}' successfully injected.`)
                 });
             }
         });
@@ -46,9 +40,7 @@ module.exports = {
                 try {
                     let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
                     app.win.webContents.executeJavaScript(formattedData).then(() => {
-                        if (app.preferences.value('advanced.verboseLogging').includes(true)) {
-                            console.log(`[LoadJSFile] '${path}' successfully injected.`)
-                        }
+                        console.verbose(`[LoadJSFile] '${path}' successfully injected.`)
                     });
                 } catch (err) {
                     console.error(`[LoadJSFile] Error while injecting: ${path} - Error: ${err}`)
@@ -115,11 +107,11 @@ module.exports = {
             app.funcs.LoadJS('emulateMacOS_rightAlign.js')
         }
 
-        if (process.platform === 'darwin' && !app.preferences.value('visual.frameType').includes('mac')) {
+        if (process.platform === 'darwin' && !app.preferences.value('visual.frameType')) {
           app.funcs.LoadJS('macOS.js')
         }
 
-        if (process.platform === 'win32' && !app.preferences.value('visual.frameType').includes('mac')) {
+        if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
             app.funcs.LoadJS('windowsFrame.js')
         }
 
@@ -181,7 +173,8 @@ module.exports = {
         // Inject the custom stylesheet
         app.funcs.LoadCSS('custom-stylesheet.css')
 
-        if (process.platform === 'win32' && !app.preferences.value('visual.frameType').includes('mac')) {
+
+        if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
             app.funcs.LoadCSS('windowsFrame.css')
         }
 
@@ -193,7 +186,7 @@ module.exports = {
         }
 
         // Set the settings variables if needed
-        if (app.preferences.value('visual.frameType').includes('mac')) {
+        if (app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') {
             app.preferences.value('visual.removeUpsell', [true]);
             app.preferences.value('visual.removeAppleLogo', [true]);
         }

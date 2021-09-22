@@ -11,7 +11,7 @@ const handler = {
         // Check for Protocols
         process.argv.forEach((value) => {
             if (value.includes('ame://') || value.includes('itms://') || value.includes('itmss://') || value.includes('musics://') || value.includes('music://')) {
-                if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[InstanceHandler] Preventing application creation as args include protocol.');
+                if (app.preferences.value('advanced.console.verboseLogging').includes(true)) console.log('[InstanceHandler] Preventing application creation as args include protocol.');
                 app.quit()
                 return true
             }
@@ -31,7 +31,7 @@ const handler = {
 
         // Detects if the application has been opened with --force-quit
         if (app.commandLine.hasSwitch('force-quit')) {
-            if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log("[Apple-Music-Electron] User has closed the application via --force-quit");
+            console.verbose("[Apple-Music-Electron] User has closed the application via --force-quit");
             app.quit()
         }
 
@@ -48,18 +48,18 @@ const handler = {
     VersionHandler: function () {
         if (!app.preferences.value('storedVersion') || app.preferences.value('storedVersion') === undefined || app.preferences.value('storedVersion') !== app.getVersion()) {
             rimraf(resolve(app.getPath('userData'), 'Cache'), [], () => {
-                if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn(`[VersionHandler] Outdated / No Version Store Found. Clearing Application Cache. ('${resolve(app.getPath('userData'), 'Cache')}')`)
+                if (app.preferences.value('advanced.console.verboseLogging').includes(true)) console.warn(`[VersionHandler] Outdated / No Version Store Found. Clearing Application Cache. ('${resolve(app.getPath('userData'), 'Cache')}')`)
             })
         }
     },
 
     InstanceHandler: function () {
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[InstanceHandler] Started.')
+        console.verbose('[InstanceHandler] Started.')
         const gotTheLock = app.requestSingleInstanceLock();
         let returnVal = false
 
         if (!gotTheLock && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) {
-            if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn("[InstanceHandler] Existing Instance is Blocking Second Instance.");
+            console.warn("[InstanceHandler] Existing Instance is Blocking Second Instance.");
             app.quit();
             return true
         } else {
@@ -67,11 +67,11 @@ const handler = {
                 console.log(`[InstanceHandler] Second Instance Started with args: [${argv.join(', ')}]`)
 
                 if (argv.includes("--force-quit")) {
-                    if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn('[InstanceHandler] Force Quit found. Quitting App.');
+                    console.warn('[InstanceHandler] Force Quit found. Quitting App.');
                     app.quit()
                     returnVal = true
                 } else if (app.win && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) { // If a Second Instance has Been Started
-                    if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn('[InstanceHandler] Showing window.');
+                    console.warn('[InstanceHandler] Showing window.');
                     app.win.show()
                     app.win.focus()
                 }
@@ -91,11 +91,11 @@ const handler = {
     },
 
     PlaybackStateHandler: function () {
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[playbackStateDidChange] Started.');
+        if (app.preferences.value('advanced.console.verboseLogging').includes(true)) console.log('[playbackStateDidChange] Started.');
         app.PreviousSongId = null;
 
         ipcMain.on('playbackStateDidChange', (_item, a) => {
-            if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn('[handler] playbackStateDidChange received.')
+            console.warn('[handler] playbackStateDidChange received.');
             app.isPlaying = a.status;
 
             try {
@@ -132,9 +132,9 @@ const handler = {
     },
 
     MediaStateHandler: function () {
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[mediaItemStateDidChange] Started.');
+        console.verbose('[mediaItemStateDidChange] Started.');
         ipcMain.on('mediaItemStateDidChange', (_item, a) => {
-            if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn('[handler] mediaItemStateDidChange received.')
+            console.warn('[handler] mediaItemStateDidChange received.')
             app.funcs.CreateNotification(a)
             app.funcs.mpris.updateActivity(a);
 
@@ -171,7 +171,7 @@ const handler = {
     },
 
     WindowStateHandler: function () {
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[WindowStateHandler] Started.');
+        console.verbose('[WindowStateHandler] Started.');
         app.previousPage = app.win.webContents.getURL()
 
         app.win.webContents.setWindowOpenHandler(({url}) => {
@@ -200,7 +200,7 @@ const handler = {
 
             if (app.preferences.value('general.incognitoMode').includes(true)) {
                 new Notification({title: 'Incognito Mode', body: `Incognito Mode enabled. DiscordRPC and LastFM are disabled.`}).show()
-                if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[Incognito] Incognito Mode enabled for Apple Music Website. [DiscordRPC and LastFM are disabled].');
+                console.verbose('[Incognito] Incognito Mode enabled for Apple Music Website. [DiscordRPC and LastFM are disabled].');
             }
         });
 
@@ -242,18 +242,18 @@ const handler = {
         ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
             if (app.win.isMaximized()) {
                 app.win.restore()
-                /*if (process.platform === 'win32' && !app.preferences.value('visual.frameType').includes('mac')) {
+                /*if (process.platform === 'win32' && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
                     app.win.webContents.insertCSS(`.web-nav-window-controls #maximize { background-image: var(--gfx-maxedBtn) !important; };`).catch((e) => console.error(e))
                 }
-                if (app.preferences.value('visual.frameType').includes('mac')) {
+                if (app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') {
                     app.win.webContents.executeJavaScript(`document.getElementById('maxResBtn').title = 'Maximize'; document.getElementById('maxResBtn').classList.remove('restoreBtn'); document.getElementById('maxResBtn').classList.add('maximizeBtn');`)
                 }*/
             } else {
                 app.win.maximize()
-                /*if (process.platform === 'win32' && !app.preferences.value('visual.frameType').includes('mac')) {
+                /*if (process.platform === 'win32' && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
                     app.win.webContents.insertCSS(`.web-nav-window-controls #maximize { background-image: var(--gfx-maxBtn) !important; };`).catch((e) => console.error(e))
                 }
-                if (app.preferences.value('visual.frameType').includes('mac')) {
+                if (app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') {
                     app.win.webContents.executeJavaScript(`document.getElementById('maxResBtn').title = 'Restore'; document.getElementById('maxResBtn').classList.remove('maximizeBtn'); document.getElementById('maxResBtn').classList.add('restoreBtn');`)
                 }*/
             }
@@ -279,7 +279,7 @@ const handler = {
     },
 
     SettingsHandler: function () {
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[SettingsHandler] Started.');
+        console.verbose('[SettingsHandler] Started.');
         let DialogMessage, cachedPreferences = app.preferences._preferences;
 
         app.preferences.on('save', (updatedPreferences) => {
@@ -305,7 +305,7 @@ const handler = {
         if (!songId) return;
         console.log(songId)
         let formattedSongID = songId.replace(/\D+/g, '');
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn(`[LinkHandler] Attempting to load song id: ${formattedSongID}`);
+        console.warn(`[LinkHandler] Attempting to load song id: ${formattedSongID}`);
         // Someone look into why playMediaItem doesn't work thanks - cryptofyre
         app.win.webContents.executeJavaScript(`MusicKit.getInstance().changeToMediaItem('${formattedSongID}')`)
     }

@@ -63,7 +63,7 @@ const BrowserWindowCreation = {
         let transparencyOptions, transparencyTheme;
 
         // Set the Transparency Options
-        if (app.preferences.value('visual.transparencyEffect') && app.preferences.value('visual.transparencyEffect') !== 'disabled' && process.platform !== "linux") {
+        if (app.preferences.value('visual.transparencyEffect') && app.preferences.value('visual.transparencyEffect') && process.platform !== "linux") {
             console.log('[fetchTransparencyOptions] Fetching Transparency Options')
 
             // If a Custom Theme is being used
@@ -119,11 +119,10 @@ const BrowserWindowCreation = {
             height: mainWindowState.height,
             x: mainWindowState.x,
             y: mainWindowState.y,
-            minWidth: (app.preferences.value('visual.frameType').includes('mac') ? (app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300) : (app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300)),
-            minHeight: (app.preferences.value('visual.frameType').includes('mac') ? (app.preferences.value('visual.streamerMode').includes(true) ? 55 : 300) : (app.preferences.value('visual.streamerMode').includes(true) ? 115 : 300)),
+            minWidth: (app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300),
+            minHeight: ((app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') ? (app.preferences.value('visual.streamerMode').includes(true) ? 55 : 300) : (app.preferences.value('visual.streamerMode').includes(true) ? 115 : 300)),
             frame: process.platform !== 'win32',
             title: "Apple Music",
-            useContentSize: true,
             resizable: true,
             // Enables DRM
             webPreferences: {
@@ -139,7 +138,7 @@ const BrowserWindowCreation = {
             }
         };
 
-        if (process.platform === 'darwin' && !app.preferences.value('visual.frameType').includes('mac')) { // macOS Frame
+        if (process.platform === 'darwin' && (!app.preferences.value('visual.frameType'))) { // macOS Frame
             options.titleBarStyle = 'hidden'
             options.titleBarOverlay = true
             options.frame = true

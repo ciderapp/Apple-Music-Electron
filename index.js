@@ -26,15 +26,15 @@ VersionHandler()
 
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {
-    if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log('[CreateWindow] Started.');
+    console.verbose('[CreateWindow] Started.');
     const InstanceHandler = require('./resources/functions/handler').InstanceHandler
     const ExistingInstance = InstanceHandler()
     if (ExistingInstance === true) {
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn('[Apple-Music-Electron][InstanceHandler] Existing Instance Found. Terminating.');
+        console.warn('[Apple-Music-Electron][InstanceHandler] Existing Instance Found. Terminating.');
         app.quit()
         return;
     } else {
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.warn('[Apple-Music-Electron][InstanceHandler] No existing instances found.');
+        console.warn('[Apple-Music-Electron][InstanceHandler] No existing instances found.');
     }
 
     const {LinkHandler} = require('./resources/functions/handler')

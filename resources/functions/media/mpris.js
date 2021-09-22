@@ -71,9 +71,7 @@ module.exports = {
     updateActivity: function (attributes) {
         if (!app.mpris.active) return;
 
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) {
-            console.log('[MPRIS][updateActivity] Updating Song Activity.')
-        }
+        console.verbose('[MPRIS][updateActivity] Updating Song Activity.')
 
         const MetaData = {
             'mpris:trackid': app.mpris.objectPath(`track/${attributes.playParams.id.replace(/[.]+/g, "")}`),
@@ -95,9 +93,7 @@ module.exports = {
     updateState: function (attributes) {
         if (!app.mpris.active) return;
 
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) {
-            console.log('[MPRIS][updateState] Updating Song Playback State.')
-        }
+        console.verbose('[MPRIS][updateState] Updating Song Playback State.')
 
         function setPlaybackIfNeeded(status) {
             if (app.mpris.playbackStatus === status) {

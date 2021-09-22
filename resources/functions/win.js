@@ -135,13 +135,13 @@ module.exports = {
             // Paused
             case false:
             case "paused":
-                if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Thumbar has been set to false/paused.') }
+                console.verbose('[setThumbarButtons] Thumbar has been set to false/paused.');
                 array = [
                     {
                         tooltip: 'Previous',
                         icon: Images.previous,
                         click() {
-                            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Previous song button clicked.') }
+                            console.verbose('[setThumbarButtons] Previous song button clicked.');
                             app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").catch((err) => console.error(err))
                         }
                     },
@@ -149,7 +149,7 @@ module.exports = {
                         tooltip: 'Play',
                         icon: Images.play,
                         click() {
-                            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Play song button clicked.') }
+                            console.verbose('[setThumbarButtons] Play song button clicked.');
 
                             app.win.webContents.executeJavaScript("MusicKit.getInstance().play()").catch((err) => console.error(err))
                         }
@@ -158,7 +158,7 @@ module.exports = {
                         tooltip: 'Next',
                         icon: Images.next,
                         click() {
-                            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Pause song button clicked.') }
+                            console.verbose('[setThumbarButtons] Pause song button clicked.');
                             app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").catch((err) => console.error(err))
                         }
                     }
@@ -168,7 +168,7 @@ module.exports = {
             // Inactive
             default:
             case "inactive":
-                if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Thumbar has been set to default/inactive.') }
+                console.verbose('[setThumbarButtons] Thumbar has been set to default/inactive.');
                 array = [
                     {
                         tooltip: 'Previous',
@@ -191,13 +191,13 @@ module.exports = {
             // Playing
             case true:
             case "playing":
-                if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Thumbar has been set to true/playing.') }
+                console.verbose('[setThumbarButtons] Thumbar has been set to true/playing.');
                 array = [
                     {
                         tooltip: 'Previous',
                         icon: Images.previous,
                         click() {
-                            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Previous song button clicked.') }
+                            console.verbose('[setThumbarButtons] Previous song button clicked.');
                             app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").catch((err) => console.error(err))
                         }
                     },
@@ -205,7 +205,7 @@ module.exports = {
                         tooltip: 'Pause',
                         icon: Images.pause,
                         click() {
-                            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Play song button clicked.') }
+                            console.verbose('[setThumbarButtons] Play song button clicked.');
                             app.win.webContents.executeJavaScript("MusicKit.getInstance().pause()").catch((err) => console.error(err))
                         }
                     },
@@ -213,23 +213,20 @@ module.exports = {
                         tooltip: 'Next',
                         icon: Images.next,
                         click() {
-                            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Pause song button clicked.') }
+                            console.verbose('[setThumbarButtons] Pause song button clicked.');
                             app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").catch((err) => console.error(err))
                         }
                     }
                 ]
                 break;
         }
-
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] ' + (app.win.setThumbarButtons(array) ? 'Thumbar Buttons Set.' : 'Thumbar Buttons Failed to be set.')) }
+        console.verbose('[setThumbarButtons] ' + (app.win.setThumbarButtons(array) ? 'Thumbar Buttons Set.' : 'Thumbar Buttons Failed to be set.'));
     },
 
     SetTrayTooltip: function (attributes) {
         if (!app.preferences.value('general.trayTooltipSongName').includes(true)) return;
 
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) {
-            console.log(`[UpdateTooltip] Updating Tooltip for ${attributes.name} to ${attributes.status}`)
-        }
+        console.verbose(`[UpdateTooltip] Updating Tooltip for ${attributes.name} to ${attributes.status}`)
 
         if (attributes.status === true) {
             app.tray.setToolTip(`Playing ${attributes.name} by ${attributes.artistName} on ${attributes.albumName}`);
@@ -245,9 +242,7 @@ module.exports = {
             return;
         }
 
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) {
-            console.log(`[CreateNotification] Notification Generating | Function Parameters: SongName: ${attributes.name} | Artist: ${attributes.artistName} | Album: ${attributes.albumName}`)
-        }
+        console.verbose(`[CreateNotification] Notification Generating | Function Parameters: SongName: ${attributes.name} | Artist: ${attributes.artistName} | Album: ${attributes.albumName}`)
 
         if (app.ipc.existingNotification) {
             console.log("[CreateNotification] Existing Notification Found - Removing. ")

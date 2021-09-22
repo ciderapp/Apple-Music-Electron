@@ -81,11 +81,8 @@ const lfm = {
                     if (err) {
                         return console.error('[LastFM] An error occurred while scrobbling', err);
                     }
-                    if (app.preferences.value('advanced.verboseLogging').includes(true)) {
-                        console.log('[LastFM] Successfully scrobbled: ', scrobbled);
-                    } else {
-                        console.log(`[LastFM] Successfully scrobbled ${attributes.name}`);
-                    }
+
+                    console.verbose('[LastFM] Successfully scrobbled: ', scrobbled);
                 });
                 app.lastfm.cachedAttributes = attributes
             }

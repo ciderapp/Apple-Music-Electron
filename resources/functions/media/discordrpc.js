@@ -54,9 +54,7 @@ module.exports = {
 
         if (!app.discord.isConnected) return;
 
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) {
-            console.log('[DiscordRPC][updateActivity] Updating Discord Activity.')
-        }
+        console.verbose('[DiscordRPC][updateActivity] Updating Discord Activity.')
 
         const listenURL = `https://applemusicelectron.com/p?id=${attributes.playParams.id}`
 
@@ -74,7 +72,7 @@ module.exports = {
                 {label: "Open in AME", url: listenURL},
             ]
         };
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log(`[LinkHandler] Listening URL has been set to: ${listenURL}`);
+        console.verbose(`[LinkHandler] Listening URL has been set to: ${listenURL}`);
 
         // clear Activity Values
         if (app.preferences.value('general.discordClearActivityOnPause').includes(true)) {
@@ -115,7 +113,7 @@ module.exports = {
 
         if (ActivityObject) {
             try {
-                if (app.preferences.value('advanced.verboseLogging').includes(true)) console.log(`[DiscordRPC][setActivity] Setting activity to ${JSON.stringify(ActivityObject)}`);
+                console.verbose(`[DiscordRPC][setActivity] Setting activity to ${JSON.stringify(ActivityObject)}`);
                 app.discord.setActivity(ActivityObject)
             } catch (err) {
                 console.error(`[DiscordRPC][setActivity] ${err}`)
