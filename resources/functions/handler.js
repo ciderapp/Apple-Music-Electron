@@ -11,7 +11,7 @@ const handler = {
         // Check for Protocols
         process.argv.forEach((value) => {
             if (value.includes('ame://') || value.includes('itms://') || value.includes('itmss://') || value.includes('musics://') || value.includes('music://')) {
-                if (app.preferences.value('advanced.console.verboseLogging').includes(true)) console.log('[InstanceHandler] Preventing application creation as args include protocol.');
+                console.verbose('[InstanceHandler] Preventing application creation as args include protocol.');
                 app.quit()
                 return true
             }
@@ -54,7 +54,7 @@ const handler = {
     VersionHandler: function () {
         if (!app.preferences.value('storedVersion') || app.preferences.value('storedVersion') === undefined || app.preferences.value('storedVersion') !== app.getVersion()) {
             rimraf(resolve(app.getPath('userData'), 'Cache'), [], () => {
-                if (app.preferences.value('advanced.console.verboseLogging').includes(true)) console.warn(`[VersionHandler] Outdated / No Version Store Found. Clearing Application Cache. ('${resolve(app.getPath('userData'), 'Cache')}')`)
+                console.warn(`[VersionHandler] Outdated / No Version Store Found. Clearing Application Cache. ('${resolve(app.getPath('userData'), 'Cache')}')`)
             })
         }
     },
@@ -97,7 +97,7 @@ const handler = {
     },
 
     PlaybackStateHandler: function () {
-        if (app.preferences.value('advanced.console.verboseLogging').includes(true)) console.log('[playbackStateDidChange] Started.');
+        console.verbose('[playbackStateDidChange] Started.');
         app.PreviousSongId = null;
 
         ipcMain.on('playbackStateDidChange', (_item, a) => {

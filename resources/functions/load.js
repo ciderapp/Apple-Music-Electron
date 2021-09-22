@@ -58,14 +58,6 @@ module.exports = {
         const urlFallback = `https://music.apple.com/${region}?l=${language}`;
         const urlLanguage = `${urlBase}?l=${language}`;
         console.log(`[LoadWebsite] Attempting to load '${urlLanguage}'`)
-        if (!app.locale.region) {
-            app.locale.region = 'us';
-            console.error('[LoadWebsite] System region set to "us" as no region was found.')
-        }
-        if (!app.locale.language) {
-            app.locale.language = 'us';
-            console.error('[LoadWebsite] System language set to "us" as no language was found.')
-        }
 
         app.win.loadURL(urlLanguage).then(() => {
             if (app.preferences.value('general.startupPage') !== "browse") {

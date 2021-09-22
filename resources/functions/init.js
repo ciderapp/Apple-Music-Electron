@@ -267,6 +267,16 @@ const init = {
         // Return it
         console.log(`[GetLocale] Outputting Locale.`)
 
+
+        if (!Region) {
+            Region = 'us';
+            console.error("[GetLocale] No Region found, setting locale region to 'us'.")
+        }
+        if (!Language) {
+            Language = 'us';
+            console.error("[GetLocale] No Language found, setting locale language to 'us'.")
+        }
+
         return [Region, Language]
     },
 
