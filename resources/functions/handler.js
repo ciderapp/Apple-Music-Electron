@@ -23,6 +23,12 @@ const handler = {
             app.exit()
         }
 
+        // Verbose Check
+        if (app.commandLine.hasSwitch('verbose') ) {
+            console.log("[Apple-Music-Electron] User has launched the application with --verbose");
+            app.verboseLaunched = true
+        }
+
         // Log File Location
         if (app.commandLine.hasSwitch('log') || app.commandLine.hasSwitch('l') ) {
             console.log(join(app.getPath('userData'), 'logs'))
@@ -196,6 +202,7 @@ const handler = {
         })
 
         app.win.webContents.on('did-finish-load', async () => {
+            console.verbose('[WindowStateHandler] Page finished loading.')
             LoadOneTimeFiles()
 
             if (app.preferences.value('general.incognitoMode').includes(true)) {

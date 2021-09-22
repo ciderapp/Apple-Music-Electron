@@ -64,13 +64,15 @@ const init = {
 
         Object.assign(console, log.functions);
 
-        console.verbose = function(str) {
-            if (!app.preferences.value('advanced.verboseLogging').includes(true)) return;
-            log.debug(str)
-        }
+        console.verbose = () => {};
 
-        console.verbose = app.preferences.value('advanced.verboseLogging').includes(true) ? log.debug : function(msg) {  };
-        console.warn = app.preferences.value('advanced.verboseLogging').includes(true) ? log.warn : function(msg) {  };
+        if (app.preferences.value('advanced.verboseLogging').includes(true) || app.verboseLaunched) {
+            console.verbose = log.debug
+            console.warn = log.warn
+        } else {
+            console.verbose = function(_data) { return false };
+            console.warn = function(_data) { return false };
+        }
     },
 
     SetApplicationTheme: function () {
@@ -264,6 +266,7 @@ const init = {
 
         // Return it
         console.log(`[GetLocale] Outputting Locale.`)
+
         return [Region, Language]
     },
 

@@ -1,6 +1,8 @@
 require('v8-compile-cache');
 const {app, globalShortcut, session} = require('electron');
 
+console.log(app.getLocaleCountryCode())
+
 // Run all the Before App is Ready Stuff
 const {PreferencesInit} = require('./resources/functions/init');
 PreferencesInit()
