@@ -138,7 +138,7 @@ const BrowserWindowCreation = {
             }
         };
 
-        if (process.platform === 'darwin' && (!app.preferences.value('visual.frameType'))) { // macOS Frame
+        if (process.platform === 'darwin' && !app.preferences.value('visual.frameType')) { // macOS Frame
             options.titleBarStyle = 'hidden'
             options.titleBarOverlay = true
             options.frame = true

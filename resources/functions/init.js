@@ -47,7 +47,8 @@ const init = {
         if (process.platform === "linux") app.commandLine.appendSwitch('disable-features', 'MediaSessionService');
 
         // Assign Default Variables
-        app.isQuiting = !app.preferences.value('window.closeButtonMinimize').includes(true);
+        app.isQuiting = (!app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === 'darwin');
+        console.log(app.isQuiting)
         app.win = '';
         app.ipc = {existingNotification: false};
 
