@@ -48,7 +48,6 @@ const init = {
 
         // Assign Default Variables
         app.isQuiting = (!app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === 'darwin');
-        console.log(app.isQuiting)
         app.win = '';
         app.ipc = {existingNotification: false};
 

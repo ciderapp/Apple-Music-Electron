@@ -121,7 +121,7 @@ const BrowserWindowCreation = {
             y: mainWindowState.y,
             minWidth: (app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300),
             minHeight: ((app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') ? (app.preferences.value('visual.streamerMode').includes(true) ? 55 : 300) : (app.preferences.value('visual.streamerMode').includes(true) ? 115 : 300)),
-            frame: process.platform !== 'win32',
+            frame: (process.platform !== 'win32' && !(app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right')),
             title: "Apple Music",
             resizable: true,
             // Enables DRM
