@@ -111,7 +111,7 @@ try {
 
         /* add the node elements to the song data */
         for (let song of songs.values()) {
-            for (data of songNodeData) {
+            for (let data of songNodeData) {
                 if (data.songName === song.data.attributes.name && data.albumName === song.data.attributes.albumName) {
                     song.node = data.node;
                 }
