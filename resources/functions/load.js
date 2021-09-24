@@ -39,8 +39,18 @@ module.exports = {
             if (!error) {
                 try {
                     let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
+
+                    /*
+                    stop electron from cloning the results (causes errors)
+                    (https://github.com/electron/electron/issues/23722)
+                    the result doesn't get used anyway
+                     */
+                    formattedData += ';0'
+
                     app.win.webContents.executeJavaScript(formattedData).then(() => {
                         console.verbose(`[LoadJSFile] '${path}' successfully injected.`)
+                    }).catch(reason => {
+                        console.log(`[LoadJSFile] Error while injecting: ${path} - ${reason}`)
                     });
                 } catch (err) {
                     console.error(`[LoadJSFile] Error while injecting: ${path} - Error: ${err}`)
