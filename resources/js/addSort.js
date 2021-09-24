@@ -2,51 +2,53 @@ try {
     /*
     the queue does not respect the sorting
         can be done by managing 'MusicKit.getInstance().queue.items'
-
-    songs that get loaded by the infinite scroll aren't sorted yet
-        add some kind of listener on content changes and sort them after they're loaded?
     */
 
-    /* sorting https://music.apple.com/library/songs does not work since stuff gets loaded (and requested) on scroll */
     let url = window.location.href;
 
     /* check for https://music.apple.com/library/playlist/ (and the beta variant + language code) */
-    let matcher = url.match(/(https:\/\/)(beta\.)?(music\.apple.com\/library\/playlist\/)(p\..{15})(\?l.{3})?/);
+    let matcher = url.match(/(https:\/\/)(beta.)?(music.apple.com\/library\/playlist\/)(p..{15})(\?l.{3})?/);
 
     let contentNode;
+    let playlist;
+    let observer;
+
+    /* needed to apply the sort to the newly loaded elements */
+    let lastSortType;
 
     let songs = new Map();
 
     /* check if playlist id is set */
     if (matcher && matcher.length === 6 && matcher[4]) {
-        let playlist = matcher[4].toLowerCase();
-
         contentNode = document.getElementsByClassName('songs-list')[0];
 
         if (contentNode) {
+            observer = createObserver();
+            observer.observe(contentNode, {subtree: false, childList: true});
+
+            playlist = matcher[4].toLowerCase();
+            storeSongs();
+
             /* click does not register if we add the event listener to the child divs themselves */
             contentNode.addEventListener('click', event => {
-                /* last check of playlist id */
-                if (!playlist) {
-                    return;
-                }
-
-                storeSongs(playlist);
-
                 if (checkClickArea('songs-list__header-col--song', event)) {
-                    console.log('clicked song column');
+                    lastSortType = 'song';
                 } else if (checkClickArea('songs-list__header-col--artist', event)) {
-                    sortByArtist();
+                    lastSortType = 'artist';
                 } else if (checkClickArea('songs-list__header-col--album', event)) {
-                    sortByAlbum();
+                    lastSortType = 'album';
                 } else if (checkClickArea('songs-list__header-col--time', event)) {
-                    console.log('clicked time column');
+                    lastSortType = 'time';
                 }
+
+                handleSort();
             });
         }
     }
 
-    function storeSongs(playlist) {
+    function storeSongs() {
+        /* todo :: maybe it's better to trust the old data (= check for songs.has(song_id) and save handleNodeData(...) calls)*/
+
         /* get the cached data */
         let storageData = MusicKit.getInstance().api.storage.data;
 
@@ -55,8 +57,6 @@ try {
                 /* check for the stored playlist data */
                 if (element.match('(.*?)(library\.playlists\.)(' + playlist + ')(\..*)')) {
                     let value = JSON.parse(storageData[element]);
-
-                    console.log('object', value);
 
                     let objects = value.d;
 
@@ -89,36 +89,11 @@ try {
 
         let songNodes = contentNode.getElementsByClassName('songs-list-row');
 
-        let songNodeData = [];
-
-        /* store the node data and some other stuff to compare with the already stored songs */
         for (let songNode of songNodes) {
-            let data = {
-                songName: '',
-                artistName: '',
-                albumName: '',
-                time: '',
-                node: songNode
-            };
-
-            data.songName = songNode.getElementsByClassName('songs-list-row__song-name')[0].innerText;
-            data.artistName = songNode.getElementsByClassName('songs-list-row__link')[0].innerText;
-            data.albumName = songNode.getElementsByClassName('songs-list__col--album')[0].getElementsByTagName('p')[0].innerText;
-            data.time = songNode.getElementsByClassName('songs-list-row__length')[0].innerText;
-
-            songNodeData.push(data);
+            handleNodeData(songNode);
         }
 
-        /* add the node elements to the song data */
-        for (let song of songs.values()) {
-            for (let data of songNodeData) {
-                if (data.songName === song.data.attributes.name && data.albumName === song.data.attributes.albumName) {
-                    song.node = data.node;
-                }
-            }
-        }
-
-        console.log('stored songs', songs);
+        console.log('[JS] [addSort] Stored Songs:', songs);
     }
 
     function sortByArtist() {
@@ -129,8 +104,6 @@ try {
             /* can add aditional sorting, like track number etc. */
             return valueA.data.attributes.artistName.localeCompare(valueB.data.attributes.artistName);
         }));
-
-        manageNodes();
     }
 
     function sortByAlbum() {
@@ -141,11 +114,63 @@ try {
             /* can add aditional sorting, like track number etc. */
             return valueA.data.attributes.albumName.localeCompare(valueB.data.attributes.albumName);
         }));
+    }
 
-        manageNodes();
+    function handleNodeData(node) {
+        /* store the node data and some other stuff to compare with the already stored songs */
+        let data = {
+            songName: '',
+            artistName: '',
+            albumName: '',
+            time: '',
+            node: node
+        };
+
+        data.songName = node.getElementsByClassName('songs-list-row__song-name')[0].innerText;
+        data.artistName = node.getElementsByClassName('songs-list-row__link')[0].innerText;
+        data.albumName = node.getElementsByClassName('songs-list__col--album')[0].getElementsByTagName('p')[0].innerText;
+        data.time = node.getElementsByClassName('songs-list-row__length')[0].innerText;
+
+        return mergeData(data);
+    }
+
+    function mergeData(data) {
+        /* add the node elements to the song data */
+        for (let song of songs.values()) {
+            if (compareSongData(song, data)) {
+                song.node = data.node;
+
+                return song;
+            }
+        }
+    }
+
+    function compareSongData(song, data) {
+        return song.data.attributes.name === data.songName && song.data.attributes.albumName === data.albumName;
+    }
+
+    function handleSort() {
+        if (lastSortType) {
+            switch (lastSortType) {
+                case 'song':
+                    break;
+                case 'artist':
+                    sortByArtist();
+                    break;
+                case 'album':
+                    sortByAlbum();
+                    break;
+                case 'time':
+                    break;
+            }
+
+            manageNodes();
+        }
     }
 
     function manageNodes() {
+        observer.disconnect();
+
         let headerNode = contentNode.getElementsByClassName('songs-list__header')[0];
         let weirdNode = contentNode.getElementsByClassName('songs-list__right-click-target')[0];
         let infiniteScrollNode = contentNode.getElementsByClassName('infinite-scroll')[0];
@@ -164,7 +189,12 @@ try {
             }
         }
 
-        contentNode.appendChild(infiniteScrollNode);
+        /* this does not exist in playlists with less than 101 entries*/
+        if (infiniteScrollNode) {
+            contentNode.appendChild(infiniteScrollNode);
+        }
+
+        observer.observe(contentNode, {subtree: false, childList: true});
     }
 
     function checkClickArea(className, event) {
@@ -172,14 +202,25 @@ try {
 
         let artistRectangle = column.getBoundingClientRect();
 
-        /* don't need to check height since its the same for the entire row */
-        if (event.clientX >= artistRectangle.left && event.clientX <= artistRectangle.right) {
-            console.log('column', column);
+        /* don't need to check height since it's the same for the entire row */
+        return event.clientX >= artistRectangle.left && event.clientX <= artistRectangle.right;
+    }
 
-            return true;
-        }
+    function createObserver() {
+        return new MutationObserver(function (mutation_ist) {
+            /* when the observer catches something it means new elements have been loaded (this does not get called multiple times) */
+            storeSongs();
 
-        return false;
+            mutation_ist.forEach(function (mutation) {
+                mutation.addedNodes.forEach(function (added_node) {
+                    if (added_node.tagName === 'DIV') {
+                        handleNodeData(added_node);
+                    }
+                });
+            });
+
+            handleSort();
+        });
     }
 } catch (e) {
     console.error("[JS] Error while trying to apply addSort.js", e);
