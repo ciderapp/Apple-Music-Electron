@@ -251,17 +251,11 @@ const handler = {
                 app.win.restore()
                 /*if (process.platform === 'win32' && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
                     app.win.webContents.insertCSS(`.web-nav-window-controls #maximize { background-image: var(--gfx-maxedBtn) !important; };`).catch((e) => console.error(e))
-                }
-                if (app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') {
-                    app.win.webContents.executeJavaScript(`document.getElementById('maxResBtn').title = 'Maximize'; document.getElementById('maxResBtn').classList.remove('restoreBtn'); document.getElementById('maxResBtn').classList.add('maximizeBtn');`)
                 }*/
             } else {
                 app.win.maximize()
                 /*if (process.platform === 'win32' && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
                     app.win.webContents.insertCSS(`.web-nav-window-controls #maximize { background-image: var(--gfx-maxBtn) !important; };`).catch((e) => console.error(e))
-                }
-                if (app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') {
-                    app.win.webContents.executeJavaScript(`document.getElementById('maxResBtn').title = 'Restore'; document.getElementById('maxResBtn').classList.remove('maximizeBtn'); document.getElementById('maxResBtn').classList.add('restoreBtn');`)
                 }*/
             }
         })

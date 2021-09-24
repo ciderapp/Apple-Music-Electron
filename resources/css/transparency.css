@@ -10,7 +10,7 @@ html body {
 
 /* Make the search box transparent */
 
-@media only screen and (min-width: 483px) {
+@media only screen and (min-width: 485px) {
     #web-navigation-container {
         background-color: transparent !important;
     }
