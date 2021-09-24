@@ -7,7 +7,7 @@ try {
     let url = window.location.href;
 
     /* check for https://music.apple.com/library/playlist/ (and the beta variant + language code) */
-    let matcher = url.match(/(https:\/\/)(beta.)?(music.apple.com\/library\/playlist\/)(p..{15})(\?l.{3})?/);
+    let matcher = url.match(/(https:\/\/)(beta.)?(music.apple\.com\/library\/playlist\/)(p..{15})(\?l=.{2,5})?/);
 
     let contentNode;
     let playlist;
@@ -16,6 +16,7 @@ try {
     /* needed to apply the sort to the newly loaded elements */
     let lastSortType;
 
+    let songNodes = new Map();
     let songs = new Map();
 
     /* check if playlist id is set */
@@ -26,7 +27,14 @@ try {
             observer = createObserver();
             observer.observe(contentNode, {subtree: false, childList: true});
 
+            let nodes = contentNode.getElementsByClassName('songs-list-row');
+
+            for (let node of nodes) {
+                fillSongNodes(node);
+            }
+
             playlist = matcher[4].toLowerCase();
+
             storeSongs();
 
             /* click does not register if we add the event listener to the child divs themselves */
@@ -47,15 +55,13 @@ try {
     }
 
     function storeSongs() {
-        /* todo :: maybe it's better to trust the old data (= check for songs.has(song_id) and save handleNodeData(...) calls)*/
-
         /* get the cached data */
         let storageData = MusicKit.getInstance().api.storage.data;
 
         for (let element in storageData) {
             if (storageData.hasOwnProperty(element)) {
                 /* check for the stored playlist data */
-                if (element.match('(.*?)(library\.playlists\.)(' + playlist + ')(\..*)')) {
+                if (element.match('(.*?)(library.playlists.)(' + playlist + ')(..*)')) {
                     let value = JSON.parse(storageData[element]);
 
                     let objects = value.d;
@@ -66,31 +72,27 @@ try {
                             let songData = object.relationships.tracks.data;
 
                             for (let song of songData) {
-                                songs.set(song.id, {data: song, node: null});
+                                if (!songs.has(song.id)) {
+                                    let storedData = {data: song, node: null};
+
+                                    songs.set(song.id, storedData);
+
+                                    setNodeOfSong(storedData);
+                                }
                             }
                         } else {
                             /* song */
-                            songs.set(object.id, {data: object, node: null});
+                            if (!songs.has(object.id)) {
+                                let storedData = {data: object, node: null};
+
+                                songs.set(object.id, storedData);
+
+                                setNodeOfSong(storedData);
+                            }
                         }
                     }
-
-                    /*
-                    can be relevant for sorting:
-                        song.attributes:
-                            artistname
-                            albumname
-                            discnumber
-                            name
-                            tracknumber
-                     */
                 }
             }
-        }
-
-        let songNodes = contentNode.getElementsByClassName('songs-list-row');
-
-        for (let songNode of songNodes) {
-            handleNodeData(songNode);
         }
 
         console.log('[JS] [addSort] Stored Songs:', songs);
@@ -116,39 +118,6 @@ try {
         }));
     }
 
-    function handleNodeData(node) {
-        /* store the node data and some other stuff to compare with the already stored songs */
-        let data = {
-            songName: '',
-            artistName: '',
-            albumName: '',
-            time: '',
-            node: node
-        };
-
-        data.songName = node.getElementsByClassName('songs-list-row__song-name')[0].innerText;
-        data.artistName = node.getElementsByClassName('songs-list-row__link')[0].innerText;
-        data.albumName = node.getElementsByClassName('songs-list__col--album')[0].getElementsByTagName('p')[0].innerText;
-        data.time = node.getElementsByClassName('songs-list-row__length')[0].innerText;
-
-        return mergeData(data);
-    }
-
-    function mergeData(data) {
-        /* add the node elements to the song data */
-        for (let song of songs.values()) {
-            if (compareSongData(song, data)) {
-                song.node = data.node;
-
-                return song;
-            }
-        }
-    }
-
-    function compareSongData(song, data) {
-        return song.data.attributes.name === data.songName && song.data.attributes.albumName === data.albumName;
-    }
-
     function handleSort() {
         if (lastSortType) {
             switch (lastSortType) {
@@ -165,6 +134,45 @@ try {
             }
 
             manageNodes();
+        }
+    }
+
+    function setNodeOfSong(song) {
+        /* store the node data and some other stuff to compare with the already stored songs */
+        let attributes = song.data.attributes;
+        let id = attributes.name + attributes.artistName + attributes.albumName;
+
+        let songNode = songNodes.get(id);
+
+        if (songNode) {
+            song.node = songNode.node;
+        }
+    }
+
+    function fillSongNodes(node) {
+        let data = {
+            songName: '',
+            artistName: '',
+            albumName: '',
+            time: '',
+            node: node
+        };
+
+        data.songName = node.getElementsByClassName('songs-list-row__song-name')[0].innerText;
+        data.artistName = node.getElementsByClassName('songs-list-row__link')[0].innerText;
+        data.albumName = node.getElementsByClassName('songs-list__col--album')[0].getElementsByTagName('p')[0].innerText;
+        data.time = node.getElementsByClassName('songs-list-row__length')[0].innerText;
+
+        let id = data.songName + data.artistName + data.albumName;
+
+        songNodes.set(id, data);
+    }
+
+    function handleSongsMissingNodes() {
+        for (let song of songs.values()) {
+            if (!song.node) {
+                setNodeOfSong(song);
+            }
         }
     }
 
@@ -214,10 +222,12 @@ try {
             mutation_ist.forEach(function (mutation) {
                 mutation.addedNodes.forEach(function (added_node) {
                     if (added_node.tagName === 'DIV') {
-                        handleNodeData(added_node);
+                        fillSongNodes(added_node);
                     }
                 });
             });
+
+            handleSongsMissingNodes();
 
             handleSort();
         });
