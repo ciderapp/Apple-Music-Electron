@@ -158,7 +158,7 @@ module.exports = {
         }
 
         /* Load Back Button */
-        if (app.preferences.value('visual.backButton').includes(true) && !backButtonChecks() && app.win.webContents.canGoBack()) {
+        if (!backButtonChecks() && app.win.webContents.canGoBack()) {
             app.funcs.LoadJS('backButton.js')
         } else { /* Remove it if user cannot go back */
             await app.win.webContents.executeJavaScript(`if (document.querySelector('#backButtonBar')) { document.getElementById('backButtonBar').remove() };`);

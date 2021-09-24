@@ -321,12 +321,13 @@ const init = {
             "general": {
                 "language": "",
                 "incognitoMode": [],
-                "discordRPC": "ame-title",
-                "discordClearActivityOnPause": [
-                    true
-                ],
                 "playbackNotifications": "minimized",
                 "trayTooltipSongName": [
+                    true
+                ],
+                "startupPage": "browse",
+                "discordRPC": "ame-title",
+                "discordClearActivityOnPause": [
                     true
                 ],
                 "lastfmEnabled": [],
@@ -334,7 +335,6 @@ const init = {
                 "lastfmRemoveFeaturingArtists": [
                     true
                 ],
-                "startupPage": "browse",
                 "analyticsEnabled": [
                     true
                 ],
@@ -342,26 +342,22 @@ const init = {
             "visual": {
                 "theme": "default",
                 "frameType": "",
-                "transparencyMode": [],
-                "streamerMode": [],
-                "removeUpsell": [
-                    true
-                ],
-                "removeFooter": [
-                    true
-                ],
-                "removeAppleLogo": [
-                    true
-                ],
-                "backButton": [
-                    true
-                ],
                 "transparencyEffect": "",
                 "transparencyTheme": "appearance-based",
                 "transparencyDisableBlur": [
                     true
                 ],
-                "transparencyMaximumRefreshRate": ""
+                "transparencyMaximumRefreshRate": "",
+                "streamerMode": [],
+                "removeUpsell": [
+                    true
+                ],
+                "removeAppleLogo": [
+                    true
+                ],
+                "removeFooter": [
+                    true
+                ],
             },
             "audio": {
                 "audioQuality": "auto",
@@ -376,24 +372,23 @@ const init = {
                 ]
             },
             "advanced": {
-                "devTools": "",
-                "overwriteThemes": [],
+                "forceApplicationRegion": "",
+                "forceApplicationMode": "",
+                "verboseLogging": [],
                 "alwaysOnTop": [],
-                "removeScrollbars": [
-                    true
-                ],
+                "autoUpdaterBetaBuilds": [],
                 "useBetaSite": [
                     true
                 ],
                 "preventMediaKeyHijacking": [],
-                "autoUpdaterBetaBuilds": [],
+                "settingsMenuKeybind": "",
                 "menuBarVisible": [],
-                "forceApplicationRegion": "",
+                "removeScrollbars": [
+                    true
+                ],
+                "devTools": "",
+                "overwriteThemes": [],
                 "allowMultipleInstances": [],
-                "forceApplicationMode": "",
-                "listenNow": [],
-                "verboseLogging": [],
-                "settingsMenuKeybind": ""
             }
         }
         fields.general = [
@@ -771,16 +766,6 @@ const init = {
                     'label': 'Removes the Apple Music footer.',
                     'value': true
                 }]
-            },
-
-            { // Back Button
-                'label': 'Back Button',
-                'key': 'backButton',
-                'type': 'checkbox',
-                'options': [{
-                    'label': 'Display a back button when going back is possible.',
-                    'value': true
-                }]
             }
         ]
         fields.audio = [
@@ -812,6 +797,7 @@ const init = {
                 'key': 'appStartupBehavior',
                 'type': 'dropdown',
                 'options': [
+                    {'label': 'Enabled', 'value': 'true'},
                     {'label': 'Enabled (Application is Hidden)', 'value': 'hidden'},
                     {'label': 'Enabled (Application is Minimized)', 'value': 'minimized'}
                 ]
@@ -1003,10 +989,9 @@ const init = {
                 'help': 'If you want the application to be in a mode that your system is not using by default.'
             },
             { // Verbose Logging
-                'label': 'Verbose Logging',
                 'key': 'verboseLogging',
                 'type': 'checkbox',
-                'options': [{'label': 'Enable Verbose Logging', 'value': true}],
+                'options': [{'label': 'verboseLogging', 'value': true}],
                 'help': 'This toggle enables more advanced logging for debugging purposes.'
             },
             {
@@ -1028,8 +1013,9 @@ const init = {
                 'key': 'useBetaSite',
                 'type': 'checkbox',
                 'options': [
-                    {'label': 'useBeta', 'value': true}
-                ]
+                    {'label': 'useBetaSite', 'value': true}
+                ],
+                'help': 'This maks the application use beta.music.apple.com instead of music.apple.com.'
             },
             { // Turning on preventMediaKeyHijacking
                 'key': 'preventMediaKeyHijacking',

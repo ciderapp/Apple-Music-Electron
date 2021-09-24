@@ -179,16 +179,16 @@ const BrowserWindowCreation = {
         if (app.preferences.value('advanced.devTools') === 'detached') win.webContents.openDevTools({mode: 'detach'}); // Enables Detached DevTools
 
         // Detect if the application has been opened with --minimized
-        if (app.commandLine.hasSwitch('minimized')) {
-            console.log("[Apple-Music-Electron] Application opened with --minimized");
+        if (app.commandLine.hasSwitch('minimized') || process.argv.includes('--minimized')) {
+            console.log("[Apple-Music-Electron] Application opened with '--minimized'");
             if (typeof win.minimize === 'function') {
                 win.minimize();
             }
         }
 
         // Detect if the application has been opened with --hidden
-        if (app.commandLine.hasSwitch('hidden')) {
-            console.log("[Apple-Music-Electron] Application opened with --hidden");
+        if (app.commandLine.hasSwitch('hidden') || process.argv.includes('--hidden')) {
+            console.log("[Apple-Music-Electron] Application opened with '--hidden'");
             if (typeof win.hide === 'function') {
                 win.hide();
                 app.funcs.SetContextMenu()
