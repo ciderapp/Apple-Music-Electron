@@ -67,20 +67,20 @@
         right: 0;
     }
     .web-nav-window-controls {
-        padding: 0;
-        height: auto;
-        width: auto;
-        right: 0;
-        position: fixed;
-        top: auto;
-        margin-top: 10px;
+        padding: 0 !important;
+        height: auto !important;
+        width: auto !important;
+        right: 0 !important;
+        position: fixed !important;
+        top: auto !important;
+        margin-top: 10px !important;
     }
 
     .web-nav-window-controls-outer {
-        width: calc(100% - 50px);
-        height: 44px;
-        position: fixed;
-        right: 0;
-        -webkit-app-region: drag;
+        width: calc(100% - 50px) !important;
+        height: 44px !important;
+        position: fixed !important;
+        right: 0 !important;
+        -webkit-app-region: drag !important;
     }
 }
