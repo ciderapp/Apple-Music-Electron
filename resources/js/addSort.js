@@ -62,56 +62,15 @@ try {
 
     function storeSongs() {
         /* get the cached data */
-        let storageData = MusicKit.getInstance().api.storage.data;
+        let cachedObjects = MusicKit.getInstance().api.storage.data;
 
-        for (let element in storageData) {
-            if (storageData.hasOwnProperty(element)) {
+        for (let cachedObjectName in cachedObjects) {
+            if (cachedObjects.hasOwnProperty(cachedObjectName)) {
                 /* check for the stored playlist data */
-                if (element.match('(.*?)(library.playlists.)(' + playlist + ')(..*)')) {
-                    let value = JSON.parse(storageData[element]);
+                if (cachedObjectName.match('(.*?)(library.playlists.)(' + playlist + ')(..*)')) {
+                    let cachedObject = JSON.parse(cachedObjects[cachedObjectName]);
 
-                    let objects = value.d;
-
-                    for (let object of objects) {
-                        if (object.id.startsWith('p')) {
-                            /* playlist */
-                            let songData = object.relationships.tracks.data;
-
-                            for (let song of songData) {
-                                if (!songs.has(song.id)) {
-                                    let storedData = {data: song, node: null};
-
-                                    songs.set(song.id, storedData);
-
-                                    setNodeOfSong(storedData);
-                                }
-                            }
-                        } else {
-                            /* song */
-                            if (!songs.has(object.id)) {
-                                /* in some cases (small playlists?) there are cached instances of the song with missing data */
-                                if (object.attributes) {
-                                    let storedData = {data: object, node: null};
-
-                                    songs.set(object.id, storedData);
-
-                                    setNodeOfSong(storedData);
-                                } else {
-                                    fixToAllowSort.push(object.id);
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    /* todo :: for testing purpose
-                    console.log(element);
-
-                    if (!element.match(/.*?cache-mut/)) {
-                        let check = JSON.parse(storageData[element]);
-
-                        console.log(check);
-                    }
-                   */
+                    processCachedObject(cachedObject);
                 }
             }
         }
@@ -132,6 +91,41 @@ try {
         isSortAllowed = fixToAllowSort.length === 0;
 
         console.log('[JS] [addSort] Stored Songs:', songs);
+    }
+
+    function processCachedObject(cachedObject) {
+        let objects = cachedObject.d;
+
+        for (let object of objects) {
+            if (object.id.startsWith('p')) {
+                /* playlist */
+                let songData = object.relationships.tracks.data;
+
+                for (let song of songData) {
+                    if (!songs.has(song.id)) {
+                        let storedData = {data: song, node: null};
+
+                        songs.set(song.id, storedData);
+
+                        setNodeOfSong(storedData);
+                    }
+                }
+            } else {
+                /* song */
+                if (!songs.has(object.id)) {
+                    /* in some cases (small playlists?) there are cached instances of the song with missing data */
+                    if (object.attributes) {
+                        let storedData = {data: object, node: null};
+
+                        songs.set(object.id, storedData);
+
+                        setNodeOfSong(storedData);
+                    } else {
+                        fixToAllowSort.push(object.id);
+                    }
+                }
+            }
+        }
     }
 
     function sortByArtist() {
@@ -207,6 +201,14 @@ try {
         }
     }
 
+    function handleSongsMissingNodes() {
+        for (let song of songs.values()) {
+            if (!song.node) {
+                setNodeOfSong(song);
+            }
+        }
+    }
+
     function fillSongNodes(node) {
         let songName = node.getElementsByClassName('songs-list-row__song-name')[0].innerText;
         let artistName = node.getElementsByClassName('songs-list-row__link')[0].innerText;
@@ -241,14 +243,8 @@ try {
                 depending on what we listen we will need a variable that keeps in mind if the queue was sorted with the latest sort option
             2. loop through the queue elements and sort them according to the stored songs
         */
-    }
 
-    function handleSongsMissingNodes() {
-        for (let song of songs.values()) {
-            if (!song.node) {
-                setNodeOfSong(song);
-            }
-        }
+        doesQueueNeedSorting = false;
     }
 
     function sortNodes() {
