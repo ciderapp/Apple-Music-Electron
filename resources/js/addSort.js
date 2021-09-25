@@ -7,7 +7,7 @@ try {
     let url = window.location.href;
 
     /* check for https://music.apple.com/library/playlist/ (and the beta variant + language code) */
-    let matcher = url.match(/(https:\/\/)(beta.)?(music.apple\.com\/library\/playlist\/)(p..{15})(\?l=.{2,5})?/);
+    let matcher = url.match(/(https:\/\/)(beta\.)?(music\.apple\.com\/library\/playlist\/)(p\..{15})(\?l=.{2,5})?/);
 
     let contentNode;
     let playlist;
@@ -16,8 +16,11 @@ try {
     /* needed to apply the sort to the newly loaded elements */
     let lastSortType;
 
-    let songNodes = new Map();
     let songs = new Map();
+    let songNodes = new Map();
+
+    let fixToAllowSort = [];
+    let isSortAllowed = false;
 
     /* check if playlist id is set */
     if (matcher && matcher.length === 6 && matcher[4]) {
@@ -39,6 +42,10 @@ try {
 
             /* click does not register if we add the event listener to the child divs themselves */
             contentNode.addEventListener('click', event => {
+                if (!isSortAllowed) {
+                    return;
+                }
+
                 if (checkClickArea('songs-list__header-col--song', event)) {
                     lastSortType = 'song';
                 } else if (checkClickArea('songs-list__header-col--artist', event)) {
@@ -83,38 +90,84 @@ try {
                         } else {
                             /* song */
                             if (!songs.has(object.id)) {
-                                let storedData = {data: object, node: null};
+                                /* in some cases (small playlists?) there are cached instances of the song with missing data */
+                                if (object.attributes) {
+                                    let storedData = {data: object, node: null};
 
-                                songs.set(object.id, storedData);
+                                    songs.set(object.id, storedData);
 
-                                setNodeOfSong(storedData);
+                                    setNodeOfSong(storedData);
+                                } else {
+                                    fixToAllowSort.push(object.id);
+                                }
                             }
                         }
                     }
+                } else {
+                    /* todo :: for testing purpose
+                    console.log(element);
+
+                    if (!element.match(/.*?cache-mut/)) {
+                        let check = JSON.parse(storageData[element]);
+
+                        console.log(check);
+                    }
+                   */
                 }
             }
         }
+
+        /* this happens if the data is in multiple cached objects and only some have the actual attributes data */
+        if (fixToAllowSort.length > 0) {
+            console.log('[JS] [addSort] some songs were missing their attributes (', fixToAllowSort.length, ')');
+
+            fixToAllowSort = fixToAllowSort.filter(function (id) {
+                return (!songs.get(id).data.attributes);
+            });
+
+            if (!isSortAllowed) {
+                console.log('[JS] [addSort] some songs are still missing their attributes (', fixToAllowSort.length, ')');
+            }
+        }
+
+        isSortAllowed = fixToAllowSort.length === 0;
 
         console.log('[JS] [addSort] Stored Songs:', songs);
     }
 
     function sortByArtist() {
         songs = new Map([...songs.entries()].sort((a, b) => {
-            let valueA = a[1];
-            let valueB = b[1];
+            let attributesA = a[1].data.attributes;
+            let attributesB = b[1].data.attributes;
 
-            /* can add aditional sorting, like track number etc. */
-            return valueA.data.attributes.artistName.localeCompare(valueB.data.attributes.artistName);
+            let result = attributesA.artistName.localeCompare(attributesB.artistName);
+
+            if (result === 0) {
+                result = attributesA.albumName.localeCompare(attributesB.albumName);
+
+                if (result === 0) {
+                    /* same album and same track number is not something we should expect */
+                    return attributesA.trackNumber - attributesB.trackNumber;
+                }
+            }
+
+            return result;
         }));
     }
 
     function sortByAlbum() {
         songs = new Map([...songs.entries()].sort((a, b) => {
-            let valueA = a[1];
-            let valueB = b[1];
+            let attributesA = a[1].data.attributes;
+            let attributesB = b[1].data.attributes;
 
-            /* can add aditional sorting, like track number etc. */
-            return valueA.data.attributes.albumName.localeCompare(valueB.data.attributes.albumName);
+            let result = attributesA.albumName.localeCompare(attributesB.albumName);
+
+            if (result === 0) {
+                /* same album and same track number is not something we should expect */
+                return attributesA.trackNumber - attributesB.trackNumber;
+            }
+
+            return result;
         }));
     }
 
@@ -134,38 +187,31 @@ try {
             }
 
             manageNodes();
+
+            console.log('[JS] [addSort] Sorted Stored Songs:', songs);
         }
     }
 
     function setNodeOfSong(song) {
-        /* store the node data and some other stuff to compare with the already stored songs */
         let attributes = song.data.attributes;
         let id = attributes.name + attributes.artistName + attributes.albumName;
 
         let songNode = songNodes.get(id);
 
         if (songNode) {
-            song.node = songNode.node;
+            song.node = songNode;
         }
     }
 
     function fillSongNodes(node) {
-        let data = {
-            songName: '',
-            artistName: '',
-            albumName: '',
-            time: '',
-            node: node
-        };
+        let songName = node.getElementsByClassName('songs-list-row__song-name')[0].innerText;
+        let artistName = node.getElementsByClassName('songs-list-row__link')[0].innerText;
+        let albumName = node.getElementsByClassName('songs-list__col--album')[0].getElementsByTagName('p')[0].innerText;
+        /* time = node.getElementsByClassName('songs-list-row__length')[0].innerText; */
 
-        data.songName = node.getElementsByClassName('songs-list-row__song-name')[0].innerText;
-        data.artistName = node.getElementsByClassName('songs-list-row__link')[0].innerText;
-        data.albumName = node.getElementsByClassName('songs-list__col--album')[0].getElementsByTagName('p')[0].innerText;
-        data.time = node.getElementsByClassName('songs-list-row__length')[0].innerText;
+        let id = songName + artistName + albumName;
 
-        let id = data.songName + data.artistName + data.albumName;
-
-        songNodes.set(id, data);
+        songNodes.set(id, node);
     }
 
     function handleSongsMissingNodes() {
