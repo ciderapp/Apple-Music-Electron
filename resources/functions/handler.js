@@ -51,6 +51,24 @@ const handler = {
 
     },
 
+    LaunchHandlerPostWin: function () {
+        // Detect if the application has been opened with --minimized
+        if (app.commandLine.hasSwitch('minimized') || process.argv.includes('--minimized')) {
+            console.log("[Apple-Music-Electron] Application opened with '--minimized'");
+            if (typeof app.win.minimize === 'function') {
+                app.win.minimize();
+            }
+        }
+
+        // Detect if the application has been opened with --hidden
+        if (app.commandLine.hasSwitch('hidden') || process.argv.includes('--hidden')) {
+            console.log("[Apple-Music-Electron] Application opened with '--hidden'");
+            if (typeof app.win.hide === 'function') {
+                app.win.hide()
+            }
+        }
+    },
+
     VersionHandler: function () {
         if (!app.preferences.value('storedVersion') || app.preferences.value('storedVersion') === undefined || app.preferences.value('storedVersion') !== app.getVersion()) {
             rimraf(resolve(app.getPath('userData'), 'Cache'), [], () => {

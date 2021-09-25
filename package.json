@@ -40,16 +40,16 @@
     "v8-compile-cache": "^2.1.1"
   },
   "devDependencies": {
-    "electron": "https://github.com/castlabs/electron-releases.git#v15.0.0-wvvmp-beta.6",
+    "electron": "https://github.com/castlabs/electron-releases.git",
     "electron-builder": "^22.7.0",
     "electron-webpack": "^2.7.4",
     "musickit-typescript": "^1.2.4",
     "webpack": "~5.53.0"
   },
   "build": {
-    "electronVersion": "14.0.0",
+    "electronVersion": "15.0.0",
     "electronDownload": {
-      "version": "15.0.0-wvvmp-beta.6",
+      "version": "15.0.0-wvvmp",
       "mirror": "https://github.com/castlabs/electron-releases/releases/download/v"
     },
     "appId": "apple-music",
