@@ -1,26 +1,35 @@
 try {
-    let url = window.location.href;
+    /* todo
+    # bugs
+    what happens if the same song (= same id) is multiple times in the same playlist
+
+    # queue
+
+    # sort
+    deciding between ascending and descending
+    combine multiple types of sorting
+    */
 
     /* check for https://music.apple.com/library/playlist/ (and the beta variant + language code) */
-    let matcher = url.match(/(https:\/\/)(beta\.)?(music\.apple\.com\/library\/playlist\/)(p\..{15})(\?l=.{2,5})?/);
+    let playlistMatcher = window.location.href.match(/(https:\/\/)(beta\.)?(music\.apple\.com\/library\/playlist\/)(p\..{15})(\?l=.{2,5})?/);
 
-    let contentNode;
-    let playlist;
     let observer;
-
-    /* needed to apply the sort to the newly loaded elements */
-    let lastSortType;
+    let contentNode;
 
     let songs = new Map();
     let songNodes = new Map();
 
+    /* needed to apply the sort to the newly loaded elements */
+    let lastSortType;
+
     let fixToAllowSort = [];
     let isSortAllowed = false;
-
     let doesQueueNeedSorting = false;
 
+    let playlistID;
+
     /* check if playlist id is set */
-    if (matcher && matcher.length === 6 && matcher[4]) {
+    if (playlistMatcher && playlistMatcher.length === 6 && playlistMatcher[4]) {
         contentNode = document.getElementsByClassName('songs-list')[0];
 
         if (contentNode) {
@@ -33,9 +42,18 @@ try {
                 fillSongNodes(node);
             }
 
-            playlist = matcher[4].toLowerCase();
+            playlistID = playlistMatcher[4].toLowerCase();
 
-            storeSongs();
+            MusicKit.getInstance().addEventListener(MusicKit.Events.queueIsReady, async () => {
+                if (!doesQueueNeedSorting) {
+                    /* without this we get an endless loop since setQueue() triggers this listener */
+                    return;
+                }
+
+                sortQueue();
+            });
+
+            processCache();
 
             /* click does not register if we add the event listener to the child divs themselves */
             contentNode.addEventListener('click', event => {
@@ -60,14 +78,14 @@ try {
         }
     }
 
-    function storeSongs() {
+    function processCache() {
         /* get the cached data */
         let cachedObjects = MusicKit.getInstance().api.storage.data;
 
         for (let cachedObjectName in cachedObjects) {
             if (cachedObjects.hasOwnProperty(cachedObjectName)) {
                 /* check for the stored playlist data */
-                if (cachedObjectName.match('(.*?)(library.playlists.)(' + playlist + ')(..*)')) {
+                if (cachedObjectName.match('(.*?)(library.playlists.)(' + playlistID + ')(..*)')) {
                     let cachedObject = JSON.parse(cachedObjects[cachedObjectName]);
 
                     processCachedObject(cachedObject);
@@ -184,7 +202,6 @@ try {
             }
 
             sortNodes();
-            sortQueue();
 
             console.log('[JS] [addSort] Sorted Stored Songs:', songs);
         }
@@ -221,30 +238,55 @@ try {
     }
 
     function sortQueue() {
-        /* todo
-        let queueItems = MusicKit.getInstance().queue.items;
+        let items = MusicKit.getInstance().queue.items;
 
-        if (queueItems.length > 0) {
-            console.log(queueItems);
+        switch (lastSortType) {
+            case 'song':
+                break;
+            case 'artist':
+                items.sort(function (a, b) {
+                    if (a.type === 'library-songs') {
+                        return 1;
+                    } else if (b.type === 'library-songs') {
+                        return -1;
+                    }
 
+                    return a.attributes.artistName.localeCompare(b.attributes.artistName);
+                });
+                break;
+            case 'album':
+                items.sort(function (a, b) {
+                    if (a.type === 'library-songs') {
+                        return 1;
+                    } else if (b.type === 'library-songs') {
+                        return -1;
+                    }
+
+                    return a.attributes.albumName.localeCompare(b.attributes.albumName);
+                });
+                break;
+            case 'time':
+                break;
         }
-        */
 
-        /*
-        current queue behaviour (decided by apple) when you click 'play' on a song in the playlist:
-            1. clears the queue
-            2. fills the queue with all songs that are ordered after the one you clicked on
+        let current = MusicKit.getInstance().queue.items[MusicKit.getInstance().queue.position];
 
-        what needs to be done:
-            1. decide wether we sort the queue or not
-                i. e. is the user just sorting the ui elements
-                even if the user plays a song on the sorted playlist, he might not want the queue to be sorted?
-            2. listen to queue or playback changes (= user clicks play on a song in the playlist)
-                depending on what we listen we will need a variable that keeps in mind if the queue was sorted with the latest sort option
-            2. loop through the queue elements and sort them according to the stored songs
-        */
+        console.log(items);
+
+        items = items.splice(items.indexOf(current));
+        /* remove 'library-songs' elements */
+        items = items.filter(item => item.type === 'song');
 
         doesQueueNeedSorting = false;
+
+        MusicKit.getInstance().setQueue({items: items}).then(async () => {
+            doesQueueNeedSorting = true;
+
+            /* fixme :: workaround for now - just calling play() is apparently too early */
+            setTimeout(async function () {
+                await MusicKit.getInstance().play();
+            }, 1000);
+        }).catch(reason => console.log('set queue error', reason));
     }
 
     function sortNodes() {
@@ -288,7 +330,7 @@ try {
     function createObserver() {
         return new MutationObserver(function (mutation_ist) {
             /* when the observer catches something it means new elements have been loaded (this does not get called multiple times) */
-            storeSongs();
+            processCache();
 
             mutation_ist.forEach(function (mutation) {
                 mutation.addedNodes.forEach(function (added_node) {
