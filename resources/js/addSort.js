@@ -1,9 +1,4 @@
 try {
-    /*
-    the queue does not respect the sorting
-        can be done by managing 'MusicKit.getInstance().queue.items'
-    */
-
     let url = window.location.href;
 
     /* check for https://music.apple.com/library/playlist/ (and the beta variant + language code) */
@@ -21,6 +16,8 @@ try {
 
     let fixToAllowSort = [];
     let isSortAllowed = false;
+
+    let doesQueueNeedSorting = false;
 
     /* check if playlist id is set */
     if (matcher && matcher.length === 6 && matcher[4]) {
@@ -42,9 +39,7 @@ try {
 
             /* click does not register if we add the event listener to the child divs themselves */
             contentNode.addEventListener('click', event => {
-                if (!isSortAllowed) {
-                    return;
-                }
+                let currenSortType = lastSortType;
 
                 if (checkClickArea('songs-list__header-col--song', event)) {
                     lastSortType = 'song';
@@ -54,6 +49,10 @@ try {
                     lastSortType = 'album';
                 } else if (checkClickArea('songs-list__header-col--time', event)) {
                     lastSortType = 'time';
+                }
+
+                if (currenSortType !== lastSortType) {
+                    doesQueueNeedSorting = true;
                 }
 
                 handleSort();
@@ -172,6 +171,10 @@ try {
     }
 
     function handleSort() {
+        if (!isSortAllowed) {
+            return;
+        }
+
         if (lastSortType) {
             switch (lastSortType) {
                 case 'song':
@@ -186,7 +189,8 @@ try {
                     break;
             }
 
-            manageNodes();
+            sortNodes();
+            sortQueue();
 
             console.log('[JS] [addSort] Sorted Stored Songs:', songs);
         }
@@ -214,6 +218,31 @@ try {
         songNodes.set(id, node);
     }
 
+    function sortQueue() {
+        /* todo
+        let queueItems = MusicKit.getInstance().queue.items;
+
+        if (queueItems.length > 0) {
+            console.log(queueItems);
+
+        }
+        */
+
+        /*
+        current queue behaviour (decided by apple) when you click 'play' on a song in the playlist:
+            1. clears the queue
+            2. fills the queue with all songs that are ordered after the one you clicked on
+
+        what needs to be done:
+            1. decide wether we sort the queue or not
+                i. e. is the user just sorting the ui elements
+                even if the user plays a song on the sorted playlist, he might not want the queue to be sorted?
+            2. listen to queue or playback changes (= user clicks play on a song in the playlist)
+                depending on what we listen we will need a variable that keeps in mind if the queue was sorted with the latest sort option
+            2. loop through the queue elements and sort them according to the stored songs
+        */
+    }
+
     function handleSongsMissingNodes() {
         for (let song of songs.values()) {
             if (!song.node) {
@@ -222,7 +251,7 @@ try {
         }
     }
 
-    function manageNodes() {
+    function sortNodes() {
         observer.disconnect();
 
         let headerNode = contentNode.getElementsByClassName('songs-list__header')[0];
