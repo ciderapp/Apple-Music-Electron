@@ -1,9 +1,13 @@
 try {
     /* todo
-    # bugs
-    duplicates in the playlist cause problems
-        they appear as 'library-songs' (in the queue when you press paly on any song) and are missing attributes data
-        current behaviour does not handle them of this stuff
+    # duplicates
+        it is not possible to handle duplicates in playlists with the web version
+        if you start the playback by clicking 'play' they get added as 'library-song' but are skipped ('position' / 'nextPlayableItemIndex')
+        if you double click a row they simply do not appear
+        if you modify the queue before sending the items with 'setQueue(...)' and add duplicates that way they all get consumed at the same time once the first instance starts to play
+            sometimes they will be visible in the queue, sometimes not
+            clicking 'next' will behave like a clicking 'pause' until you have exhausted all duplicate entries
+        conclusion: it's better to remove them before sending them to the queue
 
     # sort
     deciding between ascending and descending
@@ -18,6 +22,7 @@ try {
 
     let songs = new Map();
     let songNodes = new Map();
+    let duplicateIndex = new Map();
 
     /* needed to apply the sort to the newly loaded elements */
     let lastSortType;
@@ -27,6 +32,8 @@ try {
     let blockQueueSorting = false;
 
     let playlistID;
+
+    let processedCachedObjects = [];
 
     /* check if playlist id is set */
     if (playlistMatcher && playlistMatcher.length === 6 && playlistMatcher[4]) {
@@ -88,7 +95,17 @@ try {
                 if (cachedObjectName.match('(.*?)(library.playlists.)(' + playlistID + ')(..*)')) {
                     let cachedObject = JSON.parse(cachedObjects[cachedObjectName]);
 
-                    processCachedObject(cachedObject);
+                    console.log(cachedObject);
+
+                    /*
+                    in this way on additional calls only the 'offset' cached objects get processed
+                    it also allows this process to trust duplicates in the list (since it is always a new cached object being processed)
+                    */
+                    if (!processedCachedObjects.includes(cachedObjectName)) {
+                        processCachedObject(cachedObject);
+                    }
+
+                    processedCachedObjects.push(cachedObjectName);
                 }
             }
         }
@@ -98,6 +115,12 @@ try {
             console.log('[JS] [addSort] some songs were missing their attributes (', fixToAllowSort.length, ')');
 
             fixToAllowSort = fixToAllowSort.filter(function (id) {
+                console.log(id);
+
+                let song = songs.get(id).data.attributes;
+
+                console.log(song.name, song.artistName, song.albumName);
+
                 return (!songs.get(id).data.attributes);
             });
 
@@ -120,30 +143,39 @@ try {
                 let songData = object.relationships.tracks.data;
 
                 for (let song of songData) {
-                    if (!songs.has(song.id)) {
-                        let storedData = {data: song, node: null};
-
-                        songs.set(song.id, storedData);
-
-                        setNodeOfSong(storedData);
-                    }
+                    handleCachedSong(song);
                 }
-            } else {
+            } else if (object.id.startsWith('i')) {
                 /* song */
-                if (!songs.has(object.id)) {
-                    /* in some cases (small playlists?) there are cached instances of the song with missing data */
-                    if (object.attributes) {
-                        let storedData = {data: object, node: null};
-
-                        songs.set(object.id, storedData);
-
-                        setNodeOfSong(storedData);
-                    } else {
-                        fixToAllowSort.push(object.id);
-                    }
-                }
+                handleCachedSong(object);
+            } else {
+                console.error('[JS] [addSort] unexpected cached object found', object.id);
             }
         }
+    }
+
+    function handleCachedSong(song) {
+        let storedData = {data: song, duplicateIndex: null, node: null};
+
+        if (!song.attributes) {
+            /* in some cases (small playlists?) there are cached instances of the song with missing data */
+            fixToAllowSort.push(song.id);
+
+            return;
+        }
+
+        if (!songs.has(song.id)) {
+            songs.set(song.id, storedData);
+        } else {
+            /* duplicate */
+            let index = getDuplicateIndex(song.id);
+
+            storedData.duplicateIndex = index;
+
+            songs.set(song.id + '#' + index, storedData);
+        }
+
+        setNodeOfSong(storedData);
     }
 
     function sortByArtist() {
@@ -211,6 +243,10 @@ try {
         let attributes = song.data.attributes;
         let id = attributes.name + attributes.artistName + attributes.albumName;
 
+        if (song.duplicateIndex) {
+            id += '#' + song.duplicateIndex;
+        }
+
         let songNode = songNodes.get(id);
 
         if (songNode) {
@@ -234,11 +270,28 @@ try {
 
         let id = songName + artistName + albumName;
 
+        if (songNodes.has(id)) {
+            /* duplicate */
+            let index = getDuplicateIndex(id);
+
+            id += '#' + index;
+        }
+
         songNodes.set(id, node);
     }
 
     async function sortQueue() {
         let items = MusicKit.getInstance().queue.items;
+
+        /*
+        let duplicatsToFix = items.filter(item => {
+            return item.type === 'library-songs';
+        });
+        */
+
+        items = items.filter(item => {
+            return item.type === 'song';
+        });
 
         switch (lastSortType) {
             case 'song':
@@ -260,6 +313,26 @@ try {
         /* the song where the play interaction was started on (= the start of the queue) */
         let current = MusicKit.getInstance().queue.items[MusicKit.getInstance().queue.position];
         items = items.splice(items.indexOf(current));
+
+        /*
+        for (let duplicate of duplicatsToFix) {
+            let id = duplicate.attributes.playParams.id;
+
+            let duplicateCount = duplicateIndex.get(id);
+
+            let findElement = function (item) {
+                return item.id === id;
+            };
+
+            let itemIndex = items.findIndex(findElement);
+
+            while (duplicateCount > 0) {
+                items.splice(itemIndex, 0, items[itemIndex]);
+
+                duplicateCount--;
+            }
+        }
+        */
 
         blockQueueSorting = true;
 
@@ -300,6 +373,20 @@ try {
         }
 
         observer.observe(contentNode, {subtree: false, childList: true});
+    }
+
+    function getDuplicateIndex(id) {
+        let index = duplicateIndex.get(id);
+
+        if (!index) {
+            index = 1;
+        } else {
+            index += 1;
+        }
+
+        duplicateIndex.set(id, index);
+
+        return index;
     }
 
     function checkClickArea(className, event) {
