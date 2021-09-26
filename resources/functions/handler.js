@@ -1,10 +1,11 @@
 const {app, ipcMain, shell, dialog, Notification} = require('electron')
-const {Analytics} = require('./sentry');
+const SentryInit = require("./init").SentryInit;
+SentryInit()
 const {LoadOneTimeFiles, LoadFiles} = require('./load');
 const {join, resolve} = require('path');
 const {unlinkSync} = require('fs');
 const rimraf = require('rimraf');
-Analytics.init()
+
 
 const handler = {
     LaunchHandler: function () {

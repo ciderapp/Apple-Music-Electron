@@ -1,8 +1,8 @@
 const { app, Menu, nativeTheme, Notification } = require("electron");
 const nativeImage = require('electron').nativeImage
 const { join } = require("path");
-const { Analytics } = require("./sentry");
-Analytics.init()
+const SentryInit = require("./init").SentryInit;
+SentryInit()
 
 const trayIconDir = (nativeTheme.shouldUseDarkColors ? join(__dirname, `../icons/media/light/`) : join(__dirname, `../icons/media/dark/`));
 const Images = {

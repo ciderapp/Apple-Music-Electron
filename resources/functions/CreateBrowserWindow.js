@@ -3,9 +3,9 @@ const {join} = require('path')
 const os = require('os')
 const fs = require('fs')
 const windowStateKeeper = require('electron-window-state');
-const {Analytics} = require("./sentry");
+const SentryInit = require("./init").SentryInit;
+SentryInit()
 let win;
-Analytics.init()
 
 const BrowserWindowCreation = {
 

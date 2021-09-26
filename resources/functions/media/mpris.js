@@ -1,7 +1,7 @@
 const {app} = require('electron')
 const Player = require('mpris-service');
-const {Analytics} = require("../sentry");
-Analytics.init()
+const SentryInit = require("../init").SentryInit;
+SentryInit()
 
 // Remember to use playerctl when debugging this.
 // I'm just putting this here as I keep forgetting the command.

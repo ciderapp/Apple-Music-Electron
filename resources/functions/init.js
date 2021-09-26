@@ -6,6 +6,7 @@ const chmodr = require("chmodr");
 const clone = require('git-clone');
 const rimraf = require('rimraf')
 const languages = require("../languages.json");
+const ElectronSentry = require('@sentry/electron');
 
 const init = {
 
@@ -27,6 +28,7 @@ const init = {
         console.log(`User Data Path: '${app.getPath('userData')}'`)
         console.log(`Current Configuration: ${JSON.stringify(app.preferences._preferences)}`)
         console.log("---------------------------------------------------------------------")
+        if (app.preferences.value('general.analyticsEnabled').includes(true) && app.isPackaged) console.log('[Sentry] Sentry logging is enabled, any errors you receive will be presented to the development team to fix for the next release.')
         console.verbose('[InitializeBase] Started.');
 
         app.isAuthorized = false
@@ -1264,6 +1266,12 @@ const init = {
                 app.preferences.show();
             })
         })
+    },
+
+    SentryInit: function () {
+        if (app.preferences.value('general.analyticsEnabled').includes(true) && app.isPackaged) {
+            ElectronSentry.init({dsn: "https://20e1c34b19d54dfcb8231e3ef7975240@o954055.ingest.sentry.io/5903033"});
+        }
     }
 }
 

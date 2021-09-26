@@ -1,9 +1,9 @@
 const {join} = require("path");
 const {app, ipcMain} = require("electron");
-const {Analytics} = require("./sentry");
+const SentryInit = require("./init").SentryInit;
+SentryInit()
 const {readFile, constants, chmodSync} = require("fs");
 const {LocaleInit} = require("./init");
-Analytics.init()
 
 module.exports = {
 
