@@ -2,20 +2,12 @@ const {app, ipcMain, shell, dialog, Notification} = require('electron')
 const {Analytics} = require('./sentry');
 const {LoadOneTimeFiles, LoadFiles} = require('./load');
 const {join, resolve} = require('path');
-const rimraf = require('rimraf')
+const {unlinkSync} = require('fs');
+const rimraf = require('rimraf');
 Analytics.init()
 
 const handler = {
     LaunchHandler: function () {
-
-        // Check for Protocols
-        process.argv.forEach((value) => {
-            if (value.includes('ame://') || value.includes('itms://') || value.includes('itmss://') || value.includes('musics://') || value.includes('music://')) {
-                console.verbose('[InstanceHandler] Preventing application creation as args include protocol.');
-                app.quit()
-                return true
-            }
-        })
 
         // Version Fetch
         if (app.commandLine.hasSwitch('version') || app.commandLine.hasSwitch('v') ) {
@@ -37,9 +29,18 @@ const handler = {
 
         // Detects if the application has been opened with --force-quit
         if (app.commandLine.hasSwitch('force-quit')) {
-            console.verbose("[Apple-Music-Electron] User has closed the application via --force-quit");
+            console.log("[Apple-Music-Electron] User has closed the application via --force-quit");
             app.quit()
         }
+
+        // Check for Protocols
+        process.argv.forEach((value) => {
+            if (value.includes('ame://') || value.includes('itms://') || value.includes('itmss://') || value.includes('musics://') || value.includes('music://')) {
+                if (app.preferences.value('advanced.verboseLogging').includes(true) || app.verboseLaunched) console.log('[InstanceHandler] Preventing application creation as args include protocol.');
+                app.quit()
+                return true
+            }
+        })
 
         // For macOS
         app.on('open-url', function(event, url) {
@@ -74,6 +75,8 @@ const handler = {
             rimraf(resolve(app.getPath('userData'), 'Cache'), [], () => {
                 console.warn(`[VersionHandler] Outdated / No Version Store Found. Clearing Application Cache. ('${resolve(app.getPath('userData'), 'Cache')}')`)
             })
+            unlinkSync(resolve(app.getPath('userData'), 'preferences.json'))
+            console.warn(`[VersionHandler] 'preferences.json' deleted.`)
         }
     },
 

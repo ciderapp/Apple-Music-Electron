@@ -91,56 +91,52 @@ const init = {
     },
 
     ThemeInstallation: function () {
-        init.SetApplicationTheme()
-
-        // Set the folder
-        console.log(`[InitializeTheme] User Themes Path: '${app.userThemesPath}'`)
-
-        // Make sure you can access the folder with the correct permissions
-        console.log(`[InitializeTheme] Checking if user themes directory exists.`)
-
-        // Checks if the folder exists and create themes if it doesnt
-        if (fs.existsSync(app.userThemesPath)) {
-            console.log("[InitializeTheme][existsSync] Folder exists!")
-        } else {
-            clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
-                console.log(`[InitializeTheme][GitClone] ${err ? err : `Initial Themes have been cloned to '${app.userThemesPath}'`}`)
+        function PermissionsCheck(folder, file) {
+            console.verbose(`[PermissionsCheck] Running check on ${join(folder, file)}`)
+            fs.access(join(folder, file), fs.constants.R_OK | fs.constants.W_OK, (err) => {
+                if (err) { // File cannot be read after cloning
+                    console.error(`[PermissionsCheck][access] ${err}`)
+                    chmodr(folder, 0o777, (err) => {
+                        if (err) {
+                            console.error(`[PermissionsCheck][chmodr] ${err} - Theme set to default to prevent application launch halt.`);
+                            app.preferences.value('visual.theme', 'default')
+                        }
+                    });
+                } else {
+                    console.verbose('[PermissionsCheck] Check passed.')
+                }
             })
         }
 
-        try {
-            fs.accessSync(join(app.userThemesPath, 'README.md'), fs.constants.R_OK | fs.constants.W_OK);
-            console.verbose(`[InitializeTheme][access] 'README.md' was found and can be read and written.`);
-        } catch (err) {
-            console.error(`[InitializeTheme][access] ${err} - README.md could not be read. Attempting to change permissions.`)
-            chmodr(app.userThemesPath, 0o777, (err) => {
-                if (err) {
-                    console.error(`[InitializeTheme][chmodr] ${err} - Theme set to default to prevent application launch halt.`);
-                    app.preferences.value('visual.theme', 'default')
-                    throw err
-                } else {
-                    console.log('[InitializeTheme][chmodr] Folder permissions successfully set.');
-                }
-            });
+        // Check if the themes folder exists and check permissions
+        if (fs.existsSync(app.userThemesPath)) {
+            console.log("[InitializeTheme][existsSync] Themes folder exists!")
+            PermissionsCheck(app.userThemesPath, 'README.md')
+        } else {
+            console.verbose("[InitializeTheme] Attempting to clone themes.")
+            clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
+                console.log(`[InitializeTheme][GitClone] ${err ? err : `Themes repository has been cloned to '${app.userThemesPath}'`}`)
+                PermissionsCheck(app.userThemesPath, 'README.md')
+            })
         }
 
         // Save all the file names to array and log it
-        try {
+        if (fs.existsSync(app.userThemesPath)) {
             console.log(`[InitializeTheme] Files found in Themes Directory: [${fs.readdirSync(app.userThemesPath).join(', ')}]`)
-        } catch (err) {
-            console.error(`[InitializeTheme][readdirSync] ${err} (Usually happens on first launch)`)
         }
 
         if (app.preferences.value('advanced.overwriteThemes').includes(true)) {
             rimraf(app.userThemesPath, [], () => {
                 console.warn(`[InitializeTheme] Clearing themes directory for fresh clone. ('${app.userThemesPath}`)
                 clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
-                    console.log(`[InitializeTheme][GitClone] ${err ? err : `Pulled Themes.`}`)
+                    console.log(`[InitializeTheme][GitClone] ${err ? err : `Re-cloned Themes.`}`)
                     app.preferences.value('advanced.overwriteThemes', [])
                     app.preferences.value('visual.theme', 'default')
                 })
             })
         }
+
+        init.SetApplicationTheme()
     },
 
     AppReady: function () {

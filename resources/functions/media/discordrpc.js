@@ -94,7 +94,7 @@ module.exports = {
         if (!attributes.artistName) {
             delete ActivityObject.state
         }
-        if (!ActivityObject.largeImageText || Array.from(ActivityObject.largeImageText).length < 2) {
+        if (!ActivityObject.largeImageText || ActivityObject.largeImageText.length < 2) {
             delete ActivityObject.largeImageText
         }
 
