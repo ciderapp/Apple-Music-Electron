@@ -1,9 +1,9 @@
 try {
     /* todo
     # bugs
-    what happens if the same song (= same id) is multiple times in the same playlist
-
-    # queue
+    duplicates in the playlist cause problems
+        they appear as 'library-songs' (in the queue when you press paly on any song) and are missing attributes data
+        current behaviour does not handle them of this stuff
 
     # sort
     deciding between ascending and descending
@@ -24,7 +24,7 @@ try {
 
     let fixToAllowSort = [];
     let isSortAllowed = false;
-    let doesQueueNeedSorting = false;
+    let blockQueueSorting = false;
 
     let playlistID;
 
@@ -45,12 +45,12 @@ try {
             playlistID = playlistMatcher[4].toLowerCase();
 
             MusicKit.getInstance().addEventListener(MusicKit.Events.queueIsReady, async () => {
-                if (!doesQueueNeedSorting) {
+                if (blockQueueSorting) {
                     /* without this we get an endless loop since setQueue() triggers this listener */
                     return;
                 }
 
-                sortQueue();
+                await sortQueue();
             });
 
             processCache();
@@ -70,7 +70,7 @@ try {
                 }
 
                 if (currenSortType !== lastSortType) {
-                    doesQueueNeedSorting = true;
+                    blockQueueSorting = false;
                 }
 
                 handleSort();
@@ -102,7 +102,7 @@ try {
             });
 
             if (!isSortAllowed) {
-                console.log('[JS] [addSort] some songs are still missing their attributes (', fixToAllowSort.length, ')');
+                console.error('[JS] [addSort] some songs are still missing their attributes (', fixToAllowSort.length, ') - sorting disabled');
             }
         }
 
@@ -237,7 +237,7 @@ try {
         songNodes.set(id, node);
     }
 
-    function sortQueue() {
+    async function sortQueue() {
         let items = MusicKit.getInstance().queue.items;
 
         switch (lastSortType) {
@@ -245,23 +245,11 @@ try {
                 break;
             case 'artist':
                 items.sort(function (a, b) {
-                    if (a.type === 'library-songs') {
-                        return 1;
-                    } else if (b.type === 'library-songs') {
-                        return -1;
-                    }
-
                     return a.attributes.artistName.localeCompare(b.attributes.artistName);
                 });
                 break;
             case 'album':
                 items.sort(function (a, b) {
-                    if (a.type === 'library-songs') {
-                        return 1;
-                    } else if (b.type === 'library-songs') {
-                        return -1;
-                    }
-
                     return a.attributes.albumName.localeCompare(b.attributes.albumName);
                 });
                 break;
@@ -269,24 +257,20 @@ try {
                 break;
         }
 
+        /* the song where the play interaction was started on (= the start of the queue) */
         let current = MusicKit.getInstance().queue.items[MusicKit.getInstance().queue.position];
-
-        console.log(items);
-
         items = items.splice(items.indexOf(current));
-        /* remove 'library-songs' elements */
-        items = items.filter(item => item.type === 'song');
 
-        doesQueueNeedSorting = false;
+        blockQueueSorting = true;
 
-        MusicKit.getInstance().setQueue({items: items}).then(async () => {
-            doesQueueNeedSorting = true;
+        await MusicKit.getInstance().setQueue({items: items});
 
-            /* fixme :: workaround for now - just calling play() is apparently too early */
-            setTimeout(async function () {
-                await MusicKit.getInstance().play();
-            }, 1000);
-        }).catch(reason => console.log('set queue error', reason));
+        /* simply calling play() seems to be too early here (song won't start) (< 300 ms does not seem to work) */
+        setTimeout(async function () {
+            await MusicKit.getInstance().play();
+        }, 300);
+
+        blockQueueSorting = false;
     }
 
     function sortNodes() {
