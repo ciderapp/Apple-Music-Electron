@@ -63,6 +63,17 @@ module.exports = {
                         }
                     }
                 ]
+            },
+            {
+                label: 'Develop',
+                submenu: [
+                    {
+                        label: 'Open Dev Tools',
+                        click() {
+                            app.win.webContents.openDevTools();
+                        }
+                    }
+                ]
             }
         ]));
     },

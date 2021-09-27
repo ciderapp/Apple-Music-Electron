@@ -1272,6 +1272,18 @@ const init = {
         if (app.preferences.value('general.analyticsEnabled').includes(true) && app.isPackaged) {
             ElectronSentry.init({dsn: "https://20e1c34b19d54dfcb8231e3ef7975240@o954055.ingest.sentry.io/5903033"});
         }
+    },
+
+    ElectronStoreInit: function () {
+        const Store = require('electron-store');
+        const StoreConfiguration = {
+            defaults: {},
+            schema: {},
+            migrations: {},
+            name: {}
+        } // default values and stuff
+        const store = new Store(StoreConfiguration);
+
     }
 }
 

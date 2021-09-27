@@ -26,6 +26,7 @@
     "electron-acrylic-window": "^0.5.9",
     "electron-log": "^4.3.5",
     "electron-preferences": "2.5.0",
+    "electron-store": "^8.0.1",
     "electron-updater": "^4.3.9",
     "electron-window-state": "^5.0.3",
     "git-clone": "^0.1.0",

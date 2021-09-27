@@ -77,6 +77,8 @@ module.exports = {
     },
 
     LoadFiles: async function () {
+        app.funcs.LoadJS('settingsPage.js');
+
         /* Remove Apple Music Logo */
         if (app.preferences.value('visual.removeAppleLogo').includes(true)) {
             app.funcs.LoadJS('removeAppleLogo.js')
