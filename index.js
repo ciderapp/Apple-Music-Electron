@@ -59,7 +59,7 @@ function CreateWindow() {
 
     app.funcs.SetThumbarButtons(null) // Set Inactive Thumbnail Toolbar Icons
     app.funcs.SetDockMenu() // Set the Dock for macOS
-    // app.funcs.SetApplicationMenu() // Set the Menu for OS's that use it (Mainly macOS)
+    app.funcs.SetApplicationMenu() // Set the Menu for OS's that use it (macOS)
 }
 
 // When its Ready call it all
@@ -84,6 +84,8 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     if (app.win === null) {
         CreateWindow()
+    } else {
+        app.win.show()
     }
 })
 

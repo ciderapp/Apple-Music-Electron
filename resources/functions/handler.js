@@ -221,7 +221,7 @@ const handler = {
         });
 
         app.win.on('close', function (event) { // Hide the App if isQuitting is not true
-            if (!app.isQuiting) {
+            if (!app.isQuiting || process.platform === "darwin") {
                 event.preventDefault();
                 if (typeof app.win.hide === 'function') {
                     app.win.hide();

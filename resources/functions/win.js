@@ -36,7 +36,7 @@ module.exports = {
     SetApplicationMenu: function () {
         Menu.setApplicationMenu(Menu.buildFromTemplate([
             {
-                label: 'Help',
+                label: app.getName(),
                 submenu: [
                     {
                         label: 'Show Preferences',
@@ -44,11 +44,22 @@ module.exports = {
                         click() {
                             app.preferences.show()
                         }
-                    },
+                    }
+                ]
+            },
+            {
+                label: 'Support',
+                submenu: [
                     {
                         label: 'Discord',
                         click() {
                             require("shell").openExternal("https://discord.gg/CezHYdXHEM")
+                        }
+                    },
+                    {
+                        label: 'GitHub Wiki',
+                        click() {
+                            require("shell").openExternal("https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki")
                         }
                     }
                 ]
