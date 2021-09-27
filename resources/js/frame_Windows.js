@@ -46,13 +46,11 @@ try {
         }
 
         function UserAuthorized() { /* When user is authenticated (Signed In) and web-chrome appears */
-            console.log(`Running user auth: Display: ${document.getElementsByClassName('web-chrome')[0].style.display} , Not Authenticated: ${document.body.classList.contains('not-authenticated')} , Length: ${document.getElementsByClassName('web-chrome-window-controls').length}`);
             document.getElementsByClassName('web-nav-window-controls')[0].classList.add('web-chrome-window-controls');
             document.getElementsByClassName('web-main-drag')[0].style.zIndex = '1'; /* Hide the drag bar */
         }
 
         function UserUnauthorized() { /* When user is unauthenticated (Signed Out) and web-chrome display: none */
-            console.log(`Running user unauth: Display: ${document.getElementsByClassName('web-chrome')[0].style.display} , Not Authenticated: ${document.body.classList.contains('not-authenticated')}`);
             if (document.getElementsByClassName('web-chrome-window-controls').length !== 0) {
                 console.log(`Length: ${document.getElementsByClassName('web-chrome-window-controls').length}`);
                 document.getElementsByClassName('web-chrome-window-controls')[0].classList.remove('web-chrome-window-controls');
@@ -89,5 +87,5 @@ try {
         }
     }
 } catch (e) {
-    console.error("[CSS] Error while trying to apply windowsFrame.js", e);
+    console.error("[CSS] Error while trying to apply frame_Windows.js", e);
 }

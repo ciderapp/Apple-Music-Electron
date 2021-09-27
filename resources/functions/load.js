@@ -1,9 +1,9 @@
 const {join} = require("path");
 const {app, ipcMain} = require("electron");
-const {Analytics} = require("./sentry");
+const SentryInit = require("./init").SentryInit;
+SentryInit()
 const {readFile, constants, chmodSync} = require("fs");
 const {LocaleInit} = require("./init");
-Analytics.init()
 
 module.exports = {
 
@@ -100,19 +100,18 @@ module.exports = {
             app.funcs.LoadJS('removeUpsell.js')
         }
 
-        /* Load the Emulation Files */
+        /* Load Window Frame */
         if (app.preferences.value('visual.frameType') === 'mac') {
-            app.funcs.LoadJS('emulateMacOS.js')
-        } else if (app.preferences.value('visual.frameType') === 'mac-right') {
-            app.funcs.LoadJS('emulateMacOS_rightAlign.js')
+            app.funcs.LoadJS('frame_macOS.js')
         }
-
-        if (process.platform === 'darwin' && !app.preferences.value('visual.frameType')) {
-          app.funcs.LoadJS('macOS.js')
+        else if (app.preferences.value('visual.frameType') === 'mac-right') {
+            app.funcs.LoadJS('frame_Windows.js')
         }
-
-        if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
-            app.funcs.LoadJS('windowsFrame.js')
+        else if(process.platform === 'darwin' && !app.preferences.value('visual.frameType')) {
+            app.funcs.LoadJS('frame_macOS.js')
+        }
+        else if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
+            app.funcs.LoadJS('frame_Windows.js')
         }
 
         app.funcs.LoadJS('custom.js')
@@ -159,7 +158,7 @@ module.exports = {
         }
 
         /* Load Back Button */
-        if (app.preferences.value('visual.backButton').includes(true) && !backButtonChecks() && app.win.webContents.canGoBack()) {
+        if (!backButtonChecks() && app.win.webContents.canGoBack()) {
             app.funcs.LoadJS('backButton.js')
         } else { /* Remove it if user cannot go back */
             await app.win.webContents.executeJavaScript(`if (document.querySelector('#backButtonBar')) { document.getElementById('backButtonBar').remove() };`);
@@ -173,16 +172,22 @@ module.exports = {
         // Inject the custom stylesheet
         app.funcs.LoadCSS('custom-stylesheet.css')
 
-
-        if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
-            app.funcs.LoadCSS('windowsFrame.css')
+        // Window Frames
+        if (app.preferences.value('visual.frameType') === 'mac') {
+            app.funcs.LoadCSS('frame_macOS_emulation.css')
+        }
+        else if (app.preferences.value('visual.frameType') === 'mac-right') {
+            app.funcs.LoadCSS('frame_macOS_emulation_right.css')
+        }
+        else if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
+            app.funcs.LoadCSS('frame_Windows.css')
         }
 
         // Load the appropriate css file for transparency
         if (app.transparency) {
             app.funcs.LoadCSS('transparency.css')
         } else {
-            app.funcs.LoadCSS('transparencyDisabled.css')
+            app.win.webContents.insertCSS(`html body { background-color: var(--pageBG) !important; }`)
         }
 
         // Set the settings variables if needed

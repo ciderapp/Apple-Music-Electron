@@ -3,9 +3,9 @@ const {join} = require('path')
 const os = require('os')
 const fs = require('fs')
 const windowStateKeeper = require('electron-window-state');
-const {Analytics} = require("./sentry");
+const SentryInit = require("./init").SentryInit;
+SentryInit()
 let win;
-Analytics.init()
 
 const BrowserWindowCreation = {
 
@@ -121,7 +121,7 @@ const BrowserWindowCreation = {
             y: mainWindowState.y,
             minWidth: (app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300),
             minHeight: ((app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') ? (app.preferences.value('visual.streamerMode').includes(true) ? 55 : 300) : (app.preferences.value('visual.streamerMode').includes(true) ? 115 : 300)),
-            frame: process.platform !== 'win32',
+            frame: (process.platform !== 'win32' && !(app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right')),
             title: "Apple Music",
             resizable: true,
             // Enables DRM
@@ -177,28 +177,6 @@ const BrowserWindowCreation = {
         if (!app.preferences.value('advanced.menuBarVisible').includes(true)) win.setMenuBarVisibility(false); // Hide that nasty menu bar
         if (app.preferences.value('advanced.devTools') !== 'built-in') win.setMenu(null); // Disables DevTools
         if (app.preferences.value('advanced.devTools') === 'detached') win.webContents.openDevTools({mode: 'detach'}); // Enables Detached DevTools
-
-        // Detect if the application has been opened with --minimized
-        if (app.commandLine.hasSwitch('minimized')) {
-            console.log("[Apple-Music-Electron] Application opened with --minimized");
-            if (typeof win.minimize === 'function') {
-                win.minimize();
-            }
-        }
-
-        // Detect if the application has been opened with --hidden
-        if (app.commandLine.hasSwitch('hidden')) {
-            console.log("[Apple-Music-Electron] Application opened with --hidden");
-            if (typeof win.hide === 'function') {
-                win.hide();
-                app.funcs.SetContextMenu()
-            }
-        }
-
-        // Checks if transparency is turned on to show window (work around for thumbar issues)
-        if (app.transparency) {
-            win.show()
-        }
 
         // Register listeners on Window to track size and position of the Window.
         mainWindowState.manage(win);

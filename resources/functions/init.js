@@ -6,6 +6,7 @@ const chmodr = require("chmodr");
 const clone = require('git-clone');
 const rimraf = require('rimraf')
 const languages = require("../languages.json");
+const ElectronSentry = require('@sentry/electron');
 
 const init = {
 
@@ -27,6 +28,7 @@ const init = {
         console.log(`User Data Path: '${app.getPath('userData')}'`)
         console.log(`Current Configuration: ${JSON.stringify(app.preferences._preferences)}`)
         console.log("---------------------------------------------------------------------")
+        if (app.preferences.value('general.analyticsEnabled').includes(true) && app.isPackaged) console.log('[Sentry] Sentry logging is enabled, any errors you receive will be presented to the development team to fix for the next release.')
         console.verbose('[InitializeBase] Started.');
 
         app.isAuthorized = false
@@ -91,56 +93,52 @@ const init = {
     },
 
     ThemeInstallation: function () {
-        init.SetApplicationTheme()
-
-        // Set the folder
-        console.log(`[InitializeTheme] User Themes Path: '${app.userThemesPath}'`)
-
-        // Make sure you can access the folder with the correct permissions
-        console.log(`[InitializeTheme] Checking if user themes directory exists.`)
-
-        // Checks if the folder exists and create themes if it doesnt
-        if (fs.existsSync(app.userThemesPath)) {
-            console.log("[InitializeTheme][existsSync] Folder exists!")
-        } else {
-            clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
-                console.log(`[InitializeTheme][GitClone] ${err ? err : `Initial Themes have been cloned to '${app.userThemesPath}'`}`)
+        function PermissionsCheck(folder, file) {
+            console.verbose(`[PermissionsCheck] Running check on ${join(folder, file)}`)
+            fs.access(join(folder, file), fs.constants.R_OK | fs.constants.W_OK, (err) => {
+                if (err) { // File cannot be read after cloning
+                    console.error(`[PermissionsCheck][access] ${err}`)
+                    chmodr(folder, 0o777, (err) => {
+                        if (err) {
+                            console.error(`[PermissionsCheck][chmodr] ${err} - Theme set to default to prevent application launch halt.`);
+                            app.preferences.value('visual.theme', 'default')
+                        }
+                    });
+                } else {
+                    console.verbose('[PermissionsCheck] Check passed.')
+                }
             })
         }
 
-        try {
-            fs.accessSync(join(app.userThemesPath, 'README.md'), fs.constants.R_OK | fs.constants.W_OK);
-            console.verbose(`[InitializeTheme][access] 'README.md' was found and can be read and written.`);
-        } catch (err) {
-            console.error(`[InitializeTheme][access] ${err} - README.md could not be read. Attempting to change permissions.`)
-            chmodr(app.userThemesPath, 0o777, (err) => {
-                if (err) {
-                    console.error(`[InitializeTheme][chmodr] ${err} - Theme set to default to prevent application launch halt.`);
-                    app.preferences.value('visual.theme', 'default')
-                    throw err
-                } else {
-                    console.log('[InitializeTheme][chmodr] Folder permissions successfully set.');
-                }
-            });
+        // Check if the themes folder exists and check permissions
+        if (fs.existsSync(app.userThemesPath)) {
+            console.log("[InitializeTheme][existsSync] Themes folder exists!")
+            PermissionsCheck(app.userThemesPath, 'README.md')
+        } else {
+            console.verbose("[InitializeTheme] Attempting to clone themes.")
+            clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
+                console.log(`[InitializeTheme][GitClone] ${err ? err : `Themes repository has been cloned to '${app.userThemesPath}'`}`)
+                PermissionsCheck(app.userThemesPath, 'README.md')
+            })
         }
 
         // Save all the file names to array and log it
-        try {
+        if (fs.existsSync(app.userThemesPath)) {
             console.log(`[InitializeTheme] Files found in Themes Directory: [${fs.readdirSync(app.userThemesPath).join(', ')}]`)
-        } catch (err) {
-            console.error(`[InitializeTheme][readdirSync] ${err} (Usually happens on first launch)`)
         }
 
         if (app.preferences.value('advanced.overwriteThemes').includes(true)) {
             rimraf(app.userThemesPath, [], () => {
                 console.warn(`[InitializeTheme] Clearing themes directory for fresh clone. ('${app.userThemesPath}`)
                 clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
-                    console.log(`[InitializeTheme][GitClone] ${err ? err : `Pulled Themes.`}`)
+                    console.log(`[InitializeTheme][GitClone] ${err ? err : `Re-cloned Themes.`}`)
                     app.preferences.value('advanced.overwriteThemes', [])
                     app.preferences.value('visual.theme', 'default')
                 })
             })
         }
+
+        init.SetApplicationTheme()
     },
 
     AppReady: function () {
@@ -321,12 +319,13 @@ const init = {
             "general": {
                 "language": "",
                 "incognitoMode": [],
-                "discordRPC": "ame-title",
-                "discordClearActivityOnPause": [
-                    true
-                ],
                 "playbackNotifications": "minimized",
                 "trayTooltipSongName": [
+                    true
+                ],
+                "startupPage": "browse",
+                "discordRPC": "ame-title",
+                "discordClearActivityOnPause": [
                     true
                 ],
                 "lastfmEnabled": [],
@@ -334,7 +333,6 @@ const init = {
                 "lastfmRemoveFeaturingArtists": [
                     true
                 ],
-                "startupPage": "browse",
                 "analyticsEnabled": [
                     true
                 ],
@@ -342,26 +340,22 @@ const init = {
             "visual": {
                 "theme": "default",
                 "frameType": "",
-                "transparencyMode": [],
-                "streamerMode": [],
-                "removeUpsell": [
-                    true
-                ],
-                "removeFooter": [
-                    true
-                ],
-                "removeAppleLogo": [
-                    true
-                ],
-                "backButton": [
-                    true
-                ],
                 "transparencyEffect": "",
                 "transparencyTheme": "appearance-based",
                 "transparencyDisableBlur": [
                     true
                 ],
-                "transparencyMaximumRefreshRate": ""
+                "transparencyMaximumRefreshRate": "",
+                "streamerMode": [],
+                "removeUpsell": [
+                    true
+                ],
+                "removeAppleLogo": [
+                    true
+                ],
+                "removeFooter": [
+                    true
+                ],
             },
             "audio": {
                 "audioQuality": "auto",
@@ -376,24 +370,23 @@ const init = {
                 ]
             },
             "advanced": {
-                "devTools": "",
-                "overwriteThemes": [],
+                "forceApplicationRegion": "",
+                "forceApplicationMode": "",
+                "verboseLogging": [],
                 "alwaysOnTop": [],
-                "removeScrollbars": [
-                    true
-                ],
+                "autoUpdaterBetaBuilds": [],
                 "useBetaSite": [
                     true
                 ],
                 "preventMediaKeyHijacking": [],
-                "autoUpdaterBetaBuilds": [],
+                "settingsMenuKeybind": "",
                 "menuBarVisible": [],
-                "forceApplicationRegion": "",
+                "removeScrollbars": [
+                    true
+                ],
+                "devTools": "",
+                "overwriteThemes": [],
                 "allowMultipleInstances": [],
-                "forceApplicationMode": "",
-                "listenNow": [],
-                "verboseLogging": [],
-                "settingsMenuKeybind": ""
             }
         }
         fields.general = [
@@ -771,16 +764,6 @@ const init = {
                     'label': 'Removes the Apple Music footer.',
                     'value': true
                 }]
-            },
-
-            { // Back Button
-                'label': 'Back Button',
-                'key': 'backButton',
-                'type': 'checkbox',
-                'options': [{
-                    'label': 'Display a back button when going back is possible.',
-                    'value': true
-                }]
             }
         ]
         fields.audio = [
@@ -812,6 +795,7 @@ const init = {
                 'key': 'appStartupBehavior',
                 'type': 'dropdown',
                 'options': [
+                    {'label': 'Enabled', 'value': 'true'},
                     {'label': 'Enabled (Application is Hidden)', 'value': 'hidden'},
                     {'label': 'Enabled (Application is Minimized)', 'value': 'minimized'}
                 ]
@@ -1003,10 +987,9 @@ const init = {
                 'help': 'If you want the application to be in a mode that your system is not using by default.'
             },
             { // Verbose Logging
-                'label': 'Verbose Logging',
                 'key': 'verboseLogging',
                 'type': 'checkbox',
-                'options': [{'label': 'Enable Verbose Logging', 'value': true}],
+                'options': [{'label': 'verboseLogging', 'value': true}],
                 'help': 'This toggle enables more advanced logging for debugging purposes.'
             },
             {
@@ -1028,8 +1011,9 @@ const init = {
                 'key': 'useBetaSite',
                 'type': 'checkbox',
                 'options': [
-                    {'label': 'useBeta', 'value': true}
-                ]
+                    {'label': 'useBetaSite', 'value': true}
+                ],
+                'help': 'This maks the application use beta.music.apple.com instead of music.apple.com.'
             },
             { // Turning on preventMediaKeyHijacking
                 'key': 'preventMediaKeyHijacking',
@@ -1282,6 +1266,12 @@ const init = {
                 app.preferences.show();
             })
         })
+    },
+
+    SentryInit: function () {
+        if (app.preferences.value('general.analyticsEnabled').includes(true) && app.isPackaged) {
+            ElectronSentry.init({dsn: "https://20e1c34b19d54dfcb8231e3ef7975240@o954055.ingest.sentry.io/5903033"});
+        }
     }
 }
 

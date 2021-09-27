@@ -1,5 +1,3 @@
-/* Windows Frame Styling */
-
 .web-main-drag {
     -webkit-app-region: drag;
     width: calc(100vw - var(--web-navigation-width));
@@ -10,7 +8,7 @@
     background-color: var(--playerBackground);
 }
 
-@media only screen and (max-width: 483px) {
+@media only screen and (max-width: 485px) {
     .web-main-drag {
         background-color: var(--webNavigationMobileBg) !important;
         width: calc(100% - 50px) !important;
@@ -32,7 +30,7 @@
     height: 28px !important;
 }
 
-@media only screen and (min-width: 483px) {
+@media only screen and (min-width: 485px) {
     .web-chrome-window-controls {
         height: 55px;
         background-color: var(--playerBackground);
@@ -42,7 +40,7 @@
     }
 }
 
-@media only screen and (prefers-color-scheme: dark) and (min-width: 483px) {
+@media only screen and (prefers-color-scheme: dark) and (min-width: 485px) {
     .web-chrome-window-controls {
         box-shadow: 0 1px 0 rgba(0,0,0,.05),0 1px 3px var(--playerDropShadow2),inset 0 -.5px 0 var(--playerInnerShadow);
         clip-path: inset(-5px -5px -5px 0px);
@@ -91,7 +89,7 @@
 
 span#maximize:hover,
 span#minimize:hover {
-    background-color: rgb(200 200 200 / 10%);
+    background-color: rgba(200, 200, 200, 0.1);
 }
 
 @media (prefers-color-scheme: light) {
@@ -113,7 +111,7 @@ span#minimize:hover {
 }
 
 /* Make Web-Chrome Draggable */
-@media only screen and (min-width: 483px) {
+@media only screen and (min-width: 485px) {
     .web-chrome {
         width: calc(100vw - var(--web-navigation-width) - 136px) !important;
         left: var(--web-navigation-width) !important;

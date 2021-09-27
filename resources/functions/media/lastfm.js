@@ -5,8 +5,8 @@ const {app, Notification} = require('electron'),
     apiCredentials = require('../../lfmApiCredentials.json'),
     LastfmAPI = require('lastfmapi');
 
-const {Analytics} = require("../sentry");
-Analytics.init()
+const SentryInit = require("../init").SentryInit;
+SentryInit()
 
 const lfm = {
     authenticateFromFile: function () {

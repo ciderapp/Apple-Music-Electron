@@ -1,54 +1,41 @@
-@media only screen and (max-width: 485px) {
-    /* Side Bar */
-    .web-navigation__navigation-container {
+@media only screen and (max-width: 1000px) {
+    /* Block the Profile Picture */
+    .web-navigation__auth {
+        display: none !important;
+        position: fixed !important;
+        overflow: hidden !important;
+    }
+}
+
+@media only screen and (max-width: 700px) and (min-width: 485px) {
+    :root {
+        --web-navigation-width: 0 !important;
+    }
+
+    /* Hide Entire Sidebar */
+    #web-navigation-container {
         display: none !important;
         position: fixed !important;
         overflow: hidden !important;
         z-index: 9901 !important;
     }
 
-    /* Span the Lyrics */
-    .web-chrome-playback-lcd__now-playing-container {
-        width: 100% !important;
-    }
-
-    /* Page */
-    .web-navigation {
-        grid-template-columns: minmax(0, 1fr);
-        grid-template-areas: 'page'
-    }
-
-    /* Media Panel */
     .web-chrome {
-        top: 0 !important;
-        position: fixed !important;
-        visibility: visible !important;
-        z-index: 9999 !important;
-        width: 100% !important;
+        width: 100vw !important;
     }
+}
 
-    /* Block the Profile Picture */
-    #ember17 {
+@media only screen and (max-height: 100px) and (max-width: 485px) {
+    #web-navigation-container, .menuicon {
         display: none !important;
         position: fixed !important;
         overflow: hidden !important;
+        z-index: 9901 !important;
     }
 
-    /* Hide Playback Controls */
-    .web-chrome-playback-controls__main {
+    .web-nav-window-controls, .web-nav-window-controls-outer {
         display: none !important;
-        overflow: hidden !important;
-    }
-
-    /* Hide Annoying Menu Icon */
-    .menuicon {
-        display: none !important;
-        overflow: hidden !important;
-    }
-
-    /* Hide the Drag Div if the user has right */
-    .dragDiv, .mainDragDiv, .sidebarDragDiv {
-        display: none !important;
+        position: fixed !important;
         overflow: hidden !important;
     }
 }

@@ -1,7 +1,7 @@
 const {app} = require('electron')
 const DiscordRPC = require('discord-rpc');
-const {Analytics} = require("../sentry");
-Analytics.init()
+const SentryInit = require("../init").SentryInit;
+SentryInit()
 
 module.exports = {
     connect: function (clientId) {
@@ -94,7 +94,7 @@ module.exports = {
         if (!attributes.artistName) {
             delete ActivityObject.state
         }
-        if (!ActivityObject.largeImageText || Array.from(ActivityObject.largeImageText).length < 2) {
+        if (!ActivityObject.largeImageText || ActivityObject.largeImageText.length < 2) {
             delete ActivityObject.largeImageText
         }
 

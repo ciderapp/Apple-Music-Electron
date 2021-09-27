@@ -1,21 +1,14 @@
 const {app, ipcMain, shell, dialog, Notification} = require('electron')
-const {Analytics} = require('./sentry');
+const SentryInit = require("./init").SentryInit;
+SentryInit()
 const {LoadOneTimeFiles, LoadFiles} = require('./load');
 const {join, resolve} = require('path');
-const rimraf = require('rimraf')
-Analytics.init()
+const {unlinkSync} = require('fs');
+const rimraf = require('rimraf');
+
 
 const handler = {
     LaunchHandler: function () {
-
-        // Check for Protocols
-        process.argv.forEach((value) => {
-            if (value.includes('ame://') || value.includes('itms://') || value.includes('itmss://') || value.includes('musics://') || value.includes('music://')) {
-                console.verbose('[InstanceHandler] Preventing application creation as args include protocol.');
-                app.quit()
-                return true
-            }
-        })
 
         // Version Fetch
         if (app.commandLine.hasSwitch('version') || app.commandLine.hasSwitch('v') ) {
@@ -37,9 +30,18 @@ const handler = {
 
         // Detects if the application has been opened with --force-quit
         if (app.commandLine.hasSwitch('force-quit')) {
-            console.verbose("[Apple-Music-Electron] User has closed the application via --force-quit");
+            console.log("[Apple-Music-Electron] User has closed the application via --force-quit");
             app.quit()
         }
+
+        // Check for Protocols
+        process.argv.forEach((value) => {
+            if (value.includes('ame://') || value.includes('itms://') || value.includes('itmss://') || value.includes('musics://') || value.includes('music://')) {
+                if (app.preferences.value('advanced.verboseLogging').includes(true) || app.verboseLaunched) console.log('[InstanceHandler] Preventing application creation as args include protocol.');
+                app.quit()
+                return true
+            }
+        })
 
         // For macOS
         app.on('open-url', function(event, url) {
@@ -51,11 +53,31 @@ const handler = {
 
     },
 
+    LaunchHandlerPostWin: function () {
+        // Detect if the application has been opened with --minimized
+        if (app.commandLine.hasSwitch('minimized') || process.argv.includes('--minimized')) {
+            console.log("[Apple-Music-Electron] Application opened with '--minimized'");
+            if (typeof app.win.minimize === 'function') {
+                app.win.minimize();
+            }
+        }
+
+        // Detect if the application has been opened with --hidden
+        if (app.commandLine.hasSwitch('hidden') || process.argv.includes('--hidden')) {
+            console.log("[Apple-Music-Electron] Application opened with '--hidden'");
+            if (typeof app.win.hide === 'function') {
+                app.win.hide()
+            }
+        }
+    },
+
     VersionHandler: function () {
         if (!app.preferences.value('storedVersion') || app.preferences.value('storedVersion') === undefined || app.preferences.value('storedVersion') !== app.getVersion()) {
             rimraf(resolve(app.getPath('userData'), 'Cache'), [], () => {
                 console.warn(`[VersionHandler] Outdated / No Version Store Found. Clearing Application Cache. ('${resolve(app.getPath('userData'), 'Cache')}')`)
             })
+            unlinkSync(resolve(app.getPath('userData'), 'preferences.json'))
+            console.warn(`[VersionHandler] 'preferences.json' deleted.`)
         }
     },
 
@@ -251,17 +273,11 @@ const handler = {
                 app.win.restore()
                 /*if (process.platform === 'win32' && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
                     app.win.webContents.insertCSS(`.web-nav-window-controls #maximize { background-image: var(--gfx-maxedBtn) !important; };`).catch((e) => console.error(e))
-                }
-                if (app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') {
-                    app.win.webContents.executeJavaScript(`document.getElementById('maxResBtn').title = 'Maximize'; document.getElementById('maxResBtn').classList.remove('restoreBtn'); document.getElementById('maxResBtn').classList.add('maximizeBtn');`)
                 }*/
             } else {
                 app.win.maximize()
                 /*if (process.platform === 'win32' && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
                     app.win.webContents.insertCSS(`.web-nav-window-controls #maximize { background-image: var(--gfx-maxBtn) !important; };`).catch((e) => console.error(e))
-                }
-                if (app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') {
-                    app.win.webContents.executeJavaScript(`document.getElementById('maxResBtn').title = 'Restore'; document.getElementById('maxResBtn').classList.remove('maximizeBtn'); document.getElementById('maxResBtn').classList.add('restoreBtn');`)
                 }*/
             }
         })

@@ -58,8 +58,13 @@ function CreateWindow() {
     MediaStateHandler() // IPCMain
 
     app.funcs.SetThumbarButtons(null) // Set Inactive Thumbnail Toolbar Icons
+    if (process.platform === 'win32' && app.transparency) { app.win.show() }
+
     app.funcs.SetDockMenu() // Set the Dock for macOS
     app.funcs.SetApplicationMenu() // Set the Menu for OS's that use it (macOS)
+    
+    const {LaunchHandlerPostWin} = require('./resources/functions/handler')
+    LaunchHandlerPostWin()
 }
 
 // When its Ready call it all
