@@ -34,6 +34,7 @@ module.exports = {
     },
 
     SetApplicationMenu: function () {
+        if (process.platform !== "darwin") return;
         Menu.setApplicationMenu(Menu.buildFromTemplate([
             {
                 label: app.getName(),
@@ -65,12 +66,13 @@ module.exports = {
                 ]
             },
             {
-                label: 'Develop',
+                label: 'Development',
                 submenu: [
                     {
-                        label: 'Open Dev Tools',
+                        label: 'Discord',
+                        accelerator: 'CommandOrControl+Shift+I',
                         click() {
-                            app.win.webContents.openDevTools();
+                            app.win.webContents.openDevTools()
                         }
                     }
                 ]
