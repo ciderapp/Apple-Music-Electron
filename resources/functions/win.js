@@ -69,7 +69,7 @@ module.exports = {
                 label: 'Development',
                 submenu: [
                     {
-                        label: 'Discord',
+                        label: 'Open Dev Tools',
                         accelerator: 'CommandOrControl+Shift+I',
                         click() {
                             app.win.webContents.openDevTools()
