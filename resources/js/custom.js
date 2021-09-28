@@ -34,7 +34,7 @@ try {
             GetXPath('/html/body/div[6]/ul/li[2]/span/span').innerHTML = 'Preferences (New)';
             ul.insertBefore(amPreferencesNew, ul.childNodes[9]);
 
-            /*.remove();*/
+            /* GetXPath('/html/body/div[6]/ul/li[2]').remove(); */
             const amSettings = document.createElement("li");
             amSettings.innerHTML = `
                     <span class="context-menu__option-text" tabindex="0" role="menuitem">
