@@ -1,17 +1,20 @@
 try {
-    /* todo
+    /* comments
+    # unsure
+        only tested with playlists up to ~ 200 songs - what happens at like 500 or 1.000?
+            100 elements take ~ 30ms / 200 ~ 60 ms
+
     # duplicates
         it is not possible to handle duplicates in playlists with the web version
         if you start the playback by clicking 'play' they get added as 'library-song' but are skipped ('position' / 'nextPlayableItemIndex')
         if you double click a row they simply do not appear
-        if you modify the queue before sending the items with 'setQueue(...)' and add duplicates that way they all get consumed at the same time once the first instance starts to play
-            sometimes they will be visible in the queue, sometimes not
-            clicking 'next' will behave like a clicking 'pause' until you have exhausted all duplicate entries
+        adding the duplicates before sending the list to 'setQueue(...)' does not work
+            they get added but all instances of a song get consumed at the same time once it plays
+            clicking 'next' will behave like a clicking 'pause' until you have exhausted duplicate instances that got consumed
         conclusion: it's better to remove them before sending them to the queue
 
-    # sort
-    deciding between ascending and descending
-    combine multiple types of sorting
+    # todo
+    visual indicator for current sorted type (arrow in the header cells?)
     */
 
     /* check for https://music.apple.com/library/playlist/ (and the beta variant + language code) */
@@ -24,18 +27,24 @@ try {
     let songNodes = new Map();
     let duplicateIndex = new Map();
 
-    /* needed to apply the sort to the newly loaded elements */
-    let lastSortType;
+    let processedCachedObjects = [];
 
-    let fixToAllowSort = [];
-    let isSortAllowed = false;
-    let blockQueueSorting = false;
+    /* todo :: check
+    could change it to 'types: []' - and sort by all types, priority being the newest addition
+    but that would mean you would have to deselect all other options if you just want to sort by artist again
+    => might be annoying
+
+    order: 0 = no sorting | 1 = ascending | 2 = descending
+    */
+    let sortConfig = {attributeName: null, order: 0};
+
+    /* for each song we store the original index - so we can later return to the original sorting (order === 0) */
+    let songIndex = 0;
+
+    let blockQueueSorting = true;
 
     let playlistID;
 
-    let processedCachedObjects = [];
-
-    /* check if playlist id is set */
     if (playlistMatcher && playlistMatcher.length === 6 && playlistMatcher[4]) {
         contentNode = document.getElementsByClassName('songs-list')[0];
 
@@ -64,20 +73,26 @@ try {
 
             /* click does not register if we add the event listener to the child divs themselves */
             contentNode.addEventListener('click', event => {
-                let currenSortType = lastSortType;
+                let currenSortType = sortConfig.type;
 
                 if (checkClickArea('songs-list__header-col--song', event)) {
-                    lastSortType = 'song';
+                    sortConfig.attributeName = 'name';
                 } else if (checkClickArea('songs-list__header-col--artist', event)) {
-                    lastSortType = 'artist';
+                    sortConfig.attributeName = 'artistName';
                 } else if (checkClickArea('songs-list__header-col--album', event)) {
-                    lastSortType = 'album';
+                    sortConfig.attributeName = 'albumName';
                 } else if (checkClickArea('songs-list__header-col--time', event)) {
-                    lastSortType = 'time';
+                    sortConfig.attributeName = 'durationInMillis';
                 }
 
-                if (currenSortType !== lastSortType) {
-                    blockQueueSorting = false;
+                if (currenSortType === sortConfig.type) {
+                    sortConfig.order += 1;
+
+                    if (sortConfig.order === 3) {
+                        sortConfig.order = 0;
+                    }
+                } else {
+                    sortConfig.order = 1;
                 }
 
                 handleSort();
@@ -87,54 +102,31 @@ try {
 
     function processCache() {
         /* get the cached data */
-        let cachedObjects = MusicKit.getInstance().api.storage.data;
+        let cachedObjectsNames = MusicKit.getInstance().api.storage.keys;
 
-        for (let cachedObjectName in cachedObjects) {
-            if (cachedObjects.hasOwnProperty(cachedObjectName)) {
-                /* check for the stored playlist data */
-                if (cachedObjectName.match('(.*?)(library.playlists.)(' + playlistID + ')(..*)')) {
-                    let cachedObject = JSON.parse(cachedObjects[cachedObjectName]);
+        for (let cachedObjectName of cachedObjectsNames) {
+            /* only the current playlist is relevant*/
+            if (cachedObjectName.match('(.*?library.playlists.' + playlistID + '.*)')) {
+                let cachedObject = JSON.parse(MusicKit.getInstance().api.storage.getItem(cachedObjectName));
 
-                    console.log(cachedObject);
-
-                    /*
-                    in this way on additional calls only the 'offset' cached objects get processed
-                    it also allows this process to trust duplicates in the list (since it is always a new cached object being processed)
-                    */
-                    if (!processedCachedObjects.includes(cachedObjectName)) {
-                        processCachedObject(cachedObject);
-                    }
-
-                    processedCachedObjects.push(cachedObjectName);
+                /*
+                in this way on additional calls only the 'offset' cached objects get processed (= data that gets loaded on infinite scroll)
+                it also allows this process to trust duplicates in the list (since it is always a new cached object being processed)
+                */
+                if (!processedCachedObjects.includes(cachedObjectName)) {
+                    processCachedObject(cachedObject);
                 }
+
+                processedCachedObjects.push(cachedObjectName);
             }
         }
-
-        /* this happens if the data is in multiple cached objects and only some have the actual attributes data */
-        if (fixToAllowSort.length > 0) {
-            console.log('[JS] [addSort] some songs were missing their attributes (', fixToAllowSort.length, ')');
-
-            fixToAllowSort = fixToAllowSort.filter(function (id) {
-                console.log(id);
-
-                let song = songs.get(id).data.attributes;
-
-                console.log(song.name, song.artistName, song.albumName);
-
-                return (!songs.get(id).data.attributes);
-            });
-
-            if (!isSortAllowed) {
-                console.error('[JS] [addSort] some songs are still missing their attributes (', fixToAllowSort.length, ') - sorting disabled');
-            }
-        }
-
-        isSortAllowed = fixToAllowSort.length === 0;
 
         console.log('[JS] [addSort] Stored Songs:', songs);
     }
 
     function processCachedObject(cachedObject) {
+        console.log('[JS] [addSort] processing cache object', cachedObject);
+
         let objects = cachedObject.d;
 
         for (let object of objects) {
@@ -155,14 +147,9 @@ try {
     }
 
     function handleCachedSong(song) {
-        let storedData = {data: song, duplicateIndex: null, node: null};
+        let storedData = {data: song, duplicateIndex: null, originalIndex: songIndex, node: null};
 
-        if (!song.attributes) {
-            /* in some cases (small playlists?) there are cached instances of the song with missing data */
-            fixToAllowSort.push(song.id);
-
-            return;
-        }
+        songIndex++;
 
         if (!songs.has(song.id)) {
             songs.set(song.id, storedData);
@@ -178,65 +165,41 @@ try {
         setNodeOfSong(storedData);
     }
 
-    function sortByArtist() {
+    function sortSongs() {
         songs = new Map([...songs.entries()].sort((a, b) => {
+            if (sortConfig.order === 0) {
+                return a[1].originalIndex - b[1].originalIndex;
+            }
+
             let attributesA = a[1].data.attributes;
             let attributesB = b[1].data.attributes;
 
-            let result = attributesA.artistName.localeCompare(attributesB.artistName);
-
-            if (result === 0) {
-                result = attributesA.albumName.localeCompare(attributesB.albumName);
-
-                if (result === 0) {
-                    /* same album and same track number is not something we should expect */
-                    return attributesA.trackNumber - attributesB.trackNumber;
+            /* todo :: better way to handle sort by numbers in a generic way */
+            if (sortConfig.order === 1) {
+                if (sortConfig.attributeName === 'durationInMillis') {
+                    return attributesA[sortConfig.attributeName] - attributesB[sortConfig.attributeName];
                 }
+
+                return attributesA[sortConfig.attributeName].localeCompare(attributesB[sortConfig.attributeName]);
+            } else {
+                if (sortConfig.attributeName === 'durationInMillis') {
+                    return attributesB[sortConfig.attributeName] - attributesA[sortConfig.attributeName];
+                }
+
+                return attributesB[sortConfig.attributeName].localeCompare(attributesA[sortConfig.attributeName]);
             }
-
-            return result;
-        }));
-    }
-
-    function sortByAlbum() {
-        songs = new Map([...songs.entries()].sort((a, b) => {
-            let attributesA = a[1].data.attributes;
-            let attributesB = b[1].data.attributes;
-
-            let result = attributesA.albumName.localeCompare(attributesB.albumName);
-
-            if (result === 0) {
-                /* same album and same track number is not something we should expect */
-                return attributesA.trackNumber - attributesB.trackNumber;
-            }
-
-            return result;
         }));
     }
 
     function handleSort() {
-        if (!isSortAllowed) {
-            return;
-        }
+        let startTime = performance.now();
 
-        if (lastSortType) {
-            switch (lastSortType) {
-                case 'song':
-                    break;
-                case 'artist':
-                    sortByArtist();
-                    break;
-                case 'album':
-                    sortByAlbum();
-                    break;
-                case 'time':
-                    break;
-            }
+        sortSongs();
+        sortNodes();
 
-            sortNodes();
+        let endTime = performance.now();
 
-            console.log('[JS] [addSort] Sorted Stored Songs:', songs);
-        }
+        console.log(`[JS] [addSort] finished sort in ${endTime - startTime} ms`);
     }
 
     function setNodeOfSong(song) {
@@ -281,58 +244,38 @@ try {
     }
 
     async function sortQueue() {
-        let items = MusicKit.getInstance().queue.items;
+        if (sortConfig.order === 0) {
+            /* no changes to the queue required */
 
-        /*
-        let duplicatsToFix = items.filter(item => {
-            return item.type === 'library-songs';
-        });
-        */
+            return;
+        }
+
+        let items = MusicKit.getInstance().queue.items;
 
         items = items.filter(item => {
             return item.type === 'song';
         });
 
-        switch (lastSortType) {
-            case 'song':
-                break;
-            case 'artist':
-                items.sort(function (a, b) {
-                    return a.attributes.artistName.localeCompare(b.attributes.artistName);
-                });
-                break;
-            case 'album':
-                items.sort(function (a, b) {
-                    return a.attributes.albumName.localeCompare(b.attributes.albumName);
-                });
-                break;
-            case 'time':
-                break;
-        }
+        items.sort(function (a, b) {
+            /* todo :: better way to handle sort by numbers in a generic way */
+            if (sortConfig.order === 1) {
+                if (sortConfig.attributeName === 'durationInMillis') {
+                    return a.attributes[sortConfig.attributeName] - b.attributes[sortConfig.attributeName];
+                }
+
+                return a.attributes[sortConfig.attributeName].localeCompare(b.attributes[sortConfig.attributeName]);
+            } else {
+                if (sortConfig.attributeName === 'durationInMillis') {
+                    return b.attributes[sortConfig.attributeName] - a.attributes[sortConfig.attributeName];
+                }
+
+                return b.attributes[sortConfig.attributeName].localeCompare(a.attributes[sortConfig.attributeName]);
+            }
+        });
 
         /* the song where the play interaction was started on (= the start of the queue) */
         let current = MusicKit.getInstance().queue.items[MusicKit.getInstance().queue.position];
         items = items.splice(items.indexOf(current));
-
-        /*
-        for (let duplicate of duplicatsToFix) {
-            let id = duplicate.attributes.playParams.id;
-
-            let duplicateCount = duplicateIndex.get(id);
-
-            let findElement = function (item) {
-                return item.id === id;
-            };
-
-            let itemIndex = items.findIndex(findElement);
-
-            while (duplicateCount > 0) {
-                items.splice(itemIndex, 0, items[itemIndex]);
-
-                duplicateCount--;
-            }
-        }
-        */
 
         blockQueueSorting = true;
 
@@ -367,7 +310,7 @@ try {
             }
         }
 
-        /* this does not exist in playlists with less than 101 entries*/
+        /* this does not exist in playlists with less than 101 entries */
         if (infiniteScrollNode) {
             contentNode.appendChild(infiniteScrollNode);
         }
@@ -399,20 +342,19 @@ try {
     }
 
     function createObserver() {
-        return new MutationObserver(function (mutation_ist) {
-            /* when the observer catches something it means new elements have been loaded (this does not get called multiple times) */
+        return new MutationObserver(function (mutationRecords) {
+            /* process the elements that get loaded by the infinite scroll */
             processCache();
 
-            mutation_ist.forEach(function (mutation) {
-                mutation.addedNodes.forEach(function (added_node) {
-                    if (added_node.tagName === 'DIV') {
-                        fillSongNodes(added_node);
+            mutationRecords.forEach(function (mutationRecord) {
+                mutationRecord.addedNodes.forEach(function (addedNode) {
+                    if (addedNode.tagName === 'DIV') {
+                        fillSongNodes(addedNode);
                     }
                 });
             });
 
             handleSongsMissingNodes();
-
             handleSort();
         });
     }
