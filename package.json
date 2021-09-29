@@ -28,7 +28,7 @@
     "electron-preferences": "2.5.0",
     "electron-updater": "^4.3.9",
     "electron-window-state": "^5.0.3",
-    "git-clone": "^0.1.0",
+    "git-clone": "^0.2.0",
     "lastfmapi": "^0.1.1",
     "mpris-service": "^2.1.2",
     "node-fetch": "^3.0.0",
