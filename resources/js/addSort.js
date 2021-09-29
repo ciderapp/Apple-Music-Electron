@@ -73,7 +73,7 @@ try {
 
             /* click does not register if we add the event listener to the child divs themselves */
             contentNode.addEventListener('click', event => {
-                let currenSortType = sortConfig.type;
+                let currenSortType = sortConfig.attributeName;
 
                 if (checkClickArea('songs-list__header-col--song', event)) {
                     sortConfig.attributeName = 'name';
@@ -85,7 +85,7 @@ try {
                     sortConfig.attributeName = 'durationInMillis';
                 }
 
-                if (currenSortType === sortConfig.type) {
+                if (currenSortType === sortConfig.attributeName) {
                     sortConfig.order += 1;
 
                     if (sortConfig.order === 3) {
