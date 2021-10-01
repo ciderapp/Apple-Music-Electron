@@ -73,7 +73,7 @@ try {
 
             /* click does not register if we add the event listener to the child divs themselves */
             contentNode.addEventListener('click', event => {
-                let currenSortType = sortConfig.attributeName;
+                let previousAttributeName = sortConfig.attributeName;
 
                 if (checkClickArea('songs-list__header-col--song', event)) {
                     sortConfig.attributeName = 'name';
@@ -85,7 +85,7 @@ try {
                     sortConfig.attributeName = 'durationInMillis';
                 }
 
-                if (currenSortType === sortConfig.attributeName) {
+                if (previousAttributeName === sortConfig.attributeName) {
                     sortConfig.order += 1;
 
                     if (sortConfig.order === 3) {
@@ -192,6 +192,11 @@ try {
     }
 
     function handleSort() {
+        if (!sortConfig.attributeName) {
+            /* do nothing if no sort has been applied yet */
+            return;
+        }
+
         let startTime = performance.now();
 
         sortSongs();
@@ -355,7 +360,11 @@ try {
             });
 
             handleSongsMissingNodes();
-            handleSort();
+
+            /* there is no sorting required if the order is the original layout */
+            if (sortConfig.order !== 0) {
+                handleSort();
+            }
         });
     }
 } catch (e) {
