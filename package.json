@@ -29,7 +29,7 @@
     "electron-store": "^8.0.1",
     "electron-updater": "^4.3.9",
     "electron-window-state": "^5.0.3",
-    "git-clone": "^0.1.0",
+    "git-clone": "^0.2.0",
     "lastfmapi": "^0.1.1",
     "mpris-service": "^2.1.2",
     "node-fetch": "^3.0.0",
@@ -45,7 +45,7 @@
     "electron-builder": "^22.7.0",
     "electron-webpack": "^2.7.4",
     "musickit-typescript": "^1.2.4",
-    "webpack": "~5.54.0"
+    "webpack": "~5.55.1"
   },
   "build": {
     "electronVersion": "15.0.0",
