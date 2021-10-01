@@ -13,7 +13,7 @@ try {
                         <h1 class="typography-header-emphasized">General Settings</h1>
                     </div>
                 </div>
-                <ul class="settings-list">
+                <ul class="settings-list general">
                     <li class="app-prefs-dropdown">
                         <span class="typography-title-3-tall">Choose a language for the system to use</span>
                         <select class="form-dropdown-select list-element" name="language" id="language">
@@ -175,23 +175,84 @@ try {
                             <option value='zw'>Zimbabwe</option>
                         </select>
                         </label>
+                        <span class="app-prefs-help typography-title-3-tall">You will need to restart the application for language settings to apply.</span>
                     </li>
-                    <li class="app-prefs-togg">
+                    <li class="app-prefs-toggle">
                         <span class="typography-title-3-tall">Incognito Mode</span>
                         <label class="toggle-element list-element">
-                            <input type="checkbox" checked>
+                            <input id="incognitoMode" type="checkbox" checked>
                             <span class="slider"></span>
                         </label>
+                        <span class="app-prefs-help typography-title-3-tall">When enabled the application will hide all song details and information from all receivers. (Discord RPC, LastFM, Apple)</span>
                     </li>
                     <li class="app-prefs-dropdown">
                         <span class="typography-title-3-tall">Show notifications on Song Change</span>
-                        <select class="form-dropdown-select list-element" name="selector" id="cool-selector">
+                        <select class="form-dropdown-select list-element" name="playbackNotifications" id="playbackNotifications">
                             <option disabled>Select one</option>
                             <option value=true>Enabled</option>
                             <option value='minimized'>Enabled (Notifications when Minimized)</option>
                         </select>
                         </label>
+                        <span class="app-prefs-help typography-title-3-tall">Enabling this means you will get notifications when you change song. The minimized option forces notifications to only appear if the app is hidden / minimized.</span>
                     </li>
+                    <li class="app-prefs-toggle">
+                        <span class="typography-title-3-tall">Show song name as tray icon tooltip</span>
+                        <label class="toggle-element list-element">
+                            <input id="trayTooltipSongName" type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span class="app-prefs-help typography-title-3-tall">Enabling this option allows you to see the song name in the tooltip on the taskbar when the application is minimized to the tray.</span>
+                    </li>
+                    <li class="app-prefs-dropdown">
+                        <span class="typography-title-3-tall">Startup page</span>
+                        <select class="form-dropdown-select list-element" name="startupPage" id="startupPage">
+                            <option disabled>Select one</option>
+                            <option value='browse'>Browse</option>
+                            <option value='listen-now'>Listen now</option>
+                            <option value='radio'>Radio</option>
+                            <option value='library/recently-added'>Recently Added</option>
+                            <option value='library/albums'>Albums</option>
+                            <option value='library/songs'>Songs</option>
+                            <option value='library/made-for-you'>Made for You</option>
+                        </select>
+                        </label>
+                        <span class="app-prefs-help typography-title-3-tall">Select what page you wish to be placed on when you start the application.</span>
+                    </li>
+                    <li class="app-prefs-divider header-nav">
+                        <h2 class="shelf-title">Discord Rich Presence</h2>
+                        <span class="app-prefs-help typography-title-3-tall">These settings are for managing how you display your status on Discord. You must have 'Display current activity as status message.' turned on in your Discord settings for the song to be shown.</span>
+                    </li>
+                    <li class="app-prefs-dropdown">
+                        <span class="typography-title-3-tall">Display song data as activity on Discord</span>
+                        <select class="form-dropdown-select list-element" name="discordRPC" id="discordRPC">
+                            <option disabled>Select one</option>
+                            <option value='am-title'>Enabled (Display 'Apple Music' as title)</option>
+                            <option value='ame-title'>Enabled (Display 'Apple Music Electron' as title)</option>
+                        </select>
+                        </label>
+                    </li>
+                    <li class="app-prefs-toggle">
+                        <span class="typography-title-3-tall">Clear activity on pause</span>
+                        <label class="toggle-element list-element">
+                            <input id="discordClearActivityOnPause" type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span class="app-prefs-help typography-title-3-tall">With this disabled your status will show a Pause/Play icon whenever you are playing or have a song paused. When you enable this, it is replaced with a branch icon (Nightly / Stable) and a version title when you hover.</span>
+                    </li>
+                    <li class="app-prefs-divider header-nav">
+                        <h2 class="shelf-title">LastFM</h2>
+                        <span class="app-prefs-help typography-title-3-tall"><p style="size='8px'">For information regarding this section, read the wiki post found <a style="color: #227bff !important" onclick='window.open("https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM")'>here</a>.</p></span>
+                    </li>
+                </ul>
+            </div>
+            <div class="app-prefs-section visual">
+                <div class="app-prefs-title header-nav" style="height: 10px;">
+                    <div class="header-nav-content">
+                        <h1 class="typography-header-emphasized">Visual Settings</h1>
+                    </div>
+                </div>
+                <ul class="settings-list visual">
+                    
                 </ul>
             </div>
         </div>
