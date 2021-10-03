@@ -3,15 +3,19 @@
   <img src="https://img.shields.io/github/release/Apple-Music-Electron/Apple-Music-Electron.svg?style=flat" alt="GitHub Releases"/>
   <img src="https://img.shields.io/github/stars/Apple-Music-Electron/Apple-Music-Electron" alt="GitHub Stars"/>
   <img src="https://img.shields.io/github/forks/Apple-Music-Electron/Apple-Music-Electron" alt="GitHub Forks"/>
-  <img src="https://img.shields.io/github/downloads/Apple-Music-Electron/Apple-Music-Electron/total.svg?color=23B14D" alt="GitHub Downloads"/>
+  <img src="https://img.shields.io/github/downloads/Apple-Music-Electron/Apple-Music-Electron/total.svg" alt="GitHub Downloads"/>
   <img src="https://badges.depfu.com/badges/121fff86821ca5a2bf9741f80b8f0a68/overview.svg" alt="Depfu Dependencies"/>
   <img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee"/>
-  <br>
-  <a href="https://discord.gg/CezHYdXHEM"><img src="https://img.shields.io/discord/843954443845238864?label=Discord&color=5865F2&logo=discord&logoColor=white&style=flat" alt="Discord"/></a>
-  <a href="https://twitter.com/AppleElectron"><img src="https://img.shields.io/twitter/follow/AppleElectron?label=Twitter&color=%231DA1F2&logo=twitter&style=flat" alt="Twitter"/></a>
-  <a href="https://reddit.com/r/applemusicelectron"><img src="https://img.shields.io/reddit/subreddit-subscribers/applemusicelectron?label=Reddit&color=FF5700&logo=reddit&style=flat" alt="Reddit"/></a>
-  <br><br>
-  <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-win.yml/badge.svg" alt="Windows Build Status"/>
+  <a href="https://discord.gg/CezHYdXHEM">
+    <br><img src="https://img.shields.io/discord/843954443845238864?color=5865F2&label=Discord&logo=discord&logoColor=white"/>
+  </a>
+  <a href="https://twitter.com/AppleElectron">
+    <img src="https://img.shields.io/twitter/follow/AppleElectron?color=%231DA1F2&logo=twitter&style=plastic"/>
+  </a>
+  <a href="https://reddit.com/r/applemusicelectron">
+    <img src="https://img.shields.io/reddit/subreddit-subscribers/applemusicelectron?color=FF5700&logo=reddit&style=plastic"/>
+  </a>
+  <br><br><img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-win.yml/badge.svg" alt="Windows Build Status"/>
   <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-linux.yml/badge.svg" alt="Windows Build Status"/>
   <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-macos.yml/badge.svg" alt="Windows Build Status"/>
 </p>
@@ -34,6 +38,11 @@ Package Name | Source | Version | Maintainer
 
 ### Compiling and Configuration
 For more information surrounding configuration, compiling and other developer documentation, see the [wiki](https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki).
+
+### Socials
+![Subreddit subscribers](https://img.shields.io/reddit/subreddit-subscribers/applemusicelectron?color=FF5700&logo=reddit&style=plastic)
+[![Twitter](https://img.shields.io/twitter/follow/AppleElectron?color=%231DA1F2&logo=twitter&style=plastic)](https://twitter.com/AppleElectron)
+[![Discord](https://img.shields.io/discord/843954443845238864?color=%237289DA&label=chat&logo=discord&logoColor=white)](https://discord.gg/CezHYdXHEM)
 
 ### Credits
 ![Contributors](https://contrib.rocks/image?repo=Apple-Music-Electron/Apple-Music-Electron)
