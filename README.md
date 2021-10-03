@@ -8,11 +8,12 @@
   <img src="https://badges.depfu.com/badges/121fff86821ca5a2bf9741f80b8f0a68/overview.svg" alt="Depfu Dependencies"/>
   <img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee"/>
 </p>
+<p align="center">
+  <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-win.yml/badge.svg" alt="Windows Build Status"/>
+  <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-linux.yml/badge.svg" alt="Windows Build Status"/>
+  <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-macos.yml/badge.svg" alt="Windows Build Status"/>
+</p>
 
-#### Builds
-![Build Analysis - Windows](https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-win.yml/badge.svg)
-![Build Analysis - Linux](https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-linux.yml/badge.svg)
-![Build Analysis - macOS](https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-macos.yml/badge.svg)
 #### Links
 * [Wiki](https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki)
 * [Request Feature](https://github.com/Apple-Music-Electron/Apple-Music-Electron/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=%5BEnhancement%5D)
