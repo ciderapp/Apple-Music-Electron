@@ -87,7 +87,11 @@
     },
     "appx": {
       "applicationId": "applemusicelectron",
-      "publisher": "CN=cryptofyre"
+      "publisher": "CN=cryptofyre",
+      "displayName": "Apple Music Electron",
+      "identityName": "AppleMusicElectron",
+      "backgroundColor": "#CD001A",
+      "setBuildNumber": true
     },
     "mac": {
       "icon": "./resources/icons/icon.icns",
