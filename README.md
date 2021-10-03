@@ -41,8 +41,10 @@ For more information surrounding configuration, compiling and other developer do
 ![Contributors](https://contrib.rocks/image?repo=Apple-Music-Electron/Apple-Music-Electron)
 
 ### Disclaimer
-*I do not intend to compete in any way to Apple. Apple owns the right to the Apple logo, Apple Music, Apple Music Logo,
-and MusicKit. If anyone has any issues with the legal reasoning behind this application you can contact me
-at <a href="mailto:cryptofyre@protonmail.com">cryptofyre@protonmail.com</a>.*
+*This project is NOT affliated with Apple in anyway shape or form. The project is open source and free to use (with an Apple Music subscription)
+for any legal concerns contact me at <a href="mailto:cryptofyre@protonmail.com">cryptofyre@protonmail.com</a>.*
 
-<img width="300px" src="https://user-images.githubusercontent.com/33162551/124784795-df5d4c80-df0b-11eb-99a7-dc2b1cfb81bd.png" alt="MacStadium">
+<p align="center">
+  <br>
+  <img width="300px" src="https://user-images.githubusercontent.com/33162551/124784795-df5d4c80-df0b-11eb-99a7-dc2b1cfb81bd.png" alt="MacStadium">
+</p>
