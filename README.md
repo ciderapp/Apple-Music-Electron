@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://i.imgur.com/YvBZh0X.png" width="80%" alt="Banner"><br>
+  <img src="https://i.imgur.com/YvBZh0X.png" width="80%" alt="Banner"><br><br>
   <img src="https://img.shields.io/github/release/Apple-Music-Electron/Apple-Music-Electron.svg?style=flat" alt="GitHub Releases"/>
   <img src="https://img.shields.io/github/stars/Apple-Music-Electron/Apple-Music-Electron" alt="GitHub Stars"/>
   <img src="https://img.shields.io/github/forks/Apple-Music-Electron/Apple-Music-Electron" alt="GitHub Forks"/>
