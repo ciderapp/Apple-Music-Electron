@@ -1,75 +1,48 @@
+[![Banner](https://i.imgur.com/YvBZh0X.png)](https://applemusicelectron.com/)
+
 <p align="center">
-  <a href="https://applemusicelectron.com/"><img src="https://cryptofyre.org/AME/assets/img/banneropen.png" alt="Banner"></a>
+  <img src="https://img.shields.io/github/release/Apple-Music-Electron/Apple-Music-Electron.svg?style=flat" alt="GitHub Releases"/>
+  <img src="https://img.shields.io/github/stars/Apple-Music-Electron/Apple-Music-Electron" alt="GitHub Stars"/>
+  <img src="https://img.shields.io/github/forks/Apple-Music-Electron/Apple-Music-Electron" alt="GitHub Forks"/>
+  <img src="https://img.shields.io/github/downloads/Apple-Music-Electron/Apple-Music-Electron/total.svg" alt="GitHub Downloads"/>
+  <img src="https://badges.depfu.com/badges/121fff86821ca5a2bf9741f80b8f0a68/overview.svg" alt="Depfu Dependencies"/>
+  <img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee"/>
 </p>
 
-<p align="center"> 
-  <a href="https://github.com/Apple-Music-Electron/Apple-Music-Electron/releases/latest"><strong>View the releases! »</strong></a><br /><br />
-  <a href="https://twitter.com/AppleElectron">Follow Me</a>
-  <b> · </b>
-  <a href="https://github.com/Apple-Music-Electron/Apple-Music-Electron/issues/new?assignees=&labels=bug&template=bug_report.md&title=%5BBUG%5D+">Report Bug</a>
-  <b> · </b>
-  <a href="https://github.com/Apple-Music-Electron/Apple-Music-Electron/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=%5BEnhancement%5D">Request Feature</a>
-  <b> · </b>
-  <a href="https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki">Wiki</a>
-  <b> · </b>
-  <a href="https://discord.gg/CezHYdXHEM">Discord</a><br />
-</p>
+#### Builds
+![Build Analysis - Windows](https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-win.yml/badge.svg)
+![Build Analysis - Linux](https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-linux.yml/badge.svg)
+![Build Analysis - macOS](https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-macos.yml/badge.svg)
+#### Links
+* [Wiki](https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki)
+* [Request Feature](https://github.com/Apple-Music-Electron/Apple-Music-Electron/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=%5BEnhancement%5D)
+* [Report Bug](https://github.com/Apple-Music-Electron/Apple-Music-Electron/issues/new?assignees=&labels=bug&template=bug_report.md&title=%5BBUG%5D+)
+* [**View The Releases**](https://github.com/Apple-Music-Electron/Apple-Music-Electron/releases/latest)
 
-<p align="center"> 
-  <img src="https://img.shields.io/github/stars/Apple-Music-Electron/Apple-Music-Electron" alt="Stars">
-  <img src="https://img.shields.io/github/forks/Apple-Music-Electron/Apple-Music-Electron" alt="Forks">
-  <img src="https://img.shields.io/github/license/Apple-Music-Electron/Apple-Music-Electron" alt="MIT">
-  <img src="https://img.shields.io/github/downloads/Apple-Music-Electron/Apple-Music-Electron/total.svg?style=flat" alt="Downloads">
-  <img src="https://badges.depfu.com/badges/121fff86821ca5a2bf9741f80b8f0a68/overview.svg" alt="Dependencies">
-  <a href="https://github.com/Apple-Music-Electron/Apple-Music-Electron/releases/latest"><img src="https://img.shields.io/github/release/Apple-Music-Electron/Apple-Music-Electron.svg?style=flat" alt="Release"></a>
-  <span class="badge-buymeacoffee">
-    <a href="https://ko-fi.com/cryptofyre" title="Donate to this project using Buy Me A Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee donate button" /></a>
-  </span>
-  <br>
-  <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-win.yml/badge.svg" alt="Build Analysis - Windows">
-  <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-linux.yml/badge.svg" alt="Build Analysis - Linux">
-  <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-macos.yml/badge.svg" alt="Build Analysis - macOS">
-</p>
-<p align="center">
-<!-- <img src="https://img.shields.io/badge/aPpLe_oFfIcIaL_PrOdUcT-lightgrey.svg?style=flat&logo=apple&logoColor=black" alt="This most def a apple product, for sure"> -->
-</p>
-
-# Install Sources
+### Install Sources
 Here are all the places that you can install Apple-Music-Electron from:
 
 Package Name | Source | Version | Maintainer
 ---|---|---|---
 [Apple Music Electron](https://applemusicelectron.com/) | [GitHub](https://github.com/Apple-Music-Electron/Apple-Music-Electron/) | [![Build Version](https://img.shields.io/github/release/Apple-Music-Electron/Apple-Music-Electron?style=flat)](https://github.com/Apple-Music-Electron/Apple-Music-Electron/releases) | AME Team
-[`apple-music-electron-git`](https://aur.archlinux.org/packages/apple-music-electron-git) | [Arch User Repository](https://aur.archlinux.org/) | [![Build Version](https://img.shields.io/aur/version/apple-music-electron-git?style=flat)](https://aur.archlinux.org/cgit/aur.git/log/?h=apple-music-electron-git) | [coredev-uk](https://github.com/coredev-uk)
+[`apple-music-electron-git`](https://aur.archlinux.org/packages/apple-music-electron) | [Arch User Repository](https://aur.archlinux.org/) | [![Build Version](https://img.shields.io/aur/version/apple-music-electron?style=flat)](https://aur.archlinux.org/cgit/aur.git/log/?h=apple-music-electron) | [coredev-uk](https://github.com/coredev-uk)
 [Apple Music Electron](https://snapcraft.io/apple-music-electron) | [Snapcraft](https://snapcraft.io/) | [![Snapcraft](https://snapcraft.io/apple-music-electron/badge.svg)](https://snapcraft.io/apple-music-electron) | [cryptofyre](https://github.com/cryptofyre)
 [`cryptofyre.AppleMusicElectron`](https://winstall.app/apps/cryptofyre.AppleMusicElectron) | [Windows Package Manager](https://github.com/microsoft/winget-cli/) | ![Windows Package Manager](https://img.shields.io/badge/winget-v2.5.0-blue?style=flat&logo=windows) | [cryptofyre](https://github.com/cryptofyre)
-
-<p align="center">
-  <a href="https://github.com/Apple-Music-Electron/Apple-Music-Electron">
-    <img src="https://i.imgur.com/1HCPN6B.png" alt="Features">
-    <img src="https://i.imgur.com/67KefOp.png" alt="More Features">
-  </a>
-  <a href="https://github.com/Apple-Music-Electron/Apple-Music-Electron/releases/latest">
-    <img src="https://i.imgur.com/7N84yzy.png" alt="Installation"><br />
-  </a>
-</p>
 
 ### Compiling and Configuration
 For more information surrounding configuration, compiling and other developer documentation, see the [wiki](https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki).
 
+### Socials
+![Subreddit subscribers](https://img.shields.io/reddit/subreddit-subscribers/applemusicelectron?color=FF5700&logo=reddit&style=plastic)
+[![Twitter](https://img.shields.io/twitter/follow/AppleElectron?color=%231DA1F2&logo=twitter&style=plastic)](https://twitter.com/AppleElectron)
+[![Discord](https://img.shields.io/discord/843954443845238864?color=%237289DA&label=chat&logo=discord&logoColor=white)](https://discord.gg/CezHYdXHEM)
+
 ### Credits
-<center>
-<a href="https://github.com/Apple-Music-Electron/Apple-Music-Electron/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=Apple-Music-Electron/Apple-Music-Electron" />
-</a>
-</center>
+![Contributors](https://contrib.rocks/image?repo=Apple-Music-Electron/Apple-Music-Electron)
 
 ### Disclaimer
 *I do not intend to compete in any way to Apple. Apple owns the right to the Apple logo, Apple Music, Apple Music Logo,
 and MusicKit. If anyone has any issues with the legal reasoning behind this application you can contact me
 at <a href="mailto:cryptofyre@protonmail.com">cryptofyre@protonmail.com</a>.*
 
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/33162551/124784795-df5d4c80-df0b-11eb-99a7-dc2b1cfb81bd.png" alt="MacStadium">
-<p/>
+<img width="300px" src="https://user-images.githubusercontent.com/33162551/124784795-df5d4c80-df0b-11eb-99a7-dc2b1cfb81bd.png" alt="MacStadium">
