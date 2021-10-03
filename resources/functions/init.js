@@ -21,12 +21,15 @@ const init = {
             }
         }
 
+        let censoredConfig = app.preferences._preferences
+        censoredConfig.general.lastfmAuthKey = '*****'
+
         console.log('---------------------------------------------------------------------')
         console.log(`${app.getName()} has started.`);
         console.log(`Version: ${app.getVersion()} | Electron Version: ${process.versions.electron}`)
         console.log(`Type: ${os.type} | Release: ${os.release()} ${simplifiedOs ? `(${simplifiedOs}) ` : ''}| Platform: ${os.platform()}`)
         console.log(`User Data Path: '${app.getPath('userData')}'`)
-        console.log(`Current Configuration: ${JSON.stringify(app.preferences._preferences)}`)
+        console.log(`Current Configuration: ${JSON.stringify(censoredConfig)}`)
         console.log("---------------------------------------------------------------------")
         if (app.preferences.value('general.analyticsEnabled').includes(true) && app.isPackaged) console.log('[Sentry] Sentry logging is enabled, any errors you receive will be presented to the development team to fix for the next release.')
         console.verbose('[InitializeBase] Started.');
@@ -77,21 +80,6 @@ const init = {
         }
     },
 
-    SetApplicationTheme: function () {
-        // Initial Application Theme
-        if (app.preferences.value('advanced.forceApplicationMode') === 'dark') {
-            nativeTheme.themeSource = "dark"
-        } else if (app.preferences.value('advanced.forceApplicationMode') === 'light') {
-            nativeTheme.themeSource = "light"
-        } else {
-            if (nativeTheme.shouldUseDarkColors === true) {
-                app.preferences.value('advanced.forceApplicationMode', 'dark');
-            } else {
-                app.preferences.value('advanced.forceApplicationMode', 'light');
-            }
-        }
-    },
-
     ThemeInstallation: function () {
         function PermissionsCheck(folder, file) {
             console.verbose(`[PermissionsCheck] Running check on ${join(folder, file)}`)
@@ -138,7 +126,10 @@ const init = {
             })
         }
 
-        init.SetApplicationTheme()
+        // Set the default theme
+        if (app.preferences.value('advanced.forceApplicationMode')) {
+            nativeTheme.themeSource = app.preferences.value('advanced.forceApplicationMode')
+        }
     },
 
     AppReady: function () {
@@ -371,7 +362,7 @@ const init = {
             },
             "advanced": {
                 "forceApplicationRegion": "",
-                "forceApplicationMode": "",
+                "forceApplicationMode": "system",
                 "verboseLogging": [],
                 "alwaysOnTop": [],
                 "autoUpdaterBetaBuilds": [],
@@ -701,11 +692,11 @@ const init = {
                 'help': `Sets color of acrylic effect. Can be 'light', 'dark', 'appearance-based' or a hex color code with alpha ('#0f0f0f00').`
             },
             { // Transparency on Application Focus
-                'label': 'Disable Transparency when Unfocused (Acrylic)',
+                'label': 'Disable Transparency when Unfocused (Acrylic Only)',
                 'key': 'transparencyDisableBlur',
                 'type': 'checkbox',
                 'options': [{
-                    'label': `Enable transparency on focus`,
+                    'label': `Acrylic effect will be disabled when the window loses focus`,
                     'value': true
                 }],
                 'help': 'If enabled, acrylic effect will be disabled when the window loses focus, to mimic the behaviour of normal UWP apps.'
@@ -814,7 +805,7 @@ const init = {
                 'type': 'message'
             },
             { // Turning on forceApplicationRegion
-                'label': 'forceApplicationRegion',
+                'label': 'Force Application Region',
                 'key': 'forceApplicationRegion',
                 'type': 'dropdown',
                 'options': [
@@ -977,12 +968,14 @@ const init = {
                 'help': 'WARNING: This can cause unexpected side affects. This is not advised. On most cases, the webapp will force you to your Apple ID Region or Region based on IP.'
             },
             { // Forcing Application Mode / Theme
-                'label': 'forceApplicationMode',
+                'label': 'Force Application Theme',
                 'key': 'forceApplicationMode',
                 'type': 'dropdown',
                 'options': [
-                    {'label': 'Dark Mode', 'value': 'dark'},
-                    {'label': 'Light Mode', 'value': 'light'}
+                    {'label': 'System (default)', 'value': 'system'},
+                    {'label': 'Dark', 'value': 'dark'},
+                    {'label': 'Light', 'value': 'light'},
+
                 ],
                 'help': 'If you want the application to be in a mode that your system is not using by default.'
             },
@@ -1086,6 +1079,9 @@ const init = {
             for (var key in fields.visual) {
                 if (fields.visual[key].key === 'transparencyEffect') {
                     fields.visual[key].options.shift()
+                }
+                if (fields.visual[key].key === 'transparencyDisableBlur') {
+                    fields.visual[key] = {}
                 }
             }
         }
