@@ -7,7 +7,7 @@
   <img src="https://badges.depfu.com/badges/121fff86821ca5a2bf9741f80b8f0a68/overview.svg" alt="Depfu Dependencies"/>
   <img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee"/>
   <a href="https://discord.gg/CezHYdXHEM">
-    <br><img src="https://img.shields.io/discord/843954443845238864?color=5865F2&label=chat&logo=discord&logoColor=white"/>
+    <br><img src="https://img.shields.io/discord/843954443845238864?color=5865F2&label=Discord&logo=discord&logoColor=white"/>
   </a>
   <a href="https://twitter.com/AppleElectron">
     <img src="https://img.shields.io/twitter/follow/AppleElectron?color=%231DA1F2&logo=twitter&style=plastic"/>
