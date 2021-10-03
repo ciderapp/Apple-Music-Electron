@@ -2,9 +2,10 @@ const {app, BrowserWindow, nativeTheme} = require('electron')
 const {join} = require('path')
 const os = require('os')
 const fs = require('fs')
-const {Analytics} = require("./sentry");
-let win, acrylicWindow;
-Analytics.init()
+const windowStateKeeper = require('electron-window-state');
+const SentryInit = require("./init").SentryInit;
+SentryInit()
+let win;
 
 const BrowserWindowCreation = {
 
@@ -35,97 +36,82 @@ const BrowserWindowCreation = {
         }
     },
 
-    isVibrancySupported: function () {
-        // Windows 10 or greater
-        return (
-            process.platform === 'win32' &&
-            parseInt(os.release().split('.')[0]) >= 10
-        )
-    },
-
-    fetchAcrylicTheme: function () {
-        let acrylicTheme;
-        if (app.preferences.value('visual.theme') && app.preferences.value('visual.theme') !== "default") {
-            acrylicTheme = BrowserWindowCreation.fetchTransparencyColor(app.preferences.value('visual.theme'))
-        } else if (app.preferences.value('visual.theme') === "default") {
-            acrylicTheme = (nativeTheme.shouldUseDarkColors ? '#0f0f0f10' : '#ffffff10')
-        }
-
-        if (!acrylicTheme) { // If no transparency color can be found in the theme file or the theme isn't default
-            acrylicTheme = (nativeTheme.shouldUseDarkColors ? 'dark' : 'light')
-        }
-
-        return acrylicTheme
-    },
-
     fetchTransparencyOptions: function () {
-        let transparencyOptions, transparencyTheme;
-        console.log('[fetchTransparencyOptions] Fetching Transparency Options')
-
-        // Set the Transparency Options
-        if (app.preferences.value('visual.transparencyEffect') && app.preferences.value('visual.transparencyEffect') !== 'disabled' && process.platform !== "linux") {
-
-            // If a Custom Theme is being used
-            if (app.preferences.value('visual.transparencyTheme') === 'appearance-based') {
-                transparencyTheme = BrowserWindowCreation.fetchAcrylicTheme()
-            } else {
-                transparencyTheme = app.preferences.value('visual.transparencyTheme');
-            }
-
-            transparencyOptions = {
-                theme: transparencyTheme,
-                effect: app.preferences.value('visual.transparencyEffect'),
-                debug: app.preferences.value('advanced.devTools') !== '',
-            }
-
-            if (BrowserWindowCreation.isVibrancySupported()) {
-                if (app.preferences.value('visual.transparencyEffect') === 'acrylic') {
-                    transparencyOptions.disableOnBlur = !!app.preferences.value('visual.transparencyDisableBlur').includes(true);
-                }
-            } else {
-                if (app.preferences.value('visual.transparencyEffect') === 'acrylic') {
-                    app.preferences.value('visual.transparencyEffect', 'blur')
-                    transparencyOptions.effect = 'blur'
-                }
-            }
-
-            if (app.preferences.value('visual.transparencyMaximumRefreshRate')) {
-                transparencyOptions.useCustomWindowRefreshMethod = true
-                transparencyOptions.maximumRefreshRate = app.preferences.value('visual.transparencyMaximumRefreshRate')
-            }
-
-            app.transparency = true
-        } else {
-            app.transparency = false
+        function isVibrancySupported() {
+            // Windows 10 or greater
+            if (!(process.platform === 'win32' && parseInt(os.release().split('.')[0]) >= 10)) console.log('[fetchTransparencyOptions] electron-acrylic-window not supported on this operating system.');
+            return (process.platform === 'win32' && parseInt(os.release().split('.')[0]) >= 10)
         }
 
-        console.log(`[fetchTransparencyOptions] Returning: ${transparencyOptions}`)
+        if (!app.preferences.value('visual.transparencyEffect') || !isVibrancySupported()) {
+            app.transparency = (process.platform === 'darwin');
+            return (process.platform === 'darwin' ? 'fullscreen-ui' : false)
+        }
+
+        function fetchWindowTheme(visualTheme, windowEffect) {
+            if (visualTheme && visualTheme !== "default") { // Check if a theme is set and not default
+                return BrowserWindowCreation.fetchTransparencyColor(app.preferences.value('visual.theme')) // This fetches the hex code from the theme file
+            } else if ((!visualTheme || visualTheme === "default") && windowEffect === 'acrylic') {
+                return (nativeTheme.shouldUseDarkColors ? '#3C3C4307' : '#EBEBF507')
+            } else { // Fallback
+                return (nativeTheme.shouldUseDarkColors ? 'dark' : 'light')
+            }
+        }
+
+        console.log('[fetchTransparencyOptions] Fetching Transparency Options')
+        let transparencyOptions = {
+            theme: null,
+            effect: app.preferences.value('visual.transparencyEffect'),
+            debug: app.preferences.value('advanced.devTools') !== '',
+        }
+
+        //------------------------------------------
+        //  Disable on blur for acrylic
+        //------------------------------------------
+        if (app.preferences.value('visual.transparencyEffect') === 'acrylic') {
+            transparencyOptions.disableOnBlur = (!!app.preferences.value('visual.transparencyDisableBlur').includes(true));
+        }
+
+        //------------------------------------------
+        //  Set the transparency theme
+        //------------------------------------------
+        if (app.preferences.value('visual.transparencyTheme') === 'appearance-based') {
+            transparencyOptions.theme = fetchWindowTheme(app.preferences.value('visual.theme'), app.preferences.value('visual.transparencyEffect'))
+        } else {
+            transparencyOptions.theme = app.preferences.value('visual.transparencyTheme');
+        }
+
+        //------------------------------------------
+        //  Set the refresh rate
+        //------------------------------------------
+        if (app.preferences.value('visual.transparencyMaximumRefreshRate')) {
+            transparencyOptions.useCustomWindowRefreshMethod = true
+            transparencyOptions.maximumRefreshRate = app.preferences.value('visual.transparencyMaximumRefreshRate')
+        }
+
+        app.transparency = true
+        console.log(`[fetchTransparencyOptions] Returning: ${JSON.stringify(transparencyOptions)}`)
         return transparencyOptions
     },
 
-    CreateBrowserWindow: function() {
+    CreateBrowserWindow: function () {
         console.log('[CreateBrowserWindow] Initializing Browser Window Creation.')
-
-        let minWide, minHigh, Frame;
-        if (app.preferences.value('visual.emulateMacOS').includes('left') || app.preferences.value('visual.emulateMacOS').includes('right') || app.preferences.value('advanced.forceDisableWindowFrame').includes(true)) {
-            Frame = false;
-            minWide = app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300;
-            minHigh = app.preferences.value('visual.streamerMode').includes(true) ? 55 : 300;
-        } else {
-            Frame = true;
-            minWide = app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300;
-            minHigh = app.preferences.value('visual.streamerMode').includes(true) ? 115 : 300;
-        }
+        // Set default window sizes
+        let mainWindowState = windowStateKeeper({
+            defaultWidth: 1024,
+            defaultHeight: 600
+        });
 
         const options = {
             icon: join(__dirname, `../icons/icon.ico`),
-            width: 1024,
-            height: 600,
-            minWidth: minWide,
-            minHeight: minHigh,
-            frame: Frame,
+            width: mainWindowState.width,
+            height: mainWindowState.height,
+            x: mainWindowState.x,
+            y: mainWindowState.y,
+            minWidth: (app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300),
+            minHeight: ((app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') ? (app.preferences.value('visual.streamerMode').includes(true) ? 55 : 300) : (app.preferences.value('visual.streamerMode').includes(true) ? 115 : 300)),
+            frame: (process.platform !== 'win32' && !(app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right')),
             title: "Apple Music",
-            useContentSize: true,
             resizable: true,
             // Enables DRM
             webPreferences: {
@@ -141,21 +127,34 @@ const BrowserWindowCreation = {
             }
         };
 
+        if (process.platform === 'darwin' && !app.preferences.value('visual.frameType')) { // macOS Frame
+            options.titleBarStyle = 'hidden'
+            options.titleBarOverlay = true
+            options.frame = true
+            options.trafficLightPosition = {x: 20, y: 20}
+        }
+
         const transparencyOptions = BrowserWindowCreation.fetchTransparencyOptions()
 
         // BrowserWindow Creation
-        if (app.transparency) {
-            acrylicWindow = require("electron-acrylic-window");
-            console.log('[CreateBrowserWindow] Creating BrowserWindow with transparency. Transparency Options:')
-            console.log(transparencyOptions)
-            options.vibrancy = transparencyOptions
-            win = new acrylicWindow.BrowserWindow(options)
-        } else {
+        if (app.transparency && transparencyOptions) {
+            if (process.platform === "darwin") { // Create using electron's setVibrancy function
+                console.log('[CreateBrowserWindow] Creating BrowserWindow with electron vibrancy.')
+                options.vibrancy = transparencyOptions
+                options.transparent = true
+                win = new BrowserWindow(options)
+            } else { // Create using Acrylic Window
+                console.log(`[CreateBrowserWindow] Creating Acrylic BrowserWindow.`)
+                const acrylicWindow = require("electron-acrylic-window");
+                win = new acrylicWindow.BrowserWindow(options)
+                console.log(`[CreateBrowserWindow] Settings transparency options to ${JSON.stringify(transparencyOptions)}`)
+                win.setVibrancy(transparencyOptions)
+            }
+        } else { // With transparency disabled
             console.log('[CreateBrowserWindow] Creating BrowserWindow.')
             win = new BrowserWindow(options);
             win.setBackgroundColor = '#1f1f1f00'
         }
-
 
         // alwaysOnTop
         if (!app.preferences.value('advanced.alwaysOnTop').includes(true)) {
@@ -168,22 +167,8 @@ const BrowserWindowCreation = {
         if (app.preferences.value('advanced.devTools') !== 'built-in') win.setMenu(null); // Disables DevTools
         if (app.preferences.value('advanced.devTools') === 'detached') win.webContents.openDevTools({mode: 'detach'}); // Enables Detached DevTools
 
-        // Detect if the application has been opened with --minimized
-        if (app.commandLine.hasSwitch('minimized')) {
-            console.log("[Apple-Music-Electron] Application opened with --minimized");
-            if (typeof win.minimize === 'function') {
-                win.minimize();
-            }
-        }
-
-        // Detect if the application has been opened with --hidden
-        if (app.commandLine.hasSwitch('hidden')) {
-            console.log("[Apple-Music-Electron] Application opened with --hidden");
-            if (typeof win.hide === 'function') {
-                win.hide();
-                app.funcs.SetContextMenu()
-            }
-        }
+        // Register listeners on Window to track size and position of the Window.
+        mainWindowState.manage(win);
 
         return win
     },

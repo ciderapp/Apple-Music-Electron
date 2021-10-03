@@ -1,26 +1,85 @@
-const {app, Menu, nativeTheme, Notification} = require("electron");
+const { app, Menu, nativeTheme, Notification } = require("electron");
 const nativeImage = require('electron').nativeImage
-const {checkUpdates} = require("./update");
-const {join} = require("path");
-const {Analytics} = require("./sentry");
-Analytics.init()
+const { join } = require("path");
+const SentryInit = require("./init").SentryInit;
+SentryInit()
 
 const trayIconDir = (nativeTheme.shouldUseDarkColors ? join(__dirname, `../icons/media/light/`) : join(__dirname, `../icons/media/dark/`));
 const Images = {
-    next: nativeImage.createFromPath(join(trayIconDir, `next.png`)).resize({width: 32, height: 32}),
-    nextInactive: nativeImage.createFromPath(join(trayIconDir, `next-inactive.png`)).resize({width: 32, height: 32}),
+    next: nativeImage.createFromPath(join(trayIconDir, `next.png`)).resize({ width: 32, height: 32 }),
+    nextInactive: nativeImage.createFromPath(join(trayIconDir, `next-inactive.png`)).resize({ width: 32, height: 32 }),
 
-    pause: nativeImage.createFromPath(join(trayIconDir, `pause.png`)).resize({width: 32, height: 32}),
-    pauseInactive: nativeImage.createFromPath(join(trayIconDir, `pause-inactive.png`)).resize({width: 32, height: 32}),
+    pause: nativeImage.createFromPath(join(trayIconDir, `pause.png`)).resize({ width: 32, height: 32 }),
+    pauseInactive: nativeImage.createFromPath(join(trayIconDir, `pause-inactive.png`)).resize({ width: 32, height: 32 }),
 
-    play: nativeImage.createFromPath(join(trayIconDir, `play.png`)).resize({width: 32, height: 32}),
-    playInactive: nativeImage.createFromPath(join(trayIconDir, `play-inactive.png`)).resize({width: 32, height: 32}),
+    play: nativeImage.createFromPath(join(trayIconDir, `play.png`)).resize({ width: 32, height: 32 }),
+    playInactive: nativeImage.createFromPath(join(trayIconDir, `play-inactive.png`)).resize({ width: 32, height: 32 }),
 
-    previous: nativeImage.createFromPath(join(trayIconDir, `previous.png`)).resize({width: 32, height: 32}),
-    previousInactive: nativeImage.createFromPath(join(trayIconDir, `previous-inactive.png`)).resize({width: 32, height: 32}),
+    previous: nativeImage.createFromPath(join(trayIconDir, `previous.png`)).resize({ width: 32, height: 32 }),
+    previousInactive: nativeImage.createFromPath(join(trayIconDir, `previous-inactive.png`)).resize({ width: 32, height: 32 }),
 }
 
 module.exports = {
+
+    SetDockMenu: function () {
+        if (process.platform !== 'darwin') return;
+
+        app.dock.setMenu(Menu.buildFromTemplate([
+            {
+                label: 'Show Preferences',
+                click() { app.preferences.show() }
+            }
+        ]))
+
+    },
+
+    SetApplicationMenu: function () {
+        if (process.platform !== "darwin") return;
+        Menu.setApplicationMenu(Menu.buildFromTemplate([
+            {
+                label: app.getName(),
+                submenu: [
+                    {
+                        label: 'Show Preferences',
+                        accelerator: 'CommandOrControl+Alt+S',
+                        click() {
+                            app.preferences.show()
+                        }
+                    }
+                ]
+            },
+            {
+                label: 'Support',
+                submenu: [
+                    {
+                        label: 'Discord',
+                        click() {
+                            require("shell").openExternal("https://discord.gg/CezHYdXHEM")
+                        }
+                    },
+                    {
+                        label: 'GitHub Wiki',
+                        click() {
+                            require("shell").openExternal("https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki")
+                        }
+                    }
+                ]
+            },
+            {
+                label: 'Development',
+                submenu: [
+                    {
+                        label: 'Open Dev Tools',
+                        accelerator: 'CommandOrControl+Shift+I',
+                        click() {
+                            app.win.webContents.openDevTools()
+                        }
+                    }
+                ]
+
+            }
+        ]));
+    },
 
     SetContextMenu: function (visibility) {
 
@@ -29,7 +88,7 @@ module.exports = {
                 {
                     label: 'Check for Updates',
                     click: function () {
-                        checkUpdates(true)
+                        app.checkUpdates(true)
                     }
                 },
                 {
@@ -53,7 +112,7 @@ module.exports = {
                 {
                     label: 'Check for Updates',
                     click: function () {
-                        checkUpdates(true)
+                        app.checkUpdates(true)
                     }
                 },
                 {
@@ -101,13 +160,13 @@ module.exports = {
             // Paused
             case false:
             case "paused":
-                console.log('[setThumbarButtons] Thumbar has been set to false/paused.')
+                console.verbose('[setThumbarButtons] Thumbar has been set to false/paused.');
                 array = [
                     {
                         tooltip: 'Previous',
                         icon: Images.previous,
                         click() {
-                            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Previous song button clicked.') }
+                            console.verbose('[setThumbarButtons] Previous song button clicked.');
                             app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").catch((err) => console.error(err))
                         }
                     },
@@ -115,7 +174,7 @@ module.exports = {
                         tooltip: 'Play',
                         icon: Images.play,
                         click() {
-                            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Play song button clicked.') }
+                            console.verbose('[setThumbarButtons] Play song button clicked.');
 
                             app.win.webContents.executeJavaScript("MusicKit.getInstance().play()").catch((err) => console.error(err))
                         }
@@ -124,7 +183,7 @@ module.exports = {
                         tooltip: 'Next',
                         icon: Images.next,
                         click() {
-                            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Pause song button clicked.') }
+                            console.verbose('[setThumbarButtons] Pause song button clicked.');
                             app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").catch((err) => console.error(err))
                         }
                     }
@@ -134,7 +193,7 @@ module.exports = {
             // Inactive
             default:
             case "inactive":
-                if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Thumbar has been set to default/inactive.') }
+                console.verbose('[setThumbarButtons] Thumbar has been set to default/inactive.');
                 array = [
                     {
                         tooltip: 'Previous',
@@ -157,13 +216,13 @@ module.exports = {
             // Playing
             case true:
             case "playing":
-                if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Thumbar has been set to true/playing.') }
+                console.verbose('[setThumbarButtons] Thumbar has been set to true/playing.');
                 array = [
                     {
                         tooltip: 'Previous',
                         icon: Images.previous,
                         click() {
-                            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Previous song button clicked.') }
+                            console.verbose('[setThumbarButtons] Previous song button clicked.');
                             app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").catch((err) => console.error(err))
                         }
                     },
@@ -171,7 +230,7 @@ module.exports = {
                         tooltip: 'Pause',
                         icon: Images.pause,
                         click() {
-                            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Play song button clicked.') }
+                            console.verbose('[setThumbarButtons] Play song button clicked.');
                             app.win.webContents.executeJavaScript("MusicKit.getInstance().pause()").catch((err) => console.error(err))
                         }
                     },
@@ -179,23 +238,20 @@ module.exports = {
                         tooltip: 'Next',
                         icon: Images.next,
                         click() {
-                            if (app.preferences.value('advanced.verboseLogging').includes(true)) { console.log('[setThumbarButtons] Pause song button clicked.') }
+                            console.verbose('[setThumbarButtons] Pause song button clicked.');
                             app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").catch((err) => console.error(err))
                         }
                     }
                 ]
                 break;
         }
-
-        console.log((app.win.setThumbarButtons(array) ? '[setThumbarButtons] Thumbar Buttons Set.' : '[setThumbarButtons] Thumbar Buttons Failed to be set.'))
+        console.verbose('[setThumbarButtons] ' + (app.win.setThumbarButtons(array) ? 'Thumbar Buttons Set.' : 'Thumbar Buttons Failed to be set.'));
     },
 
     SetTrayTooltip: function (attributes) {
         if (!app.preferences.value('general.trayTooltipSongName').includes(true)) return;
 
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) {
-            console.log(`[UpdateTooltip] Updating Tooltip for ${attributes.name} to ${attributes.status}`)
-        }
+        console.verbose(`[UpdateTooltip] Updating Tooltip for ${attributes.name} to ${attributes.status}`)
 
         if (attributes.status === true) {
             app.tray.setToolTip(`Playing ${attributes.name} by ${attributes.artistName} on ${attributes.albumName}`);
@@ -211,9 +267,7 @@ module.exports = {
             return;
         }
 
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) {
-            console.log(`[CreateNotification] Notification Generating | Function Parameters: SongName: ${attributes.name} | Artist: ${attributes.artistName} | Album: ${attributes.albumName}`)
-        }
+        console.verbose(`[CreateNotification] Notification Generating | Function Parameters: SongName: ${attributes.name} | Artist: ${attributes.artistName} | Album: ${attributes.albumName}`)
 
         if (app.ipc.existingNotification) {
             console.log("[CreateNotification] Existing Notification Found - Removing. ")
@@ -226,25 +280,18 @@ module.exports = {
             body: `${attributes.artistName} - ${attributes.albumName}`,
             silent: true,
             icon: join(__dirname, '../icons/icon.png'),
-            actions: []
-        }
-
-        if (process.platform === "darwin") {
-            NOTIFICATION_OBJECT.actions = {
-                actions: [{
-                    type: 'button',
-                    text: 'Skip'
-                }]
-            }
+            actions: [{
+                type: 'button',
+                text: 'Skip'
+            }]
         }
 
         app.ipc.existingNotification = new Notification(NOTIFICATION_OBJECT)
         app.ipc.existingNotification.show()
 
-        if (process.platform === "darwin") {
-            app.ipc.existingNotification.addListener('action', (_event) => {
-                app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[CreateNotification] skipToNextItem"))
-            });
-        }
+
+        app.ipc.existingNotification.addListener('action', (_event) => {
+            app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[CreateNotification] skipToNextItem"))
+        });
     }
 }

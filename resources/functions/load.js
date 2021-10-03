@@ -1,9 +1,9 @@
 const {join} = require("path");
 const {app, ipcMain} = require("electron");
-const {Analytics} = require("./sentry");
+const SentryInit = require("./init").SentryInit;
+SentryInit()
 const {readFile, constants, chmodSync} = require("fs");
 const {LocaleInit} = require("./init");
-Analytics.init()
 
 module.exports = {
 
@@ -17,17 +17,16 @@ module.exports = {
         readFile(path, "utf-8", function (error, data) {
             if (error) {
                 console.error(`[LoadCSS] Error while injecting: '${path}' - ${error}`)
-                chmodSync(path, constants.S_IRUSR | constants.S_IWUSR);
+                try {
+                    chmodSync(path, constants.S_IRUSR | constants.S_IWUSR);
+                } catch(err) {
+                    console.error(`[LoadCSS] ${err}`)
+                }
+
             } else {
                 let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
                 app.win.webContents.insertCSS(formattedData).then(() => {
-                    if (app.preferences.value('advanced.verboseLogging').includes(true)) {
-                        if (theme) {
-                            console.log(`[LoadTheme] '${path}' successfully injected.`)
-                        } else {
-                            console.log(`[LoadCSS] '${path}' successfully injected.`)
-                        }
-                    }
+                    console.verbose(`[${theme ? 'LoadTheme' : 'LoadCSS'}] '${path}' successfully injected.`)
                 });
             }
         });
@@ -41,9 +40,7 @@ module.exports = {
                 try {
                     let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
                     app.win.webContents.executeJavaScript(formattedData).then(() => {
-                        if (app.preferences.value('advanced.verboseLogging').includes(true)) {
-                            console.log(`[LoadJSFile] '${path}' successfully injected.`)
-                        }
+                        console.verbose(`[LoadJSFile] '${path}' successfully injected.`)
                     });
                 } catch (err) {
                     console.error(`[LoadJSFile] Error while injecting: ${path} - Error: ${err}`)
@@ -68,6 +65,7 @@ module.exports = {
                 ipcMain.once('authorized', (e, args) => {
                     app.win.webContents.clearHistory()
                     console.log(`[LoadWebsite] User is authenticated. Loading '${app.preferences.value('general.startupPage')}'. (${args}).`)
+                    app.isAuthorized = true
                 })
             } else {
                 console.log(`[LoadWebsite] Loaded '${urlLanguage}'`)
@@ -82,6 +80,14 @@ module.exports = {
         /* Remove Apple Music Logo */
         if (app.preferences.value('visual.removeAppleLogo').includes(true)) {
             app.funcs.LoadJS('removeAppleLogo.js')
+            await app.win.webContents.insertCSS(`
+            @media only screen and (max-width: 483px) {
+                .web-navigation__nav-list {
+                        margin-top: 50px;
+                    }
+                }
+            }
+            `)
         }
 
         /* Remove Footer */
@@ -94,11 +100,18 @@ module.exports = {
             app.funcs.LoadJS('removeUpsell.js')
         }
 
-        /* Load the Emulation Files */
-        if (app.preferences.value('visual.emulateMacOS').includes('left')) {
-            app.funcs.LoadJS('emulateMacOS.js')
-        } else if (app.preferences.value('visual.emulateMacOS').includes('right')) {
-            app.funcs.LoadJS('emulateMacOS_rightAlign.js')
+        /* Load Window Frame */
+        if (app.preferences.value('visual.frameType') === 'mac') {
+            app.funcs.LoadJS('frame_macOS.js')
+        }
+        else if (app.preferences.value('visual.frameType') === 'mac-right') {
+            app.funcs.LoadJS('frame_Windows.js')
+        }
+        else if(process.platform === 'darwin' && !app.preferences.value('visual.frameType')) {
+            app.funcs.LoadJS('frame_macOS.js')
+        }
+        else if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
+            app.funcs.LoadJS('frame_Windows.js')
         }
 
         app.funcs.LoadJS('custom.js')
@@ -145,14 +158,11 @@ module.exports = {
         }
 
         /* Load Back Button */
-        if (app.preferences.value('visual.backButton').includes(true) && !backButtonChecks() && app.win.webContents.canGoBack()) {
+        if (!backButtonChecks() && app.win.webContents.canGoBack()) {
             app.funcs.LoadJS('backButton.js')
         } else { /* Remove it if user cannot go back */
             await app.win.webContents.executeJavaScript(`if (document.querySelector('#backButtonBar')) { document.getElementById('backButtonBar').remove() };`);
         }
-
-        /* Remove the Scrollbar */
-        if (app.preferences.value('advanced.removeScrollbars').includes(true)) app.win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
 
         /* Inject the MusicKitInterop file */
         await app.win.webContents.executeJavaScript('MusicKitInterop.init()');
@@ -162,15 +172,26 @@ module.exports = {
         // Inject the custom stylesheet
         app.funcs.LoadCSS('custom-stylesheet.css')
 
+        // Window Frames
+        if (app.preferences.value('visual.frameType') === 'mac') {
+            app.funcs.LoadCSS('frame_macOS_emulation.css')
+        }
+        else if (app.preferences.value('visual.frameType') === 'mac-right') {
+            app.funcs.LoadCSS('frame_macOS_emulation_right.css')
+        }
+        else if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
+            app.funcs.LoadCSS('frame_Windows.css')
+        }
+
         // Load the appropriate css file for transparency
         if (app.transparency) {
             app.funcs.LoadCSS('transparency.css')
         } else {
-            app.funcs.LoadCSS('transparencyDisabled.css')
+            app.win.webContents.insertCSS(`html body { background-color: var(--pageBG) !important; }`)
         }
 
         // Set the settings variables if needed
-        if (app.preferences.value('visual.emulateMacOS').includes('left') || app.preferences.value('visual.emulateMacOS').includes('right')) {
+        if (app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') {
             app.preferences.value('visual.removeUpsell', [true]);
             app.preferences.value('visual.removeAppleLogo', [true]);
         }
@@ -185,6 +206,11 @@ module.exports = {
             app.funcs.LoadCSS(`${app.preferences.value('visual.theme')}.css`, true)
         }
 
-
+        /* Remove the Scrollbar */
+        if (app.preferences.value('advanced.removeScrollbars').includes(true)) {
+            app.win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
+        } else {
+            app.funcs.LoadCSS('macosScrollbar.css')
+        }
     }
 }

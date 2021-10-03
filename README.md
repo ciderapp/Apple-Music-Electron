@@ -20,6 +20,7 @@
   <img src="https://img.shields.io/github/forks/Apple-Music-Electron/Apple-Music-Electron" alt="Forks">
   <img src="https://img.shields.io/github/license/Apple-Music-Electron/Apple-Music-Electron" alt="MIT">
   <img src="https://img.shields.io/github/downloads/Apple-Music-Electron/Apple-Music-Electron/total.svg?style=flat" alt="Downloads">
+  <img src="https://badges.depfu.com/badges/121fff86821ca5a2bf9741f80b8f0a68/overview.svg" alt="Dependencies">
   <a href="https://github.com/Apple-Music-Electron/Apple-Music-Electron/releases/latest"><img src="https://img.shields.io/github/release/Apple-Music-Electron/Apple-Music-Electron.svg?style=flat" alt="Release"></a>
   <span class="badge-buymeacoffee">
     <a href="https://ko-fi.com/cryptofyre" title="Donate to this project using Buy Me A Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee donate button" /></a>
@@ -30,7 +31,7 @@
   <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-macos.yml/badge.svg" alt="Build Analysis - macOS">
 </p>
 <p align="center">
-<img src="https://img.shields.io/badge/aPpLe_oFfIcIaL_PrOdUcT-lightgrey.svg?style=flat&logo=apple&logoColor=black" alt="This most def a apple product, for sure">
+<!-- <img src="https://img.shields.io/badge/aPpLe_oFfIcIaL_PrOdUcT-lightgrey.svg?style=flat&logo=apple&logoColor=black" alt="This most def a apple product, for sure"> -->
 </p>
 
 # Install Sources
@@ -41,7 +42,12 @@ Package Name | Source | Version | Maintainer
 [Apple Music Electron](https://applemusicelectron.com/) | [GitHub](https://github.com/Apple-Music-Electron/Apple-Music-Electron/) | [![Build Version](https://img.shields.io/github/release/Apple-Music-Electron/Apple-Music-Electron?style=flat)](https://github.com/Apple-Music-Electron/Apple-Music-Electron/releases) | AME Team
 [`apple-music-electron-git`](https://aur.archlinux.org/packages/apple-music-electron-git) | [Arch User Repository](https://aur.archlinux.org/) | [![Build Version](https://img.shields.io/aur/version/apple-music-electron-git?style=flat)](https://aur.archlinux.org/cgit/aur.git/log/?h=apple-music-electron-git) | [coredev-uk](https://github.com/coredev-uk)
 [Apple Music Electron](https://snapcraft.io/apple-music-electron) | [Snapcraft](https://snapcraft.io/) | [![Snapcraft](https://snapcraft.io/apple-music-electron/badge.svg)](https://snapcraft.io/apple-music-electron) | [cryptofyre](https://github.com/cryptofyre)
-`cryptofyre.AppleMusicElectron` | [Windows Package Manager](https://github.com/microsoft/winget-cli/) | ![Windows Package Manager](https://img.shields.io/badge/winget-v2.5.0-blue?style=flat&logo=microsoft) | [cryptofyre](https://github.com/cryptofyre)
+Package Name | Source | Version | Maintainer
+---|---|---|---
+[Apple Music Electron](https://applemusicelectron.com/) | [GitHub](https://github.com/Apple-Music-Electron/Apple-Music-Electron/) | [![Build Version](https://img.shields.io/github/release/Apple-Music-Electron/Apple-Music-Electron?style=flat)](https://github.com/Apple-Music-Electron/Apple-Music-Electron/releases) | AME Team
+[`apple-music-electron-git`](https://aur.archlinux.org/packages/apple-music-electron-git) | [Arch User Repository](https://aur.archlinux.org/) | [![Build Version](https://img.shields.io/aur/version/apple-music-electron-git?style=flat)](https://aur.archlinux.org/cgit/aur.git/log/?h=apple-music-electron-git) | [coredev-uk](https://github.com/coredev-uk)
+[Apple Music Electron](https://snapcraft.io/apple-music-electron) | [Snapcraft](https://snapcraft.io/) | [![Snapcraft](https://snapcraft.io/apple-music-electron/badge.svg)](https://snapcraft.io/apple-music-electron) | [cryptofyre](https://github.com/cryptofyre)
+[`cryptofyre.AppleMusicElectron`](https://winstall.app/apps/cryptofyre.AppleMusicElectron) | [Windows Package Manager](https://github.com/microsoft/winget-cli/) | ![Windows Package Manager](https://img.shields.io/badge/winget-v2.5.0-blue?style=flat&logo=windows) | [cryptofyre](https://github.com/cryptofyre)
 
 <p align="center">
   <a href="https://github.com/Apple-Music-Electron/Apple-Music-Electron">

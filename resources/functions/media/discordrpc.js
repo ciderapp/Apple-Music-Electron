@@ -1,59 +1,62 @@
 const {app} = require('electron')
-const {Client} = require('discord-rpc');
-const {Analytics} = require("../sentry");
-Analytics.init()
+const DiscordRPC = require('discord-rpc');
+const SentryInit = require("../init").SentryInit;
+SentryInit()
 
 module.exports = {
     connect: function (clientId) {
-        if (!app.preferences.value('general.discordRPC').includes(true)) return;
-        app.discord.client = new Client({
-            transport: "ipc",
-        });
+        if (!app.preferences.value('general.discordRPC')) return;
+
+        DiscordRPC.register(clientId) // Apparently needed for ask to join, join, spectate etc.
+        const client = new DiscordRPC.Client({ transport: "ipc" });
+        app.discord = Object.assign(client,{error: false, activityCache: null, isConnected: false});
 
         // Login to Discord
-        app.discord.client.login({clientId})
+        app.discord.login({ clientId })
             .then(() => {
-                console.log("[DiscordRPC][connect] Successfully Connected to Discord!");
-                app.discord.connected = true;
-
-                if (app.discord.activityCache) {
-                    app.discord.client.setActivity(app.discord.activityCache).catch((e) => console.error(e));
-                    app.discord.activityCache = null;
-                }
+                app.discord.isConnected = true;
             })
             .catch((e) => console.error(`[DiscordRPC][connect] ${e}`));
 
+        app.discord.on('ready', () => {
+            console.log(`[DiscordRPC][connect] Successfully Connected to Discord. Authed for user: ${client.user.username} (${client.user.id})`);
+
+            if (app.discord.activityCache) {
+                client.setActivity(app.discord.activityCache).catch((e) => console.error(e));
+                app.discord.activityCache = null;
+            }
+        })
+
         // Handles Errors
-        app.discord.client.on('error', err => {
-            console.error(`[DiscordRPC][connect] Error: ${err}`);
-            console.error(`[DiscordRPC][connect] Disconnecting from Discord.`)
+        app.discord.on('error', err => {
+            console.error(`[DiscordRPC] ${err}`);
             this.disconnect()
-            app.discord.client = false;
+            app.discord.isConnected = false;
         });
     },
 
     disconnect: function () {
-        if (!app.preferences.value('general.discordRPC').includes(true)) return;
+        if (!app.preferences.value('general.discordRPC') || !app.discord.isConnected) return;
         console.log('[DiscordRPC][disconnect] Disconnecting from discord.')
         try {
-            app.discord.client.destroy().catch((e) => console.error(`[DiscordRPC][disconnect] ${e}`));
+            app.discord.destroy().catch((e) => console.error(`[DiscordRPC][disconnect] ${e}`));
         } catch (err) {
             console.error(err)
         }
     },
 
     updateActivity: function (attributes) {
-        if (!app.preferences.value('general.discordRPC').includes(true)) return;
+        if (!app.preferences.value('general.discordRPC')) return;
 
-        if (!app.discord.connected) {
+        if (!app.discord.isConnected) {
             this.connect()
         }
 
-        if (!app.discord.connected) return;
+        if (!app.discord.isConnected) return;
 
-        if (app.preferences.value('advanced.verboseLogging').includes(true)) {
-            console.log('[DiscordRPC][updateActivity] Updating Discord Activity.')
-        }
+        console.verbose('[DiscordRPC][updateActivity] Updating Discord Activity.')
+
+        const listenURL = `https://applemusicelectron.com/p?id=${attributes.playParams.id}`
 
         let ActivityObject = {
             details: attributes.name,
@@ -62,35 +65,43 @@ module.exports = {
             endTimestamp: attributes.endTime,
             largeImageKey: 'logo',
             largeImageText: attributes.albumName,
-            smallImageKey: 'play',
+            smallImageKey: 'nightly',
             smallImageText: 'Playing',
             instance: true,
             buttons: [
-                {label: "Download", url: "https://github.com/Apple-Music-Electron/Apple-Music-Electron"},
+                {label: "Open in AME", url: listenURL},
             ]
         };
+        console.verbose(`[LinkHandler] Listening URL has been set to: ${listenURL}`);
 
+        // clear Activity Values
+        if (app.preferences.value('general.discordClearActivityOnPause').includes(true)) {
+            ActivityObject.largeImageKey = 'apple'
+            ActivityObject.largeImageText = attributes.albumName
+            ActivityObject.smallImageKey = app.getVersion().includes('nightly') ? 'nightlylarge' : 'logo'
+            ActivityObject.smallImageText = `Apple Music Electron v${app.getVersion()}`
+        } else {
+            if (app.getVersion().includes('nightly')) {
+                ActivityObject.largeImageKey = 'nightly'
+            }
+        }
+
+        // Check all the values work
         if (!((new Date(attributes.endTime)).getTime() > 0)) {
             delete ActivityObject.startTimestamp
             delete ActivityObject.endTimestamp
         }
-
         if (!attributes.artistName) {
             delete ActivityObject.state
         }
-
-        if (!attributes.albumName) {
+        if (!ActivityObject.largeImageText || ActivityObject.largeImageText.length < 2) {
             delete ActivityObject.largeImageText
         }
 
-        if (attributes.status) {
-            if (app.preferences.value('advanced.discordClearActivityOnPause').includes(true)) {
-                delete ActivityObject.smallImageKey
-                delete ActivityObject.smallImageText
-            }
-        } else {
-            if (app.preferences.value('advanced.discordClearActivityOnPause').includes(true)) {
-                app.discord.client.clearActivity().catch((e) => console.error(`[DiscordRPC][clearActivity] ${e}`));
+        // Clear if if needed
+        if (!attributes.status) {
+            if (app.preferences.value('general.discordClearActivityOnPause').includes(true)) {
+                app.discord.clearActivity().catch((e) => console.error(`[DiscordRPC][clearActivity] ${e}`));
                 ActivityObject = null
             } else {
                 delete ActivityObject.startTimestamp
@@ -102,7 +113,8 @@ module.exports = {
 
         if (ActivityObject) {
             try {
-                app.discord.client.setActivity(ActivityObject)
+                console.verbose(`[DiscordRPC][setActivity] Setting activity to ${JSON.stringify(ActivityObject)}`);
+                app.discord.setActivity(ActivityObject)
             } catch (err) {
                 console.error(`[DiscordRPC][setActivity] ${err}`)
             }

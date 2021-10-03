@@ -14,7 +14,7 @@ try {
 
     /* Get the Button Path */
     let buttonPath;
-    if (preferences.visual.emulateMacOS === 'right') {
+    if (preferences.visual.frameType === 'mac-right') {
         buttonPath = '//*[@id="web-main"]/div[4]/div/div[3]/div[3]/button'
     } else {
         buttonPath = '//*[@id="web-main"]/div[3]/div/div[3]/div[3]/button'
@@ -119,6 +119,10 @@ try {
     /* Audio Quality Selector */
     if (preferences.audio.audioQuality === 'auto') {
         if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to auto, dynamically setting bitrate between 64 and 256.");
+    } else if (preferences.audio.audioQuality === 'extreme') {
+        if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to extreme, forcing bitrate to 990..");
+        MusicKit.PlaybackBitrate = 990;
+        MusicKit.getInstance().bitrate = 990;
     } else if (preferences.audio.audioQuality === 'high') {
         if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to high, forcing bitrate to 256.");
         MusicKit.PlaybackBitrate = 256;
@@ -130,7 +134,7 @@ try {
     }
 
     /* Gapless Playback */
-    if (preferences.audio.gaplessEnabled === true) {
+    if (preferences.audio.gaplessEnabled.includes(true)) {
         if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] Gapless Playback enabled, songs will now preload before ending reducing load times.");
         MusicKit.getInstance()._bag.features["enable-gapless"] = true;
     }
@@ -138,6 +142,37 @@ try {
     /* Incognito Mode */
     if (preferences.general.incognitoMode.includes(true)) {
         MusicKit.privateEnabled = true
+    }
+
+    /* Contact Menu Creation (From PR #221 by @SiverDX) */
+    function simulateClick(element, clientX, clientY) {
+        let event = new MouseEvent('click', {
+            clientX: clientX,
+            clientY: clientY
+        });
+
+        element.dispatchEvent(event);
+    }
+
+    /* Check if the user is on the library song list or on playlist/album */
+    let clickRegion;
+    if (document.getElementsByClassName("songs-list-row").length === 0) {
+        clickRegion = document.getElementsByClassName("library-track")
+    } else {
+        clickRegion = document.getElementsByClassName("songs-list-row")
+    }
+
+    /* Loop through each row/song and add event listener */
+    for (let area of clickRegion) {
+        area.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+
+            let control = area.getElementsByClassName("context-menu__overflow ")[0];
+
+            if (control) {
+                simulateClick(control, event.clientX, event.clientY);
+            }
+        });
     }
 
 } catch (e) {

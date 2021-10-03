@@ -1,22 +1,15 @@
 require('v8-compile-cache');
-const {app, globalShortcut, session, Notification} = require('electron');
-
-// Version Fetch
-if (app.commandLine.hasSwitch('version') || app.commandLine.hasSwitch('v') ) {
-    const pjson = require('./package.json')
-    console.log(pjson.version)
-    app.exit()
-}
+const {app, globalShortcut, session} = require('electron');
 
 // Run all the Before App is Ready Stuff
+const {PreferencesInit} = require('./resources/functions/init');
+PreferencesInit()
+
+const {LaunchHandler} = require('./resources/functions/handler')
+LaunchHandler()
+
 const {LoggingInit} = require('./resources/functions/init')
 LoggingInit()
-
-const {SettingsMenuInit} = require("./resources/functions/settings/OpenMenu");
-SettingsMenuInit()
-console.log('[Apple-Music-Electron] Current Configuration:')
-console.log(app.preferences._preferences)
-console.log("---------------------------------------------------------------------")
 
 const {BaseInit} = require('./resources/functions/init')
 BaseInit()
@@ -24,26 +17,31 @@ BaseInit()
 const winFuncs = require('./resources/functions/win')
 const loadFuncs = require('./resources/functions/load')
 app.funcs = Object.assign(winFuncs, loadFuncs)
+app.funcs.discord = require('./resources/functions/media/discordrpc')
+app.funcs.lastfm = require('./resources/functions/media/lastfm')
+app.funcs.mpris = require('./resources/functions/media/mpris')
+
+const {VersionHandler} = require('./resources/functions/handler');
+VersionHandler()
 
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {
-    console.log('[CreateWindow] Started.')
+    console.verbose('[CreateWindow] Started.');
     const InstanceHandler = require('./resources/functions/handler').InstanceHandler
     const ExistingInstance = InstanceHandler()
     if (ExistingInstance === true) {
-        console.log('[Apple-Music-Electron] [InstanceHandler] Existing Instance Found. Terminating.')
+        console.warn('[Apple-Music-Electron][InstanceHandler] Existing Instance Found. Terminating.');
         app.quit()
         return;
     } else {
-        console.log('[Apple-Music-Electron] [InstanceHandler] No existing instances found.')
+        console.warn('[Apple-Music-Electron][InstanceHandler] No existing instances found.');
     }
 
     const {LinkHandler} = require('./resources/functions/handler')
-    LinkHandler() // Testing
+    LinkHandler() // Handles Protocols
 
     const {CreateBrowserWindow} = require('./resources/functions/CreateBrowserWindow')
     app.win = CreateBrowserWindow() // Create the Browser Window
-    app.win.show()
 
     app.funcs.LoadWebsite() // Load the Website
 
@@ -59,12 +57,14 @@ function CreateWindow() {
     const {MediaStateHandler} = require('./resources/functions/handler')
     MediaStateHandler() // IPCMain
 
-    app.funcs.SetThumbarButtons() // Set Inactive Thumbar Icons
+    if (process.platform === 'win32' && app.transparency) { app.win.show() } // Show the window so SetThumbarButtons doesnt break
+    app.funcs.SetThumbarButtons(null) // Set Inactive Thumbnail Toolbar Icons
 
-    if (app.preferences.value('general.incognitoMode').includes(true)) {
-        new Notification({title: "Incognito Mode", body: `Incognito Mode enabled. Song Info Receivers will be disabled.`}).show()
-        console.log("[Incognito] Incognito Mode enabled. Turning off Discord RPC, LastFM, MPRIS.")
-    }
+    app.funcs.SetDockMenu() // Set the Dock for macOS
+    app.funcs.SetApplicationMenu() // Set the Menu for OS's that use it (macOS)
+    
+    const {LaunchHandlerPostWin} = require('./resources/functions/handler')
+    LaunchHandlerPostWin()
 }
 
 // When its Ready call it all
@@ -77,8 +77,8 @@ app.on('ready', () => {
 
     const {AppReady} = require('./resources/functions/init')
     AppReady()
-    console.log("[Apple-Music-Electron] Application is Ready.")
-    console.log("[Apple-Music-Electron] Creating Window...")
+    
+    console.log('[Apple-Music-Electron] Application is Ready. Creating Window.')
     CreateWindow()
 });
 
@@ -89,16 +89,34 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     if (app.win === null) {
         CreateWindow()
+    } else {
+        app.win.show()
     }
 })
 
+app.on('widevine-ready', (version, lastVersion) => {
+    if (null !== lastVersion) {
+        console.log('[Apple-Music-Electron][Widevine] Widevine ' + version + ', upgraded from ' + lastVersion + ', is ready to be used!')
+    } else {
+        console.log('[Apple-Music-Electron][Widevine] Widevine ' + version + ' is ready to be used!')
+    }
+})
+
+app.on('widevine-update-pending', (currentVersion, pendingVersion) => {
+    console.log('[Apple-Music-Electron][Widevine] Widevine ' + currentVersion + ' is ready to be upgraded to ' + pendingVersion + '!')
+})
+
+app.on('widevine-error', (error) => {
+    console.log('[Apple-Music-Electron][Widevine] Widevine installation encountered an error: ' + error)
+    process.exit(1)
+})
+
 app.on('before-quit', function () {
-    app.mpris.clearActivity()
-    app.discord.rpc.disconnect()
-    console.log("[DiscordRPC] Disconnecting from Discord.")
-    console.log("---------------------------------------------------------------------")
-    console.log("Application Closing...")
-    console.log("---------------------------------------------------------------------")
+    app.funcs.mpris.clearActivity()
+    app.funcs.discord.disconnect()
+    console.log('---------------------------------------------------------------------')
+    console.log('Application Closing...')
+    console.log('---------------------------------------------------------------------')
     app.isQuiting = true;
     globalShortcut.unregisterAll()
 });
