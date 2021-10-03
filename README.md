@@ -15,7 +15,7 @@
   <a href="https://reddit.com/r/applemusicelectron">
     <img src="https://img.shields.io/reddit/subreddit-subscribers/applemusicelectron?color=FF5700&logo=reddit&style=plastic"/>
   </a>
-  <br><img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-win.yml/badge.svg" alt="Windows Build Status"/>
+  <br><br><img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-win.yml/badge.svg" alt="Windows Build Status"/>
   <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-linux.yml/badge.svg" alt="Windows Build Status"/>
   <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-macos.yml/badge.svg" alt="Windows Build Status"/>
 </p>
