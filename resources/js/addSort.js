@@ -2,7 +2,7 @@ try {
     /* comments
     # unsure
         only tested with playlists up to ~ 200 songs - what happens at like 500 or 1.000?
-            100 elements take ~ 30ms / 200 ~ 60 ms
+            sorting 100 elements take ~ 30ms / 200 ~ 60 ms
 
     # duplicates
         it is not possible to handle duplicates in playlists with the web version
@@ -15,6 +15,7 @@ try {
 
     # todo
     visual indicator for current sorted type (arrow in the header cells?)
+    look into sorting performance
     */
 
     /* check for https://music.apple.com/library/playlist/ (and the beta variant + language code) */
@@ -29,36 +30,35 @@ try {
 
     let processedCachedObjects = [];
 
-    /* todo :: check
-    could change it to 'types: []' - and sort by all types, priority being the newest addition
-    but that would mean you would have to deselect all other options if you just want to sort by artist again
-    => might be annoying
-
-    order: 0 = no sorting | 1 = ascending | 2 = descending
-    */
+    /* order: 0 = no sorting | 1 = ascending | 2 = descending */
     let sortConfig = {attributeName: null, order: 0};
+
+    let clickedColumn;
+    let upArrow = '˄';
+    let downArrow = '˅';
+    /* to remove previously set arrows */
+    let regExp = new RegExp(' (' + downArrow + '|' + upArrow + ')');
 
     /* for each song we store the original index - so we can later return to the original sorting (order === 0) */
     let songIndex = 0;
 
-    let blockQueueSorting = true;
+    let blockQueueSorting = false;
 
     let playlistID;
 
     if (playlistMatcher && playlistMatcher.length === 6 && playlistMatcher[4]) {
         contentNode = document.getElementsByClassName('songs-list')[0];
+        playlistID = playlistMatcher[4].toLowerCase();
 
         if (contentNode) {
             observer = createObserver();
             observer.observe(contentNode, {subtree: false, childList: true});
 
-            let nodes = contentNode.getElementsByClassName('songs-list-row');
-
-            for (let node of nodes) {
+            for (let node of contentNode.getElementsByClassName('songs-list-row')) {
                 fillSongNodes(node);
             }
 
-            playlistID = playlistMatcher[4].toLowerCase();
+            processCache();
 
             MusicKit.getInstance().addEventListener(MusicKit.Events.queueIsReady, async () => {
                 if (blockQueueSorting) {
@@ -69,20 +69,23 @@ try {
                 await sortQueue();
             });
 
-            processCache();
-
             /* click does not register if we add the event listener to the child divs themselves */
             contentNode.addEventListener('click', event => {
                 let previousAttributeName = sortConfig.attributeName;
+                let previousColumn = clickedColumn;
 
                 if (checkClickArea('songs-list__header-col--song', event)) {
                     sortConfig.attributeName = 'name';
+                    clickedColumn = 'songs-list__header-col--song';
                 } else if (checkClickArea('songs-list__header-col--artist', event)) {
                     sortConfig.attributeName = 'artistName';
+                    clickedColumn = 'songs-list__header-col--artist';
                 } else if (checkClickArea('songs-list__header-col--album', event)) {
                     sortConfig.attributeName = 'albumName';
+                    clickedColumn = 'songs-list__header-col--album';
                 } else if (checkClickArea('songs-list__header-col--time', event)) {
                     sortConfig.attributeName = 'durationInMillis';
+                    clickedColumn = 'songs-list__header-col--time';
                 }
 
                 if (previousAttributeName === sortConfig.attributeName) {
@@ -93,6 +96,21 @@ try {
                     }
                 } else {
                     sortConfig.order = 1;
+                }
+
+                /* fixme :: causes some weird line to appear; its a bootleg 'see how it looks like' thing anyway */
+                if (previousColumn) {
+                    /* remove previous arrow */
+                    let node = contentNode.getElementsByClassName(previousColumn)[0].getElementsByClassName('songs-list__header-col-label')[0];
+                    node.innerHTML = node.innerHTML.replace(regExp, '');
+                }
+
+                let node = contentNode.getElementsByClassName(clickedColumn)[0].getElementsByClassName('songs-list__header-col-label')[0];
+
+                if (sortConfig.order === 1) {
+                    node.innerHTML += ' ' + upArrow;
+                } else if (sortConfig.order === 2) {
+                    node.innerHTML += ' ' + downArrow;
                 }
 
                 handleSort();
@@ -165,48 +183,6 @@ try {
         setNodeOfSong(storedData);
     }
 
-    function sortSongs() {
-        songs = new Map([...songs.entries()].sort((a, b) => {
-            if (sortConfig.order === 0) {
-                return a[1].originalIndex - b[1].originalIndex;
-            }
-
-            let attributesA = a[1].data.attributes;
-            let attributesB = b[1].data.attributes;
-
-            /* todo :: better way to handle sort by numbers in a generic way */
-            if (sortConfig.order === 1) {
-                if (sortConfig.attributeName === 'durationInMillis') {
-                    return attributesA[sortConfig.attributeName] - attributesB[sortConfig.attributeName];
-                }
-
-                return attributesA[sortConfig.attributeName].localeCompare(attributesB[sortConfig.attributeName]);
-            } else {
-                if (sortConfig.attributeName === 'durationInMillis') {
-                    return attributesB[sortConfig.attributeName] - attributesA[sortConfig.attributeName];
-                }
-
-                return attributesB[sortConfig.attributeName].localeCompare(attributesA[sortConfig.attributeName]);
-            }
-        }));
-    }
-
-    function handleSort() {
-        if (!sortConfig.attributeName) {
-            /* do nothing if no sort has been applied yet */
-            return;
-        }
-
-        let startTime = performance.now();
-
-        sortSongs();
-        sortNodes();
-
-        let endTime = performance.now();
-
-        console.log(`[JS] [addSort] finished sort in ${endTime - startTime} ms`);
-    }
-
     function setNodeOfSong(song) {
         let attributes = song.data.attributes;
         let id = attributes.name + attributes.artistName + attributes.albumName;
@@ -248,34 +224,62 @@ try {
         songNodes.set(id, node);
     }
 
+    function handleSort() {
+        let startTime = performance.now();
+
+        sortSongs();
+        sortNodes();
+
+        let endTime = performance.now();
+
+        console.log(`[JS] [addSort] finished sort in ${endTime - startTime} ms`);
+    }
+
+    function compare(attributesA, attributesB) {
+        let result;
+
+        if (sortConfig.attributeName === 'durationInMillis') {
+            result = attributesA[sortConfig.attributeName] - attributesB[sortConfig.attributeName];
+        } else {
+            result = attributesA[sortConfig.attributeName].localeCompare(attributesB[sortConfig.attributeName]);
+        }
+
+        if (sortConfig.order === 2) {
+            /* descending order - negate the comparison */
+            result = -result;
+        }
+
+        return result;
+    }
+
+    function sortSongs() {
+        songs = new Map([...songs.entries()].sort((a, b) => {
+            if (sortConfig.order === 0) {
+                return a[1].originalIndex - b[1].originalIndex;
+            }
+
+            let attributesA = a[1].data.attributes;
+            let attributesB = b[1].data.attributes;
+
+            return compare(attributesA, attributesB);
+        }));
+    }
+
     async function sortQueue() {
         if (sortConfig.order === 0) {
             /* no changes to the queue required */
-
             return;
         }
 
         let items = MusicKit.getInstance().queue.items;
 
+        /* removes potential duplicates (type 'library-song') (those are missing 'attributes') */
         items = items.filter(item => {
             return item.type === 'song';
         });
 
         items.sort(function (a, b) {
-            /* todo :: better way to handle sort by numbers in a generic way */
-            if (sortConfig.order === 1) {
-                if (sortConfig.attributeName === 'durationInMillis') {
-                    return a.attributes[sortConfig.attributeName] - b.attributes[sortConfig.attributeName];
-                }
-
-                return a.attributes[sortConfig.attributeName].localeCompare(b.attributes[sortConfig.attributeName]);
-            } else {
-                if (sortConfig.attributeName === 'durationInMillis') {
-                    return b.attributes[sortConfig.attributeName] - a.attributes[sortConfig.attributeName];
-                }
-
-                return b.attributes[sortConfig.attributeName].localeCompare(a.attributes[sortConfig.attributeName]);
-            }
+            return compare(a.attributes, b.attributes);
         });
 
         /* the song where the play interaction was started on (= the start of the queue) */
@@ -286,12 +290,12 @@ try {
 
         await MusicKit.getInstance().setQueue({items: items});
 
+        blockQueueSorting = false;
+
         /* simply calling play() seems to be too early here (song won't start) (< 300 ms does not seem to work) */
         setTimeout(async function () {
             await MusicKit.getInstance().play();
         }, 300);
-
-        blockQueueSorting = false;
     }
 
     function sortNodes() {
