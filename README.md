@@ -9,7 +9,7 @@
   <br>
   <a target="_blank" href="https://discord.gg/CezHYdXHEM"><img src="https://img.shields.io/discord/843954443845238864?label=Discord&color=5865F2&logo=discord&logoColor=white&style=flat" alt="Discord"/></a>
   <a target="_blank" href="https://twitter.com/AppleElectron"><img src="https://img.shields.io/twitter/follow/AppleElectron?label=Twitter&color=%231DA1F2&logo=twitter&style=flat" alt="Twitter"/></a>
-  <a target="_blank" href="https://reddit.com/r/applemusicelectron"><img src="https://img.shields.io/reddit/subreddit-subscribers/applemusicelectron?label=Reddit&color=FF5700&logo=reddit&style=flat" alt="Reddit"/></a>
+  <a target="_blank" href="https://reddit.com/r/applemusicelectron"><img src="https://img.shields.io/reddit/subreddit-subscribers/applemusicelectron?label=Reddit&color=FF5700&logo=reddit&logoColor=white&style=flat" alt="Reddit"/></a>
   <br><br>
   <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-win.yml/badge.svg" alt="Windows Build Status"/>
   <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-linux.yml/badge.svg" alt="Windows Build Status"/>
