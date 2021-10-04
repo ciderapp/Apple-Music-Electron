@@ -21,8 +21,8 @@ const init = {
             }
         }
 
-        let censoredConfig = app.preferences._preferences
-        censoredConfig.general.lastfmAuthKey = '*****'
+        const censoredConfig = JSON.parse(JSON.stringify(app.preferences._preferences))
+        censoredConfig.general.lastfmAuthKey = '(hidden)'
 
         console.log('---------------------------------------------------------------------')
         console.log(`${app.getName()} has started.`);

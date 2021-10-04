@@ -3,7 +3,7 @@ const SentryInit = require("./init").SentryInit;
 SentryInit()
 const {LoadOneTimeFiles, LoadFiles} = require('./load');
 const {join, resolve} = require('path');
-const fs = require('fs');
+const {existsSync, truncate} = require('fs');
 const rimraf = require('rimraf');
 
 
@@ -74,15 +74,19 @@ const handler = {
     VersionHandler: function () {
         if (!app.preferences.value('storedVersion') || app.preferences.value('storedVersion') === undefined || app.preferences.value('storedVersion') !== app.getVersion()) {
 
-            if (fs.existsSync(resolve(app.getPath('userData'), 'Cache'))) {
+            if (app.preferences.value('storedVersion')) {
+                console.log(`[VersionHandler] Application updated from stored value ${app.preferences.value('storedVersion')} to ${app.getVersion()}`)
+            }
+
+            if (existsSync(resolve(app.getPath('userData'), 'Cache'))) {
                 rimraf(resolve(app.getPath('userData'), 'Cache'), [], () => {
-                    console.warn(`[VersionHandler] Outdated / No Version Store Found. Clearing Application Cache. ('${resolve(app.getPath('userData'), 'Cache')}')`)
+                    console.log(`[VersionHandler] Outdated / No Version Store Found. Clearing Application Cache. ('${resolve(app.getPath('userData'), 'Cache')}')`)
                 })
             }
 
-            if (fs.existsSync(resolve(app.getPath('userData'), 'preferences.json'))) {
-                fs.truncate(resolve(app.getPath('userData'), 'preferences.json'), 0, function() {
-                    console.warn(`[VersionHandler] Outdated / No Version Store Found. Clearing Preferences File. ('${resolve(app.getPath('userData'), 'preferences.json')}')`)
+            if (existsSync(resolve(app.getPath('userData'), 'preferences.json'))) {
+                truncate(resolve(app.getPath('userData'), 'preferences.json'), 0, function() {
+                    console.log(`[VersionHandler] Outdated / No Version Store Found. Clearing Preferences File. ('${resolve(app.getPath('userData'), 'preferences.json')}')`)
                 });
             }
         }
