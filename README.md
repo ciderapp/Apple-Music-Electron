@@ -48,4 +48,6 @@ for any legal concerns contact me at <a href="mailto:cryptofyre@protonmail.com">
   <img width="300px" src="https://user-images.githubusercontent.com/33162551/124784795-df5d4c80-df0b-11eb-99a7-dc2b1cfb81bd.png" alt="MacStadium">
 </p>
 
-<a name="ComingSoon">1</a>: Coming Soon
+<p style="font-size: 8px;">
+  <a name="ComingSoon">1</a>: Coming Soon
+</p>
