@@ -25,6 +25,20 @@
 ### Install Sources
 Here are all the places that you can install Apple-Music-Electron from:
 
+
+
+[![Get it from Github](https://img.shields.io/badge/Get_It_From_GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/apple-music-electron/apple-music-electron/releases/latest)
+[![Get it from the Microsoft Store](https://img.shields.io/badge/Get_It_From_The_Microsoft_Store-100000?style=for-the-badge&logo=microsoft)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+[![Get it from Windows Package Manager](https://img.shields.io/badge/Get_It_via_Winget-100000?style=for-the-badge&logo=microsoft)](https://winstall.app/apps/cryptofyre.AppleMusicElectron)
+[![Get it from the Snap Store](https://img.shields.io/badge/Get_It_From_The_Snap_Store-100000?style=for-the-badge&logo=snapcraft)](https://snapcraft.io/apple-music-electron)
+[![Get it from AUR](https://img.shields.io/badge/Get_It_From_AUR-100000?style=for-the-badge&logo=archlinux)](https://aur.archlinux.org/cgit/aur.git/log/?h=apple-music-electron)
+
+
+
+
+
+
+
 Package Name | Source | Version | Maintainer
 ---|---|---|---
 [Apple Music Electron](https://applemusicelectron.com/) | [GitHub](https://github.com/Apple-Music-Electron/Apple-Music-Electron/) | [![Build Version](https://img.shields.io/github/release/Apple-Music-Electron/Apple-Music-Electron?style=flat)](https://github.com/Apple-Music-Electron/Apple-Music-Electron/releases) | AME Team
