@@ -1,5 +1,9 @@
 # Contributor Covenant Code of Conduct
 
+Translations for this Code of Conduct and the original ContributorCovenant organisation can be found below. 
+* [Translations](https://www.contributor-covenant.org/translations)
+* [ContributorCovenant](https://github.com/EthicalSource/contributor_covenant0)
+
 ## Our Pledge
 
 We as members, contributors, and leaders pledge to make participation in our
