@@ -31,7 +31,7 @@
 
 [![Get it from the Snap Store](https://img.shields.io/badge/Get_It_From_The_Snap_Store-100000?style=for-the-badge&logo=snapcraft)](https://snapcraft.io/apple-music-electron)
 
-[![Get it from the AUR](https://img.shields.io/badge/Get_It_From_AUR-100000?style=for-the-badge&logo=archlinux)](https://aur.archlinux.org/packages/apple-music-electron)
+[![Get it from the AUR](https://img.shields.io/badge/Get_It_From_The_AUR-100000?style=for-the-badge&logo=archlinux)](https://aur.archlinux.org/packages/apple-music-electron)
 
 ### Compiling and Configuration
 For more information surrounding configuration, compiling and other developer documentation, see the [wiki](https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki).
