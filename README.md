@@ -28,9 +28,13 @@ Here are all the places that you can install Apple-Music-Electron from:
 
 
 [![Get it from Github](https://img.shields.io/badge/Get_It_From_GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/apple-music-electron/apple-music-electron/releases/latest)
-[![Get it from the Microsoft Store](https://img.shields.io/badge/Get_It_From_The_Microsoft_Store-100000?style=for-the-badge&logo=microsoft)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+
+[![Get it from the Microsoft Store](https://img.shields.io/badge/Get_It_From_The_Microsoft_Store-100000?style=for-the-badge&logo=microsoft)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)<sup>[1](#comingsoon)</sup>
+
 [![Get it from Windows Package Manager](https://img.shields.io/badge/Get_It_via_Winget-100000?style=for-the-badge&logo=microsoft)](https://winstall.app/apps/cryptofyre.AppleMusicElectron)
+
 [![Get it from the Snap Store](https://img.shields.io/badge/Get_It_From_The_Snap_Store-100000?style=for-the-badge&logo=snapcraft)](https://snapcraft.io/apple-music-electron)
+
 [![Get it from AUR](https://img.shields.io/badge/Get_It_From_AUR-100000?style=for-the-badge&logo=archlinux)](https://aur.archlinux.org/cgit/aur.git/log/?h=apple-music-electron)
 
 
@@ -46,6 +50,10 @@ Package Name | Source | Version | Maintainer
 [Apple Music Electron](https://snapcraft.io/apple-music-electron) | [Snapcraft](https://snapcraft.io/) | [![Snapcraft](https://snapcraft.io/apple-music-electron/badge.svg)](https://snapcraft.io/apple-music-electron) | [cryptofyre](https://github.com/cryptofyre)
 [`cryptofyre.AppleMusicElectron`](https://winstall.app/apps/cryptofyre.AppleMusicElectron) | [Windows Package Manager](https://github.com/microsoft/winget-cli/) | ![Windows Package Manager](https://img.shields.io/badge/winget-v2.5.0-blue?style=flat&logo=microsoft) | [cryptofyre](https://github.com/cryptofyre)
 
+
+
+
+<a name="comingsoon">1</a>: Coming Soon
 ### Compiling and Configuration
 For more information surrounding configuration, compiling and other developer documentation, see the [wiki](https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki).
 
