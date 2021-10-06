@@ -28,7 +28,7 @@ try {
             xhttp.send();
         },
         updateMeta() {
-            // Exposes artwork and other metadata to CSS for themes
+            /** Exposes artwork and other metadata to CSS for themes */ 
             var musicKit = MusicKit.getInstance();
             var artwork = musicKit.nowPlayingItem["attributes"]["artwork"]["url"];
             this._styleSheets.Meta.replaceSync(`
