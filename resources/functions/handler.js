@@ -374,6 +374,10 @@ const handler = {
         let DialogMessage, cachedPreferences = app.preferences._preferences;
 
         app.preferences.on('save', (updatedPreferences) => {
+            if (cachedPreferences.visual.theme !== updatedPreferences.visual.theme) {
+                app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${updatedPreferences.visual.theme}");`)
+            }
+
             if (!DialogMessage) {
                 DialogMessage = dialog.showMessageBox(app.win, {
                     title: "Restart Required",
