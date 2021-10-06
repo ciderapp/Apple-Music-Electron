@@ -376,26 +376,40 @@ const handler = {
         const {fetchTransparencyOptions} = require('./CreateBrowserWindow')
 
         app.preferences.on('save', (updatedPreferences) => {
+
+            // Handles Theme Changes
             if (cachedPreferences.visual.theme !== updatedPreferences.visual.theme) {
                 app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`)
                 const updatedVibrancy = fetchTransparencyOptions()
                 if (app.transparency && updatedVibrancy && process.platform !== 'darwin') app.win.setVibrancy(updatedVibrancy);
             }
-
-            if (!DialogMessage) {
-                DialogMessage = dialog.showMessageBox(app.win, {
-                    title: "Restart Required",
-                    message: "A restart is required in order for the settings you have changed to apply.",
-                    type: "warning",
-                    buttons: ['Relaunch Now', 'Relaunch Later']
-                }).then(({
-                    response
-                }) => {
-                    if (response === 0) {
-                        app.relaunch()
-                        app.quit()
-                    }
-                })
+            else if (cachedPreferences.visual.transparencyEffect !== updatedPreferences.visual.transparencyEffect) { // Handles Transparency Changes
+                const updatedVibrancy = fetchTransparencyOptions()
+                console.log(app.transparency)
+                if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
+                    app.win.setVibrancy(updatedVibrancy);
+                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(true);`)
+                } else {
+                    app.win.setVibrancy();
+                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(false);`)
+                }
+            }
+            else {
+                if (!DialogMessage) {
+                    DialogMessage = dialog.showMessageBox(app.win, {
+                        title: "Restart Required",
+                        message: "A restart is required in order for the settings you have changed to apply.",
+                        type: "warning",
+                        buttons: ['Relaunch Now', 'Relaunch Later']
+                    }).then(({
+                                 response
+                             }) => {
+                        if (response === 0) {
+                            app.relaunch()
+                            app.quit()
+                        }
+                    })
+                }
             }
 
             cachedPreferences = updatedPreferences

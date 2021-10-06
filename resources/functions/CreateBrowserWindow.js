@@ -3,6 +3,7 @@ const {join} = require('path')
 const os = require('os')
 const fs = require('fs')
 const windowStateKeeper = require('electron-window-state');
+const acrylicWindow = require("electron-acrylic-window");
 const SentryInit = require("./init").SentryInit;
 SentryInit()
 let win;
@@ -127,33 +128,29 @@ const BrowserWindowCreation = {
             }
         };
 
+        // Fetch the transparency options
+        const transparencyOptions = BrowserWindowCreation.fetchTransparencyOptions()
+
         if (process.platform === 'darwin' && !app.preferences.value('visual.frameType')) { // macOS Frame
             options.titleBarStyle = 'hidden'
             options.titleBarOverlay = true
             options.frame = true
             options.trafficLightPosition = {x: 20, y: 20}
+            options.transparent = (!!(app.transparency && transparencyOptions))
         }
 
-        const transparencyOptions = BrowserWindowCreation.fetchTransparencyOptions()
+        // Create the Browser Window
+        console.log('[CreateBrowserWindow] Creating BrowserWindow.')
+        if (process.platform === "darwin") {
+            win = new BrowserWindow(options)
+        } else {
+            win = new acrylicWindow.BrowserWindow(options)
+        }
 
-        // BrowserWindow Creation
+        // Set the transparency
         if (app.transparency && transparencyOptions) {
-            if (process.platform === "darwin") { // Create using electron's setVibrancy function
-                console.log('[CreateBrowserWindow] Creating BrowserWindow with electron vibrancy.')
-                options.vibrancy = transparencyOptions
-                options.transparent = true
-                win = new BrowserWindow(options)
-            } else { // Create using Acrylic Window
-                console.log(`[CreateBrowserWindow] Creating Acrylic BrowserWindow.`)
-                const acrylicWindow = require("electron-acrylic-window");
-                win = new acrylicWindow.BrowserWindow(options)
-                console.log(`[CreateBrowserWindow] Settings transparency options to ${JSON.stringify(transparencyOptions)}`)
-                win.setVibrancy(transparencyOptions)
-            }
-        } else { // With transparency disabled
-            console.log('[CreateBrowserWindow] Creating BrowserWindow.')
-            win = new BrowserWindow(options);
-            win.setBackgroundColor = '#1f1f1f00'
+            console.log('[CreateBrowserWindow] Setting Virbancy')
+            win.setVibrancy(transparencyOptions)
         }
 
         // alwaysOnTop
