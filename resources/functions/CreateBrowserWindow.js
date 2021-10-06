@@ -98,7 +98,7 @@ const BrowserWindowCreation = {
     CreateBrowserWindow: function () {
         console.log('[CreateBrowserWindow] Initializing Browser Window Creation.')
         // Set default window sizes
-        let mainWindowState = windowStateKeeper({
+        const mainWindowState = windowStateKeeper({
             defaultWidth: 1024,
             defaultHeight: 600
         });

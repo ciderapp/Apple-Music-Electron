@@ -2,7 +2,6 @@ const {
     app,
     Menu,
     ipcMain,
-    remote,
     shell,
     dialog,
     Notification
@@ -339,6 +338,8 @@ const handler = {
         })
 
         ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
+            if (app.win.miniplayerActive) { return } // Here we would setup a function to open the fullscreen player with lyrics
+
             if (app.win.isMaximized()) {
                 app.win.restore()
                 if (process.platform !== "win32") {
@@ -353,26 +354,39 @@ const handler = {
         })
 
         ipcMain.on('close', () => { // listen for close event
+            if (app.win.miniplayerActive) { ipcMain.emit("set-miniplayer", false); return; }
             app.win.close();
+        })
+
+        app.win.on('close', (event) => {
+            if (app.win.miniplayerActive) { ipcMain.emit("set-miniplayer", false); event.preventDefault(); }
         })
 
         ipcMain.on("resize-window", (event, width, height) => {
             app.win.setSize(width, height)
         })
 
+        const minSize = app.win.getMinimumSize()
         ipcMain.on("set-miniplayer", (event, val) => {
             if (val) {
+                app.windowState.saveState(app.win)
+                app.win.miniplayerActive = true
                 app.win.setSize(300, 300)
+                app.win.setMinimumSize(300, 55)
                 app.win.setMaximumSize(300, 300)
+                app.win.setMaximizable(false)
                 app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(true)")
             } else {
-                app.win.setMaximumSize(9999,9999)
+                app.win.miniplayerActive = false
+                app.win.setMaximumSize(9999, 9999)
+                app.win.setMinimumSize(minSize[0], minSize[1])
                 app.win.setSize(1024, 600)
+                app.win.setMaximizable(true)
                 app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(false)")
             }
         })
 
-        ipcMain.on("show-miniplayer-menu", (event) => {
+        ipcMain.on("show-miniplayer-menu", () => {
             const menuOptions = [{
                 type: "checkbox",
                 label: "Always On Top",

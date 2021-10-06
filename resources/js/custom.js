@@ -10,7 +10,7 @@ try {
     if (typeof _miniPlayer == "undefined") {
         var _miniPlayer = {
             active: false,
-            init () {
+            init() {
                 let self = this;
                 var webChrome = document.querySelector(".web-chrome");
                 var wcHeight = webChrome.offsetHeight;
@@ -25,14 +25,14 @@ try {
                     ipcRenderer.send("show-miniplayer-menu");
                 });
                 elements.artwork.addEventListener("click", () => {
-                    if (webChrome.style.display == "") {;
+                    if (webChrome.style.display === "") {
                         webChrome.style.display = "flex";
                     } else {
                         webChrome.style.display = "";
-                    };
+                    }
                 });
                 document.querySelector("#web-main").appendChild(elements.artwork);
-                if(window.innerWidth < 500) {
+                if (window.innerWidth < 500) {
                     /* Resize if window was clsoed in Mini Player */
                     ipcRenderer.send("resize-window", 1024, 600);
                 }
@@ -65,7 +65,7 @@ try {
             loadTheme(path = "") {
                 console.warn("[Custom] Applied Theme");
                 let self = this;
-                if (path == "" || path == " ") {
+                if (path === "" || path === " ") {
                     self._styleSheets.Theme.replaceSync("");
                     self.refresh();
                     return;
@@ -195,25 +195,27 @@ try {
                 window.open(`https://discord.gg/CezHYdXHEM`)
             };
             ul.insertBefore(amDiscord, ul.childNodes[4]);
-
-            const miniPlayer = document.createElement("li");
-            miniPlayer.innerHTML = `
-                    <span class="context-menu__option-text" tabindex="0" role="menuitem">
-                        <span class="context-menu__option-text-clamp">Mini Player</span>
-                    </span>
-                `;
-            miniPlayer.classList.add("context-menu__option--am-discord");
-            miniPlayer.classList.add("context-menu__option");
-            miniPlayer.onclick = function () {
-                if(typeof MusicKit.getInstance().nowPlayingItem != undefined) {
-                    ipcRenderer.send("set-miniplayer", true);
-                    document.querySelector(".context-menu-outside-click-area").dispatchEvent(new Event("click"));
-                }
-            };
-            ul.insertBefore(miniPlayer, ul.childNodes[0]);
-            
         });
     }
+
+    /* MiniPlayer */
+    MusicKit.getInstance().addEventListener(MusicKit.Events.mediaElementCreated, () => {
+        console.log('Media Element Created!');
+        if (!document.querySelector('.media-artwork-v2__image').classList.contains('media-artwork-v2__image--fallback')) {
+            const artwork = document.querySelector('#ember13');
+            artwork.onclick = function () {
+                ipcRenderer.send("set-miniplayer", true);
+            };
+            artwork.onmouseenter = function () {
+                artwork.style.filter = 'brightness(50%)';
+            };
+            artwork.onmouseleave = function () {
+                artwork.style.filter = 'brightness(100%)';
+            };
+            /* Picture-in-picture icon should be overlayed over artwork when mouse over */
+        }
+    });
+
 
     /* Scroll Volume */
     if (document.querySelector('.web-chrome-playback-lcd__volume') && typeof volumeChange === 'undefined') {
