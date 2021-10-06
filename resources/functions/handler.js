@@ -375,7 +375,12 @@ const handler = {
 
         app.preferences.on('save', (updatedPreferences) => {
             if (cachedPreferences.visual.theme !== updatedPreferences.visual.theme) {
-                app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${updatedPreferences.visual.theme}");`)
+                if (updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) {
+                    app.win.webContents.executeJavaScript(`AMThemes.loadTheme();`)
+                } else {
+                    app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${updatedPreferences.visual.theme}");`)
+                }
+
             }
 
             if (!DialogMessage) {
