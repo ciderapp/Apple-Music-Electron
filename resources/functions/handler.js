@@ -1,9 +1,24 @@
-const {app, ipcMain, shell, dialog, Notification} = require('electron')
+const {
+    app,
+    ipcMain,
+    shell,
+    dialog,
+    Notification
+} = require('electron')
 const SentryInit = require("./init").SentryInit;
 SentryInit()
-const {LoadOneTimeFiles, LoadFiles} = require('./load');
-const {join, resolve} = require('path');
-const {existsSync, truncate} = require('fs');
+const {
+    LoadOneTimeFiles,
+    LoadFiles
+} = require('./load');
+const {
+    join,
+    resolve
+} = require('path');
+const {
+    existsSync,
+    truncate
+} = require('fs');
 const rimraf = require('rimraf');
 
 
@@ -11,19 +26,19 @@ const handler = {
     LaunchHandler: function () {
 
         // Version Fetch
-        if (app.commandLine.hasSwitch('version') || app.commandLine.hasSwitch('v') ) {
+        if (app.commandLine.hasSwitch('version') || app.commandLine.hasSwitch('v')) {
             console.log(app.getVersion())
             app.exit()
         }
 
         // Verbose Check
-        if (app.commandLine.hasSwitch('verbose') ) {
+        if (app.commandLine.hasSwitch('verbose')) {
             console.log("[Apple-Music-Electron] User has launched the application with --verbose");
             app.verboseLaunched = true
         }
 
         // Log File Location
-        if (app.commandLine.hasSwitch('log') || app.commandLine.hasSwitch('l') ) {
+        if (app.commandLine.hasSwitch('log') || app.commandLine.hasSwitch('l')) {
             console.log(join(app.getPath('userData'), 'logs'))
             app.exit()
         }
@@ -44,7 +59,7 @@ const handler = {
         })
 
         // For macOS
-        app.on('open-url', function(event, url) {
+        app.on('open-url', function (event, url) {
             event.preventDefault()
             if (url.includes('ame://') || url.includes('itms://') || url.includes('itmss://') || url.includes('musics://') || url.includes('music://')) {
                 handler.LinkHandler(url)
@@ -85,7 +100,7 @@ const handler = {
             }
 
             if (existsSync(resolve(app.getPath('userData'), 'preferences.json'))) {
-                truncate(resolve(app.getPath('userData'), 'preferences.json'), 0, function() {
+                truncate(resolve(app.getPath('userData'), 'preferences.json'), 0, function () {
                     console.log(`[VersionHandler] Outdated / No Version Store Found. Clearing Preferences File. ('${resolve(app.getPath('userData'), 'preferences.json')}')`)
                 });
             }
@@ -176,7 +191,8 @@ const handler = {
             console.warn('[handler] mediaItemStateDidChange received.')
             app.funcs.CreateNotification(a)
             app.funcs.mpris.updateActivity(a);
-
+            // Update metadata css
+            app.win.webContents.executeJavaScript("AMThemes.updateMeta()")
             if (app.preferences.value('audio.gaplessEnabled').includes(true)) {
                 try {
                     if (a.playParams.id !== app.PreviousSongId) { // If it is a new song
@@ -213,13 +229,19 @@ const handler = {
         console.verbose('[WindowStateHandler] Started.');
         app.previousPage = app.win.webContents.getURL()
 
-        app.win.webContents.setWindowOpenHandler(({url}) => {
+        app.win.webContents.setWindowOpenHandler(({
+            url
+        }) => {
             shell.openExternal(url).then(() => console.log(`[WindowStateHandler] User has opened ${url} which has been redirected to browser.`));
-            return {action: 'deny'}
+            return {
+                action: 'deny'
+            }
         })
 
         app.win.webContents.on('unresponsive', async () => {
-            const {response} = await dialog.showMessageBox({
+            const {
+                response
+            } = await dialog.showMessageBox({
                 message: 'Apple Music has become unresponsive',
                 title: 'Do you want to try forcefully reloading the app?',
                 buttons: ['Yes', 'Quit', 'No'],
@@ -239,7 +261,10 @@ const handler = {
             LoadOneTimeFiles()
 
             if (app.preferences.value('general.incognitoMode').includes(true)) {
-                new Notification({title: 'Incognito Mode', body: `Incognito Mode enabled. DiscordRPC and LastFM are disabled.`}).show()
+                new Notification({
+                    title: 'Incognito Mode',
+                    body: `Incognito Mode enabled. DiscordRPC and LastFM are disabled.`
+                }).show()
                 console.verbose('[Incognito] Incognito Mode enabled for Apple Music Website. [DiscordRPC and LastFM are disabled].');
             }
         });
@@ -267,6 +292,38 @@ const handler = {
             }
         });
 
+        // Windows specific: Handles window states
+        // Needed because Aero Snap events do not send the same way as clicking the frame buttons.
+        if (process.platform === "win32" && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
+            var WND_STATE = {
+                MINIMIZED: 0,
+                NORMAL: 1,
+                MAXIMIZED: 2,
+                FULL_SCREEN: 3
+            }
+            var wndState = WND_STATE.NORMAL
+
+            app.win.on("resize", (event) => {
+                var isMaximized = app.win.isMaximized()
+                var isMinimized = app.win.isMinimized()
+                var isFullScreen = app.win.isFullScreen()
+                var state = wndState
+                if (isMinimized && state !== WND_STATE.MINIMIZED) {
+                    wndState = WND_STATE.MINIMIZED
+                    // 
+                } else if (isFullScreen && state !== WND_STATE.FULL_SCREEN) {
+                    wndState = WND_STATE.FULL_SCREEN
+                    // 
+                } else if (isMaximized && state !== WND_STATE.MAXIMIZED) {
+                    wndState = WND_STATE.MAXIMIZED
+                    app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.add("maxed")`)
+                } else if (state !== WND_STATE.NORMAL) {
+                    wndState = WND_STATE.NORMAL
+                    app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.remove("maxed")`)
+                }
+            })
+        }
+
         ipcMain.on('minimize', () => { // listen for minimize event
             if (typeof app.win.minimize === 'function') {
                 app.win.minimize()
@@ -282,11 +339,17 @@ const handler = {
         ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
             if (app.win.isMaximized()) {
                 app.win.restore()
+                if(process.platform !== "win32") {
+                    app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.remove("maxed")`)
+                }
                 /*if (process.platform === 'win32' && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
                     app.win.webContents.insertCSS(`.web-nav-window-controls #maximize { background-image: var(--gfx-maxedBtn) !important; };`).catch((e) => console.error(e))
                 }*/
             } else {
                 app.win.maximize()
+                if(process.platform !== "win32") {
+                    app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.add("maxed")`)
+                }
                 /*if (process.platform === 'win32' && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
                     app.win.webContents.insertCSS(`.web-nav-window-controls #maximize { background-image: var(--gfx-maxBtn) !important; };`).catch((e) => console.error(e))
                 }*/
@@ -323,7 +386,9 @@ const handler = {
                     message: "A restart is required in order for the settings you have changed to apply.",
                     type: "warning",
                     buttons: ['Relaunch Now', 'Relaunch Later']
-                }).then(({response}) => {
+                }).then(({
+                    response
+                }) => {
                     if (response === 0) {
                         app.relaunch()
                         app.quit()
