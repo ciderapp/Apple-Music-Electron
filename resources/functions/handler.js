@@ -455,6 +455,8 @@ const handler = {
                     app.win.setVibrancy();
                     app.win.webContents.executeJavaScript(`AMThemes.setTransparency(false);`)
                 }
+            } else if (cachedPreferences.visual.frameType !== updatedPreferences.visual.frameType) {
+                //    JavaScript function to be run here
             } else {
                 if (!DialogMessage) {
                     DialogMessage = dialog.showMessageBox(app.win, {
