@@ -303,7 +303,7 @@ const handler = {
             }
             var wndState = WND_STATE.NORMAL
 
-            app.win.on("resize", (event) => {
+            app.win.on("resize", (_event) => {
                 var isMaximized = app.win.isMaximized()
                 var isMinimized = app.win.isMinimized()
                 var isFullScreen = app.win.isFullScreen()
@@ -342,17 +342,11 @@ const handler = {
                 if(process.platform !== "win32") {
                     app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.remove("maxed")`)
                 }
-                /*if (process.platform === 'win32' && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
-                    app.win.webContents.insertCSS(`.web-nav-window-controls #maximize { background-image: var(--gfx-maxedBtn) !important; };`).catch((e) => console.error(e))
-                }*/
             } else {
                 app.win.maximize()
                 if(process.platform !== "win32") {
                     app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.add("maxed")`)
                 }
-                /*if (process.platform === 'win32' && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
-                    app.win.webContents.insertCSS(`.web-nav-window-controls #maximize { background-image: var(--gfx-maxBtn) !important; };`).catch((e) => console.error(e))
-                }*/
             }
         })
 
