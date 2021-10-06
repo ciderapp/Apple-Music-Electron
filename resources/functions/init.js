@@ -2153,6 +2153,10 @@ const init = {
         // Set the Theme List based on css files in themes directory
         app.userThemesPath = resolve(app.getPath('userData'), 'themes');
         let themesFileNames = [], themesListing = [];
+        let ThemesList = [];
+
+        app.userPluginsPath = resolve(app.getPath('userData'), 'plugins');
+
         if (fs.existsSync(app.userThemesPath)) {
             fs.readdirSync(app.userThemesPath).forEach((value) => {
                 if (value.split('.').pop() === 'css') {
@@ -2329,6 +2333,16 @@ const init = {
                 const url = request.url.substr(7)
                 callback({
                     path: join(app.userThemesPath, url.toLowerCase())
+                })
+            })
+            protocol.registerFileProtocol('amecss', (request, callback) => {
+                const url = request.url.substr(7)
+                callback(fs.createReadStream(join(join(__dirname, '../css/'), url.toLowerCase())))
+            })
+            protocol.registerFileProtocol('plugin', (request, callback) => {
+                const url = request.url.substr(7)
+                callback({
+                    path: join(app.userPluginsPath, url.toLowerCase())
                 })
             })
         })
