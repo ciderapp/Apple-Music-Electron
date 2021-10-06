@@ -373,14 +373,13 @@ const handler = {
         console.verbose('[SettingsHandler] Started.');
         let DialogMessage, cachedPreferences = app.preferences._preferences;
 
+        const {fetchTransparencyOptions} = require('./CreateBrowserWindow')
+
         app.preferences.on('save', (updatedPreferences) => {
             if (cachedPreferences.visual.theme !== updatedPreferences.visual.theme) {
-                if (updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) {
-                    app.win.webContents.executeJavaScript(`AMThemes.loadTheme();`)
-                } else {
-                    app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${updatedPreferences.visual.theme}");`)
-                }
-
+                app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`)
+                const updatedVibrancy = fetchTransparencyOptions()
+                if (app.transparency && updatedVibrancy && process.platform !== 'darwin') app.win.setVibrancy(updatedVibrancy);
             }
 
             if (!DialogMessage) {
