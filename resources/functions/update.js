@@ -39,6 +39,10 @@ exports.checkUpdates = function (manual) {
         app.win.setProgressBar(convertedProgress)
     })
 
+    autoUpdater.on("error", function(error) {
+        console.error(`[checkUpdates] Error ${error}`)
+    });
+
     autoUpdater.on('update-downloaded', (_UpdateInfo) => {
         console.log('[checkUpdates] New version downloaded. Starting user prompt.');
 

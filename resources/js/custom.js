@@ -7,6 +7,46 @@ try {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     }
 
+    var AMThemes = {
+        _styleSheets: {
+            Theme: new CSSStyleSheet(),
+            Meta: new CSSStyleSheet()
+        },
+        loadTheme(path = "") {
+            let self = this;
+            if (path == "") {
+                self._styleSheets.Theme.replaceSync("");
+                self.refresh();
+                return;
+            }
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function () {
+                self._styleSheets.Theme.replaceSync(this.responseText);
+                self.refresh();
+            };
+            xhttp.open("GET", `themes://${path}.css`, true);
+            xhttp.send();
+        },
+        updateMeta() {
+            /** Exposes artwork and other metadata to CSS for themes */ 
+            var musicKit = MusicKit.getInstance();
+            var artwork = musicKit.nowPlayingItem["attributes"]["artwork"]["url"];
+            this._styleSheets.Meta.replaceSync(`
+                :root {
+                    --musicKit-artwork-64: url("${artwork.replace("{w}", 64).replace("{h}", 64)}");
+                    --musicKit-artwork-256: url("${artwork.replace("{w}", 256).replace("{h}", 256)}");
+                    --musicKit-artwork-512: url("${artwork.replace("{w}", 512).replace("{h}", 512)}");
+                    --musicKit-artwork: url("${artwork.replace("{w}", 2000).replace("{h}", 2000)}");
+                }
+            `);
+            this.refresh();
+        },
+        refresh() {
+            document.adoptedStyleSheets = Object.values(this._styleSheets);
+        }
+    };
+    AMThemes.loadTheme(preferences["visual"]["theme"]);
+
     /* Remove the Region Banner */
     while (document.getElementsByClassName('locale-switcher-banner').length > 0) {
         document.getElementsByClassName('locale-switcher-banner')[0].remove()

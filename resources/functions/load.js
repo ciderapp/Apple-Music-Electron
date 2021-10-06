@@ -1,9 +1,20 @@
-const {join} = require("path");
-const {app, ipcMain} = require("electron");
+const {
+    join
+} = require("path");
+const {
+    app,
+    ipcMain
+} = require("electron");
 const SentryInit = require("./init").SentryInit;
 SentryInit()
-const {readFile, constants, chmodSync} = require("fs");
-const {LocaleInit} = require("./init");
+const {
+    readFile,
+    constants,
+    chmodSync
+} = require("fs");
+const {
+    LocaleInit
+} = require("./init");
 
 module.exports = {
 
@@ -19,7 +30,7 @@ module.exports = {
                 console.error(`[LoadCSS] Error while injecting: '${path}' - ${error}`)
                 try {
                     chmodSync(path, constants.S_IRUSR | constants.S_IWUSR);
-                } catch(err) {
+                } catch (err) {
                     console.error(`[LoadCSS] ${err}`)
                 }
 
@@ -103,15 +114,15 @@ module.exports = {
         /* Load Window Frame */
         if (app.preferences.value('visual.frameType') === 'mac') {
             app.funcs.LoadJS('frame_macOS.js')
-        }
-        else if (app.preferences.value('visual.frameType') === 'mac-right') {
+        } else if (app.preferences.value('visual.frameType') === 'mac-right') {
             app.funcs.LoadJS('frame_Windows.js')
-        }
-        else if(process.platform === 'darwin' && !app.preferences.value('visual.frameType')) {
+        } else if (process.platform === 'darwin' && !app.preferences.value('visual.frameType')) {
             app.funcs.LoadJS('frame_macOS.js')
-        }
-        else if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
+        } else if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
             app.funcs.LoadJS('frame_Windows.js')
+            if (app.win.isMaximized()) {
+                app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.add("maxed")`)
+            }
         }
 
         app.funcs.LoadJS('custom.js')
@@ -160,7 +171,8 @@ module.exports = {
         /* Load Back Button */
         if (!backButtonChecks() && app.win.webContents.canGoBack()) {
             app.funcs.LoadJS('backButton.js')
-        } else { /* Remove it if user cannot go back */
+        } else {
+            /* Remove it if user cannot go back */
             await app.win.webContents.executeJavaScript(`if (document.querySelector('#backButtonBar')) { document.getElementById('backButtonBar').remove() };`);
         }
 
@@ -175,11 +187,9 @@ module.exports = {
         // Window Frames
         if (app.preferences.value('visual.frameType') === 'mac') {
             app.funcs.LoadCSS('frame_macOS_emulation.css')
-        }
-        else if (app.preferences.value('visual.frameType') === 'mac-right') {
+        } else if (app.preferences.value('visual.frameType') === 'mac-right') {
             app.funcs.LoadCSS('frame_macOS_emulation_right.css')
-        }
-        else if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
+        } else if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
             app.funcs.LoadCSS('frame_Windows.css')
         }
 
@@ -203,7 +213,7 @@ module.exports = {
 
         // Load Themes
         if (app.preferences.value('visual.theme') && !(app.preferences.value('visual.theme').includes('Template')) && !(app.preferences.value('visual.theme').includes('default'))) {
-            app.funcs.LoadCSS(`${app.preferences.value('visual.theme')}.css`, true)
+            // app.funcs.LoadCSS(`${app.preferences.value('visual.theme')}.css`, true)
         }
 
         /* Remove the Scrollbar */
