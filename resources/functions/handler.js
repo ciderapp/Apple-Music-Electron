@@ -1,6 +1,8 @@
 const {
     app,
+    Menu,
     ipcMain,
+    remote,
     shell,
     dialog,
     Notification
@@ -339,12 +341,12 @@ const handler = {
         ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
             if (app.win.isMaximized()) {
                 app.win.restore()
-                if(process.platform !== "win32") {
+                if (process.platform !== "win32") {
                     app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.remove("maxed")`)
                 }
             } else {
                 app.win.maximize()
-                if(process.platform !== "win32") {
+                if (process.platform !== "win32") {
                     app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.add("maxed")`)
                 }
             }
@@ -352,6 +354,52 @@ const handler = {
 
         ipcMain.on('close', () => { // listen for close event
             app.win.close();
+        })
+
+        ipcMain.on("resize-window", (event, width, height) => {
+            app.win.setSize(width, height)
+        })
+
+        ipcMain.on("set-miniplayer", (event, val) => {
+            if (val) {
+                app.win.setSize(300, 300)
+                app.win.setMaximumSize(300, 300)
+                app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(true)")
+            } else {
+                app.win.setMaximumSize(9999,9999)
+                app.win.setSize(1024, 600)
+                app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(false)")
+            }
+        })
+
+        ipcMain.on("show-miniplayer-menu", (event) => {
+            const menuOptions = [{
+                type: "checkbox",
+                label: "Always On Top",
+                click: () => {
+                    if (app.win.isAlwaysOnTop()) {
+                        app.win.setAlwaysOnTop(false, 'screen')
+                    } else {
+                        app.win.setAlwaysOnTop(true, 'screen')
+                    }
+                },
+                checked: app.win.isAlwaysOnTop()
+            }, {
+                label: "Exit Mini Player",
+                click: () => {
+                    ipcMain.emit("set-miniplayer", false)
+                }
+            }]
+            const menu = Menu.buildFromTemplate(menuOptions)
+            menu.popup(app.win)
+        })
+
+        ipcMain.on("alwaysOnTop", (event, val) => {
+            if (val) {
+                app.win.setAlwaysOnTop(true, 'screen')
+            } else {
+                app.win.setAlwaysOnTop(false, 'screen')
+            }
         })
 
         app.win.on('show', function () {
@@ -373,7 +421,9 @@ const handler = {
         console.verbose('[SettingsHandler] Started.');
         let DialogMessage, cachedPreferences = app.preferences._preferences;
 
-        const {fetchTransparencyOptions} = require('./CreateBrowserWindow')
+        const {
+            fetchTransparencyOptions
+        } = require('./CreateBrowserWindow')
 
         app.preferences.on('save', (updatedPreferences) => {
 
@@ -382,8 +432,7 @@ const handler = {
                 app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`)
                 const updatedVibrancy = fetchTransparencyOptions()
                 if (app.transparency && updatedVibrancy && process.platform !== 'darwin') app.win.setVibrancy(updatedVibrancy);
-            }
-            else if (cachedPreferences.visual.transparencyEffect !== updatedPreferences.visual.transparencyEffect) { // Handles Transparency Changes
+            } else if (cachedPreferences.visual.transparencyEffect !== updatedPreferences.visual.transparencyEffect) { // Handles Transparency Changes
                 const updatedVibrancy = fetchTransparencyOptions()
                 console.log(app.transparency)
                 if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
@@ -393,8 +442,7 @@ const handler = {
                     app.win.setVibrancy();
                     app.win.webContents.executeJavaScript(`AMThemes.setTransparency(false);`)
                 }
-            }
-            else {
+            } else {
                 if (!DialogMessage) {
                     DialogMessage = dialog.showMessageBox(app.win, {
                         title: "Restart Required",
@@ -402,8 +450,8 @@ const handler = {
                         type: "warning",
                         buttons: ['Relaunch Now', 'Relaunch Later']
                     }).then(({
-                                 response
-                             }) => {
+                        response
+                    }) => {
                         if (response === 0) {
                             app.relaunch()
                             app.quit()

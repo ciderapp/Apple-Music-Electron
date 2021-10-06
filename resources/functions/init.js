@@ -2335,9 +2335,9 @@ const init = {
                     path: join(app.userThemesPath, url.toLowerCase())
                 })
             })
-            protocol.registerFileProtocol('amecss', (request, callback) => {
+            protocol.registerFileProtocol('ameres', (request, callback) => {
                 const url = request.url.substr(7)
-                callback(fs.createReadStream(join(join(__dirname, '../css/'), url.toLowerCase())))
+                callback(fs.createReadStream(join(join(__dirname, '../'), url.toLowerCase())))
             })
             protocol.registerFileProtocol('plugin', (request, callback) => {
                 const url = request.url.substr(7)

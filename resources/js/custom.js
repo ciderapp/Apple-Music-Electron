@@ -7,6 +7,54 @@ try {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     }
 
+    if (typeof _miniPlayer == "undefined") {
+        var _miniPlayer = {
+            active: false,
+            init () {
+                let self = this;
+                var webChrome = document.querySelector(".web-chrome");
+                var wcHeight = webChrome.offsetHeight;
+                var elements = {
+                    artwork: document.createElement("div"),
+                    webNavContainer: document.querySelector("#web-navigation-container"),
+                    menuicon: document.querySelector(".menuicon")
+                };
+                elements.artwork.classList.add("miniPlayerArtwork");
+                elements.artwork.style.display = "none";
+                elements.artwork.addEventListener("contextmenu", () => {
+                    ipcRenderer.send("show-miniplayer-menu");
+                });
+                elements.artwork.addEventListener("click", () => {
+                    if (webChrome.style.display == "") {;
+                        webChrome.style.display = "flex";
+                    } else {
+                        webChrome.style.display = "";
+                    };
+                });
+                document.querySelector("#web-main").appendChild(elements.artwork);
+                if(window.innerWidth < 500) {
+                    /* Resize if window was clsoed in Mini Player */
+                    ipcRenderer.send("resize-window", 1024, 600);
+                }
+            },
+            setMiniPlayer(val) {
+                var webChrome = document.querySelector(".web-chrome");
+                var artwork = document.querySelector(".miniPlayerArtwork");
+                if (val) {
+                    self.active = true;
+                    document.body.setAttribute("data-miniplayer", 1);
+                    artwork.style.display = "block";
+                } else {
+                    self.active = false;
+                    webChrome.style.display = "";
+                    document.body.removeAttribute("data-miniplayer");
+                    artwork.style.display = "none";
+                }
+            }
+        };
+        _miniPlayer.init();
+    }
+
     if (typeof AMThemes == "undefined") {
         var AMThemes = {
             _styleSheets: {
@@ -45,17 +93,17 @@ try {
             `);
                 this.refresh();
             },
-            setTransparency (val) {
+            setTransparency(val) {
                 let self = this;
-                if(val) {
+                if (val) {
                     const xhttp = new XMLHttpRequest();
                     xhttp.onload = function () {
                         self._styleSheets.Transparency.replaceSync(this.responseText);
                         self.refresh();
                     };
-                    xhttp.open("GET", `amecss://transparency.css`, true);
+                    xhttp.open("GET", `ameres://css/transparency.css`, true);
                     xhttp.send();
-                }else{
+                } else {
                     self._styleSheets.Transparency.replaceSync(`html body { background-color: var(--pageBG) !important; }`);
                 }
             },
@@ -65,7 +113,7 @@ try {
             }
         };
         AMThemes.loadTheme(preferences["visual"]["theme"]);
-        if(preferences["visual"]["transparencyEffect"] !== "") {
+        if (preferences["visual"]["transparencyEffect"] !== "") {
             AMThemes.setTransparency(true);
         }
     }
@@ -147,6 +195,23 @@ try {
                 window.open(`https://discord.gg/CezHYdXHEM`)
             };
             ul.insertBefore(amDiscord, ul.childNodes[4]);
+
+            const miniPlayer = document.createElement("li");
+            miniPlayer.innerHTML = `
+                    <span class="context-menu__option-text" tabindex="0" role="menuitem">
+                        <span class="context-menu__option-text-clamp">Mini Player</span>
+                    </span>
+                `;
+            miniPlayer.classList.add("context-menu__option--am-discord");
+            miniPlayer.classList.add("context-menu__option");
+            miniPlayer.onclick = function () {
+                if(typeof MusicKit.getInstance().nowPlayingItem != undefined) {
+                    ipcRenderer.send("set-miniplayer", true);
+                    document.querySelector(".context-menu-outside-click-area").dispatchEvent(new Event("click"));
+                }
+            };
+            ul.insertBefore(miniPlayer, ul.childNodes[0]);
+            
         });
     }
 

@@ -163,15 +163,15 @@ span.app-prefs-title {
   height: 0;
 }
 
-.settings-list li .toggle-element input:checked + .slider {
+.settings-list li .toggle-element input:checked+.slider {
   background-color: #34C759;
 }
 
-.settings-list li .toggle-element input:focus + .slider {
+.settings-list li .toggle-element input:focus+.slider {
   box-shadow: 0 0 1px #34C759;
 }
 
-.settings-list li .toggle-element input:checked + .slider:before {
+.settings-list li .toggle-element input:checked+.slider:before {
   -webkit-transform: translateX(20px);
   -ms-transform: translateX(20px);
   transform: translateX(20px);
@@ -181,12 +181,12 @@ span.app-prefs-title {
 .settings-list li .form-dropdown-select {
   color: #f5f5f7;
   border-color: #424245;
-  background-color: hsla(0,0%,100%,.04);
+  background-color: hsla(0, 0%, 100%, .04);
   padding: 5px 10px;
   margin-left: 20px;
   border-radius: 5px;
   font-size: 15px;
-  font-family: SF Pro Text,SF Pro Icons,Helvetica Neue,Helvetica,Arial,sans-serif;
+  font-family: SF Pro Text, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif;
 }
 
 .settings-list li .form-dropdown-select option {
@@ -195,4 +195,34 @@ span.app-prefs-title {
 
 .settings-list li .form-dropdown-select option:disabled {
   color: #808080;
+}
+
+/* Mini Player Context Menu */
+@media only screen and (max-width: 400px) {
+  body[data-miniplayer] #web-main>.loading-inner, 
+  body[data-miniplayer] #backButtonBar, 
+  body[data-miniplayer] #web-navigation-container, 
+  body[data-miniplayer] .web-chrome {
+    display: none;
+  }
+  body[data-miniplayer] .menuicon{
+    display: none!important;
+  }
+
+  body[data-miniplayer] li.context-menu__option {
+    font-size: 12px;
+    min-height: auto;
+  }
+  body[data-miniplayer] .miniPlayerArtwork {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top:0;
+    left:0;
+    background: black;
+    background-image: var(--musicKit-artwork);
+    background-position: center;
+    background-size: cover;
+    z-index: 800;
+  }
 }
