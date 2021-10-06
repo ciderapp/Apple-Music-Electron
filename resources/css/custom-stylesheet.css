@@ -114,20 +114,13 @@ span.app-prefs-title {
 
 /* LastFM Connect Button */
 .settings-list li .connect-button {
-  background-color: #c3000d;
-  color: #f5f5f7;
-  border-color: #424245;
+  background-color: #E4141E;
+  color: white;
   padding: 5px 10px;
   margin-left: 20px;
   border-radius: 5px;
-  display: inline-block;
-}
-
-.settings-list li .connect-button img {
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-  overflow: hidden;
+  margin-right: 10px;
+  cursor: pointer;
 }
 
 /* Toggle Slider */
@@ -161,8 +154,7 @@ span.app-prefs-title {
   width: 40px;
   height: 20px;
   grid-column: 3;
-  margin-right: 20px;
-  margin-top: 5px;
+  margin: 5px 20px 0 20px;
 }
 
 .settings-list li .toggle-element input {

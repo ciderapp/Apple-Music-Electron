@@ -1074,8 +1074,10 @@ const init = {
             return x.replace(/\./g, "").replace(',', '.');
         }
 
+        const AcrylicSupported = ((!(!os.type().includes('Windows') || parseFloat(RemoveDP(os.release())) <= parseFloat(RemoveDP('10.0.17763')))));
+
         // Remove the Transparency Option for Acrylic if it is not supported
-        if (!os.type().includes('Windows') || parseFloat(RemoveDP(os.release())) <= parseFloat(RemoveDP('10.0.17763'))) {
+        if (!AcrylicSupported) {
             for (var key in fields.visual) {
                 if (fields.visual[key].key === 'transparencyEffect') {
                     fields.visual[key].options.shift()
@@ -1088,11 +1090,11 @@ const init = {
 
         // Set the Theme List based on css files in themes directory
         app.userThemesPath = resolve(app.getPath('userData'), 'themes');
-        let ThemesList = [];
+        let themesFileNames = [], themesListing = [];
         if (fs.existsSync(app.userThemesPath)) {
             fs.readdirSync(app.userThemesPath).forEach((value) => {
                 if (value.split('.').pop() === 'css') {
-                    ThemesList.push(value.split('.').shift())
+                    themesFileNames.push(value.split('.').shift())
                 }
             })
         }
@@ -1112,10 +1114,11 @@ const init = {
         }
 
         // Get the Info
-        ThemesList.forEach((themeFileName) => {
+        themesFileNames.forEach((themeFileName) => {
             const themeName = fetchThemeName(themeFileName)
             if (!themeName) return;
             fields.visual[0].options.push({label: themeName, value: themeFileName},)
+            themesListing[`${themeFileName}`] = themeName
         })
 
         const ElectronPreferences = require("electron-preferences");
@@ -1262,6 +1265,9 @@ const init = {
                 app.preferences.show();
             })
         })
+
+        app.preferences._preferences.supportsAcrylic = AcrylicSupported
+        app.preferences._preferences.availableThemes = themesListing
     },
 
     SentryInit: function () {

@@ -193,9 +193,9 @@ try {
                             <span class="typography-title-3-tall">Show notifications on Song Change</span>
                             <select class="form-dropdown-select list-element" name="playbackNotifications" id="playbackNotifications">
                                 <option disabled>Select one</option>
+                                <option value=''>Disabled</option>
                                 <option value=true>Enabled</option>
                                 <option value='minimized'>Enabled (Notifications when Minimized)</option>
-                                <option value=''>Disabled</option>
                             </select>
                             </label>
                             <span class="app-prefs-help typography-title-3-tall">Enabling this means you will get notifications when you change song. The minimized option forces notifications to only appear if the app is hidden / minimized.</span>
@@ -223,6 +223,14 @@ try {
                             </label>
                             <span class="app-prefs-help typography-title-3-tall">Select what page you wish to be placed on when you start the application.</span>
                         </li>
+                        <li class="app-prefs-toggle">
+                            <span class="typography-title-3-tall">Allow statistics to be collected when errors or crashes occur</span>
+                            <label class="toggle-element list-element">
+                                <input id="analyticsEnabled" type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span class="app-prefs-help typography-title-3-tall">These logs when enabled allow us to fix bugs and errors that may occur during your listening sessions to better improve the application. We understand if you're not comfortable with them on, but it helps us out immensely in figuring out widespread issues. (Note: We do not gather personal information, only stuff that shows to you as an error in the code.)</span>
+                        </li>
                         <li class="app-prefs-divider header-nav">
                             <h2 class="shelf-title">Discord Rich Presence</h2>
                             <span class="app-prefs-help typography-title-3-tall">These settings are for managing how you display your status on Discord. You must have 'Display current activity as status message.' turned on in your Discord settings for the song to be shown.</span>
@@ -233,6 +241,7 @@ try {
                                 <option disabled>Select one</option>
                                 <option value='am-title'>Enabled (Display 'Apple Music' as title)</option>
                                 <option value='ame-title'>Enabled (Display 'Apple Music Electron' as title)</option>
+                                <option value=''>Disabled</option>
                             </select>
                             </label>
                         </li>
@@ -246,13 +255,11 @@ try {
                         </li>
                         <li class="app-prefs-divider header-nav">
                             <h2 class="shelf-title">LastFM</h2>
-                            <span class="app-prefs-help typography-title-3-tall"><p style="size='8px'">For information regarding this section, read the wiki post found <a style="color: #227bff !important" href="#" onclick='window.open("https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM")'>here</a>.</p></span>
+                            <span class="app-prefs-help typography-title-3-tall">For information regarding this section, read the wiki post found <a href="#" onclick='window.open("https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM")'>here</a>.</span>
                         </li>
                         <li class="app-prefs-lastfm-connect">
-                            <span class="typography-title-3-tall">Connect Account</span>
-                            <label class="connect-button list-element">
-                                <img src="https://www.last.fm/static/images/lastfm_avatar_twitter.52a5d69a85ac.png" alt="LastFM">
-                            </label>
+                            <span class="typography-title-3-tall">LastFM Account</span>
+                            <label id="lfmConnect" class="connect-button list-element" onclick="LastFMAuthenticate()">Connect</label>
                         </li>
                         <li class="app-prefs-toggle">
                             <span class="typography-title-3-tall">Remove featuring artists from song title</span>
@@ -271,11 +278,85 @@ try {
                         </div>
                     </div>
                     <ul class="settings-list visual">
-                        
+                        <li class="app-prefs-dropdown">
+                            <span class="typography-title-3-tall">Theme</span>
+                            <select class="form-dropdown-select list-element" name="theme" id="theme">
+                                <option disabled>Select one</option>
+                                <option value='default'>Default</option>
+                            </select>
+                            </label>
+                            <span class="app-prefs-help typography-title-3-tall">You will need to restart the application in order for the default themes to be populated. You can preview all the themes <a href="#" onclick="window.open('https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki/Theme-Preview-Images')">here</a>.</span>
+                        </li>
+                        <li class="app-prefs-dropdown">
+                            <span class="typography-title-3-tall">Application Frame</span>
+                            <select class="form-dropdown-select list-element" name="frameType" id="frameType">
+                                <option disabled>Select one</option>
+                                <option value=''>Disabled</option>
+                                <option value='mac-right'>macOS Emulation (Right)</option>
+                                <option value='mac'>macOS Emulation</option>
+                            </select>
+                            </label>
+                            <span class="app-prefs-help typography-title-3-tall">macOS Emulation shows the 'stoplights' that are well known for all mac users and adjusts other UI elements to resemble the macOS Music App. Selecting the right option shows a more Windows-like representation with the stoplights replacing the usual close, minimize and maximize buttons. For mac users its suggested that you disable this for the best experience. Having this disabled will make the application use the operating system's frame.</span>
+                        </li>
+                        <li class="app-prefs-divider header-nav">
+                            <h2 class="shelf-title">Transparency Configuration</h2>
+                            <span class="app-prefs-help typography-title-3-tall">Here you can configure the transparency options for the window. Transparency only works on certain systems, so read the descriptions of each setting. It is not advised to use transparency on platforms other than Windows or macOS.</span>
+                        </li>
+                        <li class="app-prefs-dropdown">
+                            <span class="typography-title-3-tall">Transparency Effect</span>
+                            <select class="form-dropdown-select list-element" name="transparencyEffect" id="transparencyEffect">
+                                <option disabled>Select one</option>
+                                <option value=''>Disabled</option>
+                                <option value='blur'>Blur Behind</option>
+                            </select>
+                            </label>
+                            <span class="app-prefs-help typography-title-3-tall">Sets the type of Windows transparency effect, either 'acrylic', 'blur' or leave it empty to disable it. Changing the transparency blur type can improve performance and compatibility with older hardware and systems.</span>
+                        </li>
+                        <li class="app-prefs-dropdown">
+                            <span class="typography-title-3-tall">Transparency Theme</span>
+                            <input class="form-dropdown-select list-element" name="transparencyTheme" id="transparencyTheme"/>
+                            <span class="app-prefs-help typography-title-3-tall">Sets the type of Windows transparency effect, either 'acrylic', 'blur' or leave it empty to disable it. Changing the transparency blur type can improve performance and compatibility with older hardware and systems.</span>
+                        </li>
                     </ul>
                 </div>
             </div>
         `;
+
+        let ThemesListing = document.getElementById('theme').innerHTML;
+        for (const [key, value] of Object.entries(preferences.availableThemes)) {
+            ThemesListing = ThemesListing + `\n<option value="${key}">${value}</option>`;
+        }
+        document.getElementById('theme').innerHTML = ThemesListing;
+
+        if (preferences.supportsAcrylic) {
+            document.getElementById('transparencyEffect').innerHTML = document.getElementById('transparencyEffect').innerHTML + "\n<option value='acrylic'>Acrylic (W10 1809+)</option>";
+        }
+
+        function LastFMDeauthorize() {
+            preferences.general.lastfmAuthKey = 'Put your Auth Key here.';
+            preferences.general.lastfmEnabled = [];
+            ipcRenderer.sendSync('setPreferences', preferences );
+            const element = document.getElementById('lfmConnect');
+            element.innerHTML = 'Connect';
+            element.onclick = LastFMAuthenticate;
+        }
+        function LastFMAuthenticate() {
+            const element = document.getElementById('lfmConnect');
+            preferences.general.lastfmEnabled = [true];
+            window.open('LastFMLink');
+            element.innerText = 'Connecting...'
+
+            /* Get the callback and set preferences.general.lastfmAuthKey to it
+
+            ipcRenderer.sendSync('setPreferences', preferences );
+
+
+            element.innerHTML = `
+                    Disconnect
+                    <p style="font-size: 8px"><i>(Authed: ${preferences.general.lastfmAuthKey})</i></p>
+                    `;
+            element.onclick = LastFMDeauthorize;*/
+        }
 
         function hasParentClass(child, classname){
             if(child.className.split(' ').indexOf(classname) >= 0) return true;
@@ -285,10 +366,9 @@ try {
                 return false;
             }
         }
-
         function HandleField(element) {
             const field = document.getElementById(element);
-            if (!field) return;
+            if (!field) return 'Element Not Found';
 
             let fieldCategory;
             if (hasParentClass(field, 'general')) {
@@ -303,18 +383,18 @@ try {
                 fieldCategory = preferences.advanced;
             } else {
                 console.log('[HandleField] No Parent Category Found.');
-                return;
+                return 'No Parent Category Found';
             }
 
             if (hasParentClass(field, 'toggle-element')) {
                 /* Toggles */
-                field.checked = fieldCategory[element].includes[true];
+                field.checked = fieldCategory[element].includes(true);
                 field.addEventListener('change', (event) => {
                     fieldCategory[element] = (event.target.checked ? [true] : []);
                     ipcRenderer.sendSync('setPreferences', preferences );
                 });
             }
-            else if (field.classList.contains('list-element')) {
+            else if (field.classList.contains('form-dropdown-select')) {
                 /* Dropdowns */
                 field.value = fieldCategory[element];
                 field.addEventListener('change', (event) => {
@@ -322,17 +402,31 @@ try {
                     ipcRenderer.sendSync('setPreferences', preferences );
                 });
             }
+            else if (field.classList.contains('connect-button')) {
+                if (preferences.general.lastfmAuthKey !== 'Put your Auth Key here.' && preferences.general.lastfmAuthKey) {
+                    field.innerHTML = `Disconnect\n<p style="font-size: 8px"><i>(Authed: ${preferences.general.lastfmAuthKey})</i></p>`;
+                    field.onclick = LastFMDeauthorize;
+                }
+            }
         }
 
+        /* General Settings */
         HandleField('language');
         HandleField('incognitoMode');
         HandleField('playbackNotifications');
         HandleField('trayTooltipSongName');
         HandleField('startupPage');
+        HandleField('analyticsEnabled');
         HandleField('discordRPC');
         HandleField('discordClearActivityOnPause');
-        HandleField('lastfmRemoveFeaturingArtists')
+        HandleField('lfmConnect');
+        HandleField('lastfmRemoveFeaturingArtists');
 
+        /* Visual Settings */
+        HandleField('theme');
+        HandleField('frameType');
+        HandleField('transparencyEffect');
+        HandleField('transparencyTheme');
     }
 
 } catch (e) {
