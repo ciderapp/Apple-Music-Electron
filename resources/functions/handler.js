@@ -369,7 +369,6 @@ const handler = {
         const minSize = app.win.getMinimumSize()
         ipcMain.on("set-miniplayer", (event, val) => {
             if (val) {
-                app.windowState.saveState(app.win)
                 app.win.miniplayerActive = true
                 app.win.setSize(300, 300)
                 app.win.setMinimumSize(300, 55)
