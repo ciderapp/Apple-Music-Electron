@@ -324,7 +324,7 @@ try {
                         <span class="app-prefs-help typography-title-3-tall">Sets color of acrylic effect. Can be 'light', 'dark', 'appearance-based' or a hex color code with alpha ('#0f0f0f00').</span>
                     </li>
                     <li class="app-prefs-toggle" id="transparencyDisableBlurToggleLI">
-                        <span class="typography-title-3-tall">Acrylic effect will be disabled when the window loses focus</span>
+                        <span class="typography-title-3-tall">Disable Transparency when Unfocused (Acrylic Only)</span>
                         <label class="toggle-element list-element">
                             <input id="transparencyDisableBlur" type="checkbox" checked>
                             <span class="slider"></span>
@@ -332,7 +332,7 @@ try {
                         <span class="app-prefs-help typography-title-3-tall">If enabled, acrylic effect will be disabled when the window loses focus, to mimic the behaviour of normal UWP apps.</span>
                     </li>
                     <li class="app-prefs-dropdown">
-                        <span class="typography-title-3-tall">'Use Custom Window Refresh Rate</span>
+                        <span class="typography-title-3-tall">Use Custom Window Refresh Rate</span>
                         <select class="form-dropdown-select list-element" name="transparencyMaximumRefreshRate"
                                 id="transparencyMaximumRefreshRate">
                             <option disabled>Select one</option>
