@@ -126,7 +126,7 @@ module.exports = {
         }
 
         app.funcs.LoadJS('custom.js')
-
+        
         function matchRuleShort(str, rule) {
             var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
             return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
@@ -178,6 +178,7 @@ module.exports = {
 
         /* Inject the MusicKitInterop file */
         await app.win.webContents.executeJavaScript('MusicKitInterop.init()');
+        app.funcs.LoadJS('lyrics.js')
     },
 
     LoadOneTimeFiles: function () {
@@ -222,5 +223,7 @@ module.exports = {
         } else {
             app.funcs.LoadCSS('macosScrollbar.css')
         }
+
     }
+
 }

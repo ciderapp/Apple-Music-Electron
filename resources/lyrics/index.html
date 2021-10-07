@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Lyrcier Test</title>
+	<script type="text/javascript" src="lyricer.js"></script>
+	<link rel="stylesheet" href="lyricer.css">
+</head>
+<body>
+	<div id="lyricer">
+	</div>
+	<script type="text/javascript">
+	const { ipcRenderer } = require('electron');
+	var text = "";
+	var lrc = new Lyricer();
+	ipcRenderer.on('truelyrics', function (event, data) {
+	lrc.setLrc(data);
+	console.log("bruh");
+    });
+	ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
+	lrc.move(data);
+    });
+	
+
+	lrc.setLrc(text);
+	window.addEventListener("lyricerclick", function(e){
+		ipcRenderer.send('ProgressTimeUpdateFromLyrics',e.detail.time);
+		console.log('clicked on ' + e.detail.time);
+	});
+	</script>
+</body>
+</html>

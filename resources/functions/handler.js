@@ -3,7 +3,8 @@ const {
     ipcMain,
     shell,
     dialog,
-    Notification
+    Notification,
+    BrowserWindow
 } = require('electron')
 const SentryInit = require("./init").SentryInit;
 SentryInit()
@@ -20,6 +21,7 @@ const {
     truncate
 } = require('fs');
 const rimraf = require('rimraf');
+
 
 
 const handler = {
@@ -143,7 +145,7 @@ const handler = {
         }
         return returnVal
     },
-
+    
     PlaybackStateHandler: function () {
         console.verbose('[playbackStateDidChange] Started.');
         app.PreviousSongId = null;
@@ -259,7 +261,7 @@ const handler = {
         app.win.webContents.on('did-finish-load', async () => {
             console.verbose('[WindowStateHandler] Page finished loading.')
             LoadOneTimeFiles()
-
+            
             if (app.preferences.value('general.incognitoMode').includes(true)) {
                 new Notification({
                     title: 'Incognito Mode',
@@ -407,6 +409,50 @@ const handler = {
         console.warn(`[LinkHandler] Attempting to load song id: ${formattedSongID}`);
         // Someone look into why playMediaItem doesn't work thanks - cryptofyre
         app.win.webContents.executeJavaScript(`MusicKit.getInstance().changeToMediaItem('${formattedSongID}')`)
+    },
+
+    LyricsHandler: function(lyrics) {
+        var win = new BrowserWindow({ width: 800, height: 600 , show : false,       
+            webPreferences: {
+           nodeIntegration: true, contextIsolation: false
+        }});
+        ipcMain.on('LyricsHandler', function(event, data) {
+            if (win == null){
+               win = new BrowserWindow({ width: 800, height: 600 , show : true,       
+               webPreferences: {
+               nodeIntegration: true, 
+               contextIsolation: false
+               }
+            });
+            }
+            console.log("attempted: " + data) 
+            // Or load a local HTML file
+            win.loadFile(join(__dirname, '../lyrics/index.html'));
+            win.show();
+            win.on('closed', () => {
+                win = null
+            });
+            win.webContents.on('did-finish-load', ()=>{
+                if (win){
+                win.webContents.send('truelyrics', data);}
+                
+              })
+            
+          
+        });
+        ipcMain.on('LyricsTimeUpdate', function(event, data) {
+            if (win != null ){
+            win.webContents.send('ProgressTimeUpdate', data);}    
+        });
+        ipcMain.on('LyricsUpdate', function(event, data) {
+            if (win != null){
+            win.webContents.send('truelyrics', data);}    
+        });
+        ipcMain.on('ProgressTimeUpdateFromLyrics', function(event, data) {
+            if (win){
+            app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`);
+        }    
+        });
     }
 }
 
