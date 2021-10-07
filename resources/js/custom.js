@@ -206,12 +206,6 @@ try {
             artwork.onclick = function () {
                 ipcRenderer.send("set-miniplayer", true);
             };
-            artwork.onmouseenter = function () {
-                artwork.style.filter = 'brightness(50%)';
-            };
-            artwork.onmouseleave = function () {
-                artwork.style.filter = 'brightness(100%)';
-            };
             /* Picture-in-picture icon should be overlayed over artwork when mouse over */
         }
     });
