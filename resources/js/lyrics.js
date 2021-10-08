@@ -4,14 +4,21 @@
         try{  
 
             MusicKit.getInstance().addEventListener( MusicKit.Events.playbackTimeDidChange, function(e){
-                ipcRenderer.send('LyricsTimeUpdate',MusicKit.getInstance().currentPlaybackTime - 0.250);
+                ipcRenderer.send('LyricsTimeUpdate',MusicKit.getInstance().currentPlaybackTime + 0.250);
             });
 
             MusicKit.getInstance().addEventListener( MusicKit.Events.nowPlayingItemDidChange, function(e){
                 var artworkURL = MusicKitInterop.getAttributes()["artwork"]["url"];
                 if (artworkURL != ''){
                 GetXPath(buttonImagePath).src = (MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256);} else {
-                GetXPath(buttonImagePath).src = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";    
+                    MusicKit.getInstance().api.library.song(MusicKit.getInstance().nowPlayingItem.id).then((data)=>{
+                        if (data != null && data != ""){
+                            GetXPath(buttonImagePath).src =  data["artwork"]["url"];}
+                        else {
+                            GetXPath(buttonImagePath).src = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
+                        }    
+                    });
+                        
                 }
                 GetLyrics(1);
             });
@@ -88,10 +95,21 @@
                         var jsonResponse2 = JSON.parse(req2.responseText);
                             var lyrics = jsonResponse2["lrc"]["lyric"];
                             console.log(lyrics);
-                            var artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";                            
-                            if (mode == 1){ipcRenderer.send('LyricsUpdate',lyrics,artworkURL);} 
-                            else { 
-                                ipcRenderer.send('LyricsHandler',lyrics,artworkURL);}
+                            var artworkURL = "";
+                            
+                            MusicKit.getInstance().api.library.song(MusicKit.getInstance().nowPlayingItem.id).then((data)=>{
+                                    if (data != null && data != ""){
+                                        artworkURL=  data["artwork"]["url"];}
+                                    else {
+                                        artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
+                                    } 
+                                    if (mode == 1){ipcRenderer.send('LyricsUpdate',lyrics,artworkURL);} 
+                                    else { 
+                                        ipcRenderer.send('LyricsHandler',lyrics,artworkURL);}   
+                            });
+                                    
+                                
+
                         };
                         req2.send();
                         
