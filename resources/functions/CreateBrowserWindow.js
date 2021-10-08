@@ -121,7 +121,7 @@ const BrowserWindowCreation = {
                 nodeIntegration: false,
                 nodeIntegrationInWorker: false,
                 contextIsolation: false,
-                webSecurity: false,
+                webSecurity: true,
                 sandbox: false,
                 nativeWindowOpen: true
             }

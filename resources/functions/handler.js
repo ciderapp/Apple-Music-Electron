@@ -412,17 +412,18 @@ const handler = {
     },
 
     LyricsHandler: function(lyrics) {
-        var win = new BrowserWindow({ width: 800, height: 600 , show : false,       
+        var win = new BrowserWindow({ width: 800, height: 600 , show : false,  autoHideMenuBar: true,     
             webPreferences: {
            nodeIntegration: true, contextIsolation: false
         }});
 
         ipcMain.on('LyricsHandler', function(event, data, artworkURL) {
             if (win == null){
-               win = new BrowserWindow({ width: 800, height: 600 , show : true,       
+               win = new BrowserWindow({ width: 800, height: 600 , show : true,  autoHideMenuBar: true,   
                webPreferences: {
                nodeIntegration: true, 
-               contextIsolation: false
+               contextIsolation: false,
+               
                }
             });
             }

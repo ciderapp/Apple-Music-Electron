@@ -3,14 +3,19 @@
     src: url("SF-Pro-Display-Semibold.otf") format("opentype");
 }
 
+@font-face {
+    font-family: SFSemiBold;
+    src: url("SFProJP_semibold.woff2") format("woff2");
+}
+
 #lyricer {
 	width: 90%;
 	font-size: 300%;
-	font-family: "SFSemiBold","Hiragino Sans GB W6",Tahoma,Arial;
+	font-family: "SFSemiBold","SFJPSemiBold","Hiragino Sans GB W6",Tahoma,Arial;
   	text-shadow: 0 0 1px #EEEEEE;
   	color: #666666;
   	overflow: hidden;
-	z-index: 1;  
+	z-index: 2;  
 	position: absolute;
 	overflow-y: scroll;
 	margin-right: 20px;
