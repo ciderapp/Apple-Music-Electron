@@ -1,6 +1,5 @@
 
 
-        console.log("Lyrics!");
         try{  
 
             MusicKit.getInstance().addEventListener( MusicKit.Events.playbackTimeDidChange, function(e){
@@ -42,11 +41,6 @@
                     var artistname = encodeURIComponent(MusicKitInterop.getAttributes()["artistName"]);
                     var duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] /1000));
                     var songid = (musicKit.nowPlayingItem !=null)? musicKit.nowPlayingItem["_songId"] ?? -1 : -1;
-                    /* netease */
-                    /* https://music.163.com/api/search/pc?s=ew_%20joji&type=1&limit=1 */
-                    /* ["result"]["songs"][0]["id"] */
-                    /* http://music.163.com/api/song/lyric?os=pc&id=1481691177&lv=-1&kv=-1&tv=-1 */
-                    /* ["lrc"]["lyric"] */
 
                     if (songid != -1){
                         
@@ -119,7 +113,6 @@
                 }
                 GetXPath(buttonPath).addEventListener('click', function () {
                     GetLyrics(2);
-                    console.log("Hi guys!");
                     
                 },false);
             }
