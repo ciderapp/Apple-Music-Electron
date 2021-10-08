@@ -8,8 +8,8 @@
 	<link rel="stylesheet" href="lyricer.css">
 </head>
 <body>
-    <img style="width: 100%; height: 100%; filter: blur(8px);  background-repeat: no-repeat;
-	background-size: cover; position: absolute;" id="backgroundImage"></img>
+    <img style="width: 100%; height: 100%; filter: blur(8px);  background-repeat: no-repeat;   object-fit: cover; 
+	object-position: center; position: absolute;" id="backgroundImage"></img>
 	<div id="lyricer">
 	</div>
 	<script type="text/javascript">
@@ -50,6 +50,7 @@
 	
     });
 	ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
+    if (data < 0){data = 0};
 	lrc.move(data);
     });
 	

@@ -66,9 +66,9 @@
 		};
 		this.rangeLrc.push( { "starttime": starttime, "endtime": 999.99, "line": line } );
 		// dummy lines
-		for (var i = 0; i < this.showLines; i++) {
-			this.rangeLrc.push( { "starttime": -1, "endtime": 0, "line": "&nbsp;" } );
-		};
+		// for (var i = 0; i < this.showLines; i++) {
+		// 	this.rangeLrc.push( { "starttime": -1, "endtime": 0, "line": "&nbsp;" } );
+		// };
 		this.totalLines = this.rangeLrc.length;
 
 		// set html and move to start
@@ -117,8 +117,9 @@
 	Lyricer.prototype.move = function(time) {
 		for (var i = 0; i < this.totalLines; i++) {
 			if (time >= this.rangeLrc[i].starttime && time < this.rangeLrc[i].endtime) {
+				if (this.currentLine !=i){
 				this.currentLine = i;
-				moveToLine(this,this.currentLine);
+				moveToLine(this,this.currentLine);}
 				return;
 			};
 		};
