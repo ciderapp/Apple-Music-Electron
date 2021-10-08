@@ -1,5 +1,6 @@
 const {
     app,
+    Menu,
     ipcMain,
     shell,
     dialog,
@@ -305,7 +306,7 @@ const handler = {
             }
             var wndState = WND_STATE.NORMAL
 
-            app.win.on("resize", (event) => {
+            app.win.on("resize", (_event) => {
                 var isMaximized = app.win.isMaximized()
                 var isMinimized = app.win.isMinimized()
                 var isFullScreen = app.win.isFullScreen()
@@ -339,27 +340,81 @@ const handler = {
         })
 
         ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
+            if (app.win.miniplayerActive) { return } // Here we would setup a function to open the fullscreen player with lyrics
+
             if (app.win.isMaximized()) {
                 app.win.restore()
-                if(process.platform !== "win32") {
+                if (process.platform !== "win32") {
                     app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.remove("maxed")`)
                 }
-                /*if (process.platform === 'win32' && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
-                    app.win.webContents.insertCSS(`.web-nav-window-controls #maximize { background-image: var(--gfx-maxedBtn) !important; };`).catch((e) => console.error(e))
-                }*/
             } else {
                 app.win.maximize()
-                if(process.platform !== "win32") {
+                if (process.platform !== "win32") {
                     app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.add("maxed")`)
                 }
-                /*if (process.platform === 'win32' && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
-                    app.win.webContents.insertCSS(`.web-nav-window-controls #maximize { background-image: var(--gfx-maxBtn) !important; };`).catch((e) => console.error(e))
-                }*/
             }
         })
 
         ipcMain.on('close', () => { // listen for close event
+            if (app.win.miniplayerActive) { ipcMain.emit("set-miniplayer", false); return; }
             app.win.close();
+        })
+
+        app.win.on('close', (event) => {
+            if (app.win.miniplayerActive) { ipcMain.emit("set-miniplayer", false); event.preventDefault(); }
+        })
+
+        ipcMain.on("resize-window", (event, width, height) => {
+            app.win.setSize(width, height)
+        })
+
+        const minSize = app.win.getMinimumSize()
+        ipcMain.on("set-miniplayer", (event, val) => {
+            if (val) {
+                app.win.miniplayerActive = true
+                app.win.setSize(300, 300)
+                app.win.setMinimumSize(300, 55)
+                app.win.setMaximumSize(300, 300)
+                app.win.setMaximizable(false)
+                app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(true)")
+            } else {
+                app.win.miniplayerActive = false
+                app.win.setMaximumSize(9999, 9999)
+                app.win.setMinimumSize(minSize[0], minSize[1])
+                app.win.setSize(1024, 600)
+                app.win.setMaximizable(true)
+                app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(false)")
+            }
+        })
+
+        ipcMain.on("show-miniplayer-menu", () => {
+            const menuOptions = [{
+                type: "checkbox",
+                label: "Always On Top",
+                click: () => {
+                    if (app.win.isAlwaysOnTop()) {
+                        app.win.setAlwaysOnTop(false, 'screen')
+                    } else {
+                        app.win.setAlwaysOnTop(true, 'screen')
+                    }
+                },
+                checked: app.win.isAlwaysOnTop()
+            }, {
+                label: "Exit Mini Player",
+                click: () => {
+                    ipcMain.emit("set-miniplayer", false)
+                }
+            }]
+            const menu = Menu.buildFromTemplate(menuOptions)
+            menu.popup(app.win)
+        })
+
+        ipcMain.on("alwaysOnTop", (event, val) => {
+            if (val) {
+                app.win.setAlwaysOnTop(true, 'screen')
+            } else {
+                app.win.setAlwaysOnTop(false, 'screen')
+            }
         })
 
         app.win.on('show', function () {
@@ -381,21 +436,45 @@ const handler = {
         console.verbose('[SettingsHandler] Started.');
         let DialogMessage, cachedPreferences = app.preferences._preferences;
 
+        const {
+            fetchTransparencyOptions
+        } = require('./CreateBrowserWindow')
+
         app.preferences.on('save', (updatedPreferences) => {
-            if (!DialogMessage) {
-                DialogMessage = dialog.showMessageBox(app.win, {
-                    title: "Restart Required",
-                    message: "A restart is required in order for the settings you have changed to apply.",
-                    type: "warning",
-                    buttons: ['Relaunch Now', 'Relaunch Later']
-                }).then(({
-                    response
-                }) => {
-                    if (response === 0) {
-                        app.relaunch()
-                        app.quit()
-                    }
-                })
+
+            // Handles Theme Changes
+            if (cachedPreferences.visual.theme !== updatedPreferences.visual.theme) {
+                app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`)
+                const updatedVibrancy = fetchTransparencyOptions()
+                if (app.transparency && updatedVibrancy && process.platform !== 'darwin') app.win.setVibrancy(updatedVibrancy);
+            } else if (cachedPreferences.visual.transparencyEffect !== updatedPreferences.visual.transparencyEffect) { // Handles Transparency Changes
+                const updatedVibrancy = fetchTransparencyOptions()
+                console.log(app.transparency)
+                if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
+                    app.win.setVibrancy(updatedVibrancy);
+                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(true);`)
+                } else {
+                    app.win.setVibrancy();
+                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(false);`)
+                }
+            } else if (cachedPreferences.visual.frameType !== updatedPreferences.visual.frameType) {
+                //    JavaScript function to be run here
+            } else {
+                if (!DialogMessage) {
+                    DialogMessage = dialog.showMessageBox(app.win, {
+                        title: "Restart Required",
+                        message: "A restart is required in order for the settings you have changed to apply.",
+                        type: "warning",
+                        buttons: ['Relaunch Now', 'Relaunch Later']
+                    }).then(({
+                        response
+                    }) => {
+                        if (response === 0) {
+                            app.relaunch()
+                            app.quit()
+                        }
+                    })
+                }
             }
 
             cachedPreferences = updatedPreferences

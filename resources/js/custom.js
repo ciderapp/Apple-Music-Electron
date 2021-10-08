@@ -7,16 +7,65 @@ try {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     }
 
+    if (typeof _miniPlayer == "undefined") {
+        var _miniPlayer = {
+            active: false,
+            init() {
+                let self = this;
+                var webChrome = document.querySelector(".web-chrome");
+                var wcHeight = webChrome.offsetHeight;
+                var elements = {
+                    artwork: document.createElement("div"),
+                    webNavContainer: document.querySelector("#web-navigation-container"),
+                    menuicon: document.querySelector(".menuicon")
+                };
+                elements.artwork.classList.add("miniPlayerArtwork");
+                elements.artwork.style.display = "none";
+                elements.artwork.addEventListener("contextmenu", () => {
+                    ipcRenderer.send("show-miniplayer-menu");
+                });
+                elements.artwork.addEventListener("click", () => {
+                    if (webChrome.style.display === "") {
+                        webChrome.style.display = "flex";
+                    } else {
+                        webChrome.style.display = "";
+                    }
+                });
+                document.querySelector("#web-main").appendChild(elements.artwork);
+                if (window.innerWidth < 500) {
+                    /* Resize if window was clsoed in Mini Player */
+                    ipcRenderer.send("resize-window", 1024, 600);
+                }
+            },
+            setMiniPlayer(val) {
+                var webChrome = document.querySelector(".web-chrome");
+                var artwork = document.querySelector(".miniPlayerArtwork");
+                if (val) {
+                    self.active = true;
+                    document.body.setAttribute("data-miniplayer", 1);
+                    artwork.style.display = "block";
+                } else {
+                    self.active = false;
+                    webChrome.style.display = "";
+                    document.body.removeAttribute("data-miniplayer");
+                    artwork.style.display = "none";
+                }
+            }
+        };
+        _miniPlayer.init();
+    }
+
     if (typeof AMThemes == "undefined") {
         var AMThemes = {
             _styleSheets: {
+                Transparency: new CSSStyleSheet(),
                 Theme: new CSSStyleSheet(),
-                Meta: new CSSStyleSheet()
+                Meta: new CSSStyleSheet(),
             },
             loadTheme(path = "") {
-                console.warn(`[Custom] Theme changed`);
+                console.warn("[Custom] Applied Theme");
                 let self = this;
-                if (path == "") {
+                if (path === "" || path === " ") {
                     self._styleSheets.Theme.replaceSync("");
                     self.refresh();
                     return;
@@ -30,26 +79,44 @@ try {
                 xhttp.send();
             },
             updateMeta() {
+                console.warn("[Custom] Refreshed Meta CSS");
                 /** Exposes artwork and other metadata to CSS for themes */
                 var musicKit = MusicKit.getInstance();
                 var artwork = musicKit.nowPlayingItem["attributes"]["artwork"]["url"];
                 this._styleSheets.Meta.replaceSync(`
-                    :root {
-                        --musicKit-artwork-64: url("${artwork.replace("{w}", 64).replace("{h}", 64)}");
-                        --musicKit-artwork-256: url("${artwork.replace("{w}", 256).replace("{h}", 256)}");
-                        --musicKit-artwork-512: url("${artwork.replace("{w}", 512).replace("{h}", 512)}");
-                        --musicKit-artwork: url("${artwork.replace("{w}", 2000).replace("{h}", 2000)}");
-                    }
-                `);
+                :root {
+                    --musicKit-artwork-64: url("${artwork.replace("{w}", 64).replace("{h}", 64)}");
+                    --musicKit-artwork-256: url("${artwork.replace("{w}", 256).replace("{h}", 256)}");
+                    --musicKit-artwork-512: url("${artwork.replace("{w}", 512).replace("{h}", 512)}");
+                    --musicKit-artwork: url("${artwork.replace("{w}", 2000).replace("{h}", 2000)}");
+                }
+            `);
                 this.refresh();
             },
+            setTransparency(val) {
+                let self = this;
+                if (val) {
+                    const xhttp = new XMLHttpRequest();
+                    xhttp.onload = function () {
+                        self._styleSheets.Transparency.replaceSync(this.responseText);
+                        self.refresh();
+                    };
+                    xhttp.open("GET", `ameres://css/transparency.css`, true);
+                    xhttp.send();
+                } else {
+                    self._styleSheets.Transparency.replaceSync(`html body { background-color: var(--pageBG) !important; }`);
+                }
+            },
             refresh() {
+                console.warn("[Custom] Refresh");
                 document.adoptedStyleSheets = Object.values(this._styleSheets);
             }
         };
         AMThemes.loadTheme(preferences["visual"]["theme"]);
+        if (preferences["visual"]["transparencyEffect"] !== "") {
+            AMThemes.setTransparency(true);
+        }
     }
-
 
     /* Remove the Region Banner */
     while (document.getElementsByClassName('locale-switcher-banner').length > 0) {
@@ -74,7 +141,11 @@ try {
 
             const ul = GetXPath("/html/body/div[6]/ul");
 
-            GetXPath('/html/body/div[6]/ul/li[2]').remove();
+            const amPreferencesNew = GetXPath('/html/body/div[6]/ul/li[2]');
+            GetXPath('/html/body/div[6]/ul/li[2]/span/span').innerHTML = 'Preferences (New)';
+            ul.insertBefore(amPreferencesNew, ul.childNodes[9]);
+
+            /* GetXPath('/html/body/div[6]/ul/li[2]').remove(); */
             const amSettings = document.createElement("li");
             amSettings.innerHTML = `
                     <span class="context-menu__option-text" tabindex="0" role="menuitem">
@@ -126,6 +197,19 @@ try {
             ul.insertBefore(amDiscord, ul.childNodes[4]);
         });
     }
+
+    /* MiniPlayer */
+    MusicKit.getInstance().addEventListener(MusicKit.Events.mediaElementCreated, () => {
+        console.log('Media Element Created!');
+        if (!document.querySelector('.media-artwork-v2__image').classList.contains('media-artwork-v2__image--fallback')) {
+            const artwork = document.querySelector('#ember13');
+            artwork.onclick = function () {
+                ipcRenderer.send("set-miniplayer", true);
+            };
+            /* Picture-in-picture icon should be overlayed over artwork when mouse over */
+        }
+    });
+
 
     /* Scroll Volume */
     if (document.querySelector('.web-chrome-playback-lcd__volume') && typeof volumeChange === 'undefined') {

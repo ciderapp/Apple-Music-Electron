@@ -1,56 +1,256 @@
 /* Back Button CSS */
 
 #backButtonBar {
-    position: absolute;
-    width: 100%;
-    top: 0;
-    height: 40px;
-    transition: 0.2s;
-    background-color: transparent;
-    padding: 5px 10px;
-    z-index: 9902;
-    opacity: 0.95;
-    margin-top: 55px;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  height: 40px;
+  transition: 0.2s;
+  background-color: transparent;
+  padding: 5px 10px;
+  z-index: 9902;
+  opacity: 0.95;
+  margin-top: 55px;
 }
 
 #backButtonBar .button-area {
-    position: inherit;
-    width: 50px;
-    height: 30px;
-    max-height: 30px;
-    cursor: pointer;
-    background-color: rgba(0, 0, 0, 0);
-    border-radius: 7px;
-    opacity: 1.0;
-    transition: 0.2s;
+  position: inherit;
+  width: 50px;
+  height: 30px;
+  max-height: 30px;
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 7px;
+  opacity: 1;
+  transition: 0.2s;
 }
 
 #backButtonBar .button-area:active {
-    background-color: var(--segmentedControlSelectedBG) !important;
-    backdrop-filter: saturate(0%) blur(25px) !important;
-    box-shadow: 0 0 .5px var(--segmentedControlSelectedBorder), 0 3px 8px var(--segmentedControlSelectedShadow1), 0 3px 1px var(--segmentedControlSelectedShadow2);
+  background-color: var(--segmentedControlSelectedBG) !important;
+  backdrop-filter: saturate(0%) blur(25px) !important;
+  box-shadow: 0 0 0.5px var(--segmentedControlSelectedBorder),
+    0 3px 8px var(--segmentedControlSelectedShadow1),
+    0 3px 1px var(--segmentedControlSelectedShadow2);
 }
 
 #backButtonBar .button-area img:active {
-    opacity: 1 !important;
+  opacity: 1 !important;
 }
 
 #backButtonBar .button-area img {
-    display: block;
-    margin: auto;
-    width: auto;
-    height: auto;
-    opacity: 0.50;
-    z-index: 10000;
-    transition: 0.2s;
+  display: block;
+  margin: auto;
+  width: auto;
+  height: auto;
+  opacity: 0.5;
+  z-index: 10000;
+  transition: 0.2s;
 }
 
 #backButtonBar .button-area img:hover {
-    opacity: 1;
+  opacity: 1;
 }
 
 @media (prefers-color-scheme: dark) {
-    #backButtonBar .button-area img {
-        filter: brightness(0) invert(1);
-    }
+  #backButtonBar .button-area img {
+    filter: brightness(0) invert(1);
+  }
+}
+
+/* Settings Menu CSS */
+
+.application-preferences {
+  width: 100%;
+  height: 100%;
+  padding-top: 50px;
+  display: grid;
+  grid-template-rows: auto auto auto auto;
+  grid-template-columns: auto;
+}
+
+.app-prefs-section {
+  width: 100%;
+  height: auto;
+}
+
+.app-prefs-section .settings-list {
+  padding: 0 10%
+}
+
+span.app-prefs-title {
+  height: 10px !important;
+}
+
+.settings-list {
+  margin: 50px 10px 50px 10px;
+}
+
+.settings-list li {
+  margin: 30px 0 30px 10px;
+}
+
+.settings-list li .list-element {
+  position: relative;
+  float: right;
+}
+
+/* Help */
+.settings-list .app-prefs-help {
+  color: #808080;
+  margin: 0 0;
+  font-size: 12px;
+  display: block;
+}
+
+.settings-list .app-prefs-divider .app-prefs-help {
+  font-size: 10px !important;
+  margin-left: 20px !important;
+}
+
+/* Divider */
+.settings-list .app-prefs-divider {
+  margin: 0 0;
+}
+
+/* LastFM Connect Button */
+.settings-list li .connect-button {
+  background-color: #E4141E;
+  color: white;
+  padding: 5px 10px;
+  margin-left: 20px;
+  border-radius: 5px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+/* Toggle Slider */
+.settings-list li .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  border-radius: 28px;
+}
+
+.settings-list li .slider:before {
+  border-radius: 50%;
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.settings-list li .toggle-element {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  grid-column: 3;
+  margin: 5px 20px 0 20px;
+}
+
+.settings-list li .toggle-element input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.settings-list li .toggle-element input:checked+.slider {
+  background-color: #34C759;
+}
+
+.settings-list li .toggle-element input:focus+.slider {
+  box-shadow: 0 0 1px #34C759;
+}
+
+.settings-list li .toggle-element input:checked+.slider:before {
+  -webkit-transform: translateX(20px);
+  -ms-transform: translateX(20px);
+  transform: translateX(20px);
+}
+
+/* Dropdown */
+.settings-list li .form-dropdown-select {
+  color: #f5f5f7;
+  border-color: #424245;
+  background-color: hsla(0, 0%, 100%, .04);
+  padding: 5px 10px;
+  margin-left: 20px;
+  border-radius: 5px;
+  font-size: 15px;
+  font-family: SF Pro Text, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif;
+}
+
+.settings-list li .form-dropdown-select option {
+  color: black;
+}
+
+.settings-list li .form-dropdown-select option:disabled {
+  color: #808080;
+}
+
+#ember13.media-artwork-v2--downloaded::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#ember13.media-artwork-v2--downloaded:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0 0 0 / 50%);
+  background-image: url("ameres://icons/webui/MiniPlayer_hover.svg");
+  background-size: contain;
+  background-position: center;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Mini Player Context Menu */
+@media only screen and (max-width: 400px) {
+
+  body[data-miniplayer] #web-main>.loading-inner,
+  body[data-miniplayer] #backButtonBar,
+  body[data-miniplayer] #web-navigation-container,
+  body[data-miniplayer] .web-chrome {
+    display: none;
+  }
+
+  body[data-miniplayer] .menuicon {
+    display: none !important;
+  }
+
+  body[data-miniplayer] li.context-menu__option {
+    font-size: 12px;
+    min-height: auto;
+  }
+
+  body[data-miniplayer] .miniPlayerArtwork {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: black;
+    background-image: var(--musicKit-artwork);
+    background-position: center;
+    background-size: cover;
+    z-index: 800;
+  }
 }
