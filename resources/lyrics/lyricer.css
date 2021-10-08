@@ -1,0 +1,49 @@
+@font-face {
+    font-family: SFSemiBold;
+    src: url("SF-Pro-Display-Semibold.otf") format("opentype");
+}
+
+@font-face {
+    font-family: SFSemiBold;
+    src: url("SFProJP_semibold.woff2") format("woff2");
+}
+
+#lyricer {
+	width: 90%;
+	font-size: 300%;
+	font-family: "SFSemiBold","SFJPSemiBold","Hiragino Sans GB W6",Tahoma,Arial;
+  	text-shadow: 0 0 1px #EEEEEE;
+  	color: #666666;
+  	overflow: hidden;
+	z-index: 2;  
+	position: absolute;
+	overflow-y: scroll;
+	margin-right: 20px;
+    margin-left: 5%;
+    height: 90%;
+}
+
+#lyricer::-webkit-scrollbar {
+	display: none;
+  }
+
+#lyricer ul {
+	list-style-type: none;
+	padding: 10px;
+
+	
+}
+
+#lyricer ul li {
+	overflow: auto;
+	margin-bottom: 20px;
+	opacity: 80%;
+}
+
+
+
+#lyricer .lyricer-current-line {
+	color: #fff;
+	text-shadow: 1.5px 1.5px 1.5px #a9a9a9;
+	opacity: 100%;
+}

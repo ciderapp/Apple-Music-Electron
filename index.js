@@ -57,6 +57,9 @@ function CreateWindow() {
     const {MediaStateHandler} = require('./resources/functions/handler')
     MediaStateHandler() // IPCMain
 
+    const {LyricsHandler} = require('./resources/functions/handler')
+    LyricsHandler()
+
     if (process.platform === 'win32' && app.transparency) { app.win.show() } // Show the window so SetThumbarButtons doesnt break
     app.funcs.SetThumbarButtons(null) // Set Inactive Thumbnail Toolbar Icons
 
