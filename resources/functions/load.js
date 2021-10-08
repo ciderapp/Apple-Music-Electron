@@ -88,6 +88,8 @@ module.exports = {
     },
 
     LoadFiles: async function () {
+        app.funcs.LoadJS('settingsPage.js');
+
         /* Remove Apple Music Logo */
         if (app.preferences.value('visual.removeAppleLogo').includes(true)) {
             app.funcs.LoadJS('removeAppleLogo.js')
@@ -196,9 +198,9 @@ module.exports = {
 
         // Load the appropriate css file for transparency
         if (app.transparency) {
-            app.funcs.LoadCSS('transparency.css')
+            // app.funcs.LoadCSS('transparency.css')
         } else {
-            app.win.webContents.insertCSS(`html body { background-color: var(--pageBG) !important; }`)
+            // app.win.webContents.insertCSS(`html body { background-color: var(--pageBG) !important; }`)
         }
 
         // Set the settings variables if needed

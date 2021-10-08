@@ -2136,8 +2136,10 @@ const init = {
             return x.replace(/\./g, "").replace(',', '.');
         }
 
+        const AcrylicSupported = ((!(!os.type().includes('Windows') || parseFloat(RemoveDP(os.release())) <= parseFloat(RemoveDP('10.0.17763')))));
+
         // Remove the Transparency Option for Acrylic if it is not supported
-        if (!os.type().includes('Windows') || parseFloat(RemoveDP(os.release())) <= parseFloat(RemoveDP('10.0.17763'))) {
+        if (!AcrylicSupported) {
             for (var key in fields.visual) {
                 if (fields.visual[key].key === 'transparencyEffect') {
                     fields.visual[key].options.shift()
@@ -2150,11 +2152,15 @@ const init = {
 
         // Set the Theme List based on css files in themes directory
         app.userThemesPath = resolve(app.getPath('userData'), 'themes');
+        let themesFileNames = [], themesListing = [];
         let ThemesList = [];
+
+        app.userPluginsPath = resolve(app.getPath('userData'), 'plugins');
+
         if (fs.existsSync(app.userThemesPath)) {
             fs.readdirSync(app.userThemesPath).forEach((value) => {
                 if (value.split('.').pop() === 'css') {
-                    ThemesList.push(value.split('.').shift())
+                    themesFileNames.push(value.split('.').shift())
                 }
             })
         }
@@ -2174,13 +2180,14 @@ const init = {
         }
 
         // Get the Info
-        ThemesList.forEach((themeFileName) => {
+        themesFileNames.forEach((themeFileName) => {
             const themeName = fetchThemeName(themeFileName)
             if (!themeName) return;
             fields.visual[0].options.push({
                 label: themeName,
                 value: themeFileName
             }, )
+            themesListing[`${themeFileName}`] = themeName
         })
 
         const ElectronPreferences = require("electron-preferences");
@@ -2328,7 +2335,20 @@ const init = {
                     path: join(app.userThemesPath, url.toLowerCase())
                 })
             })
+            protocol.registerFileProtocol('ameres', (request, callback) => {
+                const url = request.url.substr(7)
+                callback(fs.createReadStream(join(join(__dirname, '../'), url.toLowerCase())))
+            })
+            protocol.registerFileProtocol('plugin', (request, callback) => {
+                const url = request.url.substr(7)
+                callback({
+                    path: join(app.userPluginsPath, url.toLowerCase())
+                })
+            })
         })
+
+        app.preferences._preferences.supportsAcrylic = AcrylicSupported
+        app.preferences._preferences.availableThemes = themesListing
     },
 
     SentryInit: function () {
@@ -2337,6 +2357,18 @@ const init = {
                 dsn: "https://20e1c34b19d54dfcb8231e3ef7975240@o954055.ingest.sentry.io/5903033"
             });
         }
+    },
+
+    ElectronStoreInit: function () {
+        const Store = require('electron-store');
+        const StoreConfiguration = {
+            defaults: {},
+            schema: {},
+            migrations: {},
+            name: {}
+        } // default values and stuff
+        const store = new Store(StoreConfiguration);
+
     }
 }
 
