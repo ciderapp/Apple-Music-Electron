@@ -280,6 +280,7 @@ const handler = {
         });
 
         app.win.on('close', function (event) { // Hide the App if isQuitting is not true
+            if (app.win.miniplayerActive) { event.preventDefault(); ipcMain.emit("set-miniplayer", false); return; }
             if (!app.isQuiting || process.platform === "darwin") {
                 event.preventDefault();
                 if (typeof app.win.hide === 'function') {
