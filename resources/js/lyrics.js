@@ -8,7 +8,7 @@
             });
 
             MusicKit.getInstance().addEventListener( MusicKit.Events.nowPlayingItemDidChange, function(e){
-                GetXPath(buttonImagePath).src = "";
+                GetXPath(buttonImagePath).src = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
                 var artworkURL = MusicKitInterop.getAttributes()["artwork"]["url"];
                 if (artworkURL != ''){
                 GetXPath(buttonImagePath).src = (MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256);} else {
