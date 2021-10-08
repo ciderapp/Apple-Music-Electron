@@ -416,7 +416,8 @@ const handler = {
             webPreferences: {
            nodeIntegration: true, contextIsolation: false
         }});
-        ipcMain.on('LyricsHandler', function(event, data) {
+
+        ipcMain.on('LyricsHandler', function(event, data, artworkURL) {
             if (win == null){
                win = new BrowserWindow({ width: 800, height: 600 , show : true,       
                webPreferences: {
@@ -434,7 +435,9 @@ const handler = {
             });
             win.webContents.on('did-finish-load', ()=>{
                 if (win){
-                win.webContents.send('truelyrics', data);}
+                win.webContents.send('truelyrics', data);
+                win.webContents.send('albumart', artworkURL);
+            }
                 
               })
             
@@ -444,9 +447,11 @@ const handler = {
             if (win != null ){
             win.webContents.send('ProgressTimeUpdate', data);}    
         });
-        ipcMain.on('LyricsUpdate', function(event, data) {
+        ipcMain.on('LyricsUpdate', function(event, data, artworkURL) {
             if (win != null){
-            win.webContents.send('truelyrics', data);}    
+            win.webContents.send('truelyrics', data);
+            win.webContents.send('albumart', artworkURL);
+        }    
         });
         ipcMain.on('ProgressTimeUpdateFromLyrics', function(event, data) {
             if (win){

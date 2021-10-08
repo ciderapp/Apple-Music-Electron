@@ -2,20 +2,52 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Lyrcier Test</title>
+	<title>Lyrics</title>
 	<script type="text/javascript" src="lyricer.js"></script>
+	<script type="text/javascript" src="Vibrant.js"></script>
 	<link rel="stylesheet" href="lyricer.css">
 </head>
 <body>
+    <img style="width: 100%; height: 100%; filter: blur(8px);  background-repeat: no-repeat;
+	background-size: cover; position: absolute;" id="backgroundImage"></img>
 	<div id="lyricer">
 	</div>
 	<script type="text/javascript">
 	const { ipcRenderer } = require('electron');
+
+	function changeStylesheetRule(stylesheet, selector, property, value) {
+	selector = selector.toLowerCase();
+	property = property.toLowerCase();
+	value = value.toLowerCase();
+
+	for(var i = 0; i < stylesheet.cssRules.length; i++) {
+		var rule = stylesheet.cssRules[i];
+		if(rule.selectorText === selector) {
+			rule.style[property] = value;
+			return;
+		}
+	}
+  
+	stylesheet.insertRule(selector + " { " + property + ": " + value + "; }", 0);
+    }
+
 	var text = "";
 	var lrc = new Lyricer();
 	ipcRenderer.on('truelyrics', function (event, data) {
 	lrc.setLrc(data);
 	console.log("bruh");
+    });
+	ipcRenderer.on('albumart', function (event, data) {
+		document.getElementById("backgroundImage").onload = function() {
+		var vibrant = new Vibrant(this);
+		for (var swatch in swatches);
+		var swatches = vibrant.swatches();
+        if (swatches.hasOwnProperty(swatch) && swatches[swatch])
+            console.log(swatch, swatches[swatch].getHex());
+		changeStylesheetRule(document.styleSheets[0],'#lyricer ul li','color',swatches['Vibrant'].getHex());
+		}
+		document.getElementById("backgroundImage").setAttribute('src',`${data}`);
+	
     });
 	ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
 	lrc.move(data);

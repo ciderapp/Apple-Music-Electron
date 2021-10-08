@@ -1,25 +1,44 @@
+@font-face {
+    font-family: SFSemiBold;
+    src: url("SF-Pro-Display-Semibold.otf") format("opentype");
+}
+
 #lyricer {
-	font-size: 88%;
-	font-family: "Microsoft YaHei","Hiragino Sans GB W3",Tahoma,Arial;
+	width: 90%;
+	font-size: 300%;
+	font-family: "SFSemiBold","Hiragino Sans GB W3",Tahoma,Arial;
   	text-shadow: 0 0 1px #EEEEEE;
   	color: #666666;
   	overflow: hidden;
+	z-index: 1;  
+	position: absolute;
+	overflow-y: scroll;
+	margin-right: 20px;
+    margin-left: 5%;
+    height: 90%;
 }
+
+#lyricer::-webkit-scrollbar {
+	display: none;
+  }
 
 #lyricer ul {
 	list-style-type: none;
-	padding: 5px;
+	padding: 10px;
+
+	
 }
 
 #lyricer ul li {
 	overflow: auto;
+	margin-bottom: 20px;
+	opacity: 80%;
 }
 
-#lyricer ul li:hover {
-	color: #428bca;
-}
+
 
 #lyricer .lyricer-current-line {
 	color: #fff;
-	text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #fff, 0 0 4px #ff2d95, 0 0 6px #ff2d95, 0 0 8px #ff2d95, 0 0 10px #ff2d95, 0 0 12px #ff2d95;
+	text-shadow: 1.5px 1.5px 1.5px #a9a9a9;
+	opacity: 100%;
 }

@@ -52,9 +52,9 @@
 
 		// crate the range lrc array
 		// dummy lines
-		for (var i = 0; i < this.showLines; i++) {
-			this.rangeLrc.push( { "starttime": -1, "endtime": 0, "line": "&nbsp;" } );
-		};
+		// for (var i = 0; i < rawLrcArray.length; i++) {
+		// 	this.rangeLrc.push( { "starttime": -1, "endtime": 0, "line": "&nbsp;" } );
+		// };
 		// real data
 		var starttime = 0;
 		var line = "";
@@ -96,8 +96,8 @@
 		};
 
 		// hide the later ones
-		for (var i = self.showLines; i < self.totalLines; i++) {
-			document.getElementById(self.lineidPrefix + i).style.display = "none";
+		for (var i = self.totalLines; i < self.totalLines; i++) {
+			document.getElementById(self.lineidPrefix + i).style.display = "block";
 		};
 	};
 
@@ -132,10 +132,11 @@
 			if ( i >= startShow && i <= endShow ) {
 				li.style.display = "block";
 			} else{
-				li.style.display = "none";
+				li.style.display = "block";
 			};
 			if (i==line) {
 				li.className = self.currentcss;
+				li.scrollIntoView({ behavior: 'smooth', block: 'center'});
 			} else {
 				li.className = "";
 			};
