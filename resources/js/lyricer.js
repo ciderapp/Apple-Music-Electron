@@ -1,10 +1,10 @@
 (function () {
-	// The constrcutor can be empty or passed in the lrc string
+	/* The constrcutor can be empty or passed in the lrc string*/
 	var Lyricer = function (options) {
-		this.divID = "lyricer"; // the default html container id
-		this.currentcss = "lyricer-current-line"; // this css for the line current playing
-		this.lineidPrefix = "lyricer-line"; // the id prefix for each line
-		this.showLines = 8; //lines showing before and after;
+		this.divID = "lyricer"; /* the default html container id */
+		this.currentcss = "lyricer-current-line"; /* this css for the line current playing*/
+		this.lineidPrefix = "lyricer-line"; /* the id prefix for each line*/
+		this.showLines = 8; /*lines showing before and after;*/
 		this.clickable = true;
 		this.clickEventName = "lyricerclick";
 		if( options ) {
@@ -26,13 +26,13 @@
 		var timeRegex = /\[([0-9]+):([0-9.]+)\]/;
 		var rawLrcArray = rawLrc.split(/[\r\n]/);
 		for (var i = 0; i < rawLrcArray.length; i++) {
-			// handle tags first
+			/* handle tags first*/
 			var tag = tagRegex.exec(rawLrcArray[i]);
 			if ( tag && tag[0] ) {
 				this.tags[tag[1]] = tag[2];
 				continue;
 			}
-			// handle lrc
+			/* handle lrc*/
 			var lrc = lrcAllRegex.exec(rawLrcArray[i]);
 			if ( lrc && lrc[0] ) {
 				var times = lrc[1].replace(/\]\[/g,"],[").split(",");
@@ -45,17 +45,17 @@
 			};
 		};
 
-		//sort lrc array
+		/*sort lrc array*/
 		this.lrc.sort(function (a,b) {
 			return a.starttime - b.starttime;
 		});
 
-		// crate the range lrc array
-		// dummy lines
-		// for (var i = 0; i < rawLrcArray.length; i++) {
-		// 	this.rangeLrc.push( { "starttime": -1, "endtime": 0, "line": "&nbsp;" } );
-		// };
-		// real data
+		/* crate the range lrc array*/
+		/* dummy lines*/
+		/* for (var i = 0; i < rawLrcArray.length; i++) {
+		/* 	this.rangeLrc.push( { "starttime": -1, "endtime": 0, "line": "&nbsp;" } );
+		/* };
+		/* real data*/
 		var starttime = 0;
 		var line = "";
 		for (var i = 0; i < this.lrc.length; i++) {
@@ -65,13 +65,13 @@
 			line = this.lrc[i].line;
 		};
 		this.rangeLrc.push( { "starttime": starttime, "endtime": 999.99, "line": line } );
-		// dummy lines
-		// for (var i = 0; i < this.showLines; i++) {
-		// 	this.rangeLrc.push( { "starttime": -1, "endtime": 0, "line": "&nbsp;" } );
-		// };
+		/* dummy lines
+		/* for (var i = 0; i < this.showLines; i++) {
+		/* 	this.rangeLrc.push( { "starttime": -1, "endtime": 0, "line": "&nbsp;" } );
+		/* };*/
 		this.totalLines = this.rangeLrc.length;
 
-		// set html and move to start
+		/* set html and move to start*/
 		setHtml(this);
 		this.move(0);
 	};
@@ -95,7 +95,7 @@
 			ul.appendChild(li);
 		};
 
-		// hide the later ones
+		/* hide the later ones*/
 		for (var i = self.totalLines; i < self.totalLines; i++) {
 			document.getElementById(self.lineidPrefix + i).style.display = "block";
 		};
@@ -144,6 +144,6 @@
 		};
 	};
 	
-	window.Lyricer = Lyricer; //exposed to global
+	window.Lyricer = Lyricer; /*exposed to global*/
 
 })();

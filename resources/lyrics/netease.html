@@ -3,10 +3,8 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Lyrics</title>
-	<script type="text/javascript" src="Vibrant.js"></script>
 	<script type="text/javascript" src="../js/lyricer.js"></script>
 	<link rel="stylesheet" href="../css/lyricer.css">
-	<link rel="stylesheet" href="https://www.apple.com/wss/fonts?families=SF+Pro,v4|SF+Pro+Icons,v1&display=swap">
 	<link href="https://fonts.googleapis.com/css?family=M+PLUS+1p" rel="stylesheet">
 </head>
 <body style="margin: 0%;">
@@ -35,7 +33,7 @@
 
 	var text = "";
 	var lrc = new Lyricer();
-	ipcRenderer.on('truelyrics', function (event, lrcfile) {
+	ipcRenderer.on('neteasecors', function (event, lrcfile) {
 		if (lrcfile.startsWith("netease=")){
 		try{	
 		var url  = "https://music.163.com/api/search/pc?s="+lrcfile.substring(8)+"&type=1&limit=1";
@@ -52,39 +50,21 @@
         req2.onload  = function() {
         var jsonResponse2 = JSON.parse(req2.responseText);
         var lyrics = jsonResponse2["lrc"]["lyric"];
-        lrc.setLrc(lyrics)};
+		ipcRenderer.send('LyricsHandlerNE',lyrics);	
+        window.close();
+	};
         req2.send();
         };
-        req.send();}catch(e){
-		lrc.setLrc('[00:00] Instrumental. / Lyrics not found.');	
+        req.send();
+	}catch(e){
+		ipcRenderer.send('LyricsHandlerNE','[00:00] Instrumental. / Lyrics not found.');
+        window.close();		
 		} } 
-	else{	
-	lrc.setLrc(lrcfile);}
-    });
-	ipcRenderer.on('albumart', function (event, data) {
-		document.getElementById("backgroundImage").onload = function() {
-		var vibrant = new Vibrant(this,128,3);
-		for (var swatch in swatches);
-		var swatches = vibrant.swatches();
-        if (swatches.hasOwnProperty(swatch) && swatches[swatch])
-            console.log(swatch, swatches[swatch].getHex());
-		var selectedswatch = (swatches['LightVibrant'] != null ) ? swatches['LightVibrant'] : swatches['Vibrant'];
-		changeStylesheetRule(document.styleSheets[0],'#lyricer ul li','color',selectedswatch.getHex());
-		}
-		document.getElementById("backgroundImage").setAttribute('src',`${data}`);
-	
-    });
-	ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
-    if (data < 0){data = 0};
-	lrc.move(data);
+	else{}
     });
 	
 
 	lrc.setLrc(text);
-	window.addEventListener("lyricerclick", function(e){
-		ipcRenderer.send('ProgressTimeUpdateFromLyrics',e.detail.time);
-		console.log('clicked on ' + e.detail.time);
-	});
 	</script>
 </body>
 </html>
