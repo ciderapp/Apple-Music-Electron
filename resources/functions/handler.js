@@ -280,7 +280,11 @@ const handler = {
         });
 
         app.win.on('close', function (event) { // Hide the App if isQuitting is not true
-            if (app.win.miniplayerActive) { event.preventDefault(); ipcMain.emit("set-miniplayer", false); return; }
+            if (app.win.miniplayerActive) {
+                event.preventDefault();
+                ipcMain.emit("set-miniplayer", false);
+                return;
+            }
             if (!app.isQuiting || process.platform === "darwin") {
                 event.preventDefault();
                 if (typeof app.win.hide === 'function') {
@@ -339,7 +343,9 @@ const handler = {
         })
 
         ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
-            if (app.win.miniplayerActive) { return } // Here we would setup a function to open the fullscreen player with lyrics
+            if (app.win.miniplayerActive) {
+                return
+            } // Here we would setup a function to open the fullscreen player with lyrics
 
             if (app.win.isMaximized()) {
                 app.win.restore()
@@ -355,12 +361,18 @@ const handler = {
         })
 
         ipcMain.on('close', () => { // listen for close event
-            if (app.win.miniplayerActive) { ipcMain.emit("set-miniplayer", false); return; }
+            if (app.win.miniplayerActive) {
+                ipcMain.emit("set-miniplayer", false);
+                return;
+            }
             app.win.close();
         })
 
         app.win.on('close', (event) => {
-            if (app.win.miniplayerActive) { ipcMain.emit("set-miniplayer", false); event.preventDefault(); }
+            if (app.win.miniplayerActive) {
+                ipcMain.emit("set-miniplayer", false);
+                event.preventDefault();
+            }
         })
 
         ipcMain.on("resize-window", (event, width, height) => {
@@ -414,6 +426,10 @@ const handler = {
             } else {
                 app.win.setAlwaysOnTop(false, 'screen')
             }
+        })
+
+        ipcMain.on("load-plugin", (event, plugin) => {
+
         })
 
         app.win.on('show', function () {

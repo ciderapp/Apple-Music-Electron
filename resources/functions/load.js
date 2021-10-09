@@ -43,13 +43,16 @@ module.exports = {
         });
     },
 
-    LoadJS: function (path) {
+    LoadJS: function (path, formatting = true) {
         path = join(join(__dirname, '../js/'), path)
 
         readFile(path, "utf-8", function (error, data) {
             if (!error) {
                 try {
-                    let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
+                    let formattedData = data
+                    if(formatting) {
+                        formattedData = data.replace(/\s{2,10}/g, ' ').trim();
+                    }
                     app.win.webContents.executeJavaScript(formattedData).then(() => {
                         console.verbose(`[LoadJSFile] '${path}' successfully injected.`)
                     });
@@ -81,7 +84,6 @@ module.exports = {
             } else {
                 console.log(`[LoadWebsite] Loaded '${urlLanguage}'`)
             }
-
         }).catch((err) => {
             app.win.loadURL(urlFallback).then(() => console.error(`[LoadWebsite] '${urlLanguage}' was unavailable, falling back to '${urlFallback}' | ${err}`))
         })
@@ -185,6 +187,7 @@ module.exports = {
     LoadOneTimeFiles: function () {
         // Inject the custom stylesheet
         app.funcs.LoadCSS('custom-stylesheet.css')
+        app.funcs.LoadJS('pluginSystem.js', false)
 
         // Window Frames
         if (app.preferences.value('visual.frameType') === 'mac') {

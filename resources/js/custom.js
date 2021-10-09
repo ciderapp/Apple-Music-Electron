@@ -7,6 +7,10 @@ try {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     }
 
+    if(typeof _plugins != "undefined") {
+        _plugins.execute("OnNavigation")
+    }
+
     if (typeof _miniPlayer == "undefined") {
         var _miniPlayer = {
             active: false,
