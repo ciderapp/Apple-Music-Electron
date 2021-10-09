@@ -2,7 +2,7 @@
   "name": "apple-music-electron",
   "applicationId": "AppleMusicElectron",
   "productName": "Apple Music",
-  "version": "2.5.1",
+  "version": "3.0.0",
   "description": "A free, lightweight, open source alternative to iTunes and other Apple Music applications based on Electron 15.0.0",
   "license": "MIT",
   "author": "Apple Music Electron Team <cryptofyre@protonmail.com> (https://applemusicelectron.com)",
