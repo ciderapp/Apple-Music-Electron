@@ -468,8 +468,8 @@ try {
         function LastFMAuthenticate() {
             const element = document.getElementById('lfmConnect');
             preferences.general.lastfmEnabled = [true];
-            window.open('https://www.last.fm/api/auth?api_key=174905d201451602407b428a86e8344d&cb=ame://auth/lastfm')
-            element.innerText = 'Connecting...'
+            window.open('https://www.last.fm/api/auth?api_key=174905d201451602407b428a86e8344d&cb=ame://auth/lastfm');
+            element.innerText = 'Connecting...';
 
             /* 
             Get the callback and set preferences.general.lastfmAuthKey to it
