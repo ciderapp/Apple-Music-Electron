@@ -489,7 +489,6 @@ const handler = {
         });
         ipcMain.on('LyricsHandlerNE', function(event, data) {
             app.win.send('truelyrics', data);
-            win.close();
         });
         ipcMain.on('LyricsTimeUpdate', function(event, data) {
             app.win.send('ProgressTimeUpdate', data);
