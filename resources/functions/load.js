@@ -119,7 +119,6 @@ module.exports = {
         }
 
         app.funcs.LoadJS('custom.js')
-        app.funcs.LoadJS('lyricer.js')
         app.funcs.LoadJS('lyrics.js')
         function matchRuleShort(str, rule) {
             var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
@@ -176,6 +175,7 @@ module.exports = {
         app.funcs.LoadCSS('custom-stylesheet.css')
         app.funcs.LoadCSS('lyricer.css')
         app.funcs.LoadJS('pluginSystem.js', false)
+        app.funcs.LoadJS('lyricer.js')
 
         // Window Frames
         if (app.preferences.value('visual.frameType') === 'mac') {
