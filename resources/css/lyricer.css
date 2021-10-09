@@ -6,6 +6,21 @@ body {
 	background: black;
 }
 
+.appleSidebar {
+	—-panel-width: 100px;
+	width: var(—-panel-width);
+	animation: lyricsSlideOut .5s forward;
+   }
+   
+   @keyframes lyricsSlideOut {
+   0% {
+	transform: translateX(var(—-panelWidth));
+   }
+   100% {
+	transform: translateX(0px);
+   }
+}
+
 #backgroundImage {
 	width: 100%;
 	height: 100%;
