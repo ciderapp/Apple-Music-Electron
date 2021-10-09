@@ -115,11 +115,13 @@
             lyricsbutton.id = "lyricsbutton";
             lyricsbutton.className = "web-chrome-playback-controls__meta-btn web-chrome-playback-controls__secondary-btn";
         
+            
 
             if (document.getElementById("lyricsbutton") == null){
                 GetXPath(mediaControlsPath).insertBefore(lyricsbutton, GetXPath(mediaControlsPath).childNodes[4]);
                 document.getElementById("lyricsbutton").addEventListener('click', function () {
-                  
+                   /* if (document.getElementsByClassName("web-chrome-drawer-open").length == 0) {document.body.classList.add("web-chrome-drawer-open");} 
+                    else {document.body.classList.remove("web-chrome-drawer-open");} */
                     GetLyrics(2);
                     
                 },false);
