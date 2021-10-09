@@ -254,3 +254,14 @@ span.app-prefs-title {
     z-index: 800;
   }
 }
+
+/* Lyrics Button */
+#lyricsButton {
+  height: 22px;
+  width: 22px;
+  background-color: transparent;
+}
+
+#lyricsButton:active {
+  fill: var(--keyColor);
+}
