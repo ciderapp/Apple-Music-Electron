@@ -112,7 +112,7 @@ app.on('widevine-error', (error) => {
     process.exit(1)
 })
 
-app.on('before-quit', function () {
+app.on('before-quit', () => {
     app.funcs.mpris.clearActivity()
     app.funcs.discord.disconnect()
     console.log('---------------------------------------------------------------------')
@@ -121,6 +121,3 @@ app.on('before-quit', function () {
     app.isQuiting = true;
     globalShortcut.unregisterAll()
 });
-
-
-

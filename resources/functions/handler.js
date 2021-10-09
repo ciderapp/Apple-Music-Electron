@@ -344,6 +344,8 @@ const handler = {
                 if (typeof app.win.hide === "function") {
                     app.win.hide();
                 }
+            } else {
+                app.quit()
             }
 
         });
@@ -355,12 +357,12 @@ const handler = {
                 app.win.focus()
             }
             // if (app.win.StoredWebsite) app.win.loadURL(app.win.StoredWebsite)
-        })
+        });
 
         app.win.on('hide', () => {
             app.funcs.SetContextMenu(false)
             // app.win.StoredWebsite = app.win.webContents.getURL();
-        })
+        });
     },
 
     SettingsHandler: function () {
