@@ -21,7 +21,7 @@ body {
 	font-size: 2rem;
 	font-weight: 700;
 	font-family: "SF Pro", "M PLUS 1p", "Hiragino Sans GB W6", Tahoma, Arial;
-	/* text-shadow: rgb(238, 238, 238) 0px 0px 1px; */
+	text-shadow: rgb(238, 238, 238) 0px 0px 1px;
 	color: rgb(102, 102, 102);
 	overflow: hidden scroll;
 	z-index: 2;
