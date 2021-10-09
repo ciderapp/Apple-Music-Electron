@@ -111,6 +111,7 @@ try {
     }
 
     const mediaControlsPath = "/html/body/div[4]/div/div[3]/div/div[3]";
+    const sidebar = "/html/body/div[4]/div[3]/div[1]";
     var lyricsbutton = document.createElement("div");
     lyricsbutton.style.height = "22px";
     lyricsbutton.style.width = "22px";
@@ -124,8 +125,53 @@ try {
     if (document.getElementById("lyricsButton") == null) {
         GetXPath(mediaControlsPath).insertBefore(lyricsbutton, GetXPath(mediaControlsPath).childNodes[4]);
         document.getElementById("lyricsButton").addEventListener('click', function () {
-            /* if (document.getElementsByClassName("web-chrome-drawer-open").length == 0) {document.body.classList.add("web-chrome-drawer-open");}
-             else {document.body.classList.remove("web-chrome-drawer-open");} */
+             if (document.getElementsByClassName("web-chrome-drawer-open").length == 0) {
+                   document.body.classList.add("web-chrome-drawer-open");
+                   GetXPath(sidebar).innerHTML = `	<div id="lyricer">
+                   </div>`;
+                   var text = "";
+	var lrc = new Lyricer();
+	ipcRenderer.on('truelyrics', function (event, lrcfile) {
+		if (lrcfile.startsWith("netease=")){
+		try{	
+		var url  = "https://music.163.com/api/search/pc?s="+lrcfile.substring(8)+"&type=1&limit=1";
+        var req = new XMLHttpRequest();  
+        req.overrideMimeType("application/json");
+        req.open('GET', url, true);
+        req.onload  = function() {
+        var jsonResponse = JSON.parse(req.responseText);                
+        var id = jsonResponse["result"]["songs"][0]["id"];
+        var url2  = "https://music.163.com/api/song/lyric?os=pc&id="+id+"&lv=-1&kv=-1&tv=-1";
+        var req2 = new XMLHttpRequest();  
+        req2.overrideMimeType("application/json");
+        req2.open('GET', url2, true);
+        req2.onload  = function() {
+        var jsonResponse2 = JSON.parse(req2.responseText);
+        var lyrics = jsonResponse2["lrc"]["lyric"];
+        lrc.setLrc(lyrics)};
+        req2.send();
+        };
+        req.send();
+    }catch(e){
+		lrc.setLrc('[00:00] Instrumental. / Lyrics not found.');	
+		} } 
+	else{	
+	lrc.setLrc(lrcfile);}
+    });
+	ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
+    if (data < 0){data = 0};
+	lrc.move(data);
+    });
+	
+
+	lrc.setLrc(text);
+	window.addEventListener("lyricerclick", function(e){
+		ipcRenderer.send('ProgressTimeUpdateFromLyrics',e.detail.time);
+		console.log('clicked on ' + e.detail.time);
+        document.body.setAttribute("background-color", `var(--systemToolbarTitlebarMaterialSover-inactive)`);
+	});
+                }
+             else {document.body.classList.remove("web-chrome-drawer-open");} 
             GetLyrics(2);
         }, false);
     }

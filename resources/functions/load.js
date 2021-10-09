@@ -119,6 +119,7 @@ module.exports = {
         }
 
         app.funcs.LoadJS('custom.js')
+        app.funcs.LoadJS('lyricer.js')
         app.funcs.LoadJS('lyrics.js')
         function matchRuleShort(str, rule) {
             var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
@@ -173,6 +174,7 @@ module.exports = {
     LoadOneTimeFiles: function () {
         // Inject the custom stylesheet
         app.funcs.LoadCSS('custom-stylesheet.css')
+        app.funcs.LoadCSS('lyricer.css')
         app.funcs.LoadJS('pluginSystem.js', false)
 
         // Window Frames

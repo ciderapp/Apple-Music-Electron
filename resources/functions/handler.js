@@ -432,47 +432,52 @@ const handler = {
     },
 
     LyricsHandler: function(lyrics) {
-        let win = new BrowserWindow({ width: 800, height: 600 , show : false,  autoHideMenuBar: true,
-            webPreferences: {
-           nodeIntegration: true, contextIsolation: false
-        }});
+        // let win = new BrowserWindow({ width: 800, height: 600 , show : false,  autoHideMenuBar: true,
+        //     webPreferences: {
+        //    nodeIntegration: true, contextIsolation: false
+        // }});
 
         ipcMain.on('LyricsHandler', function(event, data, artworkURL) {
-            if (win == null){
-               win = new BrowserWindow({ width: 800, height: 600 , show : true,  autoHideMenuBar: true,   
-               webPreferences: {
-               nodeIntegration: true, 
-               contextIsolation: false,
+            // if (win == null){
+            //    win = new BrowserWindow({ width: 800, height: 600 , show : true,  autoHideMenuBar: true,   
+            //    webPreferences: {
+            //    nodeIntegration: true, 
+            //    contextIsolation: false,
                
-               }
-            });
-            }
+            //    }
+            // });
+            // }
             console.log("attempted: " + data) 
             // Or load a local HTML file
-            win.loadFile(join(__dirname, '../lyrics/index.html'));
-            win.show();
-            win.on('closed', () => {
-                win = null
-            });
-            win.webContents.on('did-finish-load', ()=>{
-                if (win){
-                win.webContents.send('truelyrics', data);
-                win.webContents.send('albumart', artworkURL);
-            }
+            // win.loadFile(join(__dirname, '../lyrics/index.html'));
+            // win.show();
+            // win.on('closed', () => {
+            //     win = null
+            // });
+            app.win.send('truelyrics', data);
+            app.win.send('albumart', artworkURL);
+            // win.webContents.on('did-finish-load', ()=>{
+            //     if (win){
+            //     win.webContents.send('truelyrics', data);
+            //     win.webContents.send('albumart', artworkURL);
+            // }
                 
-              })
+            //  })
             
           
         });
         ipcMain.on('LyricsTimeUpdate', function(event, data) {
-            if (win != null ) {
-            win.webContents.send('ProgressTimeUpdate', data);}    
+            app.win.send('ProgressTimeUpdate', data);
+            // if (win != null ) {
+            // win.webContents.send('ProgressTimeUpdate', data);}    
         });
         ipcMain.on('LyricsUpdate', function(event, data, artworkURL) {
-            if (win != null) {
-            win.webContents.send('truelyrics', data);
-            win.webContents.send('albumart', artworkURL);
-        }    
+            app.win.send('truelyrics', data);
+            app.win.send('albumart', artworkURL);
+        //     if (win != null) {
+        //     win.webContents.send('truelyrics', data);
+        //     win.webContents.send('albumart', artworkURL);
+        // }    
         });
         ipcMain.on('ProgressTimeUpdateFromLyrics', function(event, data) {
             if (win) {
