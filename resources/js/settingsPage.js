@@ -459,19 +459,23 @@ try {
         function LastFMDeauthorize() {
             preferences.general.lastfmAuthKey = 'Put your Auth Key here.';
             preferences.general.lastfmEnabled = [];
-            ipcRenderer.sendSync('setPreferences', preferences );
+            ipcRenderer.sendSync('setPreferences', preferences);
             const element = document.getElementById('lfmConnect');
             element.innerHTML = 'Connect';
             element.onclick = LastFMAuthenticate;
         }
+
         function LastFMAuthenticate() {
             const element = document.getElementById('lfmConnect');
             preferences.general.lastfmEnabled = [true];
-            window.open('LastFMLink');
+            window.open('https://www.last.fm/api/auth?api_key=174905d201451602407b428a86e8344d&cb=ame://auth/lastfm')
             element.innerText = 'Connecting...'
 
-            /* Get the callback and set preferences.general.lastfmAuthKey to it
-
+            /* 
+            Get the callback and set preferences.general.lastfmAuthKey to it
+            
+            ---Check Lines 428-431 on handler.js, hopefully it works - child-duckling (Quacksire#6003)---
+            
             ipcRenderer.sendSync('setPreferences', preferences );
 
 
@@ -482,14 +486,15 @@ try {
             element.onclick = LastFMDeauthorize;*/
         }
 
-        function hasParentClass(child, classname){
-            if(child.className.split(' ').indexOf(classname) >= 0) return true;
-            try{
+        function hasParentClass(child, classname) {
+            if (child.className.split(' ').indexOf(classname) >= 0) return true;
+            try {
                 return child.parentNode && hasParentClass(child.parentNode, classname);
-            }catch(TypeError){
+            } catch (TypeError) {
                 return false;
             }
         }
+
         function HandleField(element) {
             const field = document.getElementById(element);
             if (!field) return 'Element Not Found';
@@ -515,18 +520,16 @@ try {
                 field.checked = fieldCategory[element].includes(true);
                 field.addEventListener('change', (event) => {
                     fieldCategory[element] = (event.target.checked ? [true] : []);
-                    ipcRenderer.sendSync('setPreferences', preferences );
+                    ipcRenderer.sendSync('setPreferences', preferences);
                 });
-            }
-            else if (field.classList.contains('form-dropdown-select')) {
+            } else if (field.classList.contains('form-dropdown-select')) {
                 /* Dropdowns */
                 field.value = fieldCategory[element];
                 field.addEventListener('change', (event) => {
                     fieldCategory[element] = event.target.value;
-                    ipcRenderer.sendSync('setPreferences', preferences );
+                    ipcRenderer.sendSync('setPreferences', preferences);
                 });
-            }
-            else if (field.classList.contains('connect-button')) {
+            } else if (field.classList.contains('connect-button')) {
                 if (preferences.general.lastfmAuthKey !== 'Put your Auth Key here.' && preferences.general.lastfmAuthKey) {
                     field.innerHTML = `Disconnect\n<p style="font-size: 8px"><i>(Authed: ${preferences.general.lastfmAuthKey})</i></p>`;
                     field.onclick = LastFMDeauthorize;
