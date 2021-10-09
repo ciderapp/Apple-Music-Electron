@@ -1,25 +1,31 @@
 :root {
 	--appleEase: cubic-bezier(0.42, 0, 0.58, 1);
+	--panel-width: 300px;
 }
 
 body {
 	background: black;
 }
 
+
+
 .appleSidebar {
-	—-panel-width: 100px;
-	width: var(—-panel-width);
-	animation: lyricsSlideOut .5s forward;
-   }
-   
-   @keyframes lyricsSlideOut {
-   0% {
-	transform: translateX(var(—-panelWidth));
-   }
-   100% {
-	transform: translateX(0px);
-   }
+	width: var(--panelWidth);
+	animation: 3s lyricsSlideOut forwards;
+	
 }
+
+@keyframes lyricsSlideOut {
+	0% {
+	 transform: translateX(-300px) ; 
+	}
+	100% {
+	 transform: translateX(0px) ;
+	}
+}
+   
+
+
 
 #backgroundImage {
 	width: 100%;

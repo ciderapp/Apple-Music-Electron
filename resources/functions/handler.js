@@ -8,8 +8,8 @@ const rimraf = require('rimraf');
 app.currentPlaybackActivity = false
 
 const handler = {
+    
     LaunchHandler: function() {
-
         // Version Fetch
         if (app.commandLine.hasSwitch('version') || app.commandLine.hasSwitch('v')) {
             console.log(app.getVersion())
@@ -441,8 +441,8 @@ const handler = {
 
     LyricsHandler: function(lyrics) {
         let win = new BrowserWindow({
-            width: 800,
-            height: 600,
+            width: 1,
+            height: 1,
             show: false,
             autoHideMenuBar: true,
             webPreferences: {
@@ -451,52 +451,55 @@ const handler = {
             }
         });
 
-        ipcMain.on('LyricsHandler', function(event, data, artworkURL) {
-            if (win == null) {
-                win = new BrowserWindow({
-                    width: 800,
-                    height: 600,
-                    show: true,
-                    autoHideMenuBar: true,
-                    webPreferences: {
-                        nodeIntegration: true,
-                        contextIsolation: false,
-
-                    }
-                });
-            }
-            console.log("attempted: " + data)
-                // Or load a local HTML file
-            win.loadFile(join(__dirname, '../lyrics/index.html'));
-            win.show();
-            win.on('closed', () => {
-                win = null
-            });
-            win.webContents.on('did-finish-load', () => {
-                if (win) {
-                    win.webContents.send('truelyrics', data);
-                    win.webContents.send('albumart', artworkURL);
+        ipcMain.on('NetEaseLyricsHandler', function(event, data){
+            try{	 
+                if (win == null) {
+                    win = new BrowserWindow({
+                        width: 100,
+                        height: 100,
+                        show: false,
+                        autoHideMenuBar: true,
+                        webPreferences: {
+                            nodeIntegration: true,
+                            contextIsolation: false,
+    
+                        }
+                    });
+                    win.webContents.on('did-finish-load', () => {
+                        win.webContents.send('neteasecors', data);  
+                    });
+                } else {
+                    win.webContents.on('did-finish-load', () => {
+                        win.webContents.send('neteasecors', data);  
+                    });
                 }
+                win.loadFile(join(__dirname, '../lyrics/netease.html'));
+                win.on('closed', () => {
+                win = null
+                });
 
-            })
-
-
+            }catch(e){
+                console.log(e);
+                app.win.send('truelyrics', '[00:00] Instrumental. / Lyrics not found.');	
+            } 
+        });
+        ipcMain.on('LyricsHandler', function(event, data, artworkURL) {
+            app.win.send('truelyrics', data);
+            app.win.send('albumart', artworkURL);
+        });
+        ipcMain.on('LyricsHandlerNE', function(event, data) {
+            app.win.send('truelyrics', data);
+            win.close();
         });
         ipcMain.on('LyricsTimeUpdate', function(event, data) {
-            if (win != null) {
-                win.webContents.send('ProgressTimeUpdate', data);
-            }
+            app.win.send('ProgressTimeUpdate', data);
         });
         ipcMain.on('LyricsUpdate', function(event, data, artworkURL) {
-            if (win != null) {
-                win.webContents.send('truelyrics', data);
-                win.webContents.send('albumart', artworkURL);
-            }
+            app.win.send('truelyrics', data);
+            app.win.send('albumart', artworkURL);
         });
         ipcMain.on('ProgressTimeUpdateFromLyrics', function(event, data) {
-            if (win) {
-                app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`).catch((e) => console.error(e));
-            }
+            app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`).catch((e) => console.error(e));
         });
     }
 }
