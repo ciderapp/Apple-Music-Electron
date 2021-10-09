@@ -8,7 +8,7 @@ const rimraf = require('rimraf');
 app.currentPlaybackActivity = false
 
 const handler = {
-    LaunchHandler: function () {
+    LaunchHandler: function() {
 
         // Version Fetch
         if (app.commandLine.hasSwitch('version') || app.commandLine.hasSwitch('v')) {
@@ -44,7 +44,7 @@ const handler = {
         })
 
         // For macOS
-        app.on('open-url', function (event, url) {
+        app.on('open-url', function(event, url) {
             event.preventDefault()
             if (url.includes('ame://') || url.includes('itms://') || url.includes('itmss://') || url.includes('musics://') || url.includes('music://')) {
                 handler.LinkHandler(url)
@@ -53,7 +53,7 @@ const handler = {
 
     },
 
-    LaunchHandlerPostWin: function () {
+    LaunchHandlerPostWin: function() {
         // Detect if the application has been opened with --minimized
         if (app.commandLine.hasSwitch('minimized') || process.argv.includes('--minimized')) {
             console.log("[Apple-Music-Electron] Application opened with '--minimized'");
@@ -71,7 +71,7 @@ const handler = {
         }
     },
 
-    VersionHandler: function () {
+    VersionHandler: function() {
         if (!app.preferences.value('storedVersion') || app.preferences.value('storedVersion') === undefined || app.preferences.value('storedVersion') !== app.getVersion()) {
 
             if (app.preferences.value('storedVersion')) {
@@ -85,14 +85,14 @@ const handler = {
             }
 
             if (existsSync(resolve(app.getPath('userData'), 'preferences.json'))) {
-                truncate(resolve(app.getPath('userData'), 'preferences.json'), 0, function () {
+                truncate(resolve(app.getPath('userData'), 'preferences.json'), 0, function() {
                     console.log(`[VersionHandler] Outdated / No Version Store Found. Clearing Preferences File. ('${resolve(app.getPath('userData'), 'preferences.json')}')`)
                 });
             }
         }
     },
 
-    InstanceHandler: function () {
+    InstanceHandler: function() {
         console.verbose('[InstanceHandler] Started.')
         const gotTheLock = app.requestSingleInstanceLock();
         let returnVal = false
@@ -129,7 +129,7 @@ const handler = {
         return returnVal
     },
 
-    PlaybackStateHandler: function () {
+    PlaybackStateHandler: function() {
         console.verbose('[playbackStateDidChange] Started.');
 
         ipcMain.on('playbackStateDidChange', (_event, a) => {
@@ -144,7 +144,7 @@ const handler = {
         });
     },
 
-    MediaStateHandler: function () {
+    MediaStateHandler: function() {
         console.verbose('[nowPlayingItemDidChange] Started.');
 
         ipcMain.on('nowPlayingItemDidChange', (_event, a) => {
@@ -156,7 +156,7 @@ const handler = {
         });
     },
 
-    WindowStateHandler: function () {
+    WindowStateHandler: function() {
         console.verbose('[WindowStateHandler] Started.');
         app.previousPage = app.win.webContents.getURL()
 
@@ -169,7 +169,7 @@ const handler = {
             }
         })
 
-        app.win.webContents.on('unresponsive', async () => {
+        app.win.webContents.on('unresponsive', async() => {
             const {
                 response
             } = await dialog.showMessageBox({
@@ -187,10 +187,10 @@ const handler = {
             }
         })
 
-        app.win.webContents.on('did-finish-load', async () => {
+        app.win.webContents.on('did-finish-load', async() => {
             console.verbose('[WindowStateHandler] Page finished loading.')
             LoadOneTimeFiles()
-            
+
             if (app.preferences.value('general.incognitoMode').includes(true)) {
                 new Notification({
                     title: 'Incognito Mode',
@@ -200,11 +200,11 @@ const handler = {
             }
         });
 
-        app.win.webContents.on('did-start-loading', async () => {
+        app.win.webContents.on('did-start-loading', async() => {
             app.previousPage = app.win.webContents.getURL()
         });
 
-        app.win.webContents.on('page-title-updated', function (event) { // Prevents the Window Title from being Updated
+        app.win.webContents.on('page-title-updated', function(event) { // Prevents the Window Title from being Updated
             LoadFiles()
             event.preventDefault()
         });
@@ -227,10 +227,10 @@ const handler = {
                 const state = wndState;
                 if (isMinimized && state !== WND_STATE.MINIMIZED) {
                     wndState = WND_STATE.MINIMIZED
-                    // 
+                        // 
                 } else if (isFullScreen && state !== WND_STATE.FULL_SCREEN) {
                     wndState = WND_STATE.FULL_SCREEN
-                    // 
+                        // 
                 } else if (isMaximized && state !== WND_STATE.MAXIMIZED) {
                     wndState = WND_STATE.MAXIMIZED
                     app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.add("maxed")`)
@@ -337,9 +337,12 @@ const handler = {
         })
 
         app.win.on('close', (event) => {
-            if (app.win.miniplayerActive) { ipcMain.emit("set-miniplayer", false); event.preventDefault(); }
+            if (app.win.miniplayerActive) {
+                ipcMain.emit("set-miniplayer", false);
+                event.preventDefault();
+            }
 
-            if ((app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === "darwin") && !app.isQuiting) {// Hide the App if isQuitting is not true
+            if ((app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === "darwin") && !app.isQuiting) { // Hide the App if isQuitting is not true
                 event.preventDefault()
                 if (typeof app.win.hide === "function") {
                     app.win.hide();
@@ -361,11 +364,11 @@ const handler = {
 
         app.win.on('hide', () => {
             app.funcs.SetContextMenu(false)
-            // app.win.StoredWebsite = app.win.webContents.getURL();
+                // app.win.StoredWebsite = app.win.webContents.getURL();
         });
     },
 
-    SettingsHandler: function () {
+    SettingsHandler: function() {
         console.verbose('[SettingsHandler] Started.');
         let DialogMessage, cachedPreferences = app.preferences._preferences;
 
@@ -377,8 +380,7 @@ const handler = {
                 app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`).catch((e) => console.error(e));
                 const updatedVibrancy = fetchTransparencyOptions();
                 if (app.transparency && updatedVibrancy && process.platform !== 'darwin') app.win.setVibrancy(updatedVibrancy);
-            }
-            else if ((cachedPreferences.visual.transparencyEffect !== updatedPreferences.visual.transparencyEffect) || (cachedPreferences.visual.transparencyTheme !== updatedPreferences.visual.transparencyTheme) || (cachedPreferences.visual.transparencyMaximumRefreshRate !== updatedPreferences.visual.transparencyMaximumRefreshRate)) { // Handles Transparency Changes
+            } else if ((cachedPreferences.visual.transparencyEffect !== updatedPreferences.visual.transparencyEffect) || (cachedPreferences.visual.transparencyTheme !== updatedPreferences.visual.transparencyTheme) || (cachedPreferences.visual.transparencyMaximumRefreshRate !== updatedPreferences.visual.transparencyMaximumRefreshRate)) { // Handles Transparency Changes
                 const updatedVibrancy = fetchTransparencyOptions()
                 if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
                     app.win.setVibrancy(updatedVibrancy);
@@ -387,20 +389,16 @@ const handler = {
                     app.win.setVibrancy();
                     app.win.webContents.executeJavaScript(`AMThemes.setTransparency(false);`).catch((e) => console.error(e));
                 }
-            }
-            else if (cachedPreferences.visual.frameType !== updatedPreferences.visual.frameType) {
+            } else if (cachedPreferences.visual.frameType !== updatedPreferences.visual.frameType) {
                 //    run js function to unload / load new frame
-            }
-            else if (cachedPreferences.general.discordRPC !== updatedPreferences.general.discordRPC) {
+            } else if (cachedPreferences.general.discordRPC !== updatedPreferences.general.discordRPC) {
                 console.log(updatedPreferences.general.discordRPC)
                 if (updatedPreferences.general.discordRPC) {
                     app.funcs.discord.disconnect()
                 }
-            }
-            else if (cachedPreferences.window.closeButtonMinimize !== updatedPreferences.window.closeButtonMinimize || cachedPreferences.general.incognitoMode !== updatedPreferences.general.incognitoMode) {
+            } else if (cachedPreferences.window.closeButtonMinimize !== updatedPreferences.window.closeButtonMinimize || cachedPreferences.general.incognitoMode !== updatedPreferences.general.incognitoMode) {
                 //
-            }
-            else {
+            } else {
                 if (!DialogMessage) {
                     DialogMessage = dialog.showMessageBox(app.win, {
                         title: "Restart Required",
@@ -422,62 +420,83 @@ const handler = {
         });
     },
 
-    LinkHandler: function (songId) {
+    LinkHandler: function(songId) {
         if (!songId) return;
-        console.log(songId)
-        let formattedSongID = songId.replace(/\D+/g, '');
-        console.warn(`[LinkHandler] Attempting to load song id: ${formattedSongID}`);
-        // Someone look into why playMediaItem doesn't work thanks - cryptofyre
-        app.win.webContents.executeJavaScript(`MusicKit.getInstance().changeToMediaItem('${formattedSongID}')`)
+
+
+        if (String(songId).includes('auth')) {
+            let authURI = String(songId).split('/auth/')[1]
+            if (authURI.startsWith('lastfm')) { // If we wanted more auth options
+                preferences.general.lastfmAuthKey = authURI.split('lastfm?token=')[1]
+            }
+        } else {
+            console.log(songId)
+            let formattedSongID = songId.replace(/\D+/g, '');
+            console.warn(`[LinkHandler] Attempting to load song id: ${formattedSongID}`);
+            // Someone look into why playMediaItem doesn't work thanks - cryptofyre
+            app.win.webContents.executeJavaScript(`MusicKit.getInstance().changeToMediaItem('${formattedSongID}')`)
+        }
+
     },
 
     LyricsHandler: function(lyrics) {
-        let win = new BrowserWindow({ width: 800, height: 600 , show : false,  autoHideMenuBar: true,
+        let win = new BrowserWindow({
+            width: 800,
+            height: 600,
+            show: false,
+            autoHideMenuBar: true,
             webPreferences: {
-           nodeIntegration: true, contextIsolation: false
-        }});
+                nodeIntegration: true,
+                contextIsolation: false
+            }
+        });
 
         ipcMain.on('LyricsHandler', function(event, data, artworkURL) {
-            if (win == null){
-               win = new BrowserWindow({ width: 800, height: 600 , show : true,  autoHideMenuBar: true,   
-               webPreferences: {
-               nodeIntegration: true, 
-               contextIsolation: false,
-               
-               }
-            });
+            if (win == null) {
+                win = new BrowserWindow({
+                    width: 800,
+                    height: 600,
+                    show: true,
+                    autoHideMenuBar: true,
+                    webPreferences: {
+                        nodeIntegration: true,
+                        contextIsolation: false,
+
+                    }
+                });
             }
-            console.log("attempted: " + data) 
-            // Or load a local HTML file
+            console.log("attempted: " + data)
+                // Or load a local HTML file
             win.loadFile(join(__dirname, '../lyrics/index.html'));
             win.show();
             win.on('closed', () => {
                 win = null
             });
-            win.webContents.on('did-finish-load', ()=>{
-                if (win){
-                win.webContents.send('truelyrics', data);
-                win.webContents.send('albumart', artworkURL);
-            }
-                
-              })
-            
-          
+            win.webContents.on('did-finish-load', () => {
+                if (win) {
+                    win.webContents.send('truelyrics', data);
+                    win.webContents.send('albumart', artworkURL);
+                }
+
+            })
+
+
         });
         ipcMain.on('LyricsTimeUpdate', function(event, data) {
-            if (win != null ) {
-            win.webContents.send('ProgressTimeUpdate', data);}    
+            if (win != null) {
+                win.webContents.send('ProgressTimeUpdate', data);
+            }
         });
         ipcMain.on('LyricsUpdate', function(event, data, artworkURL) {
             if (win != null) {
-            win.webContents.send('truelyrics', data);
-            win.webContents.send('albumart', artworkURL);
-        }    
+                win.webContents.send('truelyrics', data);
+                win.webContents.send('albumart', artworkURL);
+            }
         });
         ipcMain.on('ProgressTimeUpdateFromLyrics', function(event, data) {
             if (win) {
-            app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`).catch((e) => console.error(e));
-        }    
+                app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`).catch((e) => console.error(e));
+            }
         });
     }
 }
