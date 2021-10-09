@@ -5,6 +5,7 @@ SentryInit()
 
 module.exports = {
     connect: function (clientId) {
+        app.discord = {isConnected: false};
         if (!app.preferences.value('general.discordRPC')) return;
 
         DiscordRPC.register(clientId) // Apparently needed for ask to join, join, spectate etc.
@@ -46,7 +47,7 @@ module.exports = {
     },
 
     updateActivity: function (attributes) {
-        if (!app.preferences.value('general.discordRPC')) return;
+        if (!app.preferences.value('general.discordRPC') || app.preferences.value('general.incognitoMode').includes(true)) return;
 
         if (!app.discord.isConnected) {
             this.connect()

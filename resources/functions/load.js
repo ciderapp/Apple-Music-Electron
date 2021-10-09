@@ -1,20 +1,9 @@
-const {
-    join
-} = require("path");
-const {
-    app,
-    ipcMain
-} = require("electron");
+const {join} = require("path");
+const {app, ipcMain} = require("electron");
 const SentryInit = require("./init").SentryInit;
 SentryInit()
-const {
-    readFile,
-    constants,
-    chmodSync
-} = require("fs");
-const {
-    LocaleInit
-} = require("./init");
+const {readFile, constants, chmodSync} = require("fs");
+const {LocaleInit} = require("./init");
 
 module.exports = {
 
@@ -179,10 +168,6 @@ module.exports = {
             /* Remove it if user cannot go back */
             await app.win.webContents.executeJavaScript(`if (document.querySelector('#backButtonBar')) { document.getElementById('backButtonBar').remove() };`);
         }
-
-        /* Inject the MusicKitInterop file */
-        await app.win.webContents.executeJavaScript('MusicKitInterop.init()');
-        
     },
 
     LoadOneTimeFiles: function () {
@@ -229,6 +214,7 @@ module.exports = {
             app.funcs.LoadCSS('macosScrollbar.css')
         }
 
+        /* Inject the MusicKitInterop file */
+        app.win.webContents.executeJavaScript('MusicKitInterop.init()').catch((e) => console.error(e))
     }
-
 }

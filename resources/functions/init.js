@@ -1,16 +1,5 @@
-const {
-    app,
-    nativeTheme,
-    nativeImage,
-    Tray,
-    globalShortcut,
-    protocol
-} = require("electron");
-const {
-    join,
-    resolve,
-    normalize
-} = require("path");
+const {app, nativeTheme, nativeImage, Tray, globalShortcut, protocol} = require("electron");
+const {join, resolve} = require("path");
 const os = require("os");
 const fs = require("fs");
 const chmodr = require("chmodr");
@@ -63,11 +52,15 @@ const init = {
         if (process.platform === "linux") app.commandLine.appendSwitch('disable-features', 'MediaSessionService');
 
         // Assign Default Variables
-        app.isQuiting = !app.preferences.value('window.closeButtonMinimize').includes(true);
+        app.isQuiting = false;
         app.win = '';
         app.ipc = {
             existingNotification: false
         };
+
+        if (app.preferences.value('general.incognitoMode').includes(true)) {
+            console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
+        }
 
         // Set Max Listener
         require('events').EventEmitter.defaultMaxListeners = Infinity;
@@ -86,12 +79,8 @@ const init = {
 
         if (app.preferences.value('advanced.verboseLogging').includes(true) || app.verboseLaunched) {
             console.verbose = log.debug
-            console.warn = log.warn
         } else {
             console.verbose = function (_data) {
-                return false
-            };
-            console.warn = function (_data) {
                 return false
             };
         }
@@ -413,11 +402,13 @@ const init = {
                 "allowMultipleInstances": [],
             }
         }
-        fields.general = [{ // Language
+        fields.general = [
+            { // Language
                 'label': 'Language',
                 'key': 'language',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'English (USA)',
                         'value': 'us'
                     },
@@ -1054,7 +1045,8 @@ const init = {
                 'label': 'Notifications on Song Change',
                 'key': 'playbackNotifications',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'Enabled',
                         'value': true
                     },
@@ -1079,7 +1071,8 @@ const init = {
                 'label': 'Load Page on Startup',
                 'key': 'startupPage',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'Browse',
                         'value': 'browse'
                     },
@@ -1119,7 +1112,8 @@ const init = {
                 'label': 'Display Song as Game Activity on Discord',
                 'key': 'discordRPC',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': "Enabled (Display 'Apple Music' as title)",
                         'value': 'am-title'
                     },
@@ -1176,14 +1170,15 @@ const init = {
                 'help': `These logs when enabled allow us to fix bugs and errors that may occur during your listening sessions to better improve the application. We understand if your not comfortable with them on but it helps us out immensely in figuring out wide spread issues. (Note: We do not gather personal information, only stuff that shows to you as a error in the code.)`
             },
         ]
-        fields.visual = [{ // Setting Your Theme
+        fields.visual = [
+            { // Setting Your Theme
                 'label': 'Themes:',
                 'key': 'theme',
                 'type': 'dropdown',
                 'options': [{
                     'label': 'Default',
                     'value': 'default'
-                }, ],
+                },],
                 'help': 'You will need to restart the application in order for the default themes to be populated.'
             },
             {
@@ -1194,7 +1189,8 @@ const init = {
                 'label': 'Application Frame',
                 'key': 'frameType',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'macOS Emulation (Right)',
                         'value': 'mac-right'
                     },
@@ -1214,7 +1210,8 @@ const init = {
                 'label': 'Transparency Effect',
                 'key': 'transparencyEffect',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'Acrylic (W10 1809+)',
                         'value': 'acrylic'
                     },
@@ -1245,7 +1242,8 @@ const init = {
                 'label': 'Use Custom Window Refresh Rate',
                 'key': 'transparencyMaximumRefreshRate',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': '30',
                         'value': 30
                     },
@@ -1314,11 +1312,13 @@ const init = {
                 }]
             }
         ]
-        fields.audio = [{ // Sound Quality
+        fields.audio = [
+            { // Sound Quality
                 'label': 'Sound Quality',
                 'key': 'audioQuality',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'Automatic (Default)',
                         'value': 'auto'
                     },
@@ -1347,11 +1347,13 @@ const init = {
                 'help': `Reduces or completely removes the delay between songs providing a smooth audio experience.`
             }
         ]
-        fields.window = [{ // Open Apple Music on Startup
+        fields.window = [
+            { // Open Apple Music on Startup
                 'label': 'Open Apple Music automatically after login',
                 'key': 'appStartupBehavior',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'Enabled',
                         'value': 'true'
                     },
@@ -1374,7 +1376,8 @@ const init = {
                 }]
             }
         ]
-        fields.advanced = [{
+        fields.advanced = [
+            {
                 'content': "<p>Do not mess with these options unless you know what you're doing.</p>",
                 'type': 'message'
             },
@@ -1382,7 +1385,8 @@ const init = {
                 'label': 'Force Application Region',
                 'key': 'forceApplicationRegion',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'United Arab Emirates',
                         'value': 'ae'
                     },
@@ -2009,7 +2013,8 @@ const init = {
                 'label': 'Force Application Theme',
                 'key': 'forceApplicationMode',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'System (default)',
                         'value': 'system'
                     },
@@ -2102,7 +2107,8 @@ const init = {
             { // Turning on devTools
                 'key': 'devTools',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'Detached',
                         'value': 'detached'
                     },
@@ -2153,7 +2159,6 @@ const init = {
         // Set the Theme List based on css files in themes directory
         app.userThemesPath = resolve(app.getPath('userData'), 'themes');
         let themesFileNames = [], themesListing = [];
-        let ThemesList = [];
 
         app.userPluginsPath = resolve(app.getPath('userData'), 'plugins');
 
@@ -2186,7 +2191,7 @@ const init = {
             fields.visual[0].options.push({
                 label: themeName,
                 value: themeFileName
-            }, )
+            },)
             themesListing[`${themeFileName}`] = themeName
         })
 
@@ -2260,10 +2265,10 @@ const init = {
                         'groups': [{
                             'label': 'Credits',
                             'fields': [{
-                                    'heading': 'Major thanks to',
-                                    'content': `<p style="size='12px'"><a style="color: #227bff !important" target="_blank" href='https://github.com/Apple-Music-Electron/'>The Apple Music Electron Team.</a></p>`,
-                                    'type': 'message'
-                                },
+                                'heading': 'Major thanks to',
+                                'content': `<p style="size='12px'"><a style="color: #227bff !important" target="_blank" href='https://github.com/Apple-Music-Electron/'>The Apple Music Electron Team.</a></p>`,
+                                'type': 'message'
+                            },
                                 {
                                     'heading': '',
                                     'content': `<p style="size='8px'">cryptofyre - Owner/Developer | <a style="color: #227bff !important" target="_blank" href='https://github.com/cryptofyre'>GitHub </a>| <a style="color: #227bff !important" target="_blank" href='https://twitter.com/cryptofyre'>Twitter </a>| <a style="color: #227bff !important" target="_blank" href='https://cryptofyre.org'>Website</a></p>`,
@@ -2357,18 +2362,6 @@ const init = {
                 dsn: "https://20e1c34b19d54dfcb8231e3ef7975240@o954055.ingest.sentry.io/5903033"
             });
         }
-    },
-
-    ElectronStoreInit: function () {
-        const Store = require('electron-store');
-        const StoreConfiguration = {
-            defaults: {},
-            schema: {},
-            migrations: {},
-            name: {}
-        } // default values and stuff
-        const store = new Store(StoreConfiguration);
-
     }
 }
 

@@ -1,23 +1,43 @@
-const { app, Menu, nativeTheme, Notification } = require("electron");
+const {app, Menu, nativeTheme, Notification, TouchBar} = require("electron");
+const {TouchBarButton, TouchBarLabel, TouchBarSpacer} = TouchBar
 const nativeImage = require('electron').nativeImage
-const { join } = require("path");
+const {join} = require("path");
 const SentryInit = require("./init").SentryInit;
 SentryInit()
 
 const trayIconDir = (nativeTheme.shouldUseDarkColors ? join(__dirname, `../icons/media/light/`) : join(__dirname, `../icons/media/dark/`));
-const Images = {
-    next: nativeImage.createFromPath(join(trayIconDir, `next.png`)).resize({ width: 32, height: 32 }),
-    nextInactive: nativeImage.createFromPath(join(trayIconDir, `next-inactive.png`)).resize({ width: 32, height: 32 }),
-
-    pause: nativeImage.createFromPath(join(trayIconDir, `pause.png`)).resize({ width: 32, height: 32 }),
-    pauseInactive: nativeImage.createFromPath(join(trayIconDir, `pause-inactive.png`)).resize({ width: 32, height: 32 }),
-
-    play: nativeImage.createFromPath(join(trayIconDir, `play.png`)).resize({ width: 32, height: 32 }),
-    playInactive: nativeImage.createFromPath(join(trayIconDir, `play-inactive.png`)).resize({ width: 32, height: 32 }),
-
-    previous: nativeImage.createFromPath(join(trayIconDir, `previous.png`)).resize({ width: 32, height: 32 }),
-    previousInactive: nativeImage.createFromPath(join(trayIconDir, `previous-inactive.png`)).resize({ width: 32, height: 32 }),
-}
+const AppleMusic = {
+    pausePlay() {
+        console.verbose('[AppleMusic] pausePlay run.')
+        console.log(app.currentPlaybackActivity)
+        if (app.currentPlaybackActivity.status) {
+            console.verbose('[AppleMusic] pause run.')
+            app.win.webContents.executeJavaScript("MusicKit.getInstance().pause()").catch((err) => console.error(err))
+        } else {
+            console.verbose('[AppleMusic] play run.')
+            app.win.webContents.executeJavaScript("MusicKit.getInstance().play()").catch((err) => console.error(err))
+        }
+    },
+    nextTrack() {
+        console.verbose('[AppleMusic] nextTrack run.')
+        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").catch((err) => console.error(err))
+    },
+    previousTrack() {
+        console.verbose('[AppleMusic] previousTrack run.')
+        app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").catch((err) => console.error(err))
+    },
+    icons: {
+        pause: nativeImage.createFromPath(join(trayIconDir, 'pause.png')).resize({width: 32, height: 32}),
+        play: nativeImage.createFromPath(join(trayIconDir, 'play.png')).resize({width: 32, height: 32}),
+        nextTrack: nativeImage.createFromPath(join(trayIconDir, 'next.png')).resize({width: 32, height: 32}),
+        previousTrack: nativeImage.createFromPath(join(trayIconDir, 'previous.png')).resize({width: 32, height: 32}),
+        inactive: {
+            play: nativeImage.createFromPath(join(trayIconDir, 'play-inactive.png')).resize({width: 32, height: 32}),
+            nextTrack: nativeImage.createFromPath(join(trayIconDir, 'next-inactive.png')).resize({width: 32, height: 32}),
+            previousTrack: nativeImage.createFromPath(join(trayIconDir, 'previous-inactive.png')).resize({width: 32, height: 32}),
+        }
+    }
+};
 
 module.exports = {
 
@@ -27,7 +47,9 @@ module.exports = {
         app.dock.setMenu(Menu.buildFromTemplate([
             {
                 label: 'Show Preferences',
-                click() { app.preferences.show() }
+                click() {
+                    app.preferences.show()
+                }
             }
         ]))
 
@@ -150,101 +172,93 @@ module.exports = {
         return true
     },
 
-    SetThumbarButtons: function (state) {
-        if (process.platform !== "win32") return;
+    SetButtons: function () {
 
-        let array;
-        switch (state) {
-
-            // Paused
-            case false:
-            case "paused":
-                console.verbose('[setThumbarButtons] Thumbar has been set to false/paused.');
-                array = [
+        if (process.platform === 'win32') { // Set the Windows Thumbnail Toolbar Buttons
+            if (app.currentPlaybackActivity) {
+                app.win.setThumbarButtons([
                     {
                         tooltip: 'Previous',
-                        icon: Images.previous,
+                        icon: AppleMusic.icons.previousTrack,
                         click() {
-                            console.verbose('[setThumbarButtons] Previous song button clicked.');
-                            app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").catch((err) => console.error(err))
+                            AppleMusic.previousTrack()
                         }
                     },
                     {
-                        tooltip: 'Play',
-                        icon: Images.play,
+                        tooltip: app.currentPlaybackActivity.status ? 'Pause' : 'Play',
+                        icon: app.currentPlaybackActivity.status ? AppleMusic.icons.pause : AppleMusic.icons.play,
                         click() {
-                            console.verbose('[setThumbarButtons] Play song button clicked.');
-
-                            app.win.webContents.executeJavaScript("MusicKit.getInstance().play()").catch((err) => console.error(err))
+                            AppleMusic.pausePlay()
                         }
                     },
                     {
                         tooltip: 'Next',
-                        icon: Images.next,
+                        icon: AppleMusic.icons.nextTrack,
                         click() {
-                            console.verbose('[setThumbarButtons] Pause song button clicked.');
-                            app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").catch((err) => console.error(err))
+                            AppleMusic.nextTrack()
                         }
                     }
-                ];
-                break;
-
-            // Inactive
-            default:
-            case "inactive":
-                console.verbose('[setThumbarButtons] Thumbar has been set to default/inactive.');
-                array = [
+                ]);
+            } else {
+                app.win.setThumbarButtons([
                     {
                         tooltip: 'Previous',
-                        icon: Images.previousInactive,
+                        icon: AppleMusic.icons.inactive.previousTrack,
                         flags: ["disabled"]
                     },
                     {
                         tooltip: 'Play',
-                        icon: Images.playInactive,
+                        icon: AppleMusic.icons.inactive.play,
                         flags: ["disabled"]
                     },
                     {
                         tooltip: 'Next',
-                        icon: Images.nextInactive,
+                        icon: AppleMusic.icons.inactive.nextTrack,
                         flags: ["disabled"]
                     }
-                ];
-                break;
+                ]);
+            }
+        } else if (process.platform === 'darwin') { // Set the macOS Touchbar
+            if (!app.currentPlaybackActivity) return;
 
-            // Playing
-            case true:
-            case "playing":
-                console.verbose('[setThumbarButtons] Thumbar has been set to true/playing.');
-                array = [
-                    {
-                        tooltip: 'Previous',
-                        icon: Images.previous,
-                        click() {
-                            console.verbose('[setThumbarButtons] Previous song button clicked.');
-                            app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToPreviousItem()").catch((err) => console.error(err))
-                        }
-                    },
-                    {
-                        tooltip: 'Pause',
-                        icon: Images.pause,
-                        click() {
-                            console.verbose('[setThumbarButtons] Play song button clicked.');
-                            app.win.webContents.executeJavaScript("MusicKit.getInstance().pause()").catch((err) => console.error(err))
-                        }
-                    },
-                    {
-                        tooltip: 'Next',
-                        icon: Images.next,
-                        click() {
-                            console.verbose('[setThumbarButtons] Pause song button clicked.');
-                            app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").catch((err) => console.error(err))
-                        }
-                    }
+            const nextTrack = new TouchBarButton({
+                icon: AppleMusic.icons.nextTrack,
+                click: () => {
+                    AppleMusic.nextTrack()
+                }
+            })
+
+            const previousTrack = new TouchBarButton({
+                icon: AppleMusic.icons.previousTrack,
+                click: () => {
+                    AppleMusic.previousTrack()
+                }
+            })
+
+            const playPause = new TouchBarButton({
+                icon: app.currentPlaybackActivity.status ? AppleMusic.icons.pause : AppleMusic.icons.play,
+                click: () => {
+                    AppleMusic.pausePlay()
+                }
+            })
+
+            const trackInfo = new TouchBarLabel({
+                label: app.currentPlaybackActivity ? `${app.currentPlaybackActivity.name} by ${app.currentPlaybackActivity.artistName}` : `Nothing is Playing`
+            })
+
+            const touchBar = new TouchBar({
+                items: [
+                    previousTrack,
+                    playPause,
+                    nextTrack,
+                    new TouchBarSpacer({size: 'flexible'}),
+                    trackInfo,
+                    new TouchBarSpacer({size: 'flexible'})
                 ]
-                break;
+            })
+
+            app.win.setTouchBar(touchBar)
         }
-        console.verbose('[setThumbarButtons] ' + (app.win.setThumbarButtons(array) ? 'Thumbar Buttons Set.' : 'Thumbar Buttons Failed to be set.'));
     },
 
     SetTrayTooltip: function (attributes) {

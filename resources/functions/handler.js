@@ -1,29 +1,11 @@
-const {
-    app,
-    Menu,
-    ipcMain,
-    shell,
-    dialog,
-    Notification,
-    BrowserWindow
-} = require('electron')
+const { app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow } = require('electron')
 const SentryInit = require("./init").SentryInit;
 SentryInit()
-const {
-    LoadOneTimeFiles,
-    LoadFiles
-} = require('./load');
-const {
-    join,
-    resolve
-} = require('path');
-const {
-    existsSync,
-    truncate
-} = require('fs');
+const { LoadOneTimeFiles, LoadFiles } = require('./load');
+const { join, resolve } = require('path');
+const { existsSync, truncate } = require('fs');
 const rimraf = require('rimraf');
-
-
+app.currentPlaybackActivity = false
 
 const handler = {
     LaunchHandler: function () {
@@ -146,85 +128,31 @@ const handler = {
         }
         return returnVal
     },
-    
+
     PlaybackStateHandler: function () {
         console.verbose('[playbackStateDidChange] Started.');
-        app.PreviousSongId = null;
 
-        ipcMain.on('playbackStateDidChange', (_item, a) => {
+        ipcMain.on('playbackStateDidChange', (_event, a) => {
             console.warn('[handler] playbackStateDidChange received.');
-            app.isPlaying = a.status;
+            app.currentPlaybackActivity = a;
 
-            try {
-                if (a.playParams.id !== app.PreviousSongId) { // If it is a new song
-                    a.startTime = Date.now()
-                    a.endTime = Number(Math.round(a.startTime + a.durationInMillis));
-                } else { // If its continuing from the same song
-                    a.startTime = Date.now()
-                    a.endTime = Number(Math.round(Date.now() + a.remainingTime));
-                }
-            } catch (err) {
-                console.error(`[playbackStateDidChange] Error when setting endTime - ${err}`);
-                a.endTime = 0;
-            }
-
-            // Just in case
-            if (!a.endTime) {
-                a.endTime = Number(Math.round(Date.now()));
-            }
-
-            app.funcs.SetThumbarButtons(a.status)
+            app.funcs.SetButtons()
             app.funcs.SetTrayTooltip(a)
-
-            if (app.preferences.value('general.incognitoMode').includes(true)) {
-                console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
-            } else {
-                app.funcs.discord.updateActivity(a)
-                app.funcs.lastfm.scrobbleSong(a)
-            }
-
+            app.funcs.discord.updateActivity(a)
+            app.funcs.lastfm.scrobbleSong(a)
             app.funcs.mpris.updateState(a)
-            app.PreviousSongId = a.playParams.id
         });
     },
 
     MediaStateHandler: function () {
-        console.verbose('[mediaItemStateDidChange] Started.');
-        ipcMain.on('mediaItemStateDidChange', (_item, a) => {
-            console.warn('[handler] mediaItemStateDidChange received.')
+        console.verbose('[nowPlayingItemDidChange] Started.');
+
+        ipcMain.on('nowPlayingItemDidChange', (_event, a) => {
+            console.warn('[handler] mediaItemStateDidChange received.');
+            app.currentPlaybackActivity = a;
+
             app.funcs.CreateNotification(a)
             app.funcs.mpris.updateActivity(a);
-            // Update metadata css
-            app.win.webContents.executeJavaScript("AMThemes.updateMeta()")
-            if (app.preferences.value('audio.gaplessEnabled').includes(true)) {
-                try {
-                    if (a.playParams.id !== app.PreviousSongId) { // If it is a new song
-                        a.startTime = Date.now()
-                        a.endTime = Number(Math.round(a.startTime + a.durationInMillis));
-                    } else { // If its continuing from the same song
-                        a.startTime = Date.now()
-                        a.endTime = Number(Math.round(Date.now() + a.remainingTime));
-                    }
-                } catch (err) {
-                    console.error(`[playbackStateDidChange] Error when setting endTime - ${err}`);
-                    a.endTime = 0;
-                }
-
-                // Just in case
-                if (!a.endTime) {
-                    a.endTime = Number(Math.round(Date.now()));
-                }
-
-                app.funcs.SetThumbarButtons(a.status)
-                app.funcs.SetTrayTooltip(a)
-
-                if (app.preferences.value('general.incognitoMode').includes(true)) {
-                    console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
-                } else {
-                    app.funcs.discord.updateActivity(a)
-                    app.funcs.lastfm.scrobbleSong(a)
-                }
-            }
         });
     },
 
@@ -281,25 +209,6 @@ const handler = {
             event.preventDefault()
         });
 
-        app.win.on('close', function (event) { // Hide the App if isQuitting is not true
-            if (app.win.miniplayerActive) {
-                event.preventDefault();
-                ipcMain.emit("set-miniplayer", false);
-                return;
-            }
-            if (!app.isQuiting || process.platform === "darwin") {
-                event.preventDefault();
-                if (typeof app.win.hide === 'function') {
-                    app.win.hide();
-                }
-            } else {
-                event.preventDefault();
-                if (typeof app.win.destroy === 'function') {
-                    app.win.destroy();
-                }
-            }
-        });
-
         // Windows specific: Handles window states
         // Needed because Aero Snap events do not send the same way as clicking the frame buttons.
         if (process.platform === "win32" && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
@@ -312,10 +221,10 @@ const handler = {
             var wndState = WND_STATE.NORMAL
 
             app.win.on("resize", (_event) => {
-                var isMaximized = app.win.isMaximized()
-                var isMinimized = app.win.isMinimized()
-                var isFullScreen = app.win.isFullScreen()
-                var state = wndState
+                const isMaximized = app.win.isMaximized()
+                const isMinimized = app.win.isMinimized()
+                const isFullScreen = app.win.isFullScreen()
+                const state = wndState;
                 if (isMinimized && state !== WND_STATE.MINIMIZED) {
                     wndState = WND_STATE.MINIMIZED
                     // 
@@ -368,13 +277,6 @@ const handler = {
                 return;
             }
             app.win.close();
-        })
-
-        app.win.on('close', (event) => {
-            if (app.win.miniplayerActive) {
-                ipcMain.emit("set-miniplayer", false);
-                event.preventDefault();
-            }
         })
 
         ipcMain.on("resize-window", (event, width, height) => {
@@ -434,16 +336,28 @@ const handler = {
 
         })
 
-        app.win.on('show', function () {
+        app.win.on('close', (event) => {
+            if (app.win.miniplayerActive) { ipcMain.emit("set-miniplayer", false); event.preventDefault(); }
+
+            if ((app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === "darwin") && !app.isQuiting) {// Hide the App if isQuitting is not true
+                event.preventDefault()
+                if (typeof app.win.hide === "function") {
+                    app.win.hide();
+                }
+            }
+
+        });
+
+        app.win.on('show', () => {
             app.funcs.SetContextMenu(true)
-            app.funcs.SetThumbarButtons(app.isPlaying)
+            app.funcs.SetButtons()
             if (app.win.isVisible()) {
                 app.win.focus()
             }
             // if (app.win.StoredWebsite) app.win.loadURL(app.win.StoredWebsite)
         })
 
-        app.win.on('hide', function () {
+        app.win.on('hide', () => {
             app.funcs.SetContextMenu(false)
             // app.win.StoredWebsite = app.win.webContents.getURL();
         })
@@ -453,30 +367,38 @@ const handler = {
         console.verbose('[SettingsHandler] Started.');
         let DialogMessage, cachedPreferences = app.preferences._preferences;
 
-        const {
-            fetchTransparencyOptions
-        } = require('./CreateBrowserWindow')
+        const { fetchTransparencyOptions } = require('./CreateBrowserWindow')
 
         app.preferences.on('save', (updatedPreferences) => {
 
-            // Handles Theme Changes
-            if (cachedPreferences.visual.theme !== updatedPreferences.visual.theme) {
-                app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`)
-                const updatedVibrancy = fetchTransparencyOptions()
+            if (cachedPreferences.visual.theme !== updatedPreferences.visual.theme) { // Handles Theme Changes
+                app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`).catch((e) => console.error(e));
+                const updatedVibrancy = fetchTransparencyOptions();
                 if (app.transparency && updatedVibrancy && process.platform !== 'darwin') app.win.setVibrancy(updatedVibrancy);
-            } else if (cachedPreferences.visual.transparencyEffect !== updatedPreferences.visual.transparencyEffect) { // Handles Transparency Changes
+            }
+            else if ((cachedPreferences.visual.transparencyEffect !== updatedPreferences.visual.transparencyEffect) || (cachedPreferences.visual.transparencyTheme !== updatedPreferences.visual.transparencyTheme) || (cachedPreferences.visual.transparencyMaximumRefreshRate !== updatedPreferences.visual.transparencyMaximumRefreshRate)) { // Handles Transparency Changes
                 const updatedVibrancy = fetchTransparencyOptions()
-                console.log(app.transparency)
                 if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
                     app.win.setVibrancy(updatedVibrancy);
-                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(true);`)
+                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(true);`).catch((e) => console.error(e));
                 } else {
                     app.win.setVibrancy();
-                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(false);`)
+                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(false);`).catch((e) => console.error(e));
                 }
-            } else if (cachedPreferences.visual.frameType !== updatedPreferences.visual.frameType) {
-                //    JavaScript function to be run here
-            } else {
+            }
+            else if (cachedPreferences.visual.frameType !== updatedPreferences.visual.frameType) {
+                //    run js function to unload / load new frame
+            }
+            else if (cachedPreferences.general.discordRPC !== updatedPreferences.general.discordRPC) {
+                console.log(updatedPreferences.general.discordRPC)
+                if (updatedPreferences.general.discordRPC) {
+                    app.funcs.discord.disconnect()
+                }
+            }
+            else if (cachedPreferences.window.closeButtonMinimize !== updatedPreferences.window.closeButtonMinimize || cachedPreferences.general.incognitoMode !== updatedPreferences.general.incognitoMode) {
+                //
+            }
+            else {
                 if (!DialogMessage) {
                     DialogMessage = dialog.showMessageBox(app.win, {
                         title: "Restart Required",
@@ -508,7 +430,7 @@ const handler = {
     },
 
     LyricsHandler: function(lyrics) {
-        var win = new BrowserWindow({ width: 800, height: 600 , show : false,  autoHideMenuBar: true,     
+        let win = new BrowserWindow({ width: 800, height: 600 , show : false,  autoHideMenuBar: true,
             webPreferences: {
            nodeIntegration: true, contextIsolation: false
         }});
@@ -541,18 +463,18 @@ const handler = {
           
         });
         ipcMain.on('LyricsTimeUpdate', function(event, data) {
-            if (win != null ){
+            if (win != null ) {
             win.webContents.send('ProgressTimeUpdate', data);}    
         });
         ipcMain.on('LyricsUpdate', function(event, data, artworkURL) {
-            if (win != null){
+            if (win != null) {
             win.webContents.send('truelyrics', data);
             win.webContents.send('albumart', artworkURL);
         }    
         });
         ipcMain.on('ProgressTimeUpdateFromLyrics', function(event, data) {
-            if (win){
-            app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`);
+            if (win) {
+            app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`).catch((e) => console.error(e));
         }    
         });
     }

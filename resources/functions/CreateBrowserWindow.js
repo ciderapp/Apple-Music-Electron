@@ -3,7 +3,6 @@ const {join} = require('path')
 const os = require('os')
 const fs = require('fs')
 const windowStateKeeper = require('electron-window-state');
-const acrylicWindow = require("electron-acrylic-window");
 const SentryInit = require("./init").SentryInit;
 SentryInit()
 let win;
@@ -144,6 +143,7 @@ const BrowserWindowCreation = {
         if (process.platform === "darwin") {
             win = new BrowserWindow(options)
         } else {
+            const acrylicWindow = require("electron-acrylic-window");
             win = new acrylicWindow.BrowserWindow(options)
         }
 

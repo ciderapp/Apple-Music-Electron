@@ -61,10 +61,8 @@ function CreateWindow() {
     LyricsHandler()
 
     if (process.platform === 'win32' && app.transparency) { app.win.show() } // Show the window so SetThumbarButtons doesnt break
-    app.funcs.SetThumbarButtons(null) // Set Inactive Thumbnail Toolbar Icons
-
+    app.funcs.SetButtons() // Set Inactive Thumbnail Toolbar Icons or TouchBar
     app.funcs.SetDockMenu() // Set the Dock for macOS
-    app.funcs.SetApplicationMenu() // Set the Menu for OS's that use it (macOS)
     
     const {LaunchHandlerPostWin} = require('./resources/functions/handler')
     LaunchHandlerPostWin()
