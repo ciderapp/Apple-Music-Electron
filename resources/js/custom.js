@@ -3,6 +3,11 @@ try {
     function GetXPath(path) {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     }
+    function matchRuleShort(str, rule) {
+        var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+        return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
+    }
+
 
     /* Create the miniPlayer Functions */
     if (typeof _miniPlayer == "undefined") {
@@ -323,6 +328,8 @@ try {
     if (typeof AMJavaScript == "undefined") {
         var AMJavaScript = {
             LoadCustomStartup: () => {
+                const preferences = ipcRenderer.sendSync('getPreferences');
+
                 /* MiniPlayer Event Listener */
                 MusicKit.getInstance().addEventListener(MusicKit.Events.mediaElementCreated, () => {
                     if (!document.querySelector('.media-artwork-v2__image').classList.contains('media-artwork-v2__image--fallback')) {
@@ -409,6 +416,8 @@ try {
             },
 
             LoadCustom: () => {
+                const preferences = ipcRenderer.sendSync('getPreferences');
+
                 /* Execute plugins OnNavigation */
                 if (typeof _plugins != "undefined") {
                     _plugins.execute("OnNavigation");
@@ -560,11 +569,14 @@ try {
                 }
 
                 /* Remove Footer */
-                if (preferences['visual']['removeFooter'].includes(true)) {
-                    while (document.getElementsByTagName('footer').length > 0) {
-                        document.getElementsByTagName('footer')[0].remove();
+                if (!matchRuleShort(window.location.href, '*settings*') && document.getElementsByClassName('application-preferences').length === 0) {
+                    if (preferences['visual']['removeFooter'].includes(true) && document.querySelector('footer').style.display !== "none") {
+                        document.querySelector('.dt-footer').style.display = "none";
+                    } else if (!preferences['visual']['removeFooter'].includes(true) && document.querySelector('footer').style.display === "none") {
+                        document.querySelector('.dt-footer').style.display = "block";
                     }
                 }
+
 
                 /* Remove Upsell */
                 if (preferences['visual']['removeUpsell'].includes(true)) {

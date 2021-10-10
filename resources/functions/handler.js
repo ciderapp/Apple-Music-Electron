@@ -141,9 +141,7 @@ const handler = {
         console.verbose('[WindowStateHandler] Started.');
         app.previousPage = app.win.webContents.getURL()
 
-        app.win.webContents.setWindowOpenHandler(({
-            url
-        }) => {
+        app.win.webContents.setWindowOpenHandler(({url}) => {
             shell.openExternal(url).then(() => console.log(`[WindowStateHandler] User has opened ${url} which has been redirected to browser.`));
             return {
                 action: 'deny'
@@ -452,6 +450,8 @@ const handler = {
             let formattedSongID = startArgs.replace(/\D+/g, '');
             console.warn(`[LinkHandler] Attempting to load song id: ${formattedSongID}`);
             // Someone look into why playMediaItem doesn't work thanks - cryptofyre
+
+            app.win.webContents.executeJavaScript(`MusicKit.getInstance().api.library.song('${formattedSongID}')`)
             app.win.webContents.executeJavaScript(`MusicKit.getInstance().changeToMediaItem('${formattedSongID}')`)
         }
 

@@ -3,9 +3,11 @@ try {
         var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
         return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
     }
-
     if (!preferences) {
         var preferences = ipcRenderer.sendSync('getPreferences');
+    }
+    if (!storedInnerHTML) {
+        var storedInnerHTML = document.getElementsByClassName('dt-footer')[0].innerHTML;
     }
 
     if (matchRuleShort(window.location.href, '*settings*') && document.getElementsByClassName('application-preferences').length === 0) {
@@ -446,13 +448,48 @@ try {
         </div>
         `;
 
-
         let themesListingHTML = document.getElementById('theme').innerHTML;
         for (const [key, value] of Object.entries(preferences.availableThemes)) {
             themesListingHTML = themesListingHTML + `\n<option value="${key}">${value}</option>`;
         }
         document.getElementById('theme').innerHTML = themesListingHTML;
 
+        /* Set the Footer */
+        if (document.querySelector('footer')) {
+            document.querySelector('.dt-footer').style.display = "block";
+            document.querySelector('.dt-footer').classList.add('app-prefs-credits');
+            document.querySelector('.dt-footer').innerHTML = `
+            <button class="typography-title-3-tall" data-test-ls-footer-btn="" disabled="" type="button">Credits</button>
+            <div class="dt-footer-contents-container">
+                <div class="dt-footer__copyright dt-flex-container">
+                    <p>Major thanks to the <a href="https://github.com/Apple-Music-Electron" class="dt-footer__link" target="_blank" rel="noopener" data-dt-link-to-exclude=""> Apple Music Electron Team</a> and to all of our <a href="https://github.com/Apple-Music-Electron/Apple-Music-Electron/graphs/contributors" class="dt-footer__link" target="_blank" rel="noopener" data-dt-link-to-exclude="">contributors</a>.</p>
+        
+                    <div class="dt-footer__locale"></div>
+                </div>
+        
+                <ul class="dt-footer__list dt-flex-container">
+                    <li class="dt-footer__item">
+                    <a href="https://github.com/Apple-Music-Electron" class="dt-footer__link" target="_blank" rel="noopener" data-dt-link-to-exclude="">Development Team</a>
+                    <ul>
+                        <li class="dt-footer__list-item"><a href="#" onclick="window.open('https://github.com/cryptofyre')">cryptofyre</a></li>
+                        <li class="dt-footer__list-item"><a href="#" onclick="window.open('https://github.com/coredev-uk')">Core</a></li>
+                        <li class="dt-footer__list-item"><a href="#" onclick="window.open('https://github.com/child-duckling')">Quacksire</a></li>
+                        <li class="dt-footer__list-item"><a href="#" onclick="window.open('https://github.com/booploops')">booploops</a></li>
+                    </ul>
+                    </li>
+                    
+                    
+                    <li class="dt-footer__item" style="margin: 20px auto 0 auto;">
+                    <p class="dt-footer__link">Social Communications Team</p>
+                    <ul>
+                        <li class="dt-footer__list-item"><a href="#" onclick="window.open('https://twitter.com/MoonyVoid')">Void</a></li>
+                        <li class="dt-footer__list-item"><a href="#" onclick="window.open('https://twitter.com/noah_grose')">NoseySG</a></li>
+                    </ul>
+                    </li>
+                </ul>
+            </div>
+            `;
+        }
 
         if (preferences.supportsAcrylic) {
             document.getElementById('transparencyEffect').innerHTML = document.getElementById('transparencyEffect').innerHTML + "\n<option value='acrylic'>Acrylic (W10 1809+)</option>";
@@ -468,7 +505,6 @@ try {
             element.innerHTML = 'Connect';
             element.onclick = LastFMAuthenticate;
         }
-
         function LastFMAuthenticate() {
             const element = document.getElementById('lfmConnect');
             window.open('https://www.last.fm/api/auth?api_key=174905d201451602407b428a86e8344d&cb=ame://auth/lastfm');
@@ -490,7 +526,6 @@ try {
                 ipcRenderer.sendSync('setPreferences', preferences);
             });
         }
-
         function updateThemes() {
             ipcRenderer.send('updateThemes');
             document.getElementById('updateThemes').innerText = 'Updating...';
@@ -506,7 +541,6 @@ try {
                 }
             });
         }
-
         function hasParentClass(child, classname) {
             if (child.className.split(' ').indexOf(classname) >= 0) return true;
             try {
@@ -515,24 +549,28 @@ try {
                 return false;
             }
         }
-
         function HandleField(element) {
             const field = document.getElementById(element);
             if (!field) return 'Element Not Found';
 
-            let fieldCategory;
+            let fieldCategory, fieldCategoryTitle;
             if (hasParentClass(field, 'general')) {
                 fieldCategory = preferences.general;
+                fieldCategoryTitle = 'general';
             } else if (hasParentClass(field, 'visual')) {
                 fieldCategory = preferences.visual;
+                fieldCategoryTitle = 'visual';
             } else if (hasParentClass(field, 'audio')) {
                 fieldCategory = preferences.audio;
+                fieldCategoryTitle = 'audio';
             } else if (hasParentClass(field, 'window')) {
                 fieldCategory = preferences.window;
+                fieldCategoryTitle = 'window';
             } else if (hasParentClass(field, 'advanced')) {
                 fieldCategory = preferences.advanced;
+                fieldCategoryTitle = 'advanced';
             } else {
-                console.log('[HandleField] No Parent Category Found.');
+                console.error('[HandleField] No Parent Category Found.');
                 return 'No Parent Category Found';
             }
 
@@ -543,6 +581,7 @@ try {
                     fieldCategory[element] = (event.target.checked ? [true] : []);
                     ipcRenderer.sendSync('setPreferences', preferences);
                 });
+                console.warn(`[HandleField] Event listener created for ${fieldCategoryTitle}.${element}`)
             } else if (field.classList.contains('form-dropdown-select')) {
                 /* Dropdowns */
                 field.value = fieldCategory[element];
@@ -550,7 +589,8 @@ try {
                     fieldCategory[element] = event.target.value;
                     ipcRenderer.sendSync('setPreferences', preferences);
                 });
-            } else if (field.classList.contains('connect-button')) {
+                console.warn(`[HandleField] Event listener created for ${fieldCategoryTitle}.${element}`)
+            } else if (field.id === "lfmConnect") {
                 if (preferences.general.lastfmAuthKey !== 'Put your Auth Key here.' && preferences.general.lastfmAuthKey) {
                     field.innerHTML = `Disconnect\n<p style="font-size: 8px"><i>(Authed: ${preferences.general.lastfmAuthKey})</i></p>`;
                     field.onclick = LastFMDeauthorize;
@@ -589,6 +629,8 @@ try {
         /* Window Settings */
         HandleField('appStartupBehavior');
         HandleField('closeButtonMinimize');
+    } else {
+        document.getElementsByClassName('dt-footer')[0].innerHTML = storedInnerHTML; /* Revert the footer */
     }
 
 } catch (e) {

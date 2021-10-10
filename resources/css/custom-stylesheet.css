@@ -94,6 +94,37 @@ span.app-prefs-title {
   float: right;
 }
 
+.app-prefs-credits .dt-footer__list .dt-footer__item {
+  margin-top: 20px;
+  display: grid;
+  grid-template-rows: 15px auto;
+  grid-template-columns: auto;
+}
+
+.app-prefs-credits .dt-footer__list .dt-footer__item ul {
+  margin-top: 10px;
+}
+
+.app-prefs-credits .dt-footer__list {
+  display: flex;
+  max-width: 800px;
+}
+
+.app-prefs-credits .dt-footer__list .dt-footer__item .dt-footer__link {
+  grid-row: 1;
+  margin-bottom: 10px;
+}
+
+.app-prefs-credits .dt-footer__list .dt-footer__item .dt-footer__list-item {
+  grid-row: 2;
+  color: var(--systemSecondary);
+  margin: 5px 0;
+}
+
+.app-prefs-credits .dt-footer__list .dt-footer__item .dt-footer__list-item a {
+  color: var(--systemSecondary) !important;
+}
+
 /* Help */
 .settings-list .app-prefs-help {
   color: #808080;
