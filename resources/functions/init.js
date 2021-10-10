@@ -26,11 +26,13 @@ const themes = {
     updateThemesListing: () => {
         let themesFileNames = [], themesListing = [];
 
-        fs.readdirSync(app.userThemesPath).forEach((value) => {
-            if (value.split('.').pop() === 'css') {
-                themesFileNames.push(value.split('.').shift())
-            }
-        });
+        if (fs.existsSync(app.userThemesPath)) {
+            fs.readdirSync(app.userThemesPath).forEach((value) => {
+                if (value.split('.').pop() === 'css') {
+                    themesFileNames.push(value.split('.').shift())
+                }
+            });
+        }
 
         // Get the Info
         themesFileNames.forEach((themeFileName) => {
