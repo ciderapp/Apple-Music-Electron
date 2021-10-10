@@ -161,8 +161,8 @@ const BrowserWindowCreation = {
         }
 
         if (!app.preferences.value('advanced.menuBarVisible').includes(true)) win.setMenuBarVisibility(false); // Hide that nasty menu bar
-        if (app.preferences.value('advanced.devTools') !== 'built-in') win.setMenu(null); // Disables DevTools
-        if (app.preferences.value('advanced.devTools') === 'detached') win.webContents.openDevTools({mode: 'detach'}); // Enables Detached DevTools
+        if (!app.preferences.value('advanced.devTools').includes(true)) win.setMenu(null); // Disables DevTools
+        if (app.preferences.value('advanced.devToolsOpenDetached').includes(true)) win.webContents.openDevTools({mode: 'detach'}); // Enables Detached DevTools
 
         // Register listeners on Window to track size and position of the Window.
         mainWindowState.manage(win);
