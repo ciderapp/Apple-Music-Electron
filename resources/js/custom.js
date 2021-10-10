@@ -256,7 +256,6 @@ try {
             updateMeta() {
                 console.warn("[Custom] Refreshed Meta CSS");
                 /** Exposes artwork and other metadata to CSS for themes */
-                document.querySelector('#ember13').getElementsByTagName('img')[0].src = 'https://music.apple.com/assets/product/MissingArtworkMusic.svg';
                 const musicKit = MusicKit.getInstance();
                 let artwork = musicKit.nowPlayingItem["attributes"]["artwork"]["url"];                
                 /* Fix Itunes Match album arts not showing */                      
@@ -360,6 +359,9 @@ try {
                     ipcRenderer.send('LyricsTimeUpdate', MusicKit.getInstance().currentPlaybackTime + 0.250);
                 });
                 MusicKit.getInstance().addEventListener(MusicKit.Events.nowPlayingItemDidChange, function () {
+                    try { 
+                        GetXPath("/html/body/div[4]/div[3]/div[3]/div/div[2]/div[1]/img").src = "https://music.apple.com/assets/product/MissingArtworkMusic.svg";} 
+                    catch (e) {}
                     try {
                         let lrc = new Lyricer();
                         lrc.setLrc("");
@@ -374,7 +376,7 @@ try {
                 let observer = new MutationObserver(function(mutationList) {
                     for (var mutation of mutationList) {
                         for (var child of mutation.addedNodes) {
-                            try{
+                            try {
                                 if (document.getElementById("mk-dialog-title").textContent ==  "cancelled"){
                                     document.getElementById("musickit-dialog").remove();
                                     document.getElementById("musickit-dialog-scrim").remove();
