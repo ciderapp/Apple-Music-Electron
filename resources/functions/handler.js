@@ -1,4 +1,4 @@
-const { app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow } = require('electron')
+const { app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, SystemPreferences, systemPreferences} = require('electron')
 const SentryInit = require("./init").SentryInit;
 SentryInit()
 const { LoadOneTimeFiles, LoadFiles } = require('./load');
@@ -6,6 +6,15 @@ const { join, resolve } = require('path');
 const { existsSync, truncate } = require('fs');
 const rimraf = require('rimraf');
 app.currentPlaybackActivity = false
+
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
 
 const handler = {
     
@@ -361,6 +370,21 @@ const handler = {
 
         const { fetchTransparencyOptions } = require('./CreateBrowserWindow')
 
+        systemPreferences.on('accent-color-changed', (event, color) => {
+            if (app.preferences.value('visual.useOperatingSystemAccent')) {
+                if (color) {
+                    const accent = '#' + color.slice(0, -2)
+                    app.win.webContents.insertCSS(`
+                    :root {
+                        --keyColor: ${accent} !important;
+                        --keyColor-rgb: ${hexToRgb(accent).r} ${hexToRgb(accent).g} ${hexToRgb(accent).b} !important;
+                    }
+                }
+                `).catch((e) => console.error(e));
+                }
+            }
+        })
+
         app.preferences.on('save', (updatedPreferences) => {
             let currentChanges = []
 
@@ -396,7 +420,7 @@ const handler = {
                     app.win.webContents.executeJavaScript(`AMThemes.setTransparency(false);`).catch((e) => console.error(e));
                 }
             }
-            else if (currentChanges.includes('visual.removeUpsell') || currentChanges.includes('visual.removeAppleLogo') || currentChanges.includes('visual.removeFooter')) {
+            else if (currentChanges.includes('visual.removeUpsell') || currentChanges.includes('visual.removeAppleLogo') || currentChanges.includes('visual.removeFooter') || currentChanges.includes('visual.useOperatingSystemAccent')) {
                 app.win.webContents.executeJavaScript('AMJavaScript.LoadCustom()').catch((e) => console.error(e));
             }
             // Frame Type Changes (TBA)

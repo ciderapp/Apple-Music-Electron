@@ -1,9 +1,18 @@
 const {join} = require("path");
-const {app, ipcMain} = require("electron");
+const {app, ipcMain, systemPreferences} = require("electron");
 const SentryInit = require("./init").SentryInit;
 SentryInit()
 const {readFile, constants, chmodSync} = require("fs");
 const {LocaleInit} = require("./init");
+
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
 
 module.exports = {
 
@@ -95,6 +104,19 @@ module.exports = {
                 }
             }
             `).catch((e) => console.error(e));
+        }
+
+        if (app.preferences.value('visual.useOperatingSystemAccent')) {
+            if (systemPreferences.getAccentColor()) {
+                const accent = '#' + systemPreferences.getAccentColor().slice(0, -2)
+                app.win.webContents.insertCSS(`
+                :root {
+                        --keyColor: ${accent} !important;
+                        --keyColor-rgb: ${hexToRgb(accent).r} ${hexToRgb(accent).g} ${hexToRgb(accent).b} !important;
+                    }
+                }
+                `).catch((e) => console.error(e));
+            }
         }
 
         /* Load Window Frame */

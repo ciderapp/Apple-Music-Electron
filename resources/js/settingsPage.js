@@ -387,6 +387,14 @@ try {
                         </label>
                         <span class="app-prefs-help typography-title-3-tall">Removes the Apple Music footer.</span>
                     </li>
+                    <li class="app-prefs-toggle">
+                        <span class="typography-title-3-tall">Use OS Accent as Application Accent</span>
+                        <label class="toggle-element list-element">
+                            <input id="useOperatingSystemAccent" type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span class="app-prefs-help typography-title-3-tall">Force the application to use your operating systems' accent.</span>
+                    </li>               
                 </ul>
             </div>
             <div class="app-prefs-section audio">
@@ -905,6 +913,7 @@ try {
         HandleField('removeUpsell');
         HandleField('removeAppleLogo');
         HandleField('removeFooter');
+        HandleField('useOperatingSystemAccent');
 
         /* Audio Settings */
         HandleField('audioQuality');

@@ -419,6 +419,7 @@ const init = {
                 "removeFooter": [
                     true
                 ],
+                "useOperatingSystemAccent": []
             },
             "audio": {
                 "audioQuality": "auto",
@@ -1358,6 +1359,15 @@ const init = {
                 'type': 'checkbox',
                 'options': [{
                     'label': 'Removes the Apple Music footer.',
+                    'value': true
+                }]
+            },
+            { // OS Accent
+                'label': 'Use OS Accent as Application Accent',
+                'key': 'useOperatingSystemAccent',
+                'type': 'checkbox',
+                'options': [{
+                    'label': "Force the application to use your operating systems' accent",
                     'value': true
                 }]
             }
