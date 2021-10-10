@@ -122,7 +122,7 @@ const BrowserWindowCreation = {
                 nodeIntegrationInWorker: false,
                 contextIsolation: false,
                 webSecurity: true,
-                sandbox: false,
+                sandbox: true,
                 nativeWindowOpen: true
             }
         };

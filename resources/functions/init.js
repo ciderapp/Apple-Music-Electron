@@ -69,6 +69,8 @@ const init = {
     LoggingInit: function () {
         const log = require("electron-log");
 
+        if (app.commandLine.hasSwitch('verbose')) { app.verboseLaunched = true }
+
         log.transports.file.resolvePath = (vars) => {
             return join(app.getPath('userData'), 'logs', vars.fileName);
         }
@@ -2158,9 +2160,8 @@ const init = {
 
         // Set the Theme List based on css files in themes directory
         app.userThemesPath = resolve(app.getPath('userData'), 'themes');
-        let themesFileNames = [], themesListing = [];
-
         app.userPluginsPath = resolve(app.getPath('userData'), 'plugins');
+        let themesFileNames = [], themesListing = [];
 
         if (fs.existsSync(app.userThemesPath)) {
             fs.readdirSync(app.userThemesPath).forEach((value) => {

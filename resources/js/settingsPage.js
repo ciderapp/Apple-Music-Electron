@@ -467,23 +467,24 @@ try {
 
         function LastFMAuthenticate() {
             const element = document.getElementById('lfmConnect');
-            preferences.general.lastfmEnabled = [true];
             window.open('https://www.last.fm/api/auth?api_key=174905d201451602407b428a86e8344d&cb=ame://auth/lastfm');
             element.innerText = 'Connecting...';
 
-            /* 
-            Get the callback and set preferences.general.lastfmAuthKey to it
-            
-            ---Check Lines 428-431 on handler.js, hopefully it works - child-duckling (Quacksire#6003)---
-            
-            ipcRenderer.sendSync('setPreferences', preferences );
+            /* Just a timeout for the button */
+            setTimeout(() => {
+                if (element.innerText === 'Connecting...') {
+                    element.innerText = 'Connect';
+                    console.warn('[LastFM] Attempted connection timed out.');
+                }
+            }, 20000);
 
-
-            element.innerHTML = `
-                    Disconnect
-                    <p style="font-size: 8px"><i>(Authed: ${preferences.general.lastfmAuthKey})</i></p>
-                    `;
-            element.onclick = LastFMDeauthorize;*/
+            ipcRenderer.on('LastfmAuthenticated', function (_event, lfmAuthKey) {
+                preferences.general.lastfmEnabled = [true];
+                preferences.general.lastfmAuthKey = lfmAuthKey;
+                element.innerHTML = `Disconnect\n<p style="font-size: 8px"><i>(Authed: ${lfmAuthKey})</i></p>`;
+                element.onclick = LastFMDeauthorize;
+                ipcRenderer.sendSync('setPreferences', preferences);
+            });
         }
 
         function hasParentClass(child, classname) {

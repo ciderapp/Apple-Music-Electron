@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<title>Lyrics</title>
 	<script type="text/javascript" src="Vibrant.js"></script>
-	<script type="text/javascript" src="../js/lyricer.js"></script>
+	<script type="text/javascript" src="../js/lyrics.js"></script>
 	<link rel="stylesheet" href="../css/lyricer.css">
 	<link rel="stylesheet" href="https://www.apple.com/wss/fonts?families=SF+Pro,v4|SF+Pro+Icons,v1&display=swap">
 	<link href="https://fonts.googleapis.com/css?family=M+PLUS+1p" rel="stylesheet">
@@ -29,7 +29,7 @@
 			return;
 		}
 	}
-  
+
 	stylesheet.insertRule(selector + " { " + property + ": " + value + "; }", 0);
     }
 
@@ -37,16 +37,16 @@
 	var lrc = new Lyricer();
 	ipcRenderer.on('truelyrics', function (event, lrcfile) {
 		if (lrcfile.startsWith("netease=")){
-		try{	
+		try{
 		var url  = "https://music.163.com/api/search/pc?s="+lrcfile.substring(8)+"&type=1&limit=1";
-        var req = new XMLHttpRequest();  
+        var req = new XMLHttpRequest();
         req.overrideMimeType("application/json");
         req.open('GET', url, true);
         req.onload  = function() {
-        var jsonResponse = JSON.parse(req.responseText);                
+        var jsonResponse = JSON.parse(req.responseText);
         var id = jsonResponse["result"]["songs"][0]["id"];
         var url2  = "https://music.163.com/api/song/lyric?os=pc&id="+id+"&lv=-1&kv=-1&tv=-1";
-        var req2 = new XMLHttpRequest();  
+        var req2 = new XMLHttpRequest();
         req2.overrideMimeType("application/json");
         req2.open('GET', url2, true);
         req2.onload  = function() {
@@ -56,9 +56,9 @@
         req2.send();
         };
         req.send();}catch(e){
-		lrc.setLrc('[00:00] Instrumental. / Lyrics not found.');	
-		} } 
-	else{	
+		lrc.setLrc('[00:00] Instrumental. / Lyrics not found.');
+		} }
+	else{
 	lrc.setLrc(lrcfile);}
     });
 	ipcRenderer.on('albumart', function (event, data) {
@@ -72,13 +72,13 @@
 		changeStylesheetRule(document.styleSheets[0],'#lyricer ul li','color',selectedswatch.getHex());
 		}
 		document.getElementById("backgroundImage").setAttribute('src',`${data}`);
-	
+
     });
 	ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
     if (data < 0){data = 0};
 	lrc.move(data);
     });
-	
+
 
 	lrc.setLrc(text);
 	window.addEventListener("lyricerclick", function(e){

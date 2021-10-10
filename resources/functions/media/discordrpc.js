@@ -64,10 +64,10 @@ module.exports = {
             state: `by ${attributes.artistName}`,
             startTimestamp: attributes.startTime,
             endTimestamp: attributes.endTime,
-            largeImageKey: 'logo',
+            largeImageKey: ((app.preferences.value('general.discordRPC') === 'am-title') ? 'apple' : 'logo'),
             largeImageText: attributes.albumName,
-            smallImageKey: 'play',
-            smallImageText: 'Playing',
+            smallImageKey: (attributes.status ? 'play' : 'pause'),
+            smallImageText: (attributes.status ? 'Playing': 'Paused'),
             instance: true,
             buttons: [
                 {label: "Open in AME", url: listenURL},
@@ -75,16 +75,9 @@ module.exports = {
         };
         console.verbose(`[LinkHandler] Listening URL has been set to: ${listenURL}`);
 
-        // clear Activity Values
         if (app.preferences.value('general.discordClearActivityOnPause').includes(true)) {
-            ActivityObject.largeImageKey = 'apple'
-            ActivityObject.largeImageText = attributes.albumName
-            ActivityObject.smallImageKey = app.getVersion().includes('nightly') ? 'nightlylarge' : 'logo'
-            ActivityObject.smallImageText = `Apple Music Electron v${app.getVersion()}`
-        } else {
-            if (app.getVersion().includes('nightly')) {
-                ActivityObject.largeImageKey = 'nightly'
-            }
+            delete ActivityObject.smallImageKey
+            delete ActivityObject.smallImageText
         }
 
         // Check all the values work

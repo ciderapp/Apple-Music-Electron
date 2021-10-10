@@ -63,13 +63,19 @@ module.exports = {
         console.log(`[LoadWebsite] Attempting to load '${urlLanguage}'`)
 
         app.win.loadURL(urlLanguage).then(() => {
+            let authedUrl;
+
+            ipcMain.once('authorized', (e, args) => {
+                app.isAuthorized = true
+                authedUrl = args
+            })
+
             if (app.preferences.value('general.startupPage') !== "browse") {
-                app.funcs.LoadJS('CheckAuth.js')
-                ipcMain.once('authorized', (e, args) => {
+                app.funcs.LoadJS('checkAuth.js')
+                if (app.isAuthorized) {
                     app.win.webContents.clearHistory()
-                    console.log(`[LoadWebsite] User is authenticated. Loading '${app.preferences.value('general.startupPage')}'. (${args}).`)
-                    app.isAuthorized = true
-                })
+                    console.log(`[LoadWebsite] User is authenticated. Loading '${app.preferences.value('general.startupPage')}'. (${authedUrl}).`)
+                }
             } else {
                 console.log(`[LoadWebsite] Loaded '${urlLanguage}'`)
             }
@@ -78,48 +84,33 @@ module.exports = {
         })
     },
 
-    LoadFiles: async function () {
+    LoadFiles: function () {
         app.funcs.LoadJS('settingsPage.js');
-
-        /* Remove Apple Music Logo */
         if (app.preferences.value('visual.removeAppleLogo').includes(true)) {
-            app.funcs.LoadJS('removeAppleLogo.js')
-            await app.win.webContents.insertCSS(`
+            app.win.webContents.insertCSS(`
             @media only screen and (max-width: 483px) {
                 .web-navigation__nav-list {
                         margin-top: 50px;
                     }
                 }
             }
-            `)
-        }
-
-        /* Remove Footer */
-        if (app.preferences.value('visual.removeFooter').includes(true)) {
-            app.funcs.LoadJS('removeFooter.js')
-        }
-
-        /* Remove Upsell */
-        if (app.preferences.value('visual.removeUpsell').includes(true)) {
-            app.funcs.LoadJS('removeUpsell.js')
+            `).catch((e) => console.error(e));
         }
 
         /* Load Window Frame */
         if (app.preferences.value('visual.frameType') === 'mac') {
             app.funcs.LoadJS('frame_macOS.js')
-        } else if (app.preferences.value('visual.frameType') === 'mac-right') {
+        } else if ((app.preferences.value('visual.frameType') === 'mac-right')) {
             app.funcs.LoadJS('frame_Windows.js')
         } else if (process.platform === 'darwin' && !app.preferences.value('visual.frameType')) {
             app.funcs.LoadJS('frame_macOS.js')
         } else if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
             app.funcs.LoadJS('frame_Windows.js')
             if (app.win.isMaximized()) {
-                app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.add("maxed")`)
+                app.win.webContents.executeJavaScript(`if (document.querySelector("#maximize")) { document.querySelector("#maximize").classList.add("maxed"); }`).catch((e) => console.error(e));
             }
         }
-
-        app.funcs.LoadJS('custom.js')
-        app.funcs.LoadJS('lyrics.js')
+        
         function matchRuleShort(str, rule) {
             var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
             return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
@@ -166,16 +157,25 @@ module.exports = {
             app.funcs.LoadJS('backButton.js')
         } else {
             /* Remove it if user cannot go back */
-            await app.win.webContents.executeJavaScript(`if (document.querySelector('#backButtonBar')) { document.getElementById('backButtonBar').remove() };`);
+            app.win.webContents.executeJavaScript(`if (document.querySelector('#backButtonBar')) { document.getElementById('backButtonBar').remove() };`).catch((e) => console.error(e));
         }
+
+        /* Load the Startup JavaScript Function */
+        app.win.webContents.executeJavaScript('AMJavaScript.LoadCustom()').catch((e) => console.error(e));
     },
 
     LoadOneTimeFiles: function () {
         // Inject the custom stylesheet
         app.funcs.LoadCSS('custom-stylesheet.css')
-        app.funcs.LoadCSS('lyricer.css')
+
+        // Inject Plugin Interaction
         app.funcs.LoadJS('pluginSystem.js', false)
-        app.funcs.LoadJS('lyricer.js')
+
+        // Lyrics
+        app.funcs.LoadJS('lyrics.js')
+
+        // Bulk JavaScript Functions
+        app.funcs.LoadJS('custom.js')
 
         // Window Frames
         if (app.preferences.value('visual.frameType') === 'mac') {
@@ -184,13 +184,6 @@ module.exports = {
             app.funcs.LoadCSS('frame_macOS_emulation_right.css')
         } else if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
             app.funcs.LoadCSS('frame_Windows.css')
-        }
-
-        // Load the appropriate css file for transparency
-        if (app.transparency) {
-            // app.funcs.LoadCSS('transparency.css')
-        } else {
-            // app.win.webContents.insertCSS(`html body { background-color: var(--pageBG) !important; }`)
         }
 
         // Set the settings variables if needed
@@ -202,11 +195,6 @@ module.exports = {
         // Streamer Mode
         if (app.preferences.value('visual.streamerMode').includes(true)) {
             app.funcs.LoadCSS('streamerMode.css')
-        }
-
-        // Load Themes
-        if (app.preferences.value('visual.theme') && !(app.preferences.value('visual.theme').includes('Template')) && !(app.preferences.value('visual.theme').includes('default'))) {
-            // app.funcs.LoadCSS(`${app.preferences.value('visual.theme')}.css`, true)
         }
 
         /* Remove the Scrollbar */

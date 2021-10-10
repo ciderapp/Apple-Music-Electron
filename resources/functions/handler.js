@@ -19,7 +19,6 @@ const handler = {
         // Verbose Check
         if (app.commandLine.hasSwitch('verbose')) {
             console.log("[Apple-Music-Electron] User has launched the application with --verbose");
-            app.verboseLaunched = true
         }
 
         // Log File Location
@@ -33,24 +32,6 @@ const handler = {
             console.log("[Apple-Music-Electron] User has closed the application via --force-quit");
             app.quit()
         }
-
-        // Check for Protocols
-        process.argv.forEach((value) => {
-            if (value.includes('ame://') || value.includes('itms://') || value.includes('itmss://') || value.includes('musics://') || value.includes('music://')) {
-                if (app.preferences.value('advanced.verboseLogging').includes(true) || app.verboseLaunched) console.log('[InstanceHandler] Preventing application creation as args include protocol.');
-                app.quit()
-                return true
-            }
-        })
-
-        // For macOS
-        app.on('open-url', function(event, url) {
-            event.preventDefault()
-            if (url.includes('ame://') || url.includes('itms://') || url.includes('itmss://') || url.includes('musics://') || url.includes('music://')) {
-                handler.LinkHandler(url)
-            }
-        })
-
     },
 
     LaunchHandlerPostWin: function() {
@@ -97,35 +78,35 @@ const handler = {
         const gotTheLock = app.requestSingleInstanceLock();
         let returnVal = false
 
+        app.on('second-instance', (_e, argv) => {
+            console.warn(`[InstanceHandler][SecondInstanceHandler] Second Instance Started with args: [${argv.join(', ')}]`)
+
+            // Checks if first instance is authorized and if second instance has protocol args
+            argv.forEach((value) => {
+                if (value.includes('ame://') || value.includes('itms://') || value.includes('itmss://') || value.includes('musics://') || value.includes('music://')) {
+                    console.warn(`[InstanceHandler][SecondInstanceHandler] Found Protocol!`)
+                    handler.LinkHandler(value);
+                }
+            })
+
+            if (argv.includes("--force-quit")) {
+                console.warn('[InstanceHandler][SecondInstanceHandler] Force Quit found. Quitting App.');
+                app.quit()
+                returnVal = true
+            }
+            else if (app.win && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) { // If a Second Instance has Been Started
+                console.warn('[InstanceHandler][SecondInstanceHandler] Showing window.');
+                app.win.show()
+                app.win.focus()
+            }
+        })
+
         if (!gotTheLock && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) {
             console.warn("[InstanceHandler] Existing Instance is Blocking Second Instance.");
             app.quit();
             return true
-        } else {
-            app.on('second-instance', (_e, argv) => {
-                console.log(`[InstanceHandler] Second Instance Started with args: [${argv.join(', ')}]`)
-
-                if (argv.includes("--force-quit")) {
-                    console.warn('[InstanceHandler] Force Quit found. Quitting App.');
-                    app.quit()
-                    returnVal = true
-                } else if (app.win && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) { // If a Second Instance has Been Started
-                    console.warn('[InstanceHandler] Showing window.');
-                    app.win.show()
-                    app.win.focus()
-                }
-
-                // Checks if first instance is authorized and if second instance has protocol args
-                if (app.win && app.isAuthorized) {
-                    argv.forEach((value) => {
-                        if (value.includes('ame://') || value.includes('itms://') || value.includes('itmss://') || value.includes('musics://') || value.includes('music://')) {
-                            handler.LinkHandler(value)
-                            if (app.preferences.value('advanced.allowMultipleInstances').includes(true)) returnVal = true;
-                        }
-                    })
-                }
-            })
         }
+
         return returnVal
     },
 
@@ -337,19 +318,23 @@ const handler = {
         })
 
         app.win.on('close', (event) => {
-            if (app.win.miniplayerActive) {
-                ipcMain.emit("set-miniplayer", false);
-                event.preventDefault();
+            if (app.isQuiting) {
+                app.quit()
+            } else {
+                if (app.win.miniplayerActive) {
+                    event.preventDefault();
+                    ipcMain.emit("set-miniplayer", false);
+                }
+
+                if ((app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === "darwin")) {
+                    event.preventDefault()
+                    if (typeof app.win.hide === "function") {
+                        app.win.hide();
+                    }
+                }
             }
 
-            if ((app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === "darwin") && !app.isQuiting) { // Hide the App if isQuitting is not true
-                event.preventDefault()
-                if (typeof app.win.hide === "function") {
-                    app.win.hide();
-                }
-            } else {
-                app.quit()
-            }
+
 
         });
 
@@ -366,21 +351,49 @@ const handler = {
             app.funcs.SetContextMenu(false)
                 // app.win.StoredWebsite = app.win.webContents.getURL();
         });
+
+        // For macOS Link Handling
+        app.on('open-url', function(event, url) {
+            event.preventDefault()
+            if (url.includes('ame://') || url.includes('itms://') || url.includes('itmss://') || url.includes('musics://') || url.includes('music://')) {
+                handler.LinkHandler(url)
+            }
+        })
+
     },
 
     SettingsHandler: function() {
         console.verbose('[SettingsHandler] Started.');
-        let DialogMessage, cachedPreferences = app.preferences._preferences;
+        let DialogMessage = false, cachedPreferences = app.preferences._preferences, storedChanges = [];
 
         const { fetchTransparencyOptions } = require('./CreateBrowserWindow')
 
         app.preferences.on('save', (updatedPreferences) => {
+            let currentChanges = []
 
-            if (cachedPreferences.visual.theme !== updatedPreferences.visual.theme) { // Handles Theme Changes
+            for (const [categoryTitle, categoryContents] of Object.entries(updatedPreferences)) {
+                if (categoryContents !== cachedPreferences[categoryTitle]) { // This has gotten the changed category
+                    for (const [settingTitle, settingValue] of Object.entries(updatedPreferences[categoryTitle])) {
+                        if (JSON.stringify(settingValue) !== JSON.stringify(cachedPreferences[categoryTitle][settingTitle])) {
+                            currentChanges.push(`${categoryTitle}.${settingTitle}`)
+                            if (!storedChanges.includes(`${categoryTitle}.${settingTitle}`)) {
+                                storedChanges.push(`${categoryTitle}.${settingTitle}`)
+                            }
+                        }
+                    }
+                }
+            }
+
+            console.verbose(`[SettingsHandler] Found changes: ${currentChanges} | Total Changes: ${storedChanges}`);
+
+            // Theme Changes
+            if (currentChanges.includes('visual.theme')) {
                 app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`).catch((e) => console.error(e));
                 const updatedVibrancy = fetchTransparencyOptions();
                 if (app.transparency && updatedVibrancy && process.platform !== 'darwin') app.win.setVibrancy(updatedVibrancy);
-            } else if ((cachedPreferences.visual.transparencyEffect !== updatedPreferences.visual.transparencyEffect) || (cachedPreferences.visual.transparencyTheme !== updatedPreferences.visual.transparencyTheme) || (cachedPreferences.visual.transparencyMaximumRefreshRate !== updatedPreferences.visual.transparencyMaximumRefreshRate)) { // Handles Transparency Changes
+            }
+            // Transparency Changes
+            else if (currentChanges.includes('visual.transparencyEffect') || currentChanges.includes('visual.transparencyTheme') || currentChanges.includes('visual.transparencyDisableBlur') || currentChanges.includes('visual.transparencyMaximumRefreshRate')) {
                 const updatedVibrancy = fetchTransparencyOptions()
                 if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
                     app.win.setVibrancy(updatedVibrancy);
@@ -389,49 +402,54 @@ const handler = {
                     app.win.setVibrancy();
                     app.win.webContents.executeJavaScript(`AMThemes.setTransparency(false);`).catch((e) => console.error(e));
                 }
-            } else if (cachedPreferences.visual.frameType !== updatedPreferences.visual.frameType) {
+            }
+            else if (currentChanges.includes('visual.removeUpsell') || currentChanges.includes('visual.removeAppleLogo') || currentChanges.includes('visual.removeFooter')) {
+                app.win.webContents.executeJavaScript('AMJavaScript.LoadCustom()').catch((e) => console.error(e));
+            }
+            // Frame Type Changes (TBA)
+            else if (currentChanges.includes('visual.frameType')) {
                 //    run js function to unload / load new frame
-            } else if (cachedPreferences.general.discordRPC !== updatedPreferences.general.discordRPC) {
-                console.log(updatedPreferences.general.discordRPC)
-                if (updatedPreferences.general.discordRPC) {
-                    app.funcs.discord.disconnect()
+            }
+            // IncognitoMode Changes
+            else if (currentChanges.includes('general.incognitoMode')) {
+                if (app.preferences.value('general.incognitoMode').includes(true)) {
+                    console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
                 }
-            } else if (cachedPreferences.window.closeButtonMinimize !== updatedPreferences.window.closeButtonMinimize || cachedPreferences.general.incognitoMode !== updatedPreferences.general.incognitoMode) {
-                //
-            } else {
-                if (!DialogMessage) {
-                    DialogMessage = dialog.showMessageBox(app.win, {
-                        title: "Restart Required",
-                        message: "A restart is required in order for the settings you have changed to apply.",
-                        type: "warning",
-                        buttons: ['Relaunch Now', 'Relaunch Later']
-                    }).then(({
-                        response
-                    }) => {
-                        if (response === 0) {
-                            app.relaunch()
-                            app.quit()
-                        }
-                    })
-                }
+            }
+            // The rest ask for a restart
+            else if (!DialogMessage && !currentChanges.includes('general.lastfmAuthKey')) {
+                DialogMessage = dialog.showMessageBox(app.win, {
+                    title: "Restart Required",
+                    message: "A restart is required in order for the settings you have changed to apply.",
+                    type: "warning",
+                    buttons: ['Relaunch Now', 'Relaunch Later']
+                }).then(({
+                    response
+                }) => {
+                    if (response === 0) {
+                        app.relaunch()
+                        app.quit()
+                    }
+                })
             }
 
             cachedPreferences = updatedPreferences
         });
     },
 
-    LinkHandler: function(songId) {
-        if (!songId) return;
+    LinkHandler: function(startArgs) {
+        if (!startArgs || !app.win || !app.isAuthorized) return;
 
 
-        if (String(songId).includes('auth')) {
-            let authURI = String(songId).split('/auth/')[1]
+        if (String(startArgs).includes('auth')) {
+            let authURI = String(startArgs).split('/auth/')[1]
             if (authURI.startsWith('lastfm')) { // If we wanted more auth options
-                preferences.general.lastfmAuthKey = authURI.split('lastfm?token=')[1]
+                const authKey = authURI.split('lastfm?token=')[1];
+                app.win.webContents.send('LastfmAuthenticated', authKey);
             }
         } else {
-            console.log(songId)
-            let formattedSongID = songId.replace(/\D+/g, '');
+            console.log(startArgs)
+            let formattedSongID = startArgs.replace(/\D+/g, '');
             console.warn(`[LinkHandler] Attempting to load song id: ${formattedSongID}`);
             // Someone look into why playMediaItem doesn't work thanks - cryptofyre
             app.win.webContents.executeJavaScript(`MusicKit.getInstance().changeToMediaItem('${formattedSongID}')`)
