@@ -103,6 +103,7 @@ span.app-prefs-title {
 
 .application-preferences .app-prefs-section #advanced {
     transform: translateY(-2000px) translateZ(0);
+    visibility: hidden;
     opacity: 0;
     transition: opacity .3s ease 0s, transform 0s linear .9s;
     position: absolute;
@@ -110,6 +111,7 @@ span.app-prefs-title {
 
 .application-preferences .app-prefs-section .revealed {
     transform: translateY(0px) !important;
+    visibility: visible !important;
     opacity: 1 !important;
     transition: top 0s linear 0s, opacity .3s ease .01s !important;
     position: relative !important;

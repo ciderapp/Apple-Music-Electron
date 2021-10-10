@@ -316,23 +316,18 @@ const handler = {
         })
 
         app.win.on('close', (event) => {
-            if (app.isQuiting) {
-                app.quit()
-            } else {
-                if (app.win.miniplayerActive) {
-                    event.preventDefault();
-                    ipcMain.emit("set-miniplayer", false);
-                }
 
-                if ((app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === "darwin")) {
-                    event.preventDefault()
-                    if (typeof app.win.hide === "function") {
-                        app.win.hide();
-                    }
+            if (!app.isQuiting || process.platform === "darwin") {
+                event.preventDefault();
+                if (typeof app.win.hide === 'function') {
+                    app.win.hide();
+                }
+            } else {
+                event.preventDefault();
+                if (typeof app.win.destroy === 'function') {
+                    app.win.destroy();
                 }
             }
-
-
 
         });
 
@@ -407,6 +402,9 @@ const handler = {
             // Frame Type Changes (TBA)
             else if (currentChanges.includes('visual.frameType')) {
                 //    run js function to unload / load new frame
+            }
+            else if (currentChanges.includes('window.closeButtonMinimize')) {
+                app.isQuiting = !app.preferences.value('window.closeButtonMinimize').includes(true);
             }
             // IncognitoMode Changes
             else if (currentChanges.includes('general.incognitoMode')) {
