@@ -370,20 +370,21 @@ const handler = {
 
         const { fetchTransparencyOptions } = require('./CreateBrowserWindow')
 
-        systemPreferences.on('accent-color-changed', (event, color) => {
-            if (app.preferences.value('visual.useOperatingSystemAccent')) {
+        if (app.preferences.value('visual.useOperatingSystemAccent').includes(true)) {
+            systemPreferences.on('accent-color-changed', (event, color) => {
                 if (color) {
                     const accent = '#' + color.slice(0, -2)
                     app.win.webContents.insertCSS(`
-                    :root {
-                        --keyColor: ${accent} !important;
-                        --keyColor-rgb: ${hexToRgb(accent).r} ${hexToRgb(accent).g} ${hexToRgb(accent).b} !important;
-                    }
-                }
-                `).catch((e) => console.error(e));
+                :root {
+                    --keyColor: ${accent} !important;
+                    --keyColor-rgb: ${hexToRgb(accent).r} ${hexToRgb(accent).g} ${hexToRgb(accent).b} !important;
                 }
             }
-        })
+            `).catch((e) => console.error(e));
+                }
+            })
+        }
+
 
         app.preferences.on('save', (updatedPreferences) => {
             let currentChanges = []

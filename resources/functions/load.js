@@ -106,7 +106,7 @@ module.exports = {
             `).catch((e) => console.error(e));
         }
 
-        if (app.preferences.value('visual.useOperatingSystemAccent')) {
+        if (app.preferences.value('visual.useOperatingSystemAccent').includes(true)) {
             if (systemPreferences.getAccentColor()) {
                 const accent = '#' + systemPreferences.getAccentColor().slice(0, -2)
                 app.win.webContents.insertCSS(`
