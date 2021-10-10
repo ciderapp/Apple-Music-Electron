@@ -82,7 +82,6 @@ try {
                     function openLyrics() {
                         document.body.classList.add("web-chrome-drawer-open");
                         document.body.classList.remove("web-chrome-drawer-opening");
-                        document.querySelector('.web-chrome-drawer').style.backgroundColor = "var(--systemToolbarTitlebarMaterialSover-inactive)";
                         document.querySelector('.web-chrome-drawer').removeEventListener('animationend', openLyrics, true);
                         document.querySelector('#lyricsButton').style.fill = 'var(--playerPlatterButtonIconFill)';
                         document.querySelector('#lyricsButton').style.boxShadow = '0 1px 1px rgb(0 0 0 / 10%)';
@@ -92,7 +91,6 @@ try {
                     function closeLyrics() {
                         document.body.classList.remove("web-chrome-drawer-open");
                         document.body.classList.remove("web-chrome-drawer-closing");
-                        document.querySelector('.web-chrome-drawer').style.backgroundColor = "";
                         document.querySelector('.web-chrome-drawer').removeEventListener('animationend', closeLyrics, true);
                         document.querySelector('#lyricsButton').style.fill = 'var(--systemSecondary)';
                         document.querySelector('#lyricsButton').style.boxShadow = 'none';
