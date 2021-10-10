@@ -112,11 +112,16 @@ try {
                                     document.querySelector('.web-chrome-drawer').removeEventListener('animationend', openLyrics, true);
                                     document.querySelector('.web-chrome-drawer').removeEventListener('animationend', closeLyrics, true);
                                 }
-                            } catch (e) { console.error(e) }
+                            } catch (e) {
+                                console.error(e)
+                            }
                         }
                         if (!document.getElementById("lyricer")) {
 
-                            GetXPath("/html/body/div[4]/div[3]/div[1]").innerHTML = `	<div id="lyricer"></div>`;
+                            const sidebar = GetXPath("/html/body/div[4]/div[3]/div[1]")
+                            if (sidebar) {
+                                sidebar.innerHTML = `<div id="lyricer"></div>`;
+                            }
 
                             let text = "";
                             let lrc = new Lyricer();
@@ -223,7 +228,9 @@ try {
                                 ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
                             }
                         });
-                    } catch (e) { console.error(e) }
+                    } catch (e) {
+                        console.error(e)
+                    }
                 }
             }
         }
@@ -257,12 +264,13 @@ try {
                 console.warn("[Custom] Refreshed Meta CSS");
                 /** Exposes artwork and other metadata to CSS for themes */
                 const musicKit = MusicKit.getInstance();
-                let artwork = musicKit.nowPlayingItem["attributes"]["artwork"]["url"];                
-                /* Fix Itunes Match album arts not showing */                      
-                if (artwork == ''){
-                    try{ musicKit.api.library.song(musicKit.nowPlayingItem.id).then((data)=>{
-                        if (data != ""){
-                                artwork =  data["artwork"]["url"]; 
+                let artwork = musicKit.nowPlayingItem["attributes"]["artwork"]["url"];
+                /* Fix Itunes Match album arts not showing */
+                if (artwork === '' || !artwork) {
+                    try {
+                        musicKit.api.library.song(musicKit.nowPlayingItem.id).then((data) => {
+                            if (data !== "") {
+                                artwork = data["artwork"]["url"];
                                 document.querySelector('#ember13').getElementsByTagName('img')[0].src = artwork;
                                 this._styleSheets.Meta.replaceSync(`
                                     :root {
@@ -273,13 +281,13 @@ try {
                                     }
                                 `);
                                 this.refresh();
-                            }   
+                            }
                         });
-                    } catch(e){
+                    } catch (e) {
                         console.error(e);
-                    }                            
+                    }
                 }
-                
+
                 this._styleSheets.Meta.replaceSync(`
                 :root {
                     --musicKit-artwork-64: url("${artwork.replace("{w}", 64).replace("{h}", 64)}");
@@ -359,9 +367,10 @@ try {
                     ipcRenderer.send('LyricsTimeUpdate', MusicKit.getInstance().currentPlaybackTime + 0.250);
                 });
                 MusicKit.getInstance().addEventListener(MusicKit.Events.nowPlayingItemDidChange, function () {
-                    try { 
-                        GetXPath("/html/body/div[4]/div[3]/div[3]/div/div[2]/div[1]/img").src = "https://music.apple.com/assets/product/MissingArtworkMusic.svg";} 
-                    catch (e) {}
+                    try {
+                        GetXPath("/html/body/div[4]/div[3]/div[3]/div/div[2]/div[1]/img").src = "https://music.apple.com/assets/product/MissingArtworkMusic.svg";
+                    } catch (e) {
+                    }
                     try {
                         let lrc = new Lyricer();
                         lrc.setLrc("");
@@ -373,19 +382,21 @@ try {
                 });
 
                 /* Mutation Observer to disable "seek error" alert */
-                let observer = new MutationObserver(function(mutationList) {
-                    for (var mutation of mutationList) {
-                        for (var child of mutation.addedNodes) {
+                let observer = new MutationObserver(function (mutationList) {
+                    for (const mutation of mutationList) {
+                        for (const child of mutation.addedNodes) {
                             try {
-                                if (document.getElementById("mk-dialog-title").textContent ==  "cancelled"){
+                                if (document.getElementById("mk-dialog-title").textContent === "cancelled") {
                                     document.getElementById("musickit-dialog").remove();
                                     document.getElementById("musickit-dialog-scrim").remove();
                                     break;
-                                    }
-                                } catch (e){break;}     
+                                }
+                            } catch (e) {
+                                break;
+                            }
                         }
-                    } 
-                    
+                    }
+
                 });
                 observer.observe(document.body, {childList: true});
 
@@ -574,7 +585,7 @@ try {
         /* Load the Startup Files as This is the First Time its been Run */
         AMJavaScript.LoadCustomStartup();
     }
-    
+
 } catch (e) {
     console.error("[JS] Error while trying to apply custom.js", e);
 }
