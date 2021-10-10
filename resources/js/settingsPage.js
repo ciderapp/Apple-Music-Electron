@@ -256,9 +256,6 @@ try {
                     </li>
                     <li class="app-prefs-divider header-nav">
                         <h2 class="shelf-title">LastFM</h2>
-                        <span class="app-prefs-help typography-title-3-tall">For information regarding this section, read the wiki post found <a
-                                href="#"
-                                onclick='window.open("https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM")'>here</a>.</span>
                     </li>
                     <li class="app-prefs-button">
                         <span class="typography-title-3-tall">LastFM Account</span>
