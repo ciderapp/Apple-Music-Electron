@@ -48,9 +48,9 @@
     "webpack": "~5.58.1"
   },
   "build": {
-    "electronVersion": "15.0.0",
+    "electronVersion": "15.1.2",
     "electronDownload": {
-      "version": "15.0.0-wvvmp",
+      "version": "15.1.2-wvvmp",
       "mirror": "https://github.com/castlabs/electron-releases/releases/download/v"
     },
     "appId": "apple-music",
