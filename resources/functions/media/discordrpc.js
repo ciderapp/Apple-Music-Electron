@@ -66,7 +66,7 @@ module.exports = {
             endTimestamp: attributes.endTime,
             largeImageKey: 'logo',
             largeImageText: attributes.albumName,
-            smallImageKey: 'nightly',
+            smallImageKey: 'play',
             smallImageText: 'Playing',
             instance: true,
             buttons: [
