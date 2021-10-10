@@ -50,6 +50,7 @@ const themes = {
             console.warn(`[InitializeTheme] Clearing themes directory for fresh clone. ('${app.userThemesPath}')`)
             clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
                 console.log(`[InitializeTheme][GitClone] ${err ? err : `Re-cloned Themes.`}`)
+                themes.updateThemesListing()
                 return Promise.resolve(err)
             })
         })
@@ -172,6 +173,7 @@ const init = {
         if (fs.existsSync(app.userThemesPath)) {
             console.log("[InitializeTheme][existsSync] Themes folder exists!")
             themes.permissionsCheck(app.userThemesPath, 'README.md')
+            themes.updateThemesListing()
         } else {
             themes.updateThemes().catch((e) => console.error(e));
         }
@@ -2374,7 +2376,6 @@ const init = {
             })
         })
 
-        themes.updateThemesListing()
         app.preferences._preferences.supportsAcrylic = AcrylicSupported
     },
 
