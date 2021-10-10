@@ -256,13 +256,10 @@ try {
                     </li>
                     <li class="app-prefs-divider header-nav">
                         <h2 class="shelf-title">LastFM</h2>
-                        <span class="app-prefs-help typography-title-3-tall">For information regarding this section, read the wiki post found <a
-                                href="#"
-                                onclick='window.open("https://github.com/cryptofyre/Apple-Music-Electron/wiki/LastFM")'>here</a>.</span>
                     </li>
-                    <li class="app-prefs-lastfm-connect">
+                    <li class="app-prefs-button">
                         <span class="typography-title-3-tall">LastFM Account</span>
-                        <label id="lfmConnect" class="connect-button list-element"
+                        <label id="lfmConnect" class="list-button list-element"
                                onclick="LastFMAuthenticate()">Connect</label>
                     </li>
                     <li class="app-prefs-toggle">
@@ -292,6 +289,11 @@ try {
                         <span class="app-prefs-help typography-title-3-tall">You will need to restart the application in order for the default themes to be populated. You can preview all the themes <a
                                 href="#"
                                 onclick="window.open('https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki/Theme-Preview-Images')">here</a>.</span>
+                    </li>
+                    <li class="app-prefs-button">
+                        <span class="typography-title-3-tall">Update Themes</span>
+                        <label id="updateThemes" class="list-button list-element"
+                               onclick="updateThemes()">Update Themes</label>
                     </li>
                     <li class="app-prefs-dropdown">
                         <span class="typography-title-3-tall">Application Frame</span>
@@ -444,11 +446,13 @@ try {
         </div>
         `;
 
-        let ThemesListing = document.getElementById('theme').innerHTML;
+
+        let themesListingHTML = document.getElementById('theme').innerHTML;
         for (const [key, value] of Object.entries(preferences.availableThemes)) {
-            ThemesListing = ThemesListing + `\n<option value="${key}">${value}</option>`;
+            themesListingHTML = themesListingHTML + `\n<option value="${key}">${value}</option>`;
         }
-        document.getElementById('theme').innerHTML = ThemesListing;
+        document.getElementById('theme').innerHTML = themesListingHTML;
+
 
         if (preferences.supportsAcrylic) {
             document.getElementById('transparencyEffect').innerHTML = document.getElementById('transparencyEffect').innerHTML + "\n<option value='acrylic'>Acrylic (W10 1809+)</option>";
@@ -484,6 +488,22 @@ try {
                 element.innerHTML = `Disconnect\n<p style="font-size: 8px"><i>(Authed: ${lfmAuthKey})</i></p>`;
                 element.onclick = LastFMDeauthorize;
                 ipcRenderer.sendSync('setPreferences', preferences);
+            });
+        }
+
+        function updateThemes() {
+            ipcRenderer.send('updateThemes');
+            document.getElementById('updateThemes').innerText = 'Updating...';
+            ipcRenderer.on('themesUpdated', (_event, themesListing) => {
+                document.getElementById('updateThemes').innerText = (themesListing ? 'Themes Updated' : 'Error');
+                if (themesListing) {
+                    let themesListingHTML = `<option disabled>Select one</option>\n<option value='default'>Default</option>`;
+                    for (const [key, value] of Object.entries(themesListing)) {
+                        themesListingHTML = themesListingHTML + `\n<option value="${key}">${value}</option>`;
+                    }
+                    document.getElementById('theme').innerHTML = themesListingHTML;
+                    console.info('[updateThemes] Themes Listing Updated!');
+                }
             });
         }
 

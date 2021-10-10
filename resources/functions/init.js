@@ -1,4 +1,4 @@
-const {app, nativeTheme, nativeImage, Tray, globalShortcut, protocol} = require("electron");
+const {app, nativeTheme, nativeImage, Tray, globalShortcut, protocol, ipcMain} = require("electron");
 const {join, resolve} = require("path");
 const os = require("os");
 const fs = require("fs");
@@ -7,6 +7,71 @@ const clone = require('git-clone');
 const rimraf = require('rimraf')
 const languages = require("../languages.json");
 const ElectronSentry = require('@sentry/electron');
+
+const themes = {
+    fetchThemeName: (fileName) => {
+        fileName = join(app.userThemesPath, `${fileName.toLowerCase()}.css`)
+        let found = false;
+        if (fs.existsSync(fileName)) {
+            const file = fs.readFileSync(fileName, "utf8");
+            file.split(/\r?\n/).forEach((line) => {
+                if (line.includes("@name")) {
+                    found = (line.split('@name')[1]).trim()
+                }
+            })
+        }
+        return found
+    },
+
+    updateThemesListing: () => {
+        let themesFileNames = [], themesListing = [];
+
+        if (fs.existsSync(app.userThemesPath)) {
+            fs.readdirSync(app.userThemesPath).forEach((value) => {
+                if (value.split('.').pop() === 'css') {
+                    themesFileNames.push(value.split('.').shift())
+                }
+            });
+        }
+
+        // Get the Info
+        themesFileNames.forEach((themeFileName) => {
+            const themeName = themes.fetchThemeName(themeFileName)
+            if (!themeName) return;
+            themesListing[`${themeFileName}`] = themeName
+        })
+
+        app.preferences._preferences.availableThemes = themesListing
+        return themesListing
+    },
+
+    updateThemes: async () => {
+        rimraf(app.userThemesPath, [], () => {
+            console.warn(`[InitializeTheme] Clearing themes directory for fresh clone. ('${app.userThemesPath}')`)
+            clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
+                console.log(`[InitializeTheme][GitClone] ${err ? err : `Re-cloned Themes.`}`)
+                themes.updateThemesListing()
+                return Promise.resolve(err)
+            })
+        })
+    },
+
+    permissionsCheck: (folder, file) => {
+        console.verbose(`[PermissionsCheck] Running check on ${join(folder, file)}`)
+        fs.access(join(folder, file), fs.constants.R_OK | fs.constants.W_OK, (err) => {
+            if (err) { // File cannot be read after cloning
+                console.error(`[PermissionsCheck][access] ${err}`)
+                chmodr(folder, 0o777, (err) => {
+                    if (err) {
+                        console.error(`[PermissionsCheck][chmodr] ${err} - Theme set to default to prevent application launch halt.`);
+                    }
+                });
+            } else {
+                console.verbose('[PermissionsCheck] Check passed.')
+            }
+        })
+    }
+}
 
 const init = {
 
@@ -69,7 +134,9 @@ const init = {
     LoggingInit: function () {
         const log = require("electron-log");
 
-        if (app.commandLine.hasSwitch('verbose')) { app.verboseLaunched = true }
+        if (app.commandLine.hasSwitch('verbose')) {
+            app.verboseLaunched = true
+        }
 
         log.transports.file.resolvePath = (vars) => {
             return join(app.getPath('userData'), 'logs', vars.fileName);
@@ -77,7 +144,8 @@ const init = {
 
         Object.assign(console, log.functions);
 
-        console.verbose = () => {};
+        console.verbose = () => {
+        };
 
         if (app.preferences.value('advanced.verboseLogging').includes(true) || app.verboseLaunched) {
             console.verbose = log.debug
@@ -89,49 +157,30 @@ const init = {
     },
 
     ThemeInstallation: function () {
-        function PermissionsCheck(folder, file) {
-            console.verbose(`[PermissionsCheck] Running check on ${join(folder, file)}`)
-            fs.access(join(folder, file), fs.constants.R_OK | fs.constants.W_OK, (err) => {
-                if (err) { // File cannot be read after cloning
-                    console.error(`[PermissionsCheck][access] ${err}`)
-                    chmodr(folder, 0o777, (err) => {
-                        if (err) {
-                            console.error(`[PermissionsCheck][chmodr] ${err} - Theme set to default to prevent application launch halt.`);
-                            app.preferences.value('visual.theme', 'default')
-                        }
-                    });
-                } else {
-                    console.verbose('[PermissionsCheck] Check passed.')
-                }
+
+        ipcMain.on('updateThemes', (_event) => {
+            rimraf(app.userThemesPath, [], () => {
+                console.warn(`[InitializeTheme] Clearing themes directory for fresh clone. ('${app.userThemesPath}')`)
+                clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
+                    console.log(`[InitializeTheme][GitClone] ${err ? err : `Re-cloned Themes.`}`)
+                    const themesListing = (err ? err : themes.updateThemesListing())
+                    app.win.webContents.send('themesUpdated', themesListing)
+                })
             })
-        }
+        })
 
         // Check if the themes folder exists and check permissions
         if (fs.existsSync(app.userThemesPath)) {
             console.log("[InitializeTheme][existsSync] Themes folder exists!")
-            PermissionsCheck(app.userThemesPath, 'README.md')
+            themes.permissionsCheck(app.userThemesPath, 'README.md')
+            themes.updateThemesListing()
         } else {
-            console.verbose("[InitializeTheme] Attempting to clone themes.")
-            clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
-                console.log(`[InitializeTheme][GitClone] ${err ? err : `Themes repository has been cloned to '${app.userThemesPath}'`}`)
-                PermissionsCheck(app.userThemesPath, 'README.md')
-            })
+            themes.updateThemes().catch((e) => console.error(e));
         }
 
         // Save all the file names to array and log it
         if (fs.existsSync(app.userThemesPath)) {
             console.log(`[InitializeTheme] Files found in Themes Directory: [${fs.readdirSync(app.userThemesPath).join(', ')}]`)
-        }
-
-        if (app.preferences.value('advanced.overwriteThemes').includes(true)) {
-            rimraf(app.userThemesPath, [], () => {
-                console.warn(`[InitializeTheme] Clearing themes directory for fresh clone. ('${app.userThemesPath}`)
-                clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
-                    console.log(`[InitializeTheme][GitClone] ${err ? err : `Re-cloned Themes.`}`)
-                    app.preferences.value('advanced.overwriteThemes', [])
-                    app.preferences.value('visual.theme', 'default')
-                })
-            })
         }
 
         // Set the default theme
@@ -328,7 +377,6 @@ const init = {
             window: [],
             advanced: []
         }
-
         fields.default = {
             'storedVersion': "",
             "general": {
@@ -400,7 +448,6 @@ const init = {
                     true
                 ],
                 "devTools": "",
-                "overwriteThemes": [],
                 "allowMultipleInstances": [],
             }
         }
@@ -2121,15 +2168,6 @@ const init = {
                 ],
                 'help': 'This allows users to access the chrome developer tools. Find more information at https://developer.chrome.com/docs/devtools/'
             },
-            { // overwriteThemes (Prevents copying and replacing existing themes)
-                'key': 'overwriteThemes',
-                'type': 'checkbox',
-                'options': [{
-                    'label': 'overwriteThemes',
-                    'value': true
-                }],
-                'help': 'Enable this to fetch the latest themes from GitHub on the next launch. (This will disable any active theme to prevent issues)'
-            },
             { // Turning on allowMultipleInstances
                 'key': 'allowMultipleInstances',
                 'type': 'checkbox',
@@ -2148,7 +2186,7 @@ const init = {
 
         // Remove the Transparency Option for Acrylic if it is not supported
         if (!AcrylicSupported) {
-            for (var key in fields.visual) {
+            for (const key in fields.visual) {
                 if (fields.visual[key].key === 'transparencyEffect') {
                     fields.visual[key].options.shift()
                 }
@@ -2161,7 +2199,7 @@ const init = {
         // Set the Theme List based on css files in themes directory
         app.userThemesPath = resolve(app.getPath('userData'), 'themes');
         app.userPluginsPath = resolve(app.getPath('userData'), 'plugins');
-        let themesFileNames = [], themesListing = [];
+        let themesFileNames = [];
 
         if (fs.existsSync(app.userThemesPath)) {
             fs.readdirSync(app.userThemesPath).forEach((value) => {
@@ -2171,29 +2209,14 @@ const init = {
             })
         }
 
-        function fetchThemeName(fileName) {
-            fileName = join(app.userThemesPath, `${fileName.toLowerCase()}.css`)
-            let found = false;
-            if (fs.existsSync(fileName)) {
-                const file = fs.readFileSync(fileName, "utf8");
-                file.split(/\r?\n/).forEach((line) => {
-                    if (line.includes("@name")) {
-                        found = (line.split('@name')[1]).trim()
-                    }
-                })
-            }
-            return found
-        }
-
         // Get the Info
         themesFileNames.forEach((themeFileName) => {
-            const themeName = fetchThemeName(themeFileName)
+            const themeName = themes.fetchThemeName(themeFileName)
             if (!themeName) return;
             fields.visual[0].options.push({
                 label: themeName,
                 value: themeFileName
             },)
-            themesListing[`${themeFileName}`] = themeName
         })
 
         const ElectronPreferences = require("electron-preferences");
@@ -2203,16 +2226,16 @@ const init = {
             'defaults': fields.default,
             /* Settings Menu */
             'sections': [{
-                    'id': 'general',
-                    'label': 'General Settings',
-                    'icon': 'settings-gear-63',
-                    'form': {
-                        'groups': [{
-                            'label': 'General Settings',
-                            'fields': fields.general
-                        }]
-                    }
-                },
+                'id': 'general',
+                'label': 'General Settings',
+                'icon': 'settings-gear-63',
+                'form': {
+                    'groups': [{
+                        'label': 'General Settings',
+                        'fields': fields.general
+                    }]
+                }
+            },
                 {
                     'id': 'visual',
                     'label': 'Visual Settings',
@@ -2354,7 +2377,6 @@ const init = {
         })
 
         app.preferences._preferences.supportsAcrylic = AcrylicSupported
-        app.preferences._preferences.availableThemes = themesListing
     },
 
     SentryInit: function () {
