@@ -118,7 +118,7 @@ try {
                         }
                         if (!document.getElementById("lyricer")) {
 
-                            const sidebar = GetXPath("/html/body/div[4]/div[3]/div[1]")
+                            const sidebar = GetXPath("/html/body/div[4]/div[3]/div[1]");
                             if (sidebar) {
                                 sidebar.innerHTML = `<div id="lyricer"></div>`;
                             }
