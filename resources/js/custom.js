@@ -256,8 +256,31 @@ try {
             updateMeta() {
                 console.warn("[Custom] Refreshed Meta CSS");
                 /** Exposes artwork and other metadata to CSS for themes */
+                document.querySelector('#ember13').getElementsByTagName('img')[0].src = 'https://music.apple.com/assets/product/MissingArtworkMusic.svg';
                 const musicKit = MusicKit.getInstance();
-                const artwork = musicKit.nowPlayingItem["attributes"]["artwork"]["url"];
+                let artwork = musicKit.nowPlayingItem["attributes"]["artwork"]["url"];                
+                /* Fix Itunes Match album arts not showing */                      
+                if (artwork == ''){
+                    try{ musicKit.api.library.song(musicKit.nowPlayingItem.id).then((data)=>{
+                        if (data != ""){
+                                artwork =  data["artwork"]["url"]; 
+                                document.querySelector('#ember13').getElementsByTagName('img')[0].src = artwork;
+                                this._styleSheets.Meta.replaceSync(`
+                                    :root {
+                                        --musicKit-artwork-64: url("${artwork.replace("{w}", 64).replace("{h}", 64)}");
+                                        --musicKit-artwork-256: url("${artwork.replace("{w}", 256).replace("{h}", 256)}");
+                                        --musicKit-artwork-512: url("${artwork.replace("{w}", 512).replace("{h}", 512)}");
+                                        --musicKit-artwork: url("${artwork.replace("{w}", 2000).replace("{h}", 2000)}");
+                                    }
+                                `);
+                                this.refresh();
+                            }   
+                        });
+                    } catch(e){
+                        console.error(e);
+                    }                            
+                }
+                
                 this._styleSheets.Meta.replaceSync(`
                 :root {
                     --musicKit-artwork-64: url("${artwork.replace("{w}", 64).replace("{h}", 64)}");
@@ -346,6 +369,23 @@ try {
                     }
                     _lyrics.GetLyrics(1);
                 });
+
+                /* Mutation Observer to disable "seek error" alert */
+                let observer = new MutationObserver(function(mutationList) {
+                    for (var mutation of mutationList) {
+                        for (var child of mutation.addedNodes) {
+                            try{
+                                if (document.getElementById("mk-dialog-title").textContent ==  "cancelled"){
+                                    document.getElementById("musickit-dialog").remove();
+                                    document.getElementById("musickit-dialog-scrim").remove();
+                                    break;
+                                    }
+                                } catch (e){break;}     
+                        }
+                    } 
+                    
+                });
+                observer.observe(document.body, {childList: true});
 
                 /* Load Themes and Transparency */
                 AMThemes.loadTheme(preferences["visual"]["theme"]);
