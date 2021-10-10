@@ -76,7 +76,8 @@ try {
                 }
 
                 /* Lyrics Button Click Event Handling */
-                if (document.querySelector("#lyricsButton") && GetXPath("/html/body/div[4]/div[3]/div[3]/div/div[3]/div[3]/button")) {
+                const upNextSideBarTogglePath =  (preferences.visual.frameType === 'mac' ? '/html/body/div[4]/div/div[3]/div/div[3]/div[3]/button' : '/html/body/div[4]/div[3]/div[3]/div/div[3]/div[3]/button');
+                if (document.querySelector("#lyricsButton") && GetXPath(upNextSideBarTogglePath)) {
 
                     function openLyrics() {
                         document.body.classList.add("web-chrome-drawer-open");
@@ -97,6 +98,11 @@ try {
                         document.querySelector('#lyricsButton').style.boxShadow = 'none';
                         document.querySelector('#lyricsButton').style.background = '0 0';
                     }
+                    
+                    if (preferences.visual.frameType === 'mac'){
+                        clonedElement = document.querySelector('#lyricsButton').cloneNode(true);
+                        document.querySelector('#lyricsButton').replaceWith(clonedElement);
+                    }
 
                     document.getElementById("lyricsButton").addEventListener('click', function () {
                         if (document.querySelector('.web-chrome-drawer').querySelector('.web-navigation__up-next.web-chrome-up-next.up-next') == null) {
@@ -111,8 +117,8 @@ try {
                         } else {
                             try {
                                 /* Checks for clicks on the up next sidebar toggle button */
-                                if (GetXPath("/html/body/div[4]/div[3]/div[3]/div/div[3]/div[3]/button").classList.contains('active')) {
-                                    GetXPath("/html/body/div[4]/div[3]/div[3]/div/div[3]/div[3]/button").click();
+                                if (GetXPath(upNextSideBarTogglePath).classList.contains('active')) {
+                                    GetXPath(upNextSideBarTogglePath).click();
                                     document.querySelector('.web-chrome-drawer').addEventListener('animationend', openLyrics, true);
                                     document.body.classList.add("web-chrome-drawer-opening");
                                 } else {
@@ -126,7 +132,7 @@ try {
                         }
                         if (!document.getElementById("lyricer")) {
 
-                            const sidebar = GetXPath("/html/body/div[4]/div[3]/div[1]");
+                            const sidebar = document.querySelector('.web-chrome-drawer');
                             if (sidebar) {
                                 sidebar.innerHTML = `<div id="lyricer"></div>`;
                             }
@@ -160,7 +166,7 @@ try {
                     }, false);
 
 
-                    GetXPath("/html/body/div[4]/div[3]/div[3]/div/div[3]/div[3]/button").addEventListener('click', function () {
+                    GetXPath(upNextSideBarTogglePath).addEventListener('click', function () {
                         if (document.querySelector('#lyricsButton').style.fill === "var(--playerPlatterButtonIconFill)") {
                             document.querySelector('#lyricsButton').style.fill = 'var(--systemSecondary)';
                             document.querySelector('#lyricsButton').style.boxShadow = 'none';
