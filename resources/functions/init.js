@@ -117,7 +117,7 @@ const init = {
         if (process.platform === "linux") app.commandLine.appendSwitch('disable-features', 'MediaSessionService');
 
         // Assign Default Variables
-        app.isQuiting = false;
+        app.isQuiting = !app.preferences.value('window.closeButtonMinimize').includes(true);
         app.win = '';
         app.ipc = {
             existingNotification: false
@@ -442,13 +442,14 @@ const init = {
                     true
                 ],
                 "preventMediaKeyHijacking": [],
-                "settingsMenuKeybind": "",
                 "menuBarVisible": [],
                 "removeScrollbars": [
                     true
                 ],
-                "devTools": "",
+                "devTools": [],
+                "devToolsOpenDetached": [],
                 "allowMultipleInstances": [],
+                "allowOldMenuAccess": [],
             }
         }
         fields.general = [
@@ -2122,11 +2123,6 @@ const init = {
                     'value': true
                 }]
             },
-            { // Setting Keybind for Opening Settings
-                'label': 'settingsMenuKeybind',
-                'key': 'settingsMenuKeybind',
-                'type': 'accelerator',
-            },
             { // Visual Advanced
                 'heading': 'Visual Advanced',
                 'content': `These are advanced features that may ruin the look of the application if you change them.`,
@@ -2155,17 +2151,20 @@ const init = {
             },
             { // Turning on devTools
                 'key': 'devTools',
-                'type': 'dropdown',
-                'options': [
-                    {
-                        'label': 'Detached',
-                        'value': 'detached'
-                    },
-                    {
-                        'label': 'Built-in',
-                        'value': 'built-in'
-                    }
-                ],
+                'type': 'checkbox',
+                'options': [{
+                    'label': 'devTools',
+                    'value': true
+                }],
+                'help': 'This allows users to access the chrome developer tools. Find more information at https://developer.chrome.com/docs/devtools/'
+            },
+            { // Turning on devTools
+                'key': 'devToolsOpenDetached',
+                'type': 'checkbox',
+                'options': [{
+                    'label': 'devToolsOpenDetached',
+                    'value': true
+                }],
                 'help': 'This allows users to access the chrome developer tools. Find more information at https://developer.chrome.com/docs/devtools/'
             },
             { // Turning on allowMultipleInstances
@@ -2173,6 +2172,14 @@ const init = {
                 'type': 'checkbox',
                 'options': [{
                     'label': 'allowMultipleInstances',
+                    'value': true
+                }]
+            },
+            {
+                'key': 'allowOldMenuAccess',
+                'type': 'checkbox',
+                'options': [{
+                    'label': 'allowOldMenuAccess',
                     'value': true
                 }]
             }
@@ -2350,14 +2357,13 @@ const init = {
             }
         });
 
-        if (!app.preferences.value("advanced.settingsMenuKeybind")) {
-            app.preferences.value("advanced.settingsMenuKeybind", process.platform === "darwin" ? "Control+Command+S" : "Control+Alt+S")
-        }
-
         app.whenReady().then(() => {
-            globalShortcut.register(app.preferences.value('advanced.settingsMenuKeybind'), () => {
-                app.preferences.show();
-            })
+            if (app.preferences.value('advanced.allowOldMenuAccess').includes(true)) {
+                globalShortcut.register((process.platform === "darwin" ? "Control+Command+S" : "Control+Alt+S"), () => {
+                    app.preferences.show();
+                })
+            }
+
             protocol.registerFileProtocol('themes', (request, callback) => {
                 const url = request.url.substr(7)
                 callback({
