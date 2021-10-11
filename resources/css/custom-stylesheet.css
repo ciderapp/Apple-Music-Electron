@@ -429,3 +429,8 @@ body {
     font-weight: 700;
     transition: all .25s var(--appleEase) !important;
 }
+
+#lyricer ul li .lyrics-translation {
+    font-size: 1.3rem;
+    font-weight: 300;
+}

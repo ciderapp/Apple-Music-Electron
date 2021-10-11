@@ -145,6 +145,13 @@ try {
                                 }
                                 
                             });
+                            ipcRenderer.on('lyricstranslation', function (event, data) {
+                                console.log(data);
+                                lrc.setMXMTranslation(data);                               
+                            });
+                            ipcRenderer.on('backuplyrics', function (event, data) {
+                                _lyrics.GetLyrics(1,true);                            
+                            });
                             ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
                                 if (data < 0) {
                                     data = 0
@@ -160,7 +167,7 @@ try {
                                 document.body.setAttribute("background-color", `var(--systemToolbarTitlebarMaterialSover-inactive)`);
                             });
 
-                            _lyrics.GetLyrics(2);
+                            _lyrics.GetLyrics(2,false);
                         }
                     }, false);
 
@@ -175,15 +182,15 @@ try {
                 }
             },
 
-            GetLyrics: (mode) => {
+            GetLyrics: (mode ,mxmfail) => {
                 const musicKit = MusicKit.getInstance();
                 const trackName = encodeURIComponent(MusicKitInterop.getAttributes()["name"]);
                 const artistName = encodeURIComponent(MusicKitInterop.getAttributes()["artistName"]);
                 const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
                 const songID = (musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem["_songId"] ?? -1 : -1;
-                if(false){
+                if(!mxmfail){
                     /* get MXM lyrics and translation */
-                    ipcRenderer.send('MxmTranslation', trackName , artistName );
+                    ipcRenderer.send('MXMTranslation', trackName , artistName );
                 } else if (songID !== -1) {
                         MusicKit.getInstance().api.lyric(songID)
                             .then(function (response) {
@@ -395,7 +402,7 @@ try {
                     } catch (e) {
                         console.error(e)
                     }
-                    _lyrics.GetLyrics(1);
+                    _lyrics.GetLyrics(1,false);
                 });
 
                 /* Mutation Observer to disable "seek error" alert */

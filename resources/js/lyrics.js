@@ -145,6 +145,23 @@
         }
     };
 
+    Lyricer.prototype.setMXMTranslation = function (translation_list) {
+        const container = document.getElementById(this.divID);
+        const lines = container.getElementsByTagName('li');
+        for (var line of lines){
+            for (var trans_line of translation_list){
+                if (line.textContent == " "+trans_line["translation"]["matched_line"]){
+                    const trans = document.createElement("div");
+                    trans.className = "lyrics-translation";
+                    trans.textContent = trans_line["translation"]["description"];
+                    line.appendChild(trans);
+                    break;
+                }
+            }
+        }
+        
+    };
+
     window.Lyricer = Lyricer; /*exposed to global*/
 
 })();
