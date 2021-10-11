@@ -143,6 +143,14 @@ const handler = {
 
             app.funcs.CreateNotification(a)
             app.funcs.mpris.updateActivity(a);
+
+            if (app.preferences.value('audio.gaplessEnabled').includes(true)) {
+                app.funcs.SetButtons()
+                app.funcs.SetTrayTooltip(a)
+                app.funcs.discord.updateActivity(a)
+                app.funcs.lastfm.scrobbleSong(a)
+                app.funcs.mpris.updateState(a)
+            }
         });
     },
 
