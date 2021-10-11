@@ -382,8 +382,8 @@ const handler = {
         app.preferences.on('save', (updatedPreferences) => {
             if (!DialogMessage) {
                 DialogMessage = dialog.showMessageBox(app.win, {
-                    title: "Restart Required",
-                    message: "A restart is required in order for the settings you have changed to apply.",
+                    title: "Relaunch Required",
+                    message: "A relaunch is required in order for the settings you have changed to apply.",
                     type: "warning",
                     buttons: ['Relaunch Now', 'Relaunch Later']
                 }).then(({
