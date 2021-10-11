@@ -1,4 +1,5 @@
 // preload.js
+const { app } = require('electron');
 const electron = require('electron');
 
 let cache = {playParams: {id: 0}, status: null, remainingTime: 0},
@@ -10,6 +11,9 @@ const MusicKitInterop = {
         MusicKit.getInstance().addEventListener(MusicKit.Events.playbackStateDidChange, () => {
             if (MusicKitInterop.filterTrack(MusicKitInterop.getAttributes(), true, false)) {
                 global.ipcRenderer.send('playbackStateDidChange', MusicKitInterop.getAttributes())
+                if(typeof _plugins != "undefined") {
+                    _plugins.execute("OnPlaybackStateChanged", {Attributes: MusicKitInterop.getAttributes()})
+                }
             }
         });
 

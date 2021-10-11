@@ -3,7 +3,7 @@ const SentryInit = require("./init").SentryInit;
 SentryInit()
 const { LoadOneTimeFiles, LoadFiles } = require('./load');
 const { join, resolve } = require('path');
-const { existsSync, truncate } = require('fs');
+const { readFile, existsSync, truncate } = require('fs');
 const rimraf = require('rimraf');
 app.currentPlaybackActivity = false
 
@@ -143,6 +143,14 @@ const handler = {
 
             app.funcs.CreateNotification(a)
             app.funcs.mpris.updateActivity(a);
+
+            if (app.preferences.value('audio.gaplessEnabled').includes(true)) {
+                app.funcs.SetButtons()
+                app.funcs.SetTrayTooltip(a)
+                app.funcs.discord.updateActivity(a)
+                app.funcs.lastfm.scrobbleSong(a)
+                app.funcs.mpris.updateState(a)
+            }
         });
     },
 
@@ -321,7 +329,20 @@ const handler = {
         })
 
         ipcMain.on("load-plugin", (event, plugin) => {
-
+            let path = join(app.userPluginsPath, plugin.toLowerCase() + ".js")
+            readFile(path, "utf-8", (error, data)=>{
+                if(!error) {
+                    try {
+                        app.win.webContents.executeJavaScript(data).then(()=>{
+                            console.verbose(`[Plugins] Injected Plugin`)
+                        })
+                    }catch (err) {
+                        console.error(`[Plugins] error injecting plugin: ${path} - Error: ${err}`)
+                    }
+                }else{
+                    console.error(`[Plugins] error reading plugin: ${path} - Error: ${error}`)
+                }
+            })
         })
 
         app.win.on('close', (event) => {
@@ -351,6 +372,9 @@ const handler = {
 
         app.win.on('hide', () => {
             app.funcs.SetContextMenu(false)
+            if(app.pluginsEnabled) {
+                app.win.webContents.executeJavaScript(`_plugins.execute('OnHide')`)
+            }
                 // app.win.StoredWebsite = app.win.webContents.getURL();
         });
 

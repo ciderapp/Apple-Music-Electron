@@ -26,6 +26,7 @@ function AppInit() {
     app.funcs.discord = require('./resources/functions/media/discordrpc')
     app.funcs.lastfm = require('./resources/functions/media/lastfm')
     app.funcs.mpris = require('./resources/functions/media/mpris')
+    app.pluginsEnabled = false
 
     const {VersionHandler} = require('./resources/functions/handler');
     VersionHandler()

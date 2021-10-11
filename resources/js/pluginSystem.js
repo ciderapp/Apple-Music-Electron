@@ -2,19 +2,21 @@ var _plugins = {
     events: {
         Start: [],
         OnNavigation: [],
-        OnSongChange: [],
-        OnPlay: [],
-        OnPause: [],
+        OnPlaybackStateChanged: [],
         OnExit: [],
-        OnHide: []
+        OnHide: [],
+        OnShow: []
     },
+    plugins: [],
+    menuitems: [],
+    chromeitems: [],
     loadPlugin(plugin = "") {
         if (plugin == "") {
             return
         }
         ipcRenderer.send("load-plugin", plugin)
     },
-    execute(type = "Start") {
+    execute(type = "Start", args = {}) {
         let self = this
         if (!this.events[type]) {
             console.warn(`[Plugins] Event type: ${type} not found!`)
@@ -23,49 +25,58 @@ var _plugins = {
             console.info(`[Plugins] Event type: ${type} called`) //info makes it more distingishable in the console (more Beginner friendly)
         }
         this.events[type].forEach(element => {
-            element()
+            element(args)
         });
     }
 };
 
-class AMEPlugin {
-    /**
-     * Adds all events to the _plugins event queue
-     */
+class AMEPlugin_Menuitem {
     constructor() {
-        _plugins.events.Start.push(this.Start);
-        _plugins.events.OnNavigation.push(this.OnNavigation);
-        _plugins.events.OnSongChange.push(this.OnSongChange);
-        _plugins.events.OnPlay.push(this.OnPlay);
-        _plugins.events.OnPause.push(this.OnPause);
-        _plugins.events.OnExit.push(this.OnExit);
-        _plugins.events.OnHide.push(this.OnHide);
+        this.Text = ""
+        this.Icon = ""
+        this.OnClick = () => {}
     }
-    //----------------------- Events -----------------------//
+    get() {
+        JSON.stringify(this)
+    }
+}
+
+class AMEPluginHelper {
+    constructor() {
+        /**
+         * Adds all events to the _plugins event queue
+         */
+        _plugins.events.Start.push(this.Start)
+        _plugins.events.OnNavigation.push(this.OnNavigation)
+        _plugins.events.OnPlaybackStateChanged.push(this.OnPlaybackStateChanged)
+        _plugins.events.OnExit.push(this.OnExit)
+        _plugins.events.OnHide.push(this.OnHide)
+        _plugins.events.OnShow.push(this.OnShow)
+        this.name = "Plugin Name"
+        this.Start()
+        this.Announce()
+    }
+    /**
+     * Announces that the plugin has loaded in console
+     */
+    Announce() {
+        console.info(`[Plugins] Plugin: ${this.name} loaded.`)
+    }
     /**
      * Excutes when the web player has fully loaded
      */
     Start() {}
     /**
-     * Executes when songs resumes
+     * Executes when playback state is changed (WIP)
      */
-    OnPlay() {}
+    OnPlaybackStateChanged() {}
     /**
-     * Executes when song is resumed
-     */
-    OnPause() {}
-    /**
-     * Executes when the user changes pages on the site or opens a context menu
+     * Executes when the user changes pages on the site or opens a context menu 
      * ex: Songs to Playlist screen
      */
     OnNavigation() {}
     /**
-     * Executes when a song changes
-     *
-     */
-    OnSongChange() {}
-    /**
-     * Executes when the application exits
+     * Executes when the application exits (WIP)
      */
     OnExit() {}
     /**
@@ -73,11 +84,25 @@ class AMEPlugin {
      */
     OnHide() {}
     /**
-     * Adds a menu item to the profile menu
+     * Executes when the application is unhidden (WIP)
      */
-    AddMenuItem() {}
+    OnShow() {}
     /**
-     * Adds a button to the web chrome after the volume meter 
+     * Adds a menu item to the profile menu (WIP)
+     */
+    AddMenuItem({
+        Text = "",
+        Icon = "",
+        OnClick = () => {}
+    }) {
+        var menuitem = new AMEPlugin_Menuitem()
+        menuitem.Text = Text
+        menuitem.Icon = Icon
+        menuitem.OnClick = OnClick
+        _plugins.menuitems.push(menuitem)
+    }
+    /**
+     * Adds a button to the web chrome after the volume meter (WIP)
      */
     AddChromeButton({
         text = "",
