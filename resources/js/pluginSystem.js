@@ -20,7 +20,7 @@ var _plugins = {
             console.warn(`[Plugins] Event type: ${type} not found!`)
             return
         } else {
-            console.warn(`[Plugins] Event type: ${type} called`)
+            console.info(`[Plugins] Event type: ${type} called`) //info makes it more distingishable in the console (more Beginner friendly)
         }
         this.events[type].forEach(element => {
             element()
@@ -41,6 +41,7 @@ class AMEPlugin {
         _plugins.events.OnExit.push(this.OnExit);
         _plugins.events.OnHide.push(this.OnHide);
     }
+    //----------------------- Events -----------------------//
     /**
      * Excutes when the web player has fully loaded
      */
@@ -60,6 +61,7 @@ class AMEPlugin {
     OnNavigation() {}
     /**
      * Executes when a song changes
+     *
      */
     OnSongChange() {}
     /**
@@ -73,9 +75,7 @@ class AMEPlugin {
     /**
      * Adds a menu item to the profile menu
      */
-    AddMenuItem() {
-
-    }
+    AddMenuItem() {}
     /**
      * Adds a button to the web chrome after the volume meter 
      */
