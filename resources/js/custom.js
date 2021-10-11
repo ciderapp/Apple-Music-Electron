@@ -338,9 +338,11 @@ try {
                 const preferences = ipcRenderer.sendSync('getPreferences');
 
                 /** Plugins */
-                Object.keys(preferences.availablePlugins).forEach((plugin)=>{
-                    _plugins.loadPlugin(plugin);
-                });
+                if(typeof _plugins != "undefined") {
+                    Object.keys(preferences.availablePlugins).forEach((plugin)=>{
+                        _plugins.loadPlugin(plugin);
+                    });
+                }
                 /** End Plugins */
 
                 /* MiniPlayer Event Listener */
@@ -489,21 +491,23 @@ try {
                         };
                         ul.insertBefore(amDiscord, ul.childNodes[4]);
 
-                        /** Plugin menu items */
-                        _plugins.menuitems.forEach((item)=>{
-                            var element = document.createElement("li");
-                            var textSpan = document.createElement("span");
-                            textSpan.classList.add("context-menu__option-text");
-                            element.appendChild(textSpan);
-                            textSpan.innerHTML = item.Text;
-                            element.addEventListener("click", item.OnClick);
-                            element.addEventListener("click", ()=>{
-                                document.querySelector(".context-menu-outside-click-area").dispatchEvent(new Event("click"));
+                        if(typeof _plugins != "undefined") {
+                            /** Plugin menu items */
+                            _plugins.menuitems.forEach((item)=>{
+                                var element = document.createElement("li");
+                                var textSpan = document.createElement("span");
+                                textSpan.classList.add("context-menu__option-text");
+                                element.appendChild(textSpan);
+                                textSpan.innerHTML = item.Text;
+                                element.addEventListener("click", item.OnClick);
+                                element.addEventListener("click", ()=>{
+                                    document.querySelector(".context-menu-outside-click-area").dispatchEvent(new Event("click"));
+                                });
+                                element.classList.add("context-menu__option");
+                                ul.appendChild(element);
                             });
-                            element.classList.add("context-menu__option");
-                            ul.appendChild(element);
-                        });
-                        /** End plugin menu items */
+                            /** End plugin menu items */
+                        }
                     });
                 }
 
