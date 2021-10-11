@@ -73,6 +73,55 @@ const themes = {
     }
 }
 
+const plugins = {
+    fetchPluginName: (fileName) => {
+        fileName = join(app.userPluginsPath, `${fileName.toLowerCase()}.js`)
+        let found = false;
+        if (fs.existsSync(fileName)) {
+            const file = fs.readFileSync(fileName, "utf8");
+            file.split(/\r?\n/).forEach((line) => {
+                if (line.includes("@name")) {
+                    found = (line.split('@name')[1]).trim()
+                }
+            })
+        }
+        return found
+    },
+
+    updatePluginsListing: () => {
+        let pluginsFileNames = [],
+            pluginsListing = [];
+
+        if (fs.existsSync(app.userPluginsPath)) {
+            fs.readdirSync(app.userPluginsPath).forEach((value) => {
+                if (value.split('.').pop() === 'js') {
+                    pluginsFileNames.push(value.split('.').shift())
+                }
+            });
+        }
+
+        // Get the Info
+        pluginsFileNames.forEach((pluginFileName) => {
+            const pluginName = plugins.fetchPluginName(pluginFileName)
+            if (!pluginName) return;
+            pluginsListing[`${pluginFileName}`] = pluginName
+        })
+
+        app.preferences._preferences.availablePlugins = pluginsListing
+        return pluginsListing
+    },
+    permissionsCheck: (folder, file) => {
+        console.verbose(`[PermissionsCheck] Running check on ${join(folder, file)}`)
+        fs.access(join(folder, file), fs.constants.R_OK | fs.constants.W_OK, (err) => {
+            if (err) { 
+                console.error(`[PermissionsCheck][access] Plugins folder does not exist.`)
+            } else {
+                console.verbose('[PermissionsCheck] Plugins folder exists.')
+            }
+        })
+    }
+}
+
 const init = {
 
     BaseInit: function () {
@@ -189,11 +238,29 @@ const init = {
         }
     },
 
+    PluginInstallation: function () {
+        // Check if the plugins folder exists and check permissions
+        if (fs.existsSync(app.userPluginsPath)) {
+            app.pluginsEnabled = true
+            console.log("[InitializePlugins][existsSync] Plugins folder exists!")
+            plugins.permissionsCheck(app.userPluginsPath, '/')
+            plugins.updatePluginsListing()
+        }else{
+            app.pluginsEnabled = false
+        }
+
+        // Save all the file names to array and log it
+        if (fs.existsSync(app.userPluginsPath)) {
+            console.log(`[InitializePlugins] Files found in Plugins Directory: [${fs.readdirSync(app.userPluginsPath).join(', ')}]`)
+        }
+    },
+
     AppReady: function () {
         console.verbose('[ApplicationReady] Started.');
         // Run the Functions
         app.funcs.SetTaskList()
         init.ThemeInstallation()
+        init.PluginInstallation()
         init.TrayInit()
 
         // Set the Protocols - Doesnt work on linux :(

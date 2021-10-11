@@ -17,6 +17,7 @@ const MusicKitInterop = {
             if (MusicKitInterop.filterTrack(MusicKitInterop.getAttributes(), false, true)) {
                 global.ipcRenderer.send('nowPlayingItemDidChange', MusicKitInterop.getAttributes());
                 AMThemes.updateMeta()
+                _plugins.execute("OnSongChange", {MediaItem: MusicKit.getInstance().nowPlayingItem})
             }
         });
     },

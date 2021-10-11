@@ -191,7 +191,9 @@ module.exports = {
         app.funcs.LoadCSS('custom-stylesheet.css')
 
         // Inject Plugin Interaction
-        app.funcs.LoadJS('pluginSystem.js', false)
+        if(app.pluginsEnabled) {
+            app.funcs.LoadJS('pluginSystem.js', false)
+        }
 
         // Lyrics
         app.funcs.LoadJS('lyrics.js')
