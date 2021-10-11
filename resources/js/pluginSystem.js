@@ -2,10 +2,7 @@ var _plugins = {
     events: {
         Start: [],
         OnNavigation: [],
-        OnSongChange: [],
         OnPlaybackStateChanged: [],
-        OnMediaStateChanged: [],
-        OnMusicKitReady: [],
         OnExit: [],
         OnHide: [],
         OnShow: []
@@ -44,17 +41,14 @@ class AMEPlugin_Menuitem {
     }
 }
 
-class AMEPlugin {
+class AMEPluginHelper {
     constructor() {
         /**
          * Adds all events to the _plugins event queue
          */
         _plugins.events.Start.push(this.Start)
         _plugins.events.OnNavigation.push(this.OnNavigation)
-        _plugins.events.OnSongChange.push(this.OnSongChange)
         _plugins.events.OnPlaybackStateChanged.push(this.OnPlaybackStateChanged)
-        _plugins.events.OnMediaStateChanged.push(this.OnMediaStateChanged)
-        _plugins.events.OnMusicKitReady.push(this.OnMusicKitReady)
         _plugins.events.OnExit.push(this.OnExit)
         _plugins.events.OnHide.push(this.OnHide)
         _plugins.events.OnShow.push(this.OnShow)
@@ -77,22 +71,10 @@ class AMEPlugin {
      */
     OnPlaybackStateChanged() {}
     /**
-     * Executes when media state is changed (WIP)
-     */
-    OnMediaStateChanged() {}
-    /**
      * Executes when the user changes pages on the site or opens a context menu 
      * ex: Songs to Playlist screen
      */
     OnNavigation() {}
-    /**
-     * Executes when a song changes
-     */
-    OnSongChange() {}
-    /**
-     * Executes when MusicKit instance is ready (WIP)
-     */
-    OnMusicKitReady() {}
     /**
      * Executes when the application exits (WIP)
      */
@@ -102,7 +84,7 @@ class AMEPlugin {
      */
     OnHide() {}
     /**
-     * Executes when the application is unhidden
+     * Executes when the application is unhidden (WIP)
      */
     OnShow() {}
     /**

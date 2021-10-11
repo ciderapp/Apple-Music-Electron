@@ -11,6 +11,9 @@ const MusicKitInterop = {
         MusicKit.getInstance().addEventListener(MusicKit.Events.playbackStateDidChange, () => {
             if (MusicKitInterop.filterTrack(MusicKitInterop.getAttributes(), true, false)) {
                 global.ipcRenderer.send('playbackStateDidChange', MusicKitInterop.getAttributes())
+                if(typeof _plugins != "undefined") {
+                    _plugins.execute("OnPlaybackStateChanged", {Attributes: MusicKitInterop.getAttributes()})
+                }
             }
         });
 
@@ -18,9 +21,6 @@ const MusicKitInterop = {
             if (MusicKitInterop.filterTrack(MusicKitInterop.getAttributes(), false, true)) {
                 global.ipcRenderer.send('nowPlayingItemDidChange', MusicKitInterop.getAttributes());
                 AMThemes.updateMeta()
-                if(typeof _plugins != "undefined") {
-                    _plugins.execute("OnSongChange", {MediaItem: MusicKit.getInstance().nowPlayingItem})
-                }
             }
         });
     },
