@@ -440,8 +440,8 @@ const handler = {
             // The rest ask for a restart
             else if (!DialogMessage && !currentChanges.includes('general.lastfmAuthKey')) {
                 DialogMessage = dialog.showMessageBox(app.win, {
-                    title: "Restart Required",
-                    message: "A restart is required in order for the settings you have changed to apply.",
+                    title: "Relaunch Required",
+                    message: "A relaunch is required in order for the settings you have changed to apply.",
                     type: "warning",
                     buttons: ['Relaunch Now', 'Relaunch Later']
                 }).then(({
@@ -491,7 +491,48 @@ const handler = {
                 contextIsolation: false
             }
         });
+        let win2 = new BrowserWindow({
+            width: 1,
+            height: 1,
+            show: false,
+            autoHideMenuBar: true,
+            webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false,
 
+            }
+        });
+        ipcMain.on('MxmTranslation', function(event, track, artist){
+            try{	 
+                if (win2 == null) {
+                    win2 = new BrowserWindow({
+                        width: 800,
+                        height: 600,
+                        show: false,
+                        autoHideMenuBar: true,
+                        webPreferences: {
+                            nodeIntegration: true,
+                            contextIsolation: false,
+                            
+                        }
+                    });
+                    win2.webContents.on('did-finish-load', () => {
+                        win2.webContents.send('mxmcors', track, artist);  
+                    });
+                } else {
+                    win2.webContents.on('did-finish-load', () => {
+                        win2.webContents.send('mxmcors', track, artist);  
+                    });
+                }
+                win2.loadFile(join(__dirname, '../lyrics/musixmatch.html'));
+                win2.on('closed', () => {
+                win2 = null
+                });
+                
+            }catch(e){
+                console.log(e);	
+            } 
+        });
         ipcMain.on('NetEaseLyricsHandler', function(event, data){
             try{	 
                 if (win == null) {
@@ -518,7 +559,7 @@ const handler = {
                 win.on('closed', () => {
                 win = null
                 });
-
+                
             }catch(e){
                 console.log(e);
                 app.win.send('truelyrics', '[00:00] Instrumental. / Lyrics not found.');	
@@ -530,6 +571,9 @@ const handler = {
         });
         ipcMain.on('LyricsHandlerNE', function(event, data) {
             app.win.send('truelyrics', data);
+        });
+        ipcMain.on('LyricsHandlerTranslation', function(event, data) {
+            app.win.webContents.executeJavaScript(`console.log(${data});`);
         });
         ipcMain.on('LyricsTimeUpdate', function(event, data) {
             app.win.send('ProgressTimeUpdate', data);

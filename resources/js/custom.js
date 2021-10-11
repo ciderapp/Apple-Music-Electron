@@ -143,6 +143,7 @@ try {
                                 } else {
                                     lrc.setLrc(lrcfile);
                                 }
+                                
                             });
                             ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
                                 if (data < 0) {
@@ -180,72 +181,74 @@ try {
                 const artistName = encodeURIComponent(MusicKitInterop.getAttributes()["artistName"]);
                 const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
                 const songID = (musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem["_songId"] ?? -1 : -1;
-
-                if (songID !== -1) {
-
-                    MusicKit.getInstance().api.lyric(songID)
-                        .then(function (response) {
-                                const ttmlLyrics = response["ttml"];
-                                let lyrics = "";
-                                const parser = new DOMParser();
-                                const doc = parser.parseFromString(ttmlLyrics, "text/xml");
-                                const lyricsLines = doc.getElementsByTagName('p');
-                                for (let element of lyricsLines) {
-                                    var rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)?(\.\d+)/);
-                                    var hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
-                                    var minutes =
-                                        (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:")
-                                    ;
-                                    var seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
-                                    var milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
-                                    var lrcTime = minutes + seconds + milliseconds;
-                                    lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
+                if(false){
+                    /* get MXM lyrics and translation */
+                    ipcRenderer.send('MxmTranslation', trackName , artistName );
+                } else if (songID !== -1) {
+                        MusicKit.getInstance().api.lyric(songID)
+                            .then(function (response) {
+                                    const ttmlLyrics = response["ttml"];
+                                    let lyrics = "";
+                                    const parser = new DOMParser();
+                                    const doc = parser.parseFromString(ttmlLyrics, "text/xml");
+                                    const lyricsLines = doc.getElementsByTagName('p');
+                                    for (let element of lyricsLines) {
+                                        var rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)?(\.\d+)/);
+                                        var hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
+                                        var minutes =
+                                            (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:")
+                                        ;
+                                        var seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
+                                        var milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
+                                        var lrcTime = minutes + seconds + milliseconds;
+                                        lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
+                                    }
+                                    console.log("AM lyrics:" + lyrics);
+                                    let artworkURL = (MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256);
+                                    if (artworkURL == null) {
+                                        artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
+                                    }
+                                    if (mode === 1) {
+                                        ipcRenderer.send('LyricsUpdate', lyrics, artworkURL);
+                                    } else {
+                                        console.log(lyrics);
+                                        ipcRenderer.send('LyricsHandler', lyrics, artworkURL);
+                                    }
                                 }
-                                console.log("AM lyrics:" + lyrics);
+                            ).catch((_error) => {
                                 let artworkURL = (MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256);
                                 if (artworkURL == null) {
                                     artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
                                 }
                                 if (mode === 1) {
-                                    ipcRenderer.send('LyricsUpdate', lyrics, artworkURL);
+                                    ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
                                 } else {
-                                    console.log(lyrics);
-                                    ipcRenderer.send('LyricsHandler', lyrics, artworkURL);
+                                    ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
                                 }
                             }
-                        ).catch((_error) => {
-                            let artworkURL = (MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256);
-                            if (artworkURL == null) {
-                                artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
-                            }
-                            if (mode === 1) {
-                                ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
-                            } else {
-                                ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
-                            }
-                        }
-                    );
+                        );
 
-                } else {
-                    try {
-                        MusicKit.getInstance().api.library.song(MusicKit.getInstance().nowPlayingItem.id).then((data) => {
-                            if (data != null && data !== "") {
-                                artworkURL = data["artwork"]["url"];
-                            } else {
-                                artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
-                            }
-                            if (mode === 1) {
-                                ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
-                            } else {
-                                ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
-                            }
-                        });
-                    } catch (e) {
-                        console.error(e)
+                    } else {
+                        try {
+                            MusicKit.getInstance().api.library.song(MusicKit.getInstance().nowPlayingItem.id).then((data) => {
+                                if (data != null && data !== "") {
+                                    artworkURL = data["artwork"]["url"];
+                                } else {
+                                    artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
+                                }
+                                if (mode === 1) {
+                                    ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
+                                } else {
+                                    ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
+                                }
+                            });
+                        } catch (e) {
+                            console.error(e)
+                        }
                     }
                 }
             }
-        }
+        
     }
 
     /* Create the AMThemes Functions */
