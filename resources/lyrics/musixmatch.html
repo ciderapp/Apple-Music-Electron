@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Lyrics</title>
+	<script type="text/javascript" src="../js/lyrics.js"></script>
+	<link rel="stylesheet" href="../css/lyricer.css">
+	<link href="https://fonts.googleapis.com/css?family=M+PLUS+1p" rel="stylesheet">
+</head>
+<body style="margin: 0;">
+    <img style="" id="backgroundImage" alt="Background Image"></img>
+	<div style="width: 100%; height: 100%; opacity: 0.8;  z-index: 1; background-color: rgba(0, 0, 0, 0.5); position: absolute;"></div>
+	<div id="lyricer">
+	</div>
+	<script type="text/javascript">
+	const { ipcRenderer } = require('electron');
+
+	function changeStylesheetRule(stylesheet, selector, property, value) {
+	selector = selector.toLowerCase();
+	property = property.toLowerCase();
+	value = value.toLowerCase();
+
+	for(var i = 0; i < stylesheet.cssRules.length; i++) {
+		var rule = stylesheet.cssRules[i];
+		if(rule.selectorText === selector) {
+			rule.style[property] = value;
+			return;
+		}
+	}
+  
+	stylesheet.insertRule(selector + " { " + property + ": " + value + "; }", 0);
+    }
+
+	var text = "";
+	var lrc = new Lyricer();
+	ipcRenderer.on('mxmcors', function (event, track, artist) {
+		try{
+		// var artist = encodeURIComponent('joji');
+        // var track =  encodeURIComponent('slow danicng in the dark');
+		var language_code = "vi";
+		var token = '';
+		var usertoken = encodeURIComponent(token);
+		var url  = "https://apic-desktop.musixmatch.com/ws/1.1/macro.subtitles.get?format=json&namespace=lyrics_richsynched&subtitle_format=lr&app_id=web-desktop-app-v1.0&q_artist="+artist+"&q_track="+track+"&usertoken="+usertoken;
+		var req = new XMLHttpRequest();  
+        req.overrideMimeType("application/json");
+        req.open('GET', url, true);
+		req.setRequestHeader("authority", "apic-desktop.musixmatch.com");
+        req.onload  = function() {	
+        var jsonResponse = JSON.parse(req.responseText);
+		console.log(jsonResponse);        
+        var id = jsonResponse["message"]["body"]["macro_calls"]["matcher.track.get"]["message"]["body"]["track"]["track_id"];
+        var url2  = "https://apic-desktop.musixmatch.com/ws/1.1/crowd.track.translations.get?translation_fields_set=minimal&selected_language="+language_code+"&track_id="+id+"&comment_format=text&part=user&format=json&usertoken="+usertoken+"&app_id=web-desktop-app-v1.0";
+        var req2 = new XMLHttpRequest();  
+        req2.overrideMimeType("application/json");
+        req2.open('GET', url2, true);
+		req2.setRequestHeader("authority", "apic-desktop.musixmatch.com");	
+        req2.onload  = function() {
+        var jsonResponse2 = JSON.parse(req2.responseText);
+		console.log(jsonResponse2); 
+        var lyrics = jsonResponse2["message"]["body"]["translations_list"];
+		console.log(lyrics);
+		var translations = '';
+		for (var line of lyrics){
+			console.log(line["translation"]["description"]);
+			translations.concat(line["translation"]["description"] + "\r\n");
+		}
+		console.log(translations);
+		ipcRenderer.send('LyricsHandlerTranslation',translations);	
+       // window.close();
+	};
+        req2.send();
+        };
+        req.send();
+	}catch(e){
+      //  window.close();		
+	} 
+    });
+	
+
+	lrc.setLrc(text);
+	</script>
+</body>
+</html>
