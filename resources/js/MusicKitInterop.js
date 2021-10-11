@@ -1,4 +1,5 @@
 // preload.js
+const { app } = require('electron');
 const electron = require('electron');
 
 let cache = {playParams: {id: 0}, status: null, remainingTime: 0},
@@ -17,7 +18,9 @@ const MusicKitInterop = {
             if (MusicKitInterop.filterTrack(MusicKitInterop.getAttributes(), false, true)) {
                 global.ipcRenderer.send('nowPlayingItemDidChange', MusicKitInterop.getAttributes());
                 AMThemes.updateMeta()
-                _plugins.execute("OnSongChange", {MediaItem: MusicKit.getInstance().nowPlayingItem})
+                if(typeof _plugins != "undefined") {
+                    _plugins.execute("OnSongChange", {MediaItem: MusicKit.getInstance().nowPlayingItem})
+                }
             }
         });
     },

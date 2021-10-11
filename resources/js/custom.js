@@ -497,6 +497,9 @@ try {
                             element.appendChild(textSpan);
                             textSpan.innerHTML = item.Text;
                             element.addEventListener("click", item.OnClick);
+                            element.addEventListener("click", ()=>{
+                                document.querySelector(".context-menu-outside-click-area").dispatchEvent(new Event("click"));
+                            });
                             element.classList.add("context-menu__option");
                             ul.appendChild(element);
                         });

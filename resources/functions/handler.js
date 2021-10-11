@@ -364,7 +364,9 @@ const handler = {
 
         app.win.on('hide', () => {
             app.funcs.SetContextMenu(false)
-            app.win.webContents.executeJavaScript(`_plugins.execute('OnHide')`)
+            if(app.pluginsEnabled) {
+                app.win.webContents.executeJavaScript(`_plugins.execute('OnHide')`)
+            }
                 // app.win.StoredWebsite = app.win.webContents.getURL();
         });
 

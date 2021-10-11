@@ -419,6 +419,7 @@ body {
     margin-bottom: 20px;
     opacity: 0.9;
     color: var(--systemQuaternary);
+    transition: all .25s var(--appleEase) !important;
 }
 
 #lyricer .lyricer-current-line {
