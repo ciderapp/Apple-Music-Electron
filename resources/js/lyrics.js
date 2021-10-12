@@ -20,10 +20,13 @@
         container.appendChild(ul);
         for (i = 0; i < self.totalLines; i++) {
             const li = document.createElement("li");
+            if (self.rangeLrc[i].line === 'lrcInstrumental'){
+                li.innerHTML = `<div class="lyricWaiting"><div></div><div></div><div></div></div>`;
+            } else {
             li.innerHTML = self.rangeLrc[i].line;
             if (!li.innerHTML) {
                 li.innerHTML = "&nbsp;"
-            }
+            }}
             li.setAttribute("id", self.lineidPrefix + i);
             if (self.clickable) {
                 li.onclick = lineClicked(self, i);
@@ -48,10 +51,10 @@
                 li.style.display = "block";
             }
             if (i === line) {
-                li.className = self.currentcss;
+                li.classList.add(self.currentcss);
                 li.scrollIntoView({behavior: 'smooth', block: 'center'});
             } else {
-                li.className = "";
+                li.classList.remove(self.currentcss);
             }
         }
     };
@@ -143,6 +146,23 @@
                 return;
             }
         }
+    };
+
+    Lyricer.prototype.setMXMTranslation = function (translation_list) {
+        const container = document.getElementById(this.divID);
+        const lines = container.getElementsByTagName('li');
+        for (var line of lines){
+            for (var trans_line of translation_list){
+                if (line.textContent == " "+trans_line["translation"]["matched_line"]){
+                    const trans = document.createElement("div");
+                    trans.className = "lyrics-translation";
+                    trans.textContent = trans_line["translation"]["description"];
+                    line.appendChild(trans);
+                    break;
+                }
+            }
+        }
+        
     };
 
     window.Lyricer = Lyricer; /*exposed to global*/

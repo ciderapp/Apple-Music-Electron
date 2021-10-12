@@ -515,6 +515,59 @@ const handler = {
                 contextIsolation: false
             }
         });
+        let win2 = new BrowserWindow({
+            width: 1,
+            height: 1,
+            show: false,
+            autoHideMenuBar: true,
+            webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false,
+
+            }
+        });
+        
+        win2.webContents.openDevTools();
+        ipcMain.on('MXMTranslation', function(event, track, artist, lang){
+            console.log('bruh0');
+            try{	 
+                if (win2 == null) {
+                    win2 = new BrowserWindow({
+                        width: 1,
+                        height: 1,
+                        show: false,
+                        autoHideMenuBar: true,
+                        webPreferences: {
+                            nodeIntegration: true,
+                            contextIsolation: false,
+                            
+                        }
+                    });
+                    
+
+                } else {
+                    win2.webContents.send('mxmcors', track, artist, lang); 
+                }
+                // try{
+                    
+                // const cookie = { url: 'https://apic-desktop.musixmatch.com/', name: 'x-mxm-user-id', value: '' }
+                // win2.webContents.session.defaultSession.cookies.set(cookie);
+                // } catch (e){}
+                if (!win2.webContents.getURL().includes('musixmatch.html')){
+                win2.loadFile(join(__dirname, '../lyrics/musixmatch.html'));
+                win2.webContents.on('did-finish-load', () => {
+                    console.log('bruh1a');
+                    win2.webContents.send('mxmcors', track, artist, lang);  
+                });}
+               
+                win2.on('closed', () => {
+                win2 = null
+                });
+                
+            }catch(e){
+                console.log(e);	
+            } 
+        });
 
         ipcMain.on('NetEaseLyricsHandler', function(event, data){
             try{	 
@@ -542,7 +595,7 @@ const handler = {
                 win.on('closed', () => {
                 win = null
                 });
-
+                
             }catch(e){
                 console.log(e);
                 app.win.send('truelyrics', '[00:00] Instrumental. / Lyrics not found.');	
@@ -555,12 +608,18 @@ const handler = {
         ipcMain.on('LyricsHandlerNE', function(event, data) {
             app.win.send('truelyrics', data);
         });
+        ipcMain.on('LyricsHandlerTranslation', function(event, data) {
+            app.win.send('lyricstranslation', data);
+        });
         ipcMain.on('LyricsTimeUpdate', function(event, data) {
             app.win.send('ProgressTimeUpdate', data);
         });
         ipcMain.on('LyricsUpdate', function(event, data, artworkURL) {
             app.win.send('truelyrics', data);
             app.win.send('albumart', artworkURL);
+        });
+        ipcMain.on('LyricsMXMFailed', function(event, data) {
+            app.win.send('backuplyrics', '');
         });
         ipcMain.on('ProgressTimeUpdateFromLyrics', function(event, data) {
             app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`).catch((e) => console.error(e));

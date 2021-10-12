@@ -430,3 +430,41 @@ body {
     font-weight: 700;
     transition: all .25s var(--appleEase) !important;
 }
+
+#lyricer ul li .lyrics-translation {
+    font-size: 1.3rem;
+    font-weight: 300;
+}
+
+.lyricWaiting{
+    display: none;
+}
+
+.lyricer-current-line .lyricWaiting{
+    display: inline-flex;
+    animation: lyricWaitingLine 6s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+}
+
+  
+.lyricWaiting>div {
+    width: 10px;
+    height: 10px;
+    background: var(--systemPrimary);
+    border-radius: 50%;
+    margin: 3px;
+}
+  
+@keyframes lyricWaitingLine {
+    0% {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+}

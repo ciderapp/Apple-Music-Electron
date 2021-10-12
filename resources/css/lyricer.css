@@ -64,6 +64,11 @@ body {
     color: var(--systemQuaternary);
 }
 
+#lyricer ul li .lyrics-translation {
+    font-size: 1.3rem;
+    font-weight: 300;
+}
+
 #lyricer .lyricer-current-line {
     color: var(--systemPrimary);
     /* text-shadow: rgb(169, 169, 169) 1.5px 1.5px 1.5px; */
