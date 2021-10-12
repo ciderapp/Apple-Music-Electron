@@ -37,7 +37,7 @@
 
         /* hide the later ones*/
         for (i = self.totalLines; i < self.totalLines; i++) {
-            document.getElementById(self.lineidPrefix + i).style.display = "block";
+            document.getElementById(self.lineidPrefix + i).style.display = "flex";
         }
     };
     const moveToLine = function (self, line) {
@@ -46,9 +46,9 @@
         for (let i = 0; i < self.totalLines; i++) {
             const li = document.getElementById(self.lineidPrefix + i);
             if (i >= startShow && i <= endShow) {
-                li.style.display = "block";
+                li.style.display = "flex";
             } else {
-                li.style.display = "block";
+                li.style.display = "flex";
             }
             if (i === line) {
                 li.classList.add(self.currentcss);

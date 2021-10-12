@@ -420,6 +420,7 @@ body {
     opacity: 0.9;
     color: var(--systemQuaternary);
     transition: all .25s var(--appleEase) !important;
+    display: flex;
 }
 
 #lyricer .lyricer-current-line {
