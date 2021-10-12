@@ -120,7 +120,8 @@
         let line = "";
         for (i = 0; i < this.lrc.length; i++) {
             endTime = parseFloat(this.lrc[i].startTime);
-            this.rangeLrc.push({"startTime": startTime, "endTime": endTime, "line": line});
+            if (!this.rangeLrc.includes({"startTime": startTime, "endTime": endTime, "line": line})){
+            this.rangeLrc.push({"startTime": startTime, "endTime": endTime, "line": line});} else {console.log('blocked');}
             startTime = endTime;
             line = this.lrc[i].line;
         }
@@ -130,6 +131,7 @@
         /* 	this.rangeLrc.push( { "startTime": -1, "endTime": 0, "line": "&nbsp;" } );
         /* };*/
         this.totalLines = this.rangeLrc.length;
+        console.log(this.rangeLrc);
 
         /* set html and move to start*/
         setHtml(this);

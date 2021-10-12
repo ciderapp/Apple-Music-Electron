@@ -539,9 +539,9 @@ const handler = {
             }
         });
         let win2 = new BrowserWindow({
-            width: 1,
-            height: 1,
-            show: false,
+            width: 800,
+            height: 600,
+            show: true,
             autoHideMenuBar: true,
             webPreferences: {
                 nodeIntegration: true,

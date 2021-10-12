@@ -207,7 +207,7 @@ try {
                                     var endtime = [0];
                                     try{
                                     for (let element of lyricsLines) {
-                                        var rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)?(\.\d+)?/);
+                                        var rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
                                         var hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
                                         var minutes =
                                             (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:")
@@ -215,7 +215,7 @@ try {
                                         var seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
                                         var milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
                                         var lrcTime = minutes + seconds + milliseconds;
-                                        var rawTime2 = element.getAttribute('end').match(/(\d+:)?(\d+:)?(\d+)?(\.\d+)?/);
+                                        var rawTime2 = element.getAttribute('end').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
                                         var hours2 = (rawTime2[2] != null) ? (rawTime2[1].replace(":", "")) : "0";
                                         var minutes2 = (rawTime2[2] != null) ? (hours2 * 60 + rawTime2[2].replace(":", "") * 1 + ":") : ((rawTime2[1] != null) ? rawTime2[1] : "00:");
                                         var seconds2 = (rawTime2[3] != null) ? (rawTime2[3]) : "00";
@@ -232,7 +232,7 @@ try {
                                     }} catch{
                                         lyrics = "";
                                         for (let element of lyricsLines) {
-                                            var rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)?(\.\d+)?/);
+                                            var rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
                                             var hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
                                             var minutes =
                                                 (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:")
