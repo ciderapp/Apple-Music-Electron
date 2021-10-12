@@ -1,9 +1,29 @@
-const { app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, SystemPreferences, systemPreferences} = require('electron')
+const {
+    app,
+    Menu,
+    ipcMain,
+    shell,
+    dialog,
+    Notification,
+    BrowserWindow,
+    SystemPreferences,
+    systemPreferences
+} = require('electron')
 const SentryInit = require("./init").SentryInit;
 SentryInit()
-const { LoadOneTimeFiles, LoadFiles } = require('./load');
-const { join, resolve } = require('path');
-const { readFile, existsSync, truncate } = require('fs');
+const {
+    LoadOneTimeFiles,
+    LoadFiles
+} = require('./load');
+const {
+    join,
+    resolve
+} = require('path');
+const {
+    readFile,
+    existsSync,
+    truncate
+} = require('fs');
 const rimraf = require('rimraf');
 app.currentPlaybackActivity = false
 
@@ -17,8 +37,8 @@ function hexToRgb(hex) {
 }
 
 const handler = {
-    
-    LaunchHandler: function() {
+
+    LaunchHandler: function () {
         // Version Fetch
         if (app.commandLine.hasSwitch('version') || app.commandLine.hasSwitch('v')) {
             console.log(app.getVersion())
@@ -43,7 +63,7 @@ const handler = {
         }
     },
 
-    LaunchHandlerPostWin: function() {
+    LaunchHandlerPostWin: function () {
         // Detect if the application has been opened with --minimized
         if (app.commandLine.hasSwitch('minimized') || process.argv.includes('--minimized')) {
             console.log("[Apple-Music-Electron] Application opened with '--minimized'");
@@ -61,7 +81,7 @@ const handler = {
         }
     },
 
-    VersionHandler: function() {
+    VersionHandler: function () {
         if (!app.preferences.value('storedVersion') || app.preferences.value('storedVersion') === undefined || app.preferences.value('storedVersion') !== app.getVersion()) {
 
             if (app.preferences.value('storedVersion')) {
@@ -75,14 +95,14 @@ const handler = {
             }
 
             if (existsSync(resolve(app.getPath('userData'), 'preferences.json'))) {
-                truncate(resolve(app.getPath('userData'), 'preferences.json'), 0, function() {
+                truncate(resolve(app.getPath('userData'), 'preferences.json'), 0, function () {
                     console.log(`[VersionHandler] Outdated / No Version Store Found. Clearing Preferences File. ('${resolve(app.getPath('userData'), 'preferences.json')}')`)
                 });
             }
         }
     },
 
-    InstanceHandler: function() {
+    InstanceHandler: function () {
         console.verbose('[InstanceHandler] Started.')
         const gotTheLock = app.requestSingleInstanceLock();
         let returnVal = false
@@ -102,8 +122,7 @@ const handler = {
                 console.warn('[InstanceHandler][SecondInstanceHandler] Force Quit found. Quitting App.');
                 app.quit()
                 returnVal = true
-            }
-            else if (app.win && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) { // If a Second Instance has Been Started
+            } else if (app.win && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) { // If a Second Instance has Been Started
                 console.warn('[InstanceHandler][SecondInstanceHandler] Showing window.');
                 app.win.show()
                 app.win.focus()
@@ -119,7 +138,7 @@ const handler = {
         return returnVal
     },
 
-    PlaybackStateHandler: function() {
+    PlaybackStateHandler: function () {
         console.verbose('[playbackStateDidChange] Started.');
 
         ipcMain.on('playbackStateDidChange', (_event, a) => {
@@ -134,7 +153,7 @@ const handler = {
         });
     },
 
-    MediaStateHandler: function() {
+    MediaStateHandler: function () {
         console.verbose('[nowPlayingItemDidChange] Started.');
 
         ipcMain.on('nowPlayingItemDidChange', (_event, a) => {
@@ -154,18 +173,20 @@ const handler = {
         });
     },
 
-    WindowStateHandler: function() {
+    WindowStateHandler: function () {
         console.verbose('[WindowStateHandler] Started.');
         app.previousPage = app.win.webContents.getURL()
 
-        app.win.webContents.setWindowOpenHandler(({url}) => {
+        app.win.webContents.setWindowOpenHandler(({
+            url
+        }) => {
             shell.openExternal(url).then(() => console.log(`[WindowStateHandler] User has opened ${url} which has been redirected to browser.`));
             return {
                 action: 'deny'
             }
         })
 
-        app.win.webContents.on('unresponsive', async() => {
+        app.win.webContents.on('unresponsive', async () => {
             const {
                 response
             } = await dialog.showMessageBox({
@@ -183,7 +204,7 @@ const handler = {
             }
         })
 
-        app.win.webContents.on('did-finish-load', async() => {
+        app.win.webContents.on('did-finish-load', async () => {
             console.verbose('[WindowStateHandler] Page finished loading.')
             LoadOneTimeFiles()
 
@@ -196,11 +217,11 @@ const handler = {
             }
         });
 
-        app.win.webContents.on('did-start-loading', async() => {
+        app.win.webContents.on('did-start-loading', async () => {
             app.previousPage = app.win.webContents.getURL()
         });
 
-        app.win.webContents.on('page-title-updated', function(event) { // Prevents the Window Title from being Updated
+        app.win.webContents.on('page-title-updated', function (event) { // Prevents the Window Title from being Updated
             LoadFiles()
             event.preventDefault()
         });
@@ -223,10 +244,10 @@ const handler = {
                 const state = wndState;
                 if (isMinimized && state !== WND_STATE.MINIMIZED) {
                     wndState = WND_STATE.MINIMIZED
-                        // 
+                    // 
                 } else if (isFullScreen && state !== WND_STATE.FULL_SCREEN) {
                     wndState = WND_STATE.FULL_SCREEN
-                        // 
+                    // 
                 } else if (isMaximized && state !== WND_STATE.MAXIMIZED) {
                     wndState = WND_STATE.MAXIMIZED
                     app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.add("maxed")`)
@@ -330,16 +351,16 @@ const handler = {
 
         ipcMain.on("load-plugin", (event, plugin) => {
             let path = join(app.userPluginsPath, plugin.toLowerCase() + ".js")
-            readFile(path, "utf-8", (error, data)=>{
-                if(!error) {
+            readFile(path, "utf-8", (error, data) => {
+                if (!error) {
                     try {
-                        app.win.webContents.executeJavaScript(data).then(()=>{
+                        app.win.webContents.executeJavaScript(data).then(() => {
                             console.verbose(`[Plugins] Injected Plugin`)
                         })
-                    }catch (err) {
+                    } catch (err) {
                         console.error(`[Plugins] error injecting plugin: ${path} - Error: ${err}`)
                     }
-                }else{
+                } else {
                     console.error(`[Plugins] error reading plugin: ${path} - Error: ${error}`)
                 }
             })
@@ -372,14 +393,14 @@ const handler = {
 
         app.win.on('hide', () => {
             app.funcs.SetContextMenu(false)
-            if(app.pluginsEnabled) {
+            if (app.pluginsEnabled) {
                 app.win.webContents.executeJavaScript(`_plugins.execute('OnHide')`)
             }
-                // app.win.StoredWebsite = app.win.webContents.getURL();
+            // app.win.StoredWebsite = app.win.webContents.getURL();
         });
 
         // For macOS Link Handling
-        app.on('open-url', function(event, url) {
+        app.on('open-url', function (event, url) {
             event.preventDefault()
             if (url.includes('ame://') || url.includes('itms://') || url.includes('itmss://') || url.includes('musics://') || url.includes('music://')) {
                 handler.LinkHandler(url)
@@ -388,11 +409,15 @@ const handler = {
 
     },
 
-    SettingsHandler: function() {
+    SettingsHandler: function () {
         console.verbose('[SettingsHandler] Started.');
-        let DialogMessage = false, cachedPreferences = app.preferences._preferences, storedChanges = [];
+        let DialogMessage = false,
+            cachedPreferences = app.preferences._preferences,
+            storedChanges = [];
 
-        const { fetchTransparencyOptions } = require('./CreateBrowserWindow')
+        const {
+            fetchTransparencyOptions
+        } = require('./CreateBrowserWindow')
 
         if (app.preferences.value('visual.useOperatingSystemAccent').includes(true)) {
             systemPreferences.on('accent-color-changed', (event, color) => {
@@ -444,15 +469,13 @@ const handler = {
                     app.win.setVibrancy();
                     app.win.webContents.executeJavaScript(`AMThemes.setTransparency(false);`).catch((e) => console.error(e));
                 }
-            }
-            else if (currentChanges.includes('visual.removeUpsell') || currentChanges.includes('visual.removeAppleLogo') || currentChanges.includes('visual.removeFooter') || currentChanges.includes('visual.useOperatingSystemAccent')) {
+            } else if (currentChanges.includes('visual.removeUpsell') || currentChanges.includes('visual.removeAppleLogo') || currentChanges.includes('visual.removeFooter') || currentChanges.includes('visual.useOperatingSystemAccent')) {
                 app.win.webContents.executeJavaScript('AMJavaScript.LoadCustom()').catch((e) => console.error(e));
             }
             // Frame Type Changes (TBA)
             else if (currentChanges.includes('visual.frameType')) {
                 //    run js function to unload / load new frame
-            }
-            else if (currentChanges.includes('window.closeButtonMinimize')) {
+            } else if (currentChanges.includes('window.closeButtonMinimize')) {
                 app.isQuiting = !app.preferences.value('window.closeButtonMinimize').includes(true);
             }
             // IncognitoMode Changes
@@ -482,7 +505,7 @@ const handler = {
         });
     },
 
-    LinkHandler: function(startArgs) {
+    LinkHandler: function (startArgs) {
         if (!startArgs || !app.win || !app.isAuthorized) return;
 
 
@@ -504,7 +527,7 @@ const handler = {
 
     },
 
-    LyricsHandler: function(lyrics) {
+    LyricsHandler: function (lyrics) {
         let win = new BrowserWindow({
             width: 1,
             height: 1,
@@ -526,11 +549,9 @@ const handler = {
 
             }
         });
-        
-        win2.webContents.openDevTools();
-        ipcMain.on('MXMTranslation', function(event, track, artist, lang){
+        ipcMain.on('MXMTranslation', function (event, track, artist, lang) {
             console.log('bruh0');
-            try{	 
+            try {
                 if (win2 == null) {
                     win2 = new BrowserWindow({
                         width: 1,
@@ -540,37 +561,38 @@ const handler = {
                         webPreferences: {
                             nodeIntegration: true,
                             contextIsolation: false,
-                            
+
                         }
                     });
-                    
+
 
                 } else {
-                    win2.webContents.send('mxmcors', track, artist, lang); 
+                    win2.webContents.send('mxmcors', track, artist, lang);
                 }
                 // try{
-                    
+
                 // const cookie = { url: 'https://apic-desktop.musixmatch.com/', name: 'x-mxm-user-id', value: '' }
                 // win2.webContents.session.defaultSession.cookies.set(cookie);
                 // } catch (e){}
-                if (!win2.webContents.getURL().includes('musixmatch.html')){
-                win2.loadFile(join(__dirname, '../lyrics/musixmatch.html'));
-                win2.webContents.on('did-finish-load', () => {
-                    console.log('bruh1a');
-                    win2.webContents.send('mxmcors', track, artist, lang);  
-                });}
-               
+                if (!win2.webContents.getURL().includes('musixmatch.html')) {
+                    win2.loadFile(join(__dirname, '../lyrics/musixmatch.html'));
+                    win2.webContents.on('did-finish-load', () => {
+                        console.log('bruh1a');
+                        win2.webContents.send('mxmcors', track, artist, lang);
+                    });
+                }
+
                 win2.on('closed', () => {
-                win2 = null
+                    win2 = null
                 });
-                
-            }catch(e){
-                console.log(e);	
-            } 
+
+            } catch (e) {
+                console.log(e);
+            }
         });
 
-        ipcMain.on('NetEaseLyricsHandler', function(event, data){
-            try{	 
+        ipcMain.on('NetEaseLyricsHandler', function (event, data) {
+            try {
                 if (win == null) {
                     win = new BrowserWindow({
                         width: 100,
@@ -580,48 +602,48 @@ const handler = {
                         webPreferences: {
                             nodeIntegration: true,
                             contextIsolation: false,
-    
+
                         }
                     });
                     win.webContents.on('did-finish-load', () => {
-                        win.webContents.send('neteasecors', data);  
+                        win.webContents.send('neteasecors', data);
                     });
                 } else {
                     win.webContents.on('did-finish-load', () => {
-                        win.webContents.send('neteasecors', data);  
+                        win.webContents.send('neteasecors', data);
                     });
                 }
                 win.loadFile(join(__dirname, '../lyrics/netease.html'));
                 win.on('closed', () => {
-                win = null
+                    win = null
                 });
-                
-            }catch(e){
+
+            } catch (e) {
                 console.log(e);
-                app.win.send('truelyrics', '[00:00] Instrumental. / Lyrics not found.');	
-            } 
+                app.win.send('truelyrics', '[00:00] Instrumental. / Lyrics not found.');
+            }
         });
-        ipcMain.on('LyricsHandler', function(event, data, artworkURL) {
+        ipcMain.on('LyricsHandler', function (event, data, artworkURL) {
             app.win.send('truelyrics', data);
             app.win.send('albumart', artworkURL);
         });
-        ipcMain.on('LyricsHandlerNE', function(event, data) {
+        ipcMain.on('LyricsHandlerNE', function (event, data) {
             app.win.send('truelyrics', data);
         });
-        ipcMain.on('LyricsHandlerTranslation', function(event, data) {
+        ipcMain.on('LyricsHandlerTranslation', function (event, data) {
             app.win.send('lyricstranslation', data);
         });
-        ipcMain.on('LyricsTimeUpdate', function(event, data) {
+        ipcMain.on('LyricsTimeUpdate', function (event, data) {
             app.win.send('ProgressTimeUpdate', data);
         });
-        ipcMain.on('LyricsUpdate', function(event, data, artworkURL) {
+        ipcMain.on('LyricsUpdate', function (event, data, artworkURL) {
             app.win.send('truelyrics', data);
             app.win.send('albumart', artworkURL);
         });
-        ipcMain.on('LyricsMXMFailed', function(event, data) {
+        ipcMain.on('LyricsMXMFailed', function (event, data) {
             app.win.send('backuplyrics', '');
         });
-        ipcMain.on('ProgressTimeUpdateFromLyrics', function(event, data) {
+        ipcMain.on('ProgressTimeUpdateFromLyrics', function (event, data) {
             app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`).catch((e) => console.error(e));
         });
     }
