@@ -97,7 +97,7 @@ const BrowserWindowCreation = {
     CreateBrowserWindow: function () {
         console.log('[CreateBrowserWindow] Initializing Browser Window Creation.')
         // Set default window sizes
-        let mainWindowState = windowStateKeeper({
+        const mainWindowState = windowStateKeeper({
             defaultWidth: 1024,
             defaultHeight: 600
         });
@@ -122,38 +122,35 @@ const BrowserWindowCreation = {
                 nodeIntegrationInWorker: false,
                 contextIsolation: false,
                 webSecurity: true,
-                sandbox: false,
+                sandbox: true,
                 nativeWindowOpen: true
             }
         };
+
+        // Fetch the transparency options
+        const transparencyOptions = BrowserWindowCreation.fetchTransparencyOptions()
 
         if (process.platform === 'darwin' && !app.preferences.value('visual.frameType')) { // macOS Frame
             options.titleBarStyle = 'hidden'
             options.titleBarOverlay = true
             options.frame = true
             options.trafficLightPosition = {x: 20, y: 20}
+            options.transparent = (!!(app.transparency && transparencyOptions))
         }
 
-        const transparencyOptions = BrowserWindowCreation.fetchTransparencyOptions()
+        // Create the Browser Window
+        console.log('[CreateBrowserWindow] Creating BrowserWindow.')
+        if (process.platform === "darwin") {
+            win = new BrowserWindow(options)
+        } else {
+            const acrylicWindow = require("electron-acrylic-window");
+            win = new acrylicWindow.BrowserWindow(options)
+        }
 
-        // BrowserWindow Creation
+        // Set the transparency
         if (app.transparency && transparencyOptions) {
-            if (process.platform === "darwin") { // Create using electron's setVibrancy function
-                console.log('[CreateBrowserWindow] Creating BrowserWindow with electron vibrancy.')
-                options.vibrancy = transparencyOptions
-                options.transparent = true
-                win = new BrowserWindow(options)
-            } else { // Create using Acrylic Window
-                console.log(`[CreateBrowserWindow] Creating Acrylic BrowserWindow.`)
-                const acrylicWindow = require("electron-acrylic-window");
-                win = new acrylicWindow.BrowserWindow(options)
-                console.log(`[CreateBrowserWindow] Settings transparency options to ${JSON.stringify(transparencyOptions)}`)
-                win.setVibrancy(transparencyOptions)
-            }
-        } else { // With transparency disabled
-            console.log('[CreateBrowserWindow] Creating BrowserWindow.')
-            win = new BrowserWindow(options);
-            win.setBackgroundColor = '#1f1f1f00'
+            console.log('[CreateBrowserWindow] Setting Virbancy')
+            win.setVibrancy(transparencyOptions)
         }
 
         // alwaysOnTop
@@ -164,8 +161,8 @@ const BrowserWindowCreation = {
         }
 
         if (!app.preferences.value('advanced.menuBarVisible').includes(true)) win.setMenuBarVisibility(false); // Hide that nasty menu bar
-        if (app.preferences.value('advanced.devTools') !== 'built-in') win.setMenu(null); // Disables DevTools
-        if (app.preferences.value('advanced.devTools') === 'detached') win.webContents.openDevTools({mode: 'detach'}); // Enables Detached DevTools
+        if (!app.preferences.value('advanced.devTools').includes(true)) win.setMenu(null); // Disables DevTools
+        if (app.preferences.value('advanced.devToolsOpenDetached').includes(true)) win.webContents.openDevTools({mode: 'detach'}); // Enables Detached DevTools
 
         // Register listeners on Window to track size and position of the Window.
         mainWindowState.manage(win);

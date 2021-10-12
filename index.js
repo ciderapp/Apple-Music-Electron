@@ -5,40 +5,41 @@ const {app, globalShortcut, session} = require('electron');
 const {PreferencesInit} = require('./resources/functions/init');
 PreferencesInit()
 
-const {LaunchHandler} = require('./resources/functions/handler')
-LaunchHandler()
-
 const {LoggingInit} = require('./resources/functions/init')
 LoggingInit()
 
-const {BaseInit} = require('./resources/functions/init')
-BaseInit()
+const {LaunchHandler} = require('./resources/functions/handler')
+LaunchHandler()
 
-const winFuncs = require('./resources/functions/win')
-const loadFuncs = require('./resources/functions/load')
-app.funcs = Object.assign(winFuncs, loadFuncs)
-app.funcs.discord = require('./resources/functions/media/discordrpc')
-app.funcs.lastfm = require('./resources/functions/media/lastfm')
-app.funcs.mpris = require('./resources/functions/media/mpris')
+const {InstanceHandler} = require('./resources/functions/handler')
+const ExistingInstance = InstanceHandler()
 
-const {VersionHandler} = require('./resources/functions/handler');
-VersionHandler()
+function AppInit() {
+    if (ExistingInstance) return;
+
+    const {BaseInit} = require('./resources/functions/init')
+    BaseInit()
+
+    const winFuncs = require('./resources/functions/win')
+    const loadFuncs = require('./resources/functions/load')
+    app.funcs = Object.assign(winFuncs, loadFuncs)
+    app.funcs.discord = require('./resources/functions/media/discordrpc')
+    app.funcs.lastfm = require('./resources/functions/media/lastfm')
+    app.funcs.mpris = require('./resources/functions/media/mpris')
+    app.pluginsEnabled = false
+
+    const {VersionHandler} = require('./resources/functions/handler');
+    VersionHandler()
+}
 
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {
     console.verbose('[CreateWindow] Started.');
-    const InstanceHandler = require('./resources/functions/handler').InstanceHandler
-    const ExistingInstance = InstanceHandler()
-    if (ExistingInstance === true) {
+    if (ExistingInstance) {
         console.warn('[Apple-Music-Electron][InstanceHandler] Existing Instance Found. Terminating.');
         app.quit()
         return;
-    } else {
-        console.warn('[Apple-Music-Electron][InstanceHandler] No existing instances found.');
     }
-
-    const {LinkHandler} = require('./resources/functions/handler')
-    LinkHandler() // Handles Protocols
 
     const {CreateBrowserWindow} = require('./resources/functions/CreateBrowserWindow')
     app.win = CreateBrowserWindow() // Create the Browser Window
@@ -57,11 +58,12 @@ function CreateWindow() {
     const {MediaStateHandler} = require('./resources/functions/handler')
     MediaStateHandler() // IPCMain
 
-    if (process.platform === 'win32' && app.transparency) { app.win.show() } // Show the window so SetThumbarButtons doesnt break
-    app.funcs.SetThumbarButtons(null) // Set Inactive Thumbnail Toolbar Icons
+    const {LyricsHandler} = require('./resources/functions/handler')
+    LyricsHandler()
 
+    if (process.platform === 'win32' && app.transparency) { app.win.show() } // Show the window so SetThumbarButtons doesnt break
+    app.funcs.SetButtons() // Set Inactive Thumbnail Toolbar Icons or TouchBar
     app.funcs.SetDockMenu() // Set the Dock for macOS
-    app.funcs.SetApplicationMenu() // Set the Menu for OS's that use it (macOS)
     
     const {LaunchHandlerPostWin} = require('./resources/functions/handler')
     LaunchHandlerPostWin()
@@ -69,6 +71,13 @@ function CreateWindow() {
 
 // When its Ready call it all
 app.on('ready', () => {
+    if (ExistingInstance) {
+        app.quit();
+        return;
+    }
+
+    AppInit()
+
     // Apple Header tomfoolery.
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
         details.responseHeaders['Content-Security-Policy'] = 'unsafe-inline'
@@ -111,7 +120,7 @@ app.on('widevine-error', (error) => {
     process.exit(1)
 })
 
-app.on('before-quit', function () {
+app.on('before-quit', () => {
     app.funcs.mpris.clearActivity()
     app.funcs.discord.disconnect()
     console.log('---------------------------------------------------------------------')
@@ -120,6 +129,3 @@ app.on('before-quit', function () {
     app.isQuiting = true;
     globalShortcut.unregisterAll()
 });
-
-
-

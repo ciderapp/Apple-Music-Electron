@@ -2,7 +2,7 @@
   "name": "apple-music-electron",
   "applicationId": "AppleMusicElectron",
   "productName": "Apple Music",
-  "version": "2.5.1",
+  "version": "3.0.0",
   "description": "A free, lightweight, open source alternative to iTunes and other Apple Music applications based on Electron 15.0.0",
   "license": "MIT",
   "author": "Apple Music Electron Team <cryptofyre@protonmail.com> (https://applemusicelectron.com)",
@@ -26,6 +26,7 @@
     "electron-acrylic-window": "^0.5.9",
     "electron-log": "^4.3.5",
     "electron-preferences": "2.5.0",
+    "electron-store": "^8.0.1",
     "electron-updater": "^4.3.9",
     "electron-window-state": "^5.0.3",
     "git-clone": "^0.2.0",
@@ -47,9 +48,9 @@
     "webpack": "~5.58.1"
   },
   "build": {
-    "electronVersion": "15.0.0",
+    "electronVersion": "15.1.2",
     "electronDownload": {
-      "version": "15.0.0-wvvmp",
+      "version": "15.1.2-wvvmp",
       "mirror": "https://github.com/castlabs/electron-releases/releases/download/v"
     },
     "appId": "apple-music",

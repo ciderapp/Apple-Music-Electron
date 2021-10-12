@@ -1,16 +1,5 @@
-const {
-    app,
-    nativeTheme,
-    nativeImage,
-    Tray,
-    globalShortcut,
-    protocol
-} = require("electron");
-const {
-    join,
-    resolve,
-    normalize
-} = require("path");
+const {app, nativeTheme, nativeImage, Tray, globalShortcut, protocol, ipcMain} = require("electron");
+const {join, resolve} = require("path");
 const os = require("os");
 const fs = require("fs");
 const chmodr = require("chmodr");
@@ -18,6 +7,120 @@ const clone = require('git-clone');
 const rimraf = require('rimraf')
 const languages = require("../languages.json");
 const ElectronSentry = require('@sentry/electron');
+
+const themes = {
+    fetchThemeName: (fileName) => {
+        fileName = join(app.userThemesPath, `${fileName.toLowerCase()}.css`)
+        let found = false;
+        if (fs.existsSync(fileName)) {
+            const file = fs.readFileSync(fileName, "utf8");
+            file.split(/\r?\n/).forEach((line) => {
+                if (line.includes("@name")) {
+                    found = (line.split('@name')[1]).trim()
+                }
+            })
+        }
+        return found
+    },
+
+    updateThemesListing: () => {
+        let themesFileNames = [], themesListing = [];
+
+        if (fs.existsSync(app.userThemesPath)) {
+            fs.readdirSync(app.userThemesPath).forEach((value) => {
+                if (value.split('.').pop() === 'css') {
+                    themesFileNames.push(value.split('.').shift())
+                }
+            });
+        }
+
+        // Get the Info
+        themesFileNames.forEach((themeFileName) => {
+            const themeName = themes.fetchThemeName(themeFileName)
+            if (!themeName) return;
+            themesListing[`${themeFileName}`] = themeName
+        })
+
+        app.preferences._preferences.availableThemes = themesListing
+        return themesListing
+    },
+
+    updateThemes: async () => {
+        rimraf(app.userThemesPath, [], () => {
+            console.warn(`[InitializeTheme] Clearing themes directory for fresh clone. ('${app.userThemesPath}')`)
+            clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
+                console.log(`[InitializeTheme][GitClone] ${err ? err : `Re-cloned Themes.`}`)
+                themes.updateThemesListing()
+                return Promise.resolve(err)
+            })
+        })
+    },
+
+    permissionsCheck: (folder, file) => {
+        console.verbose(`[PermissionsCheck] Running check on ${join(folder, file)}`)
+        fs.access(join(folder, file), fs.constants.R_OK | fs.constants.W_OK, (err) => {
+            if (err) { // File cannot be read after cloning
+                console.error(`[PermissionsCheck][access] ${err}`)
+                chmodr(folder, 0o777, (err) => {
+                    if (err) {
+                        console.error(`[PermissionsCheck][chmodr] ${err} - Theme set to default to prevent application launch halt.`);
+                    }
+                });
+            } else {
+                console.verbose('[PermissionsCheck] Check passed.')
+            }
+        })
+    }
+}
+
+const plugins = {
+    fetchPluginName: (fileName) => {
+        fileName = join(app.userPluginsPath, `${fileName.toLowerCase()}.js`)
+        let found = false;
+        if (fs.existsSync(fileName)) {
+            const file = fs.readFileSync(fileName, "utf8");
+            file.split(/\r?\n/).forEach((line) => {
+                if (line.includes("@name")) {
+                    found = (line.split('@name')[1]).trim()
+                }
+            })
+        }
+        return found
+    },
+
+    updatePluginsListing: () => {
+        let pluginsFileNames = [],
+            pluginsListing = [];
+
+        if (fs.existsSync(app.userPluginsPath)) {
+            fs.readdirSync(app.userPluginsPath).forEach((value) => {
+                if (value.split('.').pop() === 'js') {
+                    pluginsFileNames.push(value.split('.').shift())
+                }
+            });
+        }
+
+        // Get the Info
+        pluginsFileNames.forEach((pluginFileName) => {
+            const pluginName = plugins.fetchPluginName(pluginFileName)
+            if (!pluginName) return;
+            pluginsListing[`${pluginFileName}`] = pluginName
+        })
+
+        app.preferences._preferences.availablePlugins = pluginsListing
+        return pluginsListing
+    },
+    permissionsCheck: (folder, file) => {
+        console.verbose(`[PermissionsCheck] Running check on ${join(folder, file)}`)
+        fs.access(join(folder, file), fs.constants.R_OK | fs.constants.W_OK, (err) => {
+            if (err) { 
+                console.error(`[PermissionsCheck][access] Plugins folder does not exist.`)
+            } else {
+                console.verbose('[PermissionsCheck] Plugins folder exists.')
+            }
+        })
+    }
+}
 
 const init = {
 
@@ -69,6 +172,10 @@ const init = {
             existingNotification: false
         };
 
+        if (app.preferences.value('general.incognitoMode').includes(true)) {
+            console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
+        }
+
         // Set Max Listener
         require('events').EventEmitter.defaultMaxListeners = Infinity;
     },
@@ -76,71 +183,53 @@ const init = {
     LoggingInit: function () {
         const log = require("electron-log");
 
+        if (app.commandLine.hasSwitch('verbose')) {
+            app.verboseLaunched = true
+        }
+
         log.transports.file.resolvePath = (vars) => {
             return join(app.getPath('userData'), 'logs', vars.fileName);
         }
 
         Object.assign(console, log.functions);
 
-        console.verbose = () => {};
+        console.verbose = () => {
+        };
 
         if (app.preferences.value('advanced.verboseLogging').includes(true) || app.verboseLaunched) {
             console.verbose = log.debug
-            console.warn = log.warn
         } else {
             console.verbose = function (_data) {
-                return false
-            };
-            console.warn = function (_data) {
                 return false
             };
         }
     },
 
     ThemeInstallation: function () {
-        function PermissionsCheck(folder, file) {
-            console.verbose(`[PermissionsCheck] Running check on ${join(folder, file)}`)
-            fs.access(join(folder, file), fs.constants.R_OK | fs.constants.W_OK, (err) => {
-                if (err) { // File cannot be read after cloning
-                    console.error(`[PermissionsCheck][access] ${err}`)
-                    chmodr(folder, 0o777, (err) => {
-                        if (err) {
-                            console.error(`[PermissionsCheck][chmodr] ${err} - Theme set to default to prevent application launch halt.`);
-                            app.preferences.value('visual.theme', 'default')
-                        }
-                    });
-                } else {
-                    console.verbose('[PermissionsCheck] Check passed.')
-                }
+
+        ipcMain.on('updateThemes', (_event) => {
+            rimraf(app.userThemesPath, [], () => {
+                console.warn(`[InitializeTheme] Clearing themes directory for fresh clone. ('${app.userThemesPath}')`)
+                clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
+                    console.log(`[InitializeTheme][GitClone] ${err ? err : `Re-cloned Themes.`}`)
+                    const themesListing = (err ? err : themes.updateThemesListing())
+                    app.win.webContents.send('themesUpdated', themesListing)
+                })
             })
-        }
+        })
 
         // Check if the themes folder exists and check permissions
         if (fs.existsSync(app.userThemesPath)) {
             console.log("[InitializeTheme][existsSync] Themes folder exists!")
-            PermissionsCheck(app.userThemesPath, 'README.md')
+            themes.permissionsCheck(app.userThemesPath, 'README.md')
+            themes.updateThemesListing()
         } else {
-            console.verbose("[InitializeTheme] Attempting to clone themes.")
-            clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
-                console.log(`[InitializeTheme][GitClone] ${err ? err : `Themes repository has been cloned to '${app.userThemesPath}'`}`)
-                PermissionsCheck(app.userThemesPath, 'README.md')
-            })
+            themes.updateThemes().catch((e) => console.error(e));
         }
 
         // Save all the file names to array and log it
         if (fs.existsSync(app.userThemesPath)) {
             console.log(`[InitializeTheme] Files found in Themes Directory: [${fs.readdirSync(app.userThemesPath).join(', ')}]`)
-        }
-
-        if (app.preferences.value('advanced.overwriteThemes').includes(true)) {
-            rimraf(app.userThemesPath, [], () => {
-                console.warn(`[InitializeTheme] Clearing themes directory for fresh clone. ('${app.userThemesPath}`)
-                clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', app.userThemesPath, [], (err) => {
-                    console.log(`[InitializeTheme][GitClone] ${err ? err : `Re-cloned Themes.`}`)
-                    app.preferences.value('advanced.overwriteThemes', [])
-                    app.preferences.value('visual.theme', 'default')
-                })
-            })
         }
 
         // Set the default theme
@@ -149,11 +238,29 @@ const init = {
         }
     },
 
+    PluginInstallation: function () {
+        // Check if the plugins folder exists and check permissions
+        if (fs.existsSync(app.userPluginsPath)) {
+            app.pluginsEnabled = true
+            console.log("[InitializePlugins][existsSync] Plugins folder exists!")
+            plugins.permissionsCheck(app.userPluginsPath, '/')
+            plugins.updatePluginsListing()
+        }else{
+            app.pluginsEnabled = false
+        }
+
+        // Save all the file names to array and log it
+        if (fs.existsSync(app.userPluginsPath)) {
+            console.log(`[InitializePlugins] Files found in Plugins Directory: [${fs.readdirSync(app.userPluginsPath).join(', ')}]`)
+        }
+    },
+
     AppReady: function () {
         console.verbose('[ApplicationReady] Started.');
         // Run the Functions
         app.funcs.SetTaskList()
         init.ThemeInstallation()
+        init.PluginInstallation()
         init.TrayInit()
 
         // Set the Protocols - Doesnt work on linux :(
@@ -337,7 +444,6 @@ const init = {
             window: [],
             advanced: []
         }
-
         fields.default = {
             'storedVersion': "",
             "general": {
@@ -380,6 +486,9 @@ const init = {
                 "removeFooter": [
                     true
                 ],
+                "useOperatingSystemAccent": [],
+                "mxmon": [],
+                "mxmlanguage": "en",
             },
             "audio": {
                 "audioQuality": "auto",
@@ -403,21 +512,23 @@ const init = {
                     true
                 ],
                 "preventMediaKeyHijacking": [],
-                "settingsMenuKeybind": "",
                 "menuBarVisible": [],
                 "removeScrollbars": [
                     true
                 ],
-                "devTools": "",
-                "overwriteThemes": [],
+                "devTools": [],
+                "devToolsOpenDetached": [],
                 "allowMultipleInstances": [],
+                "allowOldMenuAccess": [],
             }
         }
-        fields.general = [{ // Language
+        fields.general = [
+            { // Language
                 'label': 'Language',
                 'key': 'language',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'English (USA)',
                         'value': 'us'
                     },
@@ -1054,7 +1165,8 @@ const init = {
                 'label': 'Notifications on Song Change',
                 'key': 'playbackNotifications',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'Enabled',
                         'value': true
                     },
@@ -1079,7 +1191,8 @@ const init = {
                 'label': 'Load Page on Startup',
                 'key': 'startupPage',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'Browse',
                         'value': 'browse'
                     },
@@ -1119,7 +1232,8 @@ const init = {
                 'label': 'Display Song as Game Activity on Discord',
                 'key': 'discordRPC',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': "Enabled (Display 'Apple Music' as title)",
                         'value': 'am-title'
                     },
@@ -1176,14 +1290,15 @@ const init = {
                 'help': `These logs when enabled allow us to fix bugs and errors that may occur during your listening sessions to better improve the application. We understand if your not comfortable with them on but it helps us out immensely in figuring out wide spread issues. (Note: We do not gather personal information, only stuff that shows to you as a error in the code.)`
             },
         ]
-        fields.visual = [{ // Setting Your Theme
+        fields.visual = [
+            { // Setting Your Theme
                 'label': 'Themes:',
                 'key': 'theme',
                 'type': 'dropdown',
                 'options': [{
                     'label': 'Default',
                     'value': 'default'
-                }, ],
+                },],
                 'help': 'You will need to restart the application in order for the default themes to be populated.'
             },
             {
@@ -1194,7 +1309,8 @@ const init = {
                 'label': 'Application Frame',
                 'key': 'frameType',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'macOS Emulation (Right)',
                         'value': 'mac-right'
                     },
@@ -1214,7 +1330,8 @@ const init = {
                 'label': 'Transparency Effect',
                 'key': 'transparencyEffect',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'Acrylic (W10 1809+)',
                         'value': 'acrylic'
                     },
@@ -1245,7 +1362,8 @@ const init = {
                 'label': 'Use Custom Window Refresh Rate',
                 'key': 'transparencyMaximumRefreshRate',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': '30',
                         'value': 30
                     },
@@ -1312,13 +1430,308 @@ const init = {
                     'label': 'Removes the Apple Music footer.',
                     'value': true
                 }]
-            }
+            },
+            { // OS Accent
+                'label': 'Use OS Accent as Application Accent',
+                'key': 'useOperatingSystemAccent',
+                'type': 'checkbox',
+                'options': [{
+                    'label': "Force the application to use your operating systems' accent",
+                    'value': true
+                }]
+            },
+            { // Musixmatch Lyrics
+                'label': 'Enable Musixmatch Lyrics',
+                'key': 'mxmon',
+                'type': 'checkbox',
+                'options': [{
+                    'label': "Enable Musixmatch Lyrics (less stable but better lyrics detection)",
+                    'value': true
+                }]
+            },
+            { // Language
+                'label': 'Lyrics translation language',
+                'key': 'mxmlanguage',
+                'type': 'dropdown',
+                'options': [
+                {'label':"Disabled",'value':"disabled"},
+                {'label':"Abkhazian",'value':"ab"},
+                {'label':"Afar",'value':"aa"},
+                {'label':"Afrikaans",'value':"af"},
+                {'label':"Akan",'value':"ak"},
+                {'label':"Albanian",'value':"sq"},
+                {'label':"Amharic",'value':"am"},
+                {'label':"Arabic",'value':"ar"},
+                {'label':"Aragonese",'value':"an"},
+                {'label':"Armenian",'value':"hy"},
+                {'label':"Assamese",'value':"as"},
+                {'label':"Assamese-romaji",'value':"a5"},
+                {'label':"Asturian",'value':"a3"},
+                {'label':"Avaric",'value':"av"},
+                {'label':"Avestan",'value':"ae"},
+                {'label':"Aymara",'value':"ay"},
+                {'label':"Azerbaijani",'value':"az"},
+                {'label':"Bambara",'value':"bm"},
+                {'label':"Bashkir",'value':"ba"},
+                {'label':"Basque",'value':"eu"},
+                {'label':"Bavarian",'value':"b1"},
+                {'label':"Belarusian",'value':"be"},
+                {'label':"Bengali",'value':"bn"},
+                {'label':"Bengali-romaji",'value':"b5"},
+                {'label':"Bihari languages",'value':"bh"},
+                {'label':"Bishnupriya",'value':"b3"},
+                {'label':"Bislama",'value':"bi"},
+                {'label':"Bosnian",'value':"bs"},
+                {'label':"Breton",'value':"br"},
+                {'label':"Bulgarian",'value':"bg"},
+                {'label':"Burmese",'value':"my"},
+                {'label':"Catalan",'value':"ca"},
+                {'label':"Cebuano",'value':"c2"},
+                {'label':"Central bikol",'value':"b2"},
+                {'label':"Central kurdish",'value':"c3"},
+                {'label':"Chamorro",'value':"ch"},
+                {'label':"Chavacano",'value':"c1"},
+                {'label':"Chechen",'value':"ce"},
+                {'label':"Chichewa",'value':"ny"},
+                {'label':"Chinese (simplified)",'value':"zh"},
+                {'label':"Chinese (traditional)",'value':"z1"},
+                {'label':"Chinese-romaji",'value':"rz"},
+                {'label':"Church slavic",'value':"cu"},
+                {'label':"Chuvash",'value':"cv"},
+                {'label':"Cornish",'value':"kw"},
+                {'label':"Corsican",'value':"co"},
+                {'label':"Cree",'value':"cr"},
+                {'label':"Creoles and pidgins",'value':"c4"},
+                {'label':"Creoles and pidgins, english based",'value':"c5"},
+                {'label':"Creoles and pidgins, french-based",'value':"c6"},
+                {'label':"Creoles and pidgins, portuguese-based",'value':"c7"},
+                {'label':"Croatian",'value':"hr"},
+                {'label':"Czech",'value':"cs"},
+                {'label':"Danish",'value':"da"},
+                {'label':"Dimli (individual language)",'value':"d1"},
+                {'label':"Divehi",'value':"dv"},
+                {'label':"Dotyali",'value':"d3"},
+                {'label':"Dutch",'value':"nl"},
+                {'label':"Dzongkha",'value':"dz"},
+                {'label':"Eastern mari",'value':"m2"},
+                {'label':"Egyptian arabic",'value':"a2"},
+                {'label':"Emilian-romagnol",'value':"e1"},
+                {'label':"English",'value':"en"},
+                {'label':"Erzya",'value':"m6"},
+                {'label':"Esperanto",'value':"eo"},
+                {'label':"Estonian",'value':"et"},
+                {'label':"Ewe",'value':"ee"},
+                {'label':"Faroese",'value':"fo"},
+                {'label':"Fiji hindi",'value':"h1"},
+                {'label':"Fijian",'value':"fj"},
+                {'label':"Filipino",'value':"f1"},
+                {'label':"Finnish",'value':"fi"},
+                {'label':"French",'value':"fr"},
+                {'label':"Frisian, northern",'value':"f2"},
+                {'label':"Frisian, western",'value':"fy"},
+                {'label':"Fulah",'value':"ff"},
+                {'label':"Galician",'value':"gl"},
+                {'label':"Ganda",'value':"lg"},
+                {'label':"Georgian",'value':"ka"},
+                {'label':"German",'value':"de"},
+                {'label':"German, low",'value':"n2"},
+                {'label':"Goan konkani",'value':"g1"},
+                {'label':"Greek",'value':"el"},
+                {'label':"Greek-romaji",'value':"e2"},
+                {'label':"Greenlandic",'value':"kl"},
+                {'label':"Guarani",'value':"gn"},
+                {'label':"Gujarati",'value':"gu"},
+                {'label':"Gujarati-romaji",'value':"g2"},
+                {'label':"Haitian creole",'value':"ht"},
+                {'label':"Hausa",'value':"ha"},
+                {'label':"Hebrew",'value':"he"},
+                {'label':"Herero",'value':"hz"},
+                {'label':"Hindi",'value':"hi"},
+                {'label':"Hindi-romaji",'value':"h3"},
+                {'label':"Hiri motu",'value':"ho"},
+                {'label':"Hungarian",'value':"hu"},
+                {'label':"Icelandic",'value':"is"},
+                {'label':"Ido",'value':"io"},
+                {'label':"Igbo",'value':"ig"},
+                {'label':"Iloko",'value':"i1"},
+                {'label':"Indonesian",'value':"id"},
+                {'label':"Interlingua",'value':"ia"},
+                {'label':"Interlingue",'value':"ie"},
+                {'label':"Inuktitut",'value':"iu"},
+                {'label':"Inupiaq",'value':"ik"},
+                {'label':"Irish",'value':"ga"},
+                {'label':"Italian",'value':"it"},
+                {'label':"Japanese",'value':"ja"},
+                {'label':"Japanese-romaji",'value':"rj"},
+                {'label':"Javanese",'value':"jv"},
+                {'label':"Kalmyk",'value':"x1"},
+                {'label':"Kannada",'value':"kn"},
+                {'label':"Kannada-romaji",'value':"k2"},
+                {'label':"Kanuri",'value':"kr"},
+                {'label':"Karachay-balkar",'value':"k1"},
+                {'label':"Kashmiri",'value':"ks"},
+                {'label':"Kazakh",'value':"kk"},
+                {'label':"Khmer, central",'value':"km"},
+                {'label':"Kikuyu",'value':"ki"},
+                {'label':"Kinyarwanda",'value':"rw"},
+                {'label':"Kirghiz",'value':"ky"},
+                {'label':"Komi",'value':"kv"},
+                {'label':"Kongo",'value':"kg"},
+                {'label':"Korean",'value':"ko"},
+                {'label':"Korean-romaji",'value':"rk"},
+                {'label':"Kuanyama",'value':"kj"},
+                {'label':"Kurdish",'value':"ku"},
+                {'label':"Lao",'value':"lo"},
+                {'label':"Latin",'value':"la"},
+                {'label':"Latvian",'value':"lv"},
+                {'label':"Lezghian",'value':"l1"},
+                {'label':"Limburgish",'value':"li"},
+                {'label':"Lingala",'value':"ln"},
+                {'label':"Lithuanian",'value':"lt"},
+                {'label':"Lojban",'value':"j1"},
+                {'label':"Lombard",'value':"l2"},
+                {'label':"Luba-katanga",'value':"lu"},
+                {'label':"Luxembourgish",'value':"lb"},
+                {'label':"Macedonian",'value':"mk"},
+                {'label':"Maithili",'value':"m1"},
+                {'label':"Malagasy",'value':"mg"},
+                {'label':"Malay",'value':"ms"},
+                {'label':"Malayalam",'value':"ml"},
+                {'label':"Malayalam-romaji",'value':"m8"},
+                {'label':"Maltese",'value':"mt"},
+                {'label':"Manx",'value':"gv"},
+                {'label':"Maori",'value':"mi"},
+                {'label':"Marathi",'value':"mr"},
+                {'label':"Marathi-romaji",'value':"m9"},
+                {'label':"Marshallese",'value':"mh"},
+                {'label':"Mazanderani",'value':"m7"},
+                {'label':"Minangkabau",'value':"m3"},
+                {'label':"Mingrelian",'value':"x2"},
+                {'label':"Mirandese",'value':"m5"},
+                {'label':"Moldavian",'value':"mo"},
+                {'label':"Mongolian",'value':"mn"},
+                {'label':"Nahuatl",'value':"n4"},
+                {'label':"Nauru",'value':"na"},
+                {'label':"Navajo",'value':"nv"},
+                {'label':"Ndebele, north",'value':"nd"},
+                {'label':"Ndebele, south",'value':"nr"},
+                {'label':"Ndonga",'value':"ng"},
+                {'label':"Neapolitan",'value':"n1"},
+                {'label':"Nepal bhasa",'value':"n3"},
+                {'label':"Nepali",'value':"ne"},
+                {'label':"Nepali-romaji",'value':"n5"},
+                {'label':"Northern luri",'value':"l3"},
+                {'label':"Norwegian",'value':"no"},
+                {'label':"Norwegian bokm\xe5l",'value':"nb"},
+                {'label':"Norwegian nynorsk",'value':"nn"},
+                {'label':"Occitan",'value':"oc"},
+                {'label':"Ojibwa",'value':"oj"},
+                {'label':"Oriya",'value':"or"},
+                {'label':"Oriya-romaji",'value':"o1"},
+                {'label':"Oromo",'value':"om"},
+                {'label':"Ossetian",'value':"os"},
+                {'label':"Pali",'value':"pi"},
+                {'label':"Pampanga",'value':"p1"},
+                {'label':"Panjabi",'value':"pa"},
+                {'label':"Panjabi-romaji",'value':"p5"},
+                {'label':"Persian",'value':"fa"},
+                {'label':"Pfaelzisch",'value':"p2"},
+                {'label':"Piemontese",'value':"p3"},
+                {'label':"Polish",'value':"pl"},
+                {'label':"Portuguese",'value':"pt"},
+                {'label':"Pushto",'value':"ps"},
+                {'label':"Quechua",'value':"qu"},
+                {'label':"Romanian",'value':"ro"},
+                {'label':"Romansh",'value':"rm"},
+                {'label':"Rundi",'value':"rn"},
+                {'label':"Russia buriat",'value':"b4"},
+                {'label':"Russian",'value':"ru"},
+                {'label':"Russian-romaji",'value':"r2"},
+                {'label':"Rusyn",'value':"r1"},
+                {'label':"Sami, northern",'value':"se"},
+                {'label':"Samoan",'value':"sm"},
+                {'label':"Sango",'value':"sg"},
+                {'label':"Sanskrit",'value':"sa"},
+                {'label':"Sanskrit-romaji",'value':"s4"},
+                {'label':"Sardinian",'value':"sc"},
+                {'label':"Scots",'value':"s3"},
+                {'label':"Scottish gaelic",'value':"gd"},
+                {'label':"Serbian",'value':"sr"},
+                {'label':"Serbo-croatian",'value':"sh"},
+                {'label':"Shona",'value':"sn"},
+                {'label':"Sichuan yi",'value':"ii"},
+                {'label':"Sicilian",'value':"s2"},
+                {'label':"Sindhi",'value':"sd"},
+                {'label':"Sinhala",'value':"si"},
+                {'label':"Slovak",'value':"sk"},
+                {'label':"Slovenian",'value':"sl"},
+                {'label':"Somali",'value':"so"},
+                {'label':"Sorbian, lower",'value':"d2"},
+                {'label':"Sorbian, upper",'value':"h2"},
+                {'label':"Sotho, southern",'value':"st"},
+                {'label':"South azerbaijani",'value':"a4"},
+                {'label':"Spanish",'value':"es"},
+                {'label':"Sundanese",'value':"su"},
+                {'label':"Swahili",'value':"sw"},
+                {'label':"Swati",'value':"ss"},
+                {'label':"Swedish",'value':"sv"},
+                {'label':"Tagalog",'value':"tl"},
+                {'label':"Tahitian",'value':"ty"},
+                {'label':"Tajik",'value':"tg"},
+                {'label':"Tamil",'value':"ta"},
+                {'label':"Tamil-romaji",'value':"t2"},
+                {'label':"Tatar",'value':"tt"},
+                {'label':"Telugu",'value':"te"},
+                {'label':"Telugu-romaji",'value':"t3"},
+                {'label':"Thai",'value':"th"},
+                {'label':"Thai-romaji",'value':"t4"},
+                {'label':"Tibetan",'value':"bo"},
+                {'label':"Tigrinya",'value':"ti"},
+                {'label':"Tonga (tonga islands)",'value':"to"},
+                {'label':"Tosk albanian",'value':"a1"},
+                {'label':"Tsonga",'value':"ts"},
+                {'label':"Tswana",'value':"tn"},
+                {'label':"Turkish",'value':"tr"},
+                {'label':"Turkmen",'value':"tk"},
+                {'label':"Tuvinian",'value':"t1"},
+                {'label':"Twi",'value':"tw"},
+                {'label':"Uighur",'value':"ug"},
+                {'label':"Ukrainian",'value':"uk"},
+                {'label':"Urdu",'value':"ur"},
+                {'label':"Urdu-romaji",'value':"u1"},
+                {'label':"Uzbek",'value':"uz"},
+                {'label':"Venda",'value':"ve"},
+                {'label':"Venetian",'value':"v1"},
+                {'label':"Veps",'value':"v2"},
+                {'label':"Vietnamese",'value':"vi"},
+                {'label':"Vlaams",'value':"v3"},
+                {'label':"Volap\xfck",'value':"vo"},
+                {'label':"Walloon",'value':"wa"},
+                {'label':"Waray",'value':"w1"},
+                {'label':"Welsh",'value':"cy"},
+                {'label':"Western mari",'value':"m4"},
+                {'label':"Western panjabi",'value':"p4"},
+                {'label':"Wolof",'value':"wo"},
+                {'label':"Wu chinese",'value':"w2"},
+                {'label':"Xhosa",'value':"xh"},
+                {'label':"Yakut",'value':"s1"},
+                {'label':"Yiddish",'value':"yi"},
+                {'label':"Yoruba",'value':"yo"},
+                {'label':"Yue chinese",'value':"y1"},
+                {'label':"Zhuang",'value':"za"},
+                {'label':"Zulu",'value':"zu"}
+                ],
+                'help': 'You will need to restart the application for language settings to apply.'
+            },
+
         ]
-        fields.audio = [{ // Sound Quality
+        fields.audio = [
+            { // Sound Quality
                 'label': 'Sound Quality',
                 'key': 'audioQuality',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'Automatic (Default)',
                         'value': 'auto'
                     },
@@ -1347,11 +1760,13 @@ const init = {
                 'help': `Reduces or completely removes the delay between songs providing a smooth audio experience.`
             }
         ]
-        fields.window = [{ // Open Apple Music on Startup
+        fields.window = [
+            { // Open Apple Music on Startup
                 'label': 'Open Apple Music automatically after login',
                 'key': 'appStartupBehavior',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'Enabled',
                         'value': 'true'
                     },
@@ -1374,7 +1789,8 @@ const init = {
                 }]
             }
         ]
-        fields.advanced = [{
+        fields.advanced = [
+            {
                 'content': "<p>Do not mess with these options unless you know what you're doing.</p>",
                 'type': 'message'
             },
@@ -1382,7 +1798,8 @@ const init = {
                 'label': 'Force Application Region',
                 'key': 'forceApplicationRegion',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'United Arab Emirates',
                         'value': 'ae'
                     },
@@ -2009,7 +2426,8 @@ const init = {
                 'label': 'Force Application Theme',
                 'key': 'forceApplicationMode',
                 'type': 'dropdown',
-                'options': [{
+                'options': [
+                    {
                         'label': 'System (default)',
                         'value': 'system'
                     },
@@ -2068,11 +2486,6 @@ const init = {
                     'value': true
                 }]
             },
-            { // Setting Keybind for Opening Settings
-                'label': 'settingsMenuKeybind',
-                'key': 'settingsMenuKeybind',
-                'type': 'accelerator',
-            },
             { // Visual Advanced
                 'heading': 'Visual Advanced',
                 'content': `These are advanced features that may ruin the look of the application if you change them.`,
@@ -2101,32 +2514,35 @@ const init = {
             },
             { // Turning on devTools
                 'key': 'devTools',
-                'type': 'dropdown',
-                'options': [{
-                        'label': 'Detached',
-                        'value': 'detached'
-                    },
-                    {
-                        'label': 'Built-in',
-                        'value': 'built-in'
-                    }
-                ],
-                'help': 'This allows users to access the chrome developer tools. Find more information at https://developer.chrome.com/docs/devtools/'
-            },
-            { // overwriteThemes (Prevents copying and replacing existing themes)
-                'key': 'overwriteThemes',
                 'type': 'checkbox',
                 'options': [{
-                    'label': 'overwriteThemes',
+                    'label': 'devTools',
                     'value': true
                 }],
-                'help': 'Enable this to fetch the latest themes from GitHub on the next launch. (This will disable any active theme to prevent issues)'
+                'help': 'This allows users to access the chrome developer tools. Find more information at https://developer.chrome.com/docs/devtools/'
+            },
+            { // Turning on devTools
+                'key': 'devToolsOpenDetached',
+                'type': 'checkbox',
+                'options': [{
+                    'label': 'devToolsOpenDetached',
+                    'value': true
+                }],
+                'help': 'This allows users to access the chrome developer tools. Find more information at https://developer.chrome.com/docs/devtools/'
             },
             { // Turning on allowMultipleInstances
                 'key': 'allowMultipleInstances',
                 'type': 'checkbox',
                 'options': [{
                     'label': 'allowMultipleInstances',
+                    'value': true
+                }]
+            },
+            {
+                'key': 'allowOldMenuAccess',
+                'type': 'checkbox',
+                'options': [{
+                    'label': 'allowOldMenuAccess',
                     'value': true
                 }]
             }
@@ -2136,9 +2552,11 @@ const init = {
             return x.replace(/\./g, "").replace(',', '.');
         }
 
+        const AcrylicSupported = ((!(!os.type().includes('Windows') || parseFloat(RemoveDP(os.release())) <= parseFloat(RemoveDP('10.0.17763')))));
+
         // Remove the Transparency Option for Acrylic if it is not supported
-        if (!os.type().includes('Windows') || parseFloat(RemoveDP(os.release())) <= parseFloat(RemoveDP('10.0.17763'))) {
-            for (var key in fields.visual) {
+        if (!AcrylicSupported) {
+            for (const key in fields.visual) {
                 if (fields.visual[key].key === 'transparencyEffect') {
                     fields.visual[key].options.shift()
                 }
@@ -2150,37 +2568,25 @@ const init = {
 
         // Set the Theme List based on css files in themes directory
         app.userThemesPath = resolve(app.getPath('userData'), 'themes');
-        let ThemesList = [];
+        app.userPluginsPath = resolve(app.getPath('userData'), 'plugins');
+        let themesFileNames = [];
+
         if (fs.existsSync(app.userThemesPath)) {
             fs.readdirSync(app.userThemesPath).forEach((value) => {
                 if (value.split('.').pop() === 'css') {
-                    ThemesList.push(value.split('.').shift())
+                    themesFileNames.push(value.split('.').shift())
                 }
             })
         }
 
-        function fetchThemeName(fileName) {
-            fileName = join(app.userThemesPath, `${fileName.toLowerCase()}.css`)
-            let found = false;
-            if (fs.existsSync(fileName)) {
-                const file = fs.readFileSync(fileName, "utf8");
-                file.split(/\r?\n/).forEach((line) => {
-                    if (line.includes("@name")) {
-                        found = (line.split('@name')[1]).trim()
-                    }
-                })
-            }
-            return found
-        }
-
         // Get the Info
-        ThemesList.forEach((themeFileName) => {
-            const themeName = fetchThemeName(themeFileName)
+        themesFileNames.forEach((themeFileName) => {
+            const themeName = themes.fetchThemeName(themeFileName)
             if (!themeName) return;
             fields.visual[0].options.push({
-                label: themeName,
-                value: themeFileName
-            }, )
+                'label': themeName,
+                'value': themeFileName
+            },)
         })
 
         const ElectronPreferences = require("electron-preferences");
@@ -2190,16 +2596,16 @@ const init = {
             'defaults': fields.default,
             /* Settings Menu */
             'sections': [{
-                    'id': 'general',
-                    'label': 'General Settings',
-                    'icon': 'settings-gear-63',
-                    'form': {
-                        'groups': [{
-                            'label': 'General Settings',
-                            'fields': fields.general
-                        }]
-                    }
-                },
+                'id': 'general',
+                'label': 'General Settings',
+                'icon': 'settings-gear-63',
+                'form': {
+                    'groups': [{
+                        'label': 'General Settings',
+                        'fields': fields.general
+                    }]
+                }
+            },
                 {
                     'id': 'visual',
                     'label': 'Visual Settings',
@@ -2253,10 +2659,10 @@ const init = {
                         'groups': [{
                             'label': 'Credits',
                             'fields': [{
-                                    'heading': 'Major thanks to',
-                                    'content': `<p style="size='12px'"><a style="color: #227bff !important" target="_blank" href='https://github.com/Apple-Music-Electron/'>The Apple Music Electron Team.</a></p>`,
-                                    'type': 'message'
-                                },
+                                'heading': 'Major thanks to',
+                                'content': `<p style="size='12px'"><a style="color: #227bff !important" target="_blank" href='https://github.com/Apple-Music-Electron/'>The Apple Music Electron Team.</a></p>`,
+                                'type': 'message'
+                            },
                                 {
                                     'heading': '',
                                     'content': `<p style="size='8px'">cryptofyre - Owner/Developer | <a style="color: #227bff !important" target="_blank" href='https://github.com/cryptofyre'>GitHub </a>| <a style="color: #227bff !important" target="_blank" href='https://twitter.com/cryptofyre'>Twitter </a>| <a style="color: #227bff !important" target="_blank" href='https://cryptofyre.org'>Website</a></p>`,
@@ -2314,21 +2720,32 @@ const init = {
             }
         });
 
-        if (!app.preferences.value("advanced.settingsMenuKeybind")) {
-            app.preferences.value("advanced.settingsMenuKeybind", process.platform === "darwin" ? "Control+Command+S" : "Control+Alt+S")
-        }
-
         app.whenReady().then(() => {
-            globalShortcut.register(app.preferences.value('advanced.settingsMenuKeybind'), () => {
-                app.preferences.show();
-            })
+            if (app.preferences.value('advanced.allowOldMenuAccess').includes(true)) {
+                globalShortcut.register((process.platform === "darwin" ? "Control+Command+S" : "Control+Alt+S"), () => {
+                    app.preferences.show();
+                })
+            }
+
             protocol.registerFileProtocol('themes', (request, callback) => {
                 const url = request.url.substr(7)
                 callback({
                     path: join(app.userThemesPath, url.toLowerCase())
                 })
             })
+            protocol.registerFileProtocol('ameres', (request, callback) => {
+                const url = request.url.substr(7)
+                callback(fs.createReadStream(join(join(__dirname, '../'), url.toLowerCase())))
+            })
+            protocol.registerFileProtocol('plugin', (request, callback) => {
+                const url = request.url.substr(7)
+                callback({
+                    path: join(app.userPluginsPath, url.toLowerCase())
+                })
+            })
         })
+
+        app.preferences._preferences.supportsAcrylic = AcrylicSupported
     },
 
     SentryInit: function () {

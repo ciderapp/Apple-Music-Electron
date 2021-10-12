@@ -60,7 +60,7 @@ const lfm = {
     },
 
     scrobbleSong: function (attributes) {
-        if (!app.lastfm || app.lastfm.cachedAttributes === attributes) {
+        if (!app.lastfm || app.lastfm.cachedAttributes === attributes || app.preferences.value('general.incognitoMode').includes(true)) {
             return
         }
 

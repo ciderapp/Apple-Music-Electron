@@ -21,14 +21,16 @@
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0);
     border-radius: 7px;
-    opacity: 1.0;
+    opacity: 1;
     transition: 0.2s;
 }
 
 #backButtonBar .button-area:active {
     background-color: var(--segmentedControlSelectedBG) !important;
     backdrop-filter: saturate(0%) blur(25px) !important;
-    box-shadow: 0 0 .5px var(--segmentedControlSelectedBorder), 0 3px 8px var(--segmentedControlSelectedShadow1), 0 3px 1px var(--segmentedControlSelectedShadow2);
+    box-shadow: 0 0 0.5px var(--segmentedControlSelectedBorder),
+    0 3px 8px var(--segmentedControlSelectedShadow1),
+    0 3px 1px var(--segmentedControlSelectedShadow2);
 }
 
 #backButtonBar .button-area img:active {
@@ -40,7 +42,7 @@
     margin: auto;
     width: auto;
     height: auto;
-    opacity: 0.50;
+    opacity: 0.5;
     z-index: 10000;
     transition: 0.2s;
 }
@@ -52,5 +54,418 @@
 @media (prefers-color-scheme: dark) {
     #backButtonBar .button-area img {
         filter: brightness(0) invert(1);
+    }
+}
+
+/* Settings Menu CSS */
+
+.application-preferences {
+    width: 100%;
+    height: 100%;
+    padding-top: 50px;
+    display: grid;
+    grid-template-rows: auto auto auto auto;
+    grid-template-columns: auto;
+}
+
+.app-prefs-section {
+    width: 100%;
+    height: auto;
+}
+
+.app-prefs-section .settings-list {
+    padding: 0 10%
+}
+
+span.app-prefs-title {
+    height: 10px !important;
+}
+
+.settings-list {
+    margin: 50px 10px 50px 10px;
+}
+
+.settings-list li {
+    margin: 30px 0 30px 10px;
+}
+
+.settings-list li .list-element {
+    position: relative;
+    float: right;
+}
+
+.application-preferences .app-prefs-section .header-nav-image {
+    width: auto;
+    height: 30px;
+    margin-right: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .application-preferences .app-prefs-section .header-nav-image {
+        filter: invert(100%);
+    }
+}
+
+.application-preferences .app-prefs-section #advanced {
+    transform: translateY(-2000px) translateZ(0);
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity .3s ease 0s, transform 0s linear .9s;
+    position: absolute;
+}
+
+.application-preferences .app-prefs-section .revealed {
+    transform: translateY(0px) !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transition: top 0s linear 0s, opacity .3s ease .01s !important;
+    position: relative !important;
+}
+
+/* Credits Section */
+
+.app-prefs-credits {
+    margin-top: 20px;
+}
+
+.app-prefs-credits .dt-footer__list .dt-footer__item {
+    margin-top: 20px;
+    display: grid;
+    grid-template-rows: 15px auto;
+    grid-template-columns: auto;
+}
+
+.app-prefs-credits .dt-footer__list .dt-footer__item ul {
+    margin-top: 10px;
+}
+
+.app-prefs-credits .dt-footer__list {
+    display: flex;
+    max-width: 800px;
+}
+
+.app-prefs-credits .dt-footer__list .dt-footer__item .dt-footer__link {
+    grid-row: 1;
+    margin-bottom: 10px;
+}
+
+.app-prefs-credits .dt-footer__list .dt-footer__item .dt-footer__list-item {
+    grid-row: 2;
+    color: var(--systemSecondary);
+    margin: 5px 0;
+}
+
+.app-prefs-credits .dt-footer__list .dt-footer__item .dt-footer__list-item a {
+    color: var(--systemSecondary) !important;
+}
+
+/* Help */
+.settings-list .app-prefs-help {
+    color: #808080;
+    margin: 0 0;
+    font-size: 12px;
+    display: block;
+}
+
+.header-nav-content .app-prefs-help {
+    position: relative;
+    float: right;
+    color: #808080;
+    display: block;
+    font-size: 12px;
+    margin-bottom: 6px;
+    -webkit-margin-end: 25px;
+    margin-inline-end: 25px;
+}
+
+.settings-list .app-prefs-divider .app-prefs-help {
+    font-size: 10px !important;
+    margin-left: 20px !important;
+}
+
+/* Divider */
+.settings-list .app-prefs-divider {
+    margin: 0 0;
+}
+
+/* Buttons */
+.settings-list li .list-button {
+    color: white;
+    padding: 5px 10px;
+    margin-left: 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    font-family: SF Pro Text, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif;
+}
+
+/*LastFM Connect Button*/
+.settings-list li #lfmConnect {
+    background-color: #E4141E;
+}
+
+/*Update Themes*/
+.settings-list li #updateThemes {
+    color: var(--systemPrimary);
+    border-color: #424245;
+    background-color: hsla(0, 0%, 100%, .04);
+    border-style: solid;
+    border-width: 1px;
+}
+
+/* Toggle Slider */
+.settings-list li .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+    border-radius: 28px;
+}
+
+.settings-list li .slider:before {
+    border-radius: 50%;
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    background-color: white;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+.settings-list li .toggle-element {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    grid-column: 3;
+    margin: 5px 20px 0 20px;
+}
+
+.settings-list li .toggle-element input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.settings-list li .toggle-element input:checked + .slider {
+    background-color: var(--keyColor);
+}
+
+.settings-list li .toggle-element input:focus + .slider {
+    box-shadow: 0 0 1px var(--keyColor);
+}
+
+.settings-list li .toggle-element input:checked + .slider:before {
+    -webkit-transform: translateX(20px);
+    -ms-transform: translateX(20px);
+    transform: translateX(20px);
+}
+
+/* Dropdown */
+.settings-list li .form-dropdown-select {
+    color: var(--systemPrimary);
+    border-color: #424245;
+    background-color: hsla(0, 0%, 100%, .04);
+    padding: 5px 10px;
+    margin: 10px 0 10px 20px;
+    border-radius: 5px;
+    font-size: 15px;
+    font-family: SF Pro Text, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.settings-list li .form-dropdown-select option {
+    color: black;
+}
+
+.settings-list li .form-dropdown-select option:disabled {
+    color: #808080;
+}
+
+/* Artwork CSS (for miniPlayer) */
+
+#ember13.media-artwork-v2--downloaded::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+#ember13.media-artwork-v2--downloaded:hover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    background-image: url("ameres://icons/webui/MiniPlayer_hover.svg");
+    background-size: contain;
+    background-position: center;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Mini Player Context Menu */
+@media only screen and (max-width: 400px) {
+
+    body[data-miniplayer] #web-main > .loading-inner,
+    body[data-miniplayer] #backButtonBar,
+    body[data-miniplayer] #web-navigation-container,
+    body[data-miniplayer] .web-chrome {
+        display: none;
+    }
+
+    body[data-miniplayer] .menuicon {
+        display: none !important;
+    }
+
+    body[data-miniplayer] li.context-menu__option {
+        font-size: 12px;
+        min-height: auto;
+    }
+
+    body[data-miniplayer] .miniPlayerArtwork {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: black var(--musicKit-artwork) center;
+        background-size: cover;
+        z-index: 800;
+    }
+}
+
+/* Lyrics Button */
+#lyricsButton {
+    height: 22px;
+    width: 22px;
+    background-color: transparent;
+}
+
+/* Lyrics CSS */
+:root {
+    --appleEase: cubic-bezier(0.42, 0, 0.58, 1);
+    --panel-width: 300px;
+}
+
+body {
+    background: black;
+}
+
+.appleSidebar {
+    width: var(--panelWidth);
+    animation: 3s lyricsSlideOut forwards;
+
+}
+
+@keyframes lyricsSlideOut {
+    0% {
+        transform: translateX(-300px);
+    }
+    100% {
+        transform: translateX(0px);
+    }
+}
+
+#backgroundImage {
+    width: 100%;
+    height: 100%;
+    filter: blur(16px) saturate(180%);
+    background-repeat: no-repeat;
+    object-fit: cover;
+    object-position: center center;
+    position: absolute;
+}
+
+#lyricer {
+    width: 90%;
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: "SF Pro", "M PLUS 1p", "Hiragino Sans GB W6", Tahoma, Arial, sans-serif;
+    text-shadow: rgb(238, 238, 238) 0 0 1px;
+    color: rgb(102, 102, 102);
+    overflow: hidden scroll;
+    z-index: 2;
+    position: absolute;
+    margin-right: 20px;
+    margin-left: 5%;
+    height: 90%;
+    transition: all 1s var(--appleEase) !important;
+}
+
+#lyricer::-webkit-scrollbar {
+    display: none;
+}
+
+#lyricer ul {
+    list-style-type: none;
+    padding: 10px;
+}
+
+#lyricer ul li {
+    overflow: auto;
+    margin-bottom: 20px;
+    opacity: 0.9;
+    color: var(--systemQuaternary);
+    transition: all .25s var(--appleEase) !important;
+    display: flex;
+}
+
+#lyricer .lyricer-current-line {
+    color: var(--systemPrimary);
+    /* text-shadow: rgb(169, 169, 169) 1.5px 1.5px 1.5px; */
+    opacity: 1;
+    font-size: 1.6rem;
+    font-weight: 700;
+    transition: all .25s var(--appleEase) !important;
+}
+
+#lyricer ul li .lyrics-translation {
+    font-size: 1.3rem;
+    font-weight: 300;
+}
+
+.lyricWaiting{
+    display: none;
+}
+
+.lyricer-current-line .lyricWaiting{
+    display: inline-flex;
+    animation: lyricWaitingLine 6s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+}
+
+  
+.lyricWaiting>div {
+    width: 10px;
+    height: 10px;
+    background: var(--systemPrimary);
+    border-radius: 50%;
+    margin: 3px;
+}
+  
+@keyframes lyricWaitingLine {
+    0% {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.95);
     }
 }
