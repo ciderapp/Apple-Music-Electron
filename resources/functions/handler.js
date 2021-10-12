@@ -528,7 +528,7 @@ const handler = {
         });
         
         win2.webContents.openDevTools();
-        ipcMain.on('MXMTranslation', function(event, track, artist){
+        ipcMain.on('MXMTranslation', function(event, track, artist, lang){
             console.log('bruh0');
             try{	 
                 if (win2 == null) {
@@ -546,7 +546,7 @@ const handler = {
                     
 
                 } else {
-                    win2.webContents.send('mxmcors', track, artist); 
+                    win2.webContents.send('mxmcors', track, artist, lang); 
                 }
                 // try{
                     
@@ -557,7 +557,7 @@ const handler = {
                 win2.loadFile(join(__dirname, '../lyrics/musixmatch.html'));
                 win2.webContents.on('did-finish-load', () => {
                     console.log('bruh1a');
-                    win2.webContents.send('mxmcors', track, artist);  
+                    win2.webContents.send('mxmcors', track, artist, lang);  
                 });}
                
                 win2.on('closed', () => {

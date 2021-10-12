@@ -188,9 +188,11 @@ try {
                 const artistName = encodeURIComponent(MusicKitInterop.getAttributes()["artistName"]);
                 const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
                 const songID = (musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem["_songId"] ?? -1 : -1;
-                if(!mxmfail){
+                console.log('mxmon'+preferences.visual.mxmon);
+                console.log('mxmon'+preferences.visual.mxmon);
+                if(!mxmfail && preferences.visual.mxmon[0] == true){
                     /* get MXM lyrics and translation */
-                    ipcRenderer.send('MXMTranslation', trackName , artistName );
+                    ipcRenderer.send('MXMTranslation', trackName , artistName, preferences.visual.mxmlanguage );
                 } else if (songID !== -1) {
                         MusicKit.getInstance().api.lyric(songID)
                             .then(function (response) {
