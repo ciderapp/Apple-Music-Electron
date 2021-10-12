@@ -20,10 +20,13 @@
         container.appendChild(ul);
         for (i = 0; i < self.totalLines; i++) {
             const li = document.createElement("li");
+            if (self.rangeLrc[i].line === 'lrcInstrumental'){
+                li.innerHTML = `<div class="lyricWaiting"><div></div><div></div><div></div></div>`;
+            } else {
             li.innerHTML = self.rangeLrc[i].line;
             if (!li.innerHTML) {
                 li.innerHTML = "&nbsp;"
-            }
+            }}
             li.setAttribute("id", self.lineidPrefix + i);
             if (self.clickable) {
                 li.onclick = lineClicked(self, i);
@@ -48,10 +51,10 @@
                 li.style.display = "block";
             }
             if (i === line) {
-                li.className = self.currentcss;
+                li.classList.add(self.currentcss);
                 li.scrollIntoView({behavior: 'smooth', block: 'center'});
             } else {
-                li.className = "";
+                li.classList.remove(self.currentcss);
             }
         }
     };

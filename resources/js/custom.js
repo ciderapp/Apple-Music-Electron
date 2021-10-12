@@ -184,8 +184,8 @@ try {
 
             GetLyrics: (mode ,mxmfail) => {
                 const musicKit = MusicKit.getInstance();
-                const trackName = encodeURIComponent(MusicKitInterop.getAttributes()["name"]);
-                const artistName = encodeURIComponent(MusicKitInterop.getAttributes()["artistName"]);
+                const trackName = encodeURIComponent((musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem.title ?? '': '');
+                const artistName = encodeURIComponent((musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem.artistName ?? '': '');
                 const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
                 const songID = (musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem["_songId"] ?? -1 : -1;
                 console.log('mxmon'+preferences.visual.mxmon);
@@ -201,6 +201,7 @@ try {
                                     const parser = new DOMParser();
                                     const doc = parser.parseFromString(ttmlLyrics, "text/xml");
                                     const lyricsLines = doc.getElementsByTagName('p');
+                                    var endtime = [0];
                                     for (let element of lyricsLines) {
                                         var rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)?(\.\d+)/);
                                         var hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
@@ -210,6 +211,21 @@ try {
                                         var seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
                                         var milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
                                         var lrcTime = minutes + seconds + milliseconds;
+                                        var rawTime2 = element.getAttribute('end').match(/(\d+:)?(\d+:)?(\d+)?(\.\d+)/);
+                                        var hours2 = (rawTime2[2] != null) ? (rawTime2[1].replace(":", "")) : "0";
+                                        var minutes2 = (rawTime2[2] != null) ? (hours2 * 60 + rawTime2[2].replace(":", "") * 1 + ":") : ((rawTime2[1] != null) ? rawTime2[1] : "00:");
+                                        var seconds2 = (rawTime2[3] != null) ? (rawTime2[3]) : "00";
+                                        var milliseconds2 = (rawTime2[4] != null) ? (rawTime2[4]) : ".000";
+                                        var lrcTime2 = minutes2 + seconds2 + milliseconds2;
+                                        if ( minutes.replace(":","") * 60 + seconds * 1  - endtime[endtime.length-1] > 10) {
+                                            var time = endtime[endtime.length-1];
+                                            var mins = Math.floor(time/60);
+                                            var secs = time - mins * 60;
+                                            lyrics = lyrics.concat(`[${mins}:${secs}]lrcInstrumental` + "\r\n");
+                                        };
+                                        endtime.push(minutes2.replace(":","") * 60 + seconds2 * 1);
+                                        console.log(lrcTime); 
+                                        console.log(lrcTime2);
                                         lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
                                     }
                                     console.log("AM lyrics:" + lyrics);

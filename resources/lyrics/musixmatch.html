@@ -61,9 +61,37 @@
 		lrcfile = jsonResponse["message"]["body"]["macro_calls"]["track.subtitles.get"]["message"]["body"]["subtitle_list"][0]["subtitle"]["subtitle_body"];
 		if (lrcfile == ""){
 			   ipcRenderer.send('LyricsMXMFailed','');
-		} else{ipcRenderer.send('LyricsHandlerNE',lrcfile);}
+		} else{
+			lrcfile = lrcfile.concat("\r\n"); 
+			var timearr = lrcfile.match(/\[([0-9]+):([0-9.]+)]/g);
+			timearr.unshift('[00:00.000]');
 			
-		} catch (e){}
+            for (i = 0; i < timearr.length -1 ; i++){
+				var rawTime = timearr[i+1].match(/(\d+:)?(\d+:)?(\d+)?(\.\d+)/);
+                var hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
+                var minutes =
+                    (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:")
+                ;
+                var seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
+                var milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
+                var lrcTime = minutes + seconds + milliseconds;
+                var rawTime2 = timearr[i].match(/(\d+:)?(\d+:)?(\d+)?(\.\d+)/);
+                var hours2 = (rawTime2[2] != null) ? (rawTime2[1].replace(":", "")) : "0";
+                var minutes2 = (rawTime2[2] != null) ? (hours2 * 60 + rawTime2[2].replace(":", "") * 1 + ":") : ((rawTime2[1] != null) ? rawTime2[1] : "00:");
+                var seconds2 = (rawTime2[3] != null) ? (rawTime2[3]) : "00";
+                var milliseconds2 = (rawTime2[4] != null) ? (rawTime2[4]) : ".000";
+                var lrcTime2 = minutes2 + seconds2 + milliseconds2;
+				console.log(minutes.replace(":","") * 60 + seconds * 1  - minutes2.replace(":","") * 60 - seconds2 * 1);
+                if ( minutes.replace(":","") * 60 + seconds * 1  - minutes2.replace(":","") * 60 - seconds2 * 1  > 10) {
+					var x = (i == 0) ? '00:00.000' : minutes2 + (seconds2*1+10) + milliseconds2 ;
+                    lrcfile = lrcfile.concat(`[${x}]lrcInstrumental` + "\r\n");
+                };
+			}
+			console.log(lrcfile);
+			ipcRenderer.send('LyricsHandlerNE',lrcfile);
+		}
+			
+		} catch (e){console.error(e);}
 		if (lrcfile!= "" && language_code != "disabled"){
 			console.log("no");
 			var url2  = "https://apic-desktop.musixmatch.com/ws/1.1/crowd.track.translations.get?translation_fields_set=minimal&selected_language="+language_code+"&track_id="+id+"&comment_format=text&part=user&format=json&usertoken="+usertoken+"&app_id=web-desktop-app-v1.0&t="+revisedRandId();			
@@ -92,10 +120,10 @@
 			if (token != "" && token != "UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly"){
 				u(track, artist, lang);
 			} else {
-				ipcRenderer.send('LyricsMXMFailed','');
+				
 			}
 		    }
-			 else {ipcRenderer.send('LyricsMXMFailed','');}
+			 else {}
 	        }
 		    req.send();
 			}	
