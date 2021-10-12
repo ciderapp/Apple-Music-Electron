@@ -55,11 +55,13 @@
         var jsonResponse = JSON.parse(this.responseText);
 		console.log(jsonResponse);
 		var status1 = jsonResponse["message"]["header"]["status_code"] ;
-		if (status1 != 401){     
-        var id = jsonResponse["message"]["body"]["macro_calls"]["matcher.track.get"]["message"]["body"]["track"]["track_id"];
+		if (status1 == 200){     
+        var id = '';
 		try{
-		lrcfile = jsonResponse["message"]["body"]["macro_calls"]["track.subtitles.get"]["message"]["body"]["subtitle_list"][0]["subtitle"]["subtitle_body"];
-		if (lrcfile == ""){
+	    if (jsonResponse["message"]["body"]["macro_calls"]["matcher.track.get"]["message"]["header"]["status_code"] == 200){
+		id = jsonResponse["message"]["body"]["macro_calls"]["matcher.track.get"]["message"]["body"]["track"]["track_id"] ?? '';
+		lrcfile = jsonResponse["message"]["body"]["macro_calls"]["track.subtitles.get"]["message"]["body"]["subtitle_list"][0]["subtitle"]["subtitle_body"];}
+		if (lrcfile == "" || id == ''){
 			   ipcRenderer.send('LyricsMXMFailed','');
 		} else{
 			lrcfile = lrcfile.concat("\r\n"); 
@@ -67,7 +69,7 @@
 			timearr.unshift('[00:00.000]');
 			
             for (i = 0; i < timearr.length -1 ; i++){
-				var rawTime = timearr[i+1].match(/(\d+:)?(\d+:)?(\d+)?(\.\d+)/);
+				var rawTime = timearr[i+1].match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
                 var hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
                 var minutes =
                     (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:")
@@ -75,7 +77,7 @@
                 var seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
                 var milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
                 var lrcTime = minutes + seconds + milliseconds;
-                var rawTime2 = timearr[i].match(/(\d+:)?(\d+:)?(\d+)?(\.\d+)/);
+                var rawTime2 = timearr[i].match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
                 var hours2 = (rawTime2[2] != null) ? (rawTime2[1].replace(":", "")) : "0";
                 var minutes2 = (rawTime2[2] != null) ? (hours2 * 60 + rawTime2[2].replace(":", "") * 1 + ":") : ((rawTime2[1] != null) ? rawTime2[1] : "00:");
                 var seconds2 = (rawTime2[3] != null) ? (rawTime2[3]) : "00";
@@ -83,16 +85,20 @@
                 var lrcTime2 = minutes2 + seconds2 + milliseconds2;
 				console.log(minutes.replace(":","") * 60 + seconds * 1  - minutes2.replace(":","") * 60 - seconds2 * 1);
                 if ( minutes.replace(":","") * 60 + seconds * 1  - minutes2.replace(":","") * 60 - seconds2 * 1  > 10) {
-					var x = (i == 0) ? '00:00.000' : minutes2 + (seconds2*1+10) + milliseconds2 ;
-                    lrcfile = lrcfile.concat(`[${x}]lrcInstrumental` + "\r\n");
+					console.log(minutes2 + (seconds2*1+10) + milliseconds2);
+					if (minutes2 + (seconds2*1+10) + milliseconds2 != '00:10.000'){
+                    lrcfile = lrcfile.concat(`[${minutes2 + (seconds2*1+10) + milliseconds2}]lrcInstrumental` + "\r\n");}
+					else {lrcfile = lrcfile.concat(`[00:00.00]lrcInstrumental` + "\r\n");}
                 };
 			}
 			console.log(lrcfile);
 			ipcRenderer.send('LyricsHandlerNE',lrcfile);
 		}
 			
-		} catch (e){console.error(e);}
-		if (lrcfile!= "" && language_code != "disabled"){
+		} catch (e){
+			ipcRenderer.send('LyricsMXMFailed','');
+			console.error(e);}
+		if (lrcfile!= "" && language_code != "disabled" && id != ''){
 			console.log("no");
 			var url2  = "https://apic-desktop.musixmatch.com/ws/1.1/crowd.track.translations.get?translation_fields_set=minimal&selected_language="+language_code+"&track_id="+id+"&comment_format=text&part=user&format=json&usertoken="+usertoken+"&app_id=web-desktop-app-v1.0&t="+revisedRandId();			
 			var req2 = new XMLHttpRequest();  
@@ -115,7 +121,7 @@
 			req3.onload  = function() {	
 			var jsonResponse = JSON.parse(this.responseText);
 			var status2 = jsonResponse3["message"]["header"]["status_code"] ;
-		    if (status2 != 401){
+		    if (status2 == 200){
 			token = jsonResponse3["message"]["body"]["user_token"] ?? '';
 			if (token != "" && token != "UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly"){
 				u(track, artist, lang);
@@ -139,7 +145,7 @@
 			req.onload  = function() {	
 			var jsonResponse = JSON.parse(this.responseText);
 			var status2 = jsonResponse["message"]["header"]["status_code"] ;
-		    if (status2 != 401){
+		    if (status2 == 200){
 			token = jsonResponse["message"]["body"]["user_token"] ?? '';
 			if (token != "" && token != "UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly"){
 				u(track, artist, lang);
@@ -148,7 +154,7 @@
 			}
 		    } else {ipcRenderer.send('LyricsMXMFailed','');}
 	        }
-		    req.send();window.close();}
+		    req.send();}
 		};
 		req.send();
 		}catch(e){
@@ -162,7 +168,7 @@
 			req.onload  = function() {	
 			var jsonResponse = JSON.parse(this.responseText);
 			var status2 = jsonResponse["message"]["header"]["status_code"] ;
-		    if (status2 != 401){
+		    if (status2 == 200){
 			token = jsonResponse["message"]["body"]["user_token"] ?? '';
 			if (token != "" && token != "UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly"){
 				u(track, artist, lang);
@@ -190,7 +196,7 @@
         req.onload  = function() {	
         var jsonResponse = JSON.parse(this.responseText);
 		var status2 = jsonResponse["message"]["header"]["status_code"] ;
-		if (status2 != 401){
+		if (status2 == 200){
 	    token = jsonResponse["message"]["body"]["user_token"] ?? '';
 			if (token != "" && token != "UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly"){
 				u(track, artist, lang);
