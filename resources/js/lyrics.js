@@ -120,7 +120,8 @@
         let line = "";
         for (i = 0; i < this.lrc.length; i++) {
             endTime = parseFloat(this.lrc[i].startTime);
-            if (!this.rangeLrc.includes({"startTime": startTime, "endTime": endTime, "line": line})){
+            if (startTime == 10 && line == 'lrcInstrumental') startTime=0; 
+            if (!this.rangeLrc.includes({"startTime": startTime, "endTime": endTime, "line": line})){               
             this.rangeLrc.push({"startTime": startTime, "endTime": endTime, "line": line});} else {console.log('blocked');}
             startTime = endTime;
             line = this.lrc[i].line;
