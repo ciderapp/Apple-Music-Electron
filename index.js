@@ -27,7 +27,6 @@ function CreateWindow() {
 
     if (process.platform === 'win32' && app.transparency) { app.win.show() } // Show the window so SetThumbarButtons doesnt break
     app.ame.win.SetButtons() // Set Inactive Thumbnail Toolbar Icons or TouchBar
-    app.ame.win.SetApplicationMenu() // Sets the Application Menu for Windows
 }
 
 // When its Ready call it all

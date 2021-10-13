@@ -7,53 +7,6 @@ initAnalytics();
 
 module.exports = {
 
-    SetApplicationMenu: () => {
-        if (process.platform !== "darwin") return;
-        Menu.setApplicationMenu(Menu.buildFromTemplate([
-            {
-                label: app.getName(),
-                submenu: [
-                    {
-                        label: 'Show Preferences',
-                        accelerator: 'CommandOrControl+Alt+S',
-                        click() {
-                            app.preferences.show()
-                        }
-                    }
-                ]
-            },
-            {
-                label: 'Support',
-                submenu: [
-                    {
-                        label: 'Discord',
-                        click() {
-                            require("shell").openExternal("https://discord.gg/CezHYdXHEM")
-                        }
-                    },
-                    {
-                        label: 'GitHub Wiki',
-                        click() {
-                            require("shell").openExternal("https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki")
-                        }
-                    }
-                ]
-            },
-            {
-                label: 'Development',
-                submenu: [
-                    {
-                        label: 'Open Dev Tools',
-                        accelerator: 'CommandOrControl+Shift+I',
-                        click() {
-                            app.win.webContents.openDevTools()
-                        }
-                    }
-                ]
-            }
-        ]));
-    },
-
     SetContextMenu: (visibility) => {
 
         if (visibility) {
@@ -195,7 +148,7 @@ module.exports = {
             })
 
             const trackInfo = new TouchBarLabel({
-                label: app.media ? `${app.media.name} by ${app.media.artistName}` : `Nothing is Playing`
+                label: app.media.name ? `${app.media.name} by ${app.media.artistName}` : `Nothing is Playing`
             })
 
             const touchBar = new TouchBar({
