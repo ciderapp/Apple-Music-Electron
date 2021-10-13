@@ -352,6 +352,7 @@ span.app-prefs-title {
     height: 22px;
     width: 22px;
     background-color: transparent;
+    cursor: pointer;
 }
 
 /* Lyrics CSS */

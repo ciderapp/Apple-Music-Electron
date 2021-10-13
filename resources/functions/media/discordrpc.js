@@ -1,7 +1,7 @@
-const {app} = require('electron')
-const DiscordRPC = require('discord-rpc');
-const SentryInit = require("../init").SentryInit;
-SentryInit()
+const {app} = require('electron'),
+    DiscordRPC = require('discord-rpc'),
+    {initAnalytics} = require('../utils');
+initAnalytics();
 
 module.exports = {
     connect: function (clientId) {

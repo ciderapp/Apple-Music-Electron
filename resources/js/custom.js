@@ -1,16 +1,29 @@
 try {
-    const preferences = ipcRenderer.sendSync('getPreferences');
+
     function GetXPath(path) {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     }
+
     function matchRuleShort(str, rule) {
         var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
         return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
     }
+
     if (typeof activeEventListeners == "undefined") {
         var activeEventListeners = {}
     }
 
+    if (typeof preferences == "undefined") {
+        var preferences = ipcRenderer.sendSync('getPreferences');
+    }
+
+    /* Variables that are utilised by the renderer */
+    if (typeof AM == "undefined") {
+        var AM = {
+            acrylicSupported: false,
+            themesListing: [],
+        }
+    }
 
     /* Create the miniPlayer Functions */
     if (typeof _miniPlayer == "undefined") {
@@ -76,8 +89,8 @@ try {
                     mediaControlsElement.insertBefore(lyricsButton, mediaControlsElement.childNodes[4]);
                 }
 
-                /* Lyrics Button Click Event Handling */ 
-                const upNextSideBarTogglePath =  (preferences.visual.frameType === 'mac' ? '/html/body/div[4]/div/div[3]/div/div[3]/div[3]/button' : '/html/body/div[4]/div[3]/div[3]/div/div[3]/div[3]/button');
+                /* Lyrics Button Click Event Handling */
+                const upNextSideBarTogglePath = (preferences.visual.frameType === 'mac' ? '/html/body/div[4]/div/div[3]/div/div[3]/div[3]/button' : '/html/body/div[4]/div[3]/div[3]/div/div[3]/div[3]/button');
                 const upNextSideBarToggle = mediaControlsElement.childNodes[5].getElementsByTagName('button')[0];
                 if (document.querySelector("#lyricsButton") && upNextSideBarToggle) {
 
@@ -98,8 +111,8 @@ try {
                         document.querySelector('#lyricsButton').style.boxShadow = 'none';
                         document.querySelector('#lyricsButton').style.background = '0 0';
                     }
-                    
-                    if (preferences.visual.frameType === 'mac'){
+
+                    if (preferences.visual.frameType === 'mac') {
                         clonedElement = document.querySelector('#lyricsButton').cloneNode(true);
                         document.querySelector('#lyricsButton').replaceWith(clonedElement);
                     }
@@ -145,14 +158,14 @@ try {
                                 } else {
                                     lrc.setLrc(lrcfile);
                                 }
-                                
+
                             });
                             ipcRenderer.on('lyricstranslation', function (event, data) {
                                 console.log(data);
-                                lrc.setMXMTranslation(data);                               
+                                lrc.setMXMTranslation(data);
                             });
-                            ipcRenderer.on('backuplyrics', function (event, data) {
-                                _lyrics.GetLyrics(1,true);                            
+                            ipcRenderer.on('backuplyrics', function (_event, _data) {
+                                _lyrics.GetLyrics(1, true);
                             });
                             ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
                                 if (data < 0) {
@@ -169,7 +182,7 @@ try {
                                 document.body.setAttribute("background-color", `var(--systemToolbarTitlebarMaterialSover-inactive)`);
                             });
 
-                            _lyrics.GetLyrics(2,false);
+                            _lyrics.GetLyrics(2, false);
                         }
                     }, false);
 
@@ -184,67 +197,71 @@ try {
                 }
             },
 
-            GetLyrics: (mode ,mxmfail) => {
+            GetLyrics: (mode, mxmfail) => {
                 const musicKit = MusicKit.getInstance();
-                const trackName = encodeURIComponent((musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem.title ?? '': '');
-                const artistName = encodeURIComponent((musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem.artistName ?? '': '');
+                const trackName = encodeURIComponent((musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem.title ?? '' : '');
+                const artistName = encodeURIComponent((musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem.artistName ?? '' : '');
                 const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
                 const songID = (musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem["_songId"] ?? -1 : -1;
-                console.log('mxmon'+preferences.visual.mxmon);
-                console.log('mxmon'+preferences.visual.mxmon);
-                if(!mxmfail && preferences.visual.mxmon[0] == true){
+                console.log('mxmon' + preferences.visual.mxmon);
+                console.log('mxmon' + preferences.visual.mxmon);
+                if (!mxmfail && preferences.visual.mxmon[0] == true) {
                     /* get MXM lyrics and translation */
-                    ipcRenderer.send('MXMTranslation', trackName , artistName, preferences.visual.mxmlanguage );
+                    ipcRenderer.send('MXMTranslation', trackName, artistName, preferences.visual.mxmlanguage);
                 } else if (songID !== -1) {
-                        MusicKit.getInstance().api.lyric(songID)
-                            .then(function (response) {
-                                    try{
+                    MusicKit.getInstance().api.lyric(songID)
+                        .then(function (response) {
+                            let seconds,
+                                minutes,
+                                hours,
+                                rawTime,
+                                milliseconds,
+                                lrcTime;
+
+                            try {
                                     const ttmlLyrics = response["ttml"];
                                     let lyrics = "";
                                     const parser = new DOMParser();
                                     const doc = parser.parseFromString(ttmlLyrics, "text/xml");
                                     const lyricsLines = doc.getElementsByTagName('p');
-                                    var endtime = [0];
-                                    try{
-                                    for (let element of lyricsLines) {
-                                        var rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
-                                        var hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
-                                        var minutes =
-                                            (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:")
-                                        ;
-                                        var seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
-                                        var milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
-                                        var lrcTime = minutes + seconds + milliseconds;
-                                        var rawTime2 = element.getAttribute('end').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
-                                        var hours2 = (rawTime2[2] != null) ? (rawTime2[1].replace(":", "")) : "0";
-                                        var minutes2 = (rawTime2[2] != null) ? (hours2 * 60 + rawTime2[2].replace(":", "") * 1 + ":") : ((rawTime2[1] != null) ? rawTime2[1] : "00:");
-                                        var seconds2 = (rawTime2[3] != null) ? (rawTime2[3]) : "00";
-                                        var milliseconds2 = (rawTime2[4] != null) ? (rawTime2[4]) : ".000";
-                                        var lrcTime2 = minutes2 + seconds2 + milliseconds2;
-                                        if ( minutes.replace(":","") * 60 + seconds * 1  - endtime[endtime.length-1] > 10) {
-                                            var time = endtime[endtime.length-1];
-                                            var mins = Math.floor(time/60);
-                                            var secs = time - mins * 60;
-                                            lyrics = lyrics.concat(`[${mins}:${secs}]lrcInstrumental` + "\r\n");
-                                        };
-                                        endtime.push(minutes2.replace(":","") * 60 + seconds2 * 1);
-                                        lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
-                                    }} catch{
+                                    const endTime = [0];
+                                    try {
+                                        for (let element of lyricsLines) {
+                                            rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
+                                            hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
+                                            minutes = (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:");
+                                            seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
+                                            milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
+                                            lrcTime = minutes + seconds + milliseconds;
+                                            const rawTime2 = element.getAttribute('end').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
+                                            const hours2 = (rawTime2[2] != null) ? (rawTime2[1].replace(":", "")) : "0";
+                                            const minutes2 = (rawTime2[2] != null) ? (hours2 * 60 + rawTime2[2].replace(":", "") * 1 + ":") : ((rawTime2[1] != null) ? rawTime2[1] : "00:");
+                                            const seconds2 = (rawTime2[3] != null) ? (rawTime2[3]) : "00";
+                                            const milliseconds2 = (rawTime2[4] != null) ? (rawTime2[4]) : ".000";
+                                            const lrcTime2 = minutes2 + seconds2 + milliseconds2;
+                                            if (minutes.replace(":", "") * 60 + seconds * 1 - endTime[endTime.length - 1] > 10) {
+                                                const time = endTime[endTime.length - 1];
+                                                const minutes = Math.floor(time / 60);
+                                                const secs = time - minutes * 60;
+                                                lyrics = lyrics.concat(`[${minutes}:${secs}]lrcInstrumental` + "\r\n");
+                                            }
+                                            endTime.push(minutes2.replace(":", "") * 60 + seconds2 * 1);
+                                            lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
+                                        }
+                                    } catch {
                                         lyrics = "";
                                         for (let element of lyricsLines) {
-                                            var rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
-                                            var hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
-                                            var minutes =
-                                                (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:")
-                                            ;
-                                            var seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
-                                            var milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
-                                            var lrcTime = minutes + seconds + milliseconds;
+                                            rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
+                                            hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
+                                            minutes = (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:");
+                                            seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
+                                            milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
+                                            lrcTime = minutes + seconds + milliseconds;
                                             lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
                                         }
                                     }
                                     console.log("AM lyrics:" + lyrics);
-                                    let artworkURL = ((musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem.artworkURL: '').replace("{w}", 256).replace("{h}", 256);
+                                    let artworkURL = ((musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem.artworkURL : '').replace("{w}", 256).replace("{h}", 256);
                                     if (artworkURL == null) {
                                         artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
                                     }
@@ -253,51 +270,52 @@ try {
                                     } else {
                                         console.log(lyrics);
                                         ipcRenderer.send('LyricsHandler', lyrics, artworkURL);
-                                    }} catch(e){
-                                        console.error(e);
-                                        if (mode === 1) {
-                                            ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
-                                        } else {
-                                            ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
-                                        }
+                                    }
+                                } catch (e) {
+                                    console.error(e);
+                                    if (mode === 1) {
+                                        ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
+                                    } else {
+                                        ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
                                     }
                                 }
-                            ).catch((_error) => {
-                                console.log(_error);
-                                let artworkURL = (MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256);
-                                if (artworkURL == null) {
-                                    artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
-                                }
-                                if (mode === 1) {
-                                    ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
-                                } else {
-                                    ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
-                                }
                             }
-                        );
-
-                    } else {
-                        console.log('yo');
-                        try {
-                            MusicKit.getInstance().api.library.song(MusicKit.getInstance().nowPlayingItem.id).then((data) => {
-                                if (data != null && data !== "") {
-                                    artworkURL = data["artwork"]["url"];
-                                } else {
-                                    artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
-                                }
-                                if (mode === 1) {
-                                    ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
-                                } else {
-                                    ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
-                                }
-                            });
-                        } catch (e) {
-                            console.error(e)
+                        ).catch((_error) => {
+                            console.log(_error);
+                            let artworkURL = (MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256);
+                            if (artworkURL == null) {
+                                artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
+                            }
+                            if (mode === 1) {
+                                ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
+                            } else {
+                                ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
+                            }
                         }
+                    );
+
+                } else {
+                    console.log('yo');
+                    try {
+                        MusicKit.getInstance().api.library.song(MusicKit.getInstance().nowPlayingItem.id).then((data) => {
+                            if (data != null && data !== "") {
+                                artworkURL = data["artwork"]["url"];
+                            } else {
+                                artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
+                            }
+                            if (mode === 1) {
+                                ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
+                            } else {
+                                ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
+                            }
+                        });
+                    } catch (e) {
+                        console.error(e)
                     }
                 }
             }
-        
+        }
+
     }
 
     /* Create the AMThemes Functions */
@@ -390,8 +408,8 @@ try {
                 const preferences = ipcRenderer.sendSync('getPreferences');
 
                 /** Plugins */
-                if(typeof _plugins != "undefined") {
-                    Object.keys(preferences.availablePlugins).forEach((plugin)=>{
+                if (typeof _plugins != "undefined") {
+                    Object.keys(preferences.availablePlugins).forEach((plugin) => {
                         _plugins.loadPlugin(plugin);
                     });
                 }
@@ -452,7 +470,7 @@ try {
                     } catch (e) {
                         console.error(e)
                     }
-                    _lyrics.GetLyrics(1,false);
+                    _lyrics.GetLyrics(1, false);
                 });
 
                 /* Mutation Observer to disable "seek error" alert */
@@ -479,6 +497,17 @@ try {
                 if (preferences["visual"]["transparencyEffect"] !== "") {
                     AMThemes.setTransparency(true);
                 }
+
+
+                ipcRenderer.send('updateThemesListing');
+                ipcRenderer.on('updatedThemesListing', (event, listing) => {
+                    AM.themesListing = listing;
+                });
+
+                ipcRenderer.send('isAcrylicSupported');
+                ipcRenderer.on('acrylicSupport', (event, supported) => {
+                    AM.acrylicSupported = supported;
+                });
 
             },
 
@@ -543,16 +572,16 @@ try {
                         };
                         ul.insertBefore(amDiscord, ul.childNodes[4]);
 
-                        if(typeof _plugins != "undefined") {
+                        if (typeof _plugins != "undefined") {
                             /** Plugin menu items */
-                            _plugins.menuitems.forEach((item)=>{
+                            _plugins.menuitems.forEach((item) => {
                                 var element = document.createElement("li");
                                 var textSpan = document.createElement("span");
                                 textSpan.classList.add("context-menu__option-text");
                                 element.appendChild(textSpan);
                                 textSpan.innerHTML = item.Text;
                                 element.addEventListener("click", item.OnClick);
-                                element.addEventListener("click", ()=>{
+                                element.addEventListener("click", () => {
                                     document.querySelector(".context-menu-outside-click-area").dispatchEvent(new Event("click"));
                                 });
                                 element.classList.add("context-menu__option");
@@ -571,6 +600,7 @@ try {
                         }
                         return event.deltaY < 0;
                     }
+
                     function volumeChange(event) {
                         if (checkScrollDirectionIsUp(event)) {
                             if (MusicKit.getInstance().volume <= 1) {
@@ -590,6 +620,7 @@ try {
                             }
                         }
                     }
+
                     document.getElementsByClassName('web-chrome-playback-lcd__volume')[0].addEventListener('wheel', volumeChange);
                     activeEventListeners['web-chrome-playback-lcd__volume'] = true
                 }
@@ -661,6 +692,134 @@ try {
 
         /* Load the Startup Files as This is the First Time its been Run */
         AMJavaScript.LoadCustomStartup();
+    }
+
+    /* Functions used in Settings Page */
+    if (typeof AMSettings == "undefined") {
+        var AMSettings = {
+            revealCollapse: () => {
+                const elem = document.querySelector('#advanced');
+                if (elem.classList.contains('revealed')) {
+                    /* Collapse Category */
+                    elem.classList.remove('revealed');
+                    document.querySelector('.header-nav-image').src = 'ameres://icons/webui/down.svg';
+                } else {
+                    /* Reveal the Category */
+                    elem.classList.add('revealed');
+                    document.querySelector('.header-nav-image').src = 'ameres://icons/webui/up.svg';
+                }
+            },
+
+            lastfm: {
+                LastFMDeauthorize: () => {
+                    preferences.general.lastfmAuthKey = 'Put your Auth Key here.';
+                    preferences.general.lastfmEnabled = [];
+                    ipcRenderer.sendSync('setPreferences', preferences);
+                    const element = document.getElementById('lfmConnect');
+                    element.innerHTML = 'Connect';
+                    element.onclick = AMSettings.lastfm.LastFMAuthenticate;
+                },
+                LastFMAuthenticate: () => {
+                    const element = document.getElementById('lfmConnect');
+                    window.open('https://www.last.fm/api/auth?api_key=174905d201451602407b428a86e8344d&cb=ame://auth/lastfm');
+                    element.innerText = 'Connecting...';
+
+                    /* Just a timeout for the button */
+                    setTimeout(() => {
+                        if (element.innerText === 'Connecting...') {
+                            element.innerText = 'Connect';
+                            console.warn('[LastFM] Attempted connection timed out.');
+                        }
+                    }, 20000);
+
+                    ipcRenderer.on('LastfmAuthenticated', function (_event, lfmAuthKey) {
+                        preferences.general.lastfmEnabled = [true];
+                        preferences.general.lastfmAuthKey = lfmAuthKey;
+                        element.innerHTML = `Disconnect\n<p style="font-size: 8px"><i>(Authed: ${lfmAuthKey})</i></p>`;
+                        element.onclick = AMSettings.lastfm.LastFMDeauthorize;
+                        ipcRenderer.sendSync('setPreferences', preferences);
+                    });
+                }
+            },
+
+            themes: {
+                updateThemesListing: (listing) => {
+                    let themesListingHTML = `<option disabled>Select one</option>\n<option value='default'>Default</option>`;
+                    for (const [fileName, theme] of Object.entries(listing)) {
+                        themesListingHTML = themesListingHTML + `\n<option value="${fileName}">${theme.name}</option>`;
+                    }
+                    document.getElementById('theme').innerHTML = themesListingHTML;
+                    console.info('[updateThemes] Themes Listing Updated!');
+                },
+                updateThemes: () => {
+                    ipcRenderer.send('updateThemes');
+                    document.getElementById('updateThemes').innerText = 'Updating...';
+                    ipcRenderer.on('themesUpdated', (_event, themesListing) => {
+                        document.getElementById('updateThemes').innerText = (themesListing ? 'Themes Updated' : 'Error');
+                        console.log(themesListing);
+                        if (!themesListing) return;
+                        AMSettings.themes.updateThemesListing(themesListing);
+                    });
+                }
+            },
+
+            hasParentClass: (child, classname) => {
+                if (child.className.split(' ').indexOf(classname) >= 0) return true;
+                try {
+                    return child.parentNode && AMSettings.hasParentClass(child.parentNode, classname);
+                } catch (TypeError) {
+                    return false;
+                }
+            },
+            HandleField: (element) => {
+                const field = document.getElementById(element);
+                if (!field) return 'Element Not Found';
+
+                let fieldCategory, fieldCategoryTitle;
+                if (AMSettings.hasParentClass(field, 'general')) {
+                    fieldCategory = preferences.general;
+                    fieldCategoryTitle = 'general';
+                } else if (AMSettings.hasParentClass(field, 'visual')) {
+                    fieldCategory = preferences.visual;
+                    fieldCategoryTitle = 'visual';
+                } else if (AMSettings.hasParentClass(field, 'audio')) {
+                    fieldCategory = preferences.audio;
+                    fieldCategoryTitle = 'audio';
+                } else if (AMSettings.hasParentClass(field, 'window')) {
+                    fieldCategory = preferences.window;
+                    fieldCategoryTitle = 'window';
+                } else if (AMSettings.hasParentClass(field, 'advanced')) {
+                    fieldCategory = preferences.advanced;
+                    fieldCategoryTitle = 'advanced';
+                } else {
+                    console.error('[HandleField] No Parent Category Found.');
+                    return 'No Parent Category Found';
+                }
+
+                if (AMSettings.hasParentClass(field, 'toggle-element')) {
+                    /* Toggles */
+                    field.checked = fieldCategory[element].includes(true);
+                    field.addEventListener('change', (event) => {
+                        fieldCategory[element] = (event.target.checked ? [true] : []);
+                        ipcRenderer.sendSync('setPreferences', preferences);
+                    });
+                    console.warn(`[HandleField] Event listener created for ${fieldCategoryTitle}.${element}`)
+                } else if (field.classList.contains('form-dropdown-select')) {
+                    /* Dropdowns */
+                    field.value = fieldCategory[element];
+                    field.addEventListener('change', (event) => {
+                        fieldCategory[element] = event.target.value;
+                        ipcRenderer.sendSync('setPreferences', preferences);
+                    });
+                    console.warn(`[HandleField] Event listener created for ${fieldCategoryTitle}.${element}`)
+                } else if (field.id === "lfmConnect") {
+                    if (preferences.general.lastfmAuthKey !== 'Put your Auth Key here.' && preferences.general.lastfmAuthKey) {
+                        field.innerHTML = `Disconnect\n<p style="font-size: 8px"><i>(Authed: ${preferences.general.lastfmAuthKey})</i></p>`;
+                        field.onclick = AMSettings.lastfm.LastFMDeauthorize;
+                    }
+                }
+            }
+        }
     }
 
 } catch (e) {
