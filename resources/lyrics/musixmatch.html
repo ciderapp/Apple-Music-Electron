@@ -145,8 +145,9 @@
 					try{  
 					var lyrics = jsonResponse2["message"]["body"]["translations_list"];
 					console.log(lyrics);
-					ipcRenderer.send('LyricsHandlerTranslation',lyrics);}
-					catch(e){
+					if (lyrics.length > 0) {
+						ipcRenderer.send('LyricsHandlerTranslation',lyrics);}
+				    }catch(e){
 				      /// not found trans -> ignore		
 					}
 				} else { //4xx rejected
