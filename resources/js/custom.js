@@ -477,7 +477,6 @@ try {
                         lrc.setLrc("");
                         lrc = null;
                     } catch (e) {
-                        console.error(e)
                     }
 
                     const sidebar = document.querySelector('.web-chrome-drawer');
