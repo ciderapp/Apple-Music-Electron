@@ -337,7 +337,12 @@ try {
                 Theme: new CSSStyleSheet(),
                 Meta: new CSSStyleSheet(),
             },
+            lastTheme: "",
             loadTheme(path = "") {
+                if(path == this.lastTheme) {
+                    return;
+                }
+                this.lastTheme = path;
                 console.warn("[Custom] Applied Theme");
                 let self = this;
                 if (path === "" || path === " ") {

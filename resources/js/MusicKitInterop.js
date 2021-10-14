@@ -5,7 +5,6 @@ let cache = {playParams: {id: 0}, status: null, remainingTime: 0},
     playbackCache = {status: null, time: Date.now()};
 
 const MusicKitInterop = {
-
     init: function () {
         MusicKit.getInstance().addEventListener(MusicKit.Events.playbackStateDidChange, () => {
             if (MusicKitInterop.filterTrack(MusicKitInterop.getAttributes(), true, false)) {
@@ -13,6 +12,17 @@ const MusicKitInterop = {
                 if(typeof _plugins != "undefined") {
                     _plugins.execute("OnPlaybackStateChanged", {Attributes: MusicKitInterop.getAttributes()})
                 }
+                var nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
+                if(typeof nowPlayingItem != "undefined") {
+                    if(nowPlayingItem["type"] == "musicVideo") {
+                        AMThemes.loadTheme();
+                    }else
+                    {
+                        AMThemes.loadTheme(preferences.visual.theme);
+                    }
+                }
+            }else{
+                AMThemes.loadTheme(preferences.visual.theme);
             }
         });
 
