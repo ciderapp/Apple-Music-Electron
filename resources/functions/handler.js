@@ -1,40 +1,10 @@
-const {
-    app,
-    Menu,
-    ipcMain,
-    shell,
-    dialog,
-    Notification,
-    BrowserWindow,
-    SystemPreferences,
-    systemPreferences
-} = require('electron')
-const SentryInit = require("./init").SentryInit;
-SentryInit()
-const {
-    LoadOneTimeFiles,
-    LoadFiles
-} = require('./load');
-const {
-    join,
-    resolve
-} = require('path');
-const {
-    readFile,
-    existsSync,
-    truncate
-} = require('fs');
-const rimraf = require('rimraf');
-app.currentPlaybackActivity = false
-
-function hexToRgb(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
-}
+const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences} = require('electron'),
+    {LoadOneTimeFiles, LoadFiles} = require('./load'),
+    {join, resolve} = require('path'),
+    {readFile, existsSync, truncate} = require('fs'),
+    rimraf = require('rimraf'),
+    {initAnalytics} = require('./utils');
+initAnalytics();
 
 const handler = {
 
@@ -61,24 +31,24 @@ const handler = {
             console.log("[Apple-Music-Electron] User has closed the application via --force-quit");
             app.quit()
         }
-    },
 
-    LaunchHandlerPostWin: function () {
-        // Detect if the application has been opened with --minimized
-        if (app.commandLine.hasSwitch('minimized') || process.argv.includes('--minimized')) {
-            console.log("[Apple-Music-Electron] Application opened with '--minimized'");
-            if (typeof app.win.minimize === 'function') {
-                app.win.minimize();
+        app.on('browser-window-created', (_event, _window) => {
+            // Detect if the application has been opened with --minimized
+            if (app.commandLine.hasSwitch('minimized') || process.argv.includes('--minimized')) {
+                console.log("[Apple-Music-Electron] Application opened with '--minimized'");
+                if (typeof app.win.minimize === 'function') {
+                    app.win.minimize();
+                }
             }
-        }
 
-        // Detect if the application has been opened with --hidden
-        if (app.commandLine.hasSwitch('hidden') || process.argv.includes('--hidden')) {
-            console.log("[Apple-Music-Electron] Application opened with '--hidden'");
-            if (typeof app.win.hide === 'function') {
-                app.win.hide()
+            // Detect if the application has been opened with --hidden
+            if (app.commandLine.hasSwitch('hidden') || process.argv.includes('--hidden')) {
+                console.log("[Apple-Music-Electron] Application opened with '--hidden'");
+                if (typeof app.win.hide === 'function') {
+                    app.win.hide()
+                }
             }
-        }
+        });
     },
 
     VersionHandler: function () {
@@ -100,12 +70,15 @@ const handler = {
                 });
             }
         }
+
+        if (app.preferences.value('storedVersion') !== app.getVersion()) {
+            console.verbose(`[ApplicationReady] Updating Stored Version to ${app.getVersion()} (Was ${app.preferences.value('storedVersion')}).`);
+            app.preferences.value('storedVersion', app.getVersion())
+        }
     },
 
     InstanceHandler: function () {
         console.verbose('[InstanceHandler] Started.')
-        const gotTheLock = app.requestSingleInstanceLock();
-        let returnVal = false
 
         app.on('second-instance', (_e, argv) => {
             console.warn(`[InstanceHandler][SecondInstanceHandler] Second Instance Started with args: [${argv.join(', ')}]`)
@@ -120,8 +93,8 @@ const handler = {
 
             if (argv.includes("--force-quit")) {
                 console.warn('[InstanceHandler][SecondInstanceHandler] Force Quit found. Quitting App.');
+                app.isQuiting = true
                 app.quit()
-                returnVal = true
             } else if (app.win && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) { // If a Second Instance has Been Started
                 console.warn('[InstanceHandler][SecondInstanceHandler] Showing window.');
                 app.win.show()
@@ -129,13 +102,11 @@ const handler = {
             }
         })
 
-        if (!gotTheLock && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) {
+        if (!app.requestSingleInstanceLock() && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) {
             console.warn("[InstanceHandler] Existing Instance is Blocking Second Instance.");
             app.quit();
-            return true
+            app.isQuiting = true
         }
-
-        return returnVal
     },
 
     PlaybackStateHandler: function () {
@@ -143,13 +114,13 @@ const handler = {
 
         ipcMain.on('playbackStateDidChange', (_event, a) => {
             console.warn('[handler] playbackStateDidChange received.');
-            app.currentPlaybackActivity = a;
+            app.media = a;
 
-            app.funcs.SetButtons()
-            app.funcs.SetTrayTooltip(a)
-            app.funcs.discord.updateActivity(a)
-            app.funcs.lastfm.scrobbleSong(a)
-            app.funcs.mpris.updateState(a)
+            app.ame.win.SetButtons()
+            app.ame.win.SetTrayTooltip(a)
+            app.ame.discord.updateActivity(a)
+            app.ame.lastfm.scrobbleSong(a)
+            app.ame.mpris.updateState(a)
         });
     },
 
@@ -158,17 +129,17 @@ const handler = {
 
         ipcMain.on('nowPlayingItemDidChange', (_event, a) => {
             console.warn('[handler] mediaItemStateDidChange received.');
-            app.currentPlaybackActivity = a;
+            app.media = a;
 
-            app.funcs.CreateNotification(a)
-            app.funcs.mpris.updateActivity(a);
+            app.ame.win.CreateNotification(a);
+            app.ame.mpris.updateActivity(a);
 
             if (app.preferences.value('audio.gaplessEnabled').includes(true)) {
-                app.funcs.SetButtons()
-                app.funcs.SetTrayTooltip(a)
-                app.funcs.discord.updateActivity(a)
-                app.funcs.lastfm.scrobbleSong(a)
-                app.funcs.mpris.updateState(a)
+                app.ame.win.SetButtons()
+                app.ame.win.SetTrayTooltip(a)
+                app.ame.discord.updateActivity(a)
+                app.ame.lastfm.scrobbleSong(a)
+                app.ame.mpris.updateState(a)
             }
         });
     },
@@ -177,9 +148,7 @@ const handler = {
         console.verbose('[WindowStateHandler] Started.');
         app.previousPage = app.win.webContents.getURL()
 
-        app.win.webContents.setWindowOpenHandler(({
-            url
-        }) => {
+        app.win.webContents.setWindowOpenHandler(({url}) => {
             shell.openExternal(url).then(() => console.log(`[WindowStateHandler] User has opened ${url} which has been redirected to browser.`));
             return {
                 action: 'deny'
@@ -244,10 +213,8 @@ const handler = {
                 const state = wndState;
                 if (isMinimized && state !== WND_STATE.MINIMIZED) {
                     wndState = WND_STATE.MINIMIZED
-                    // 
                 } else if (isFullScreen && state !== WND_STATE.FULL_SCREEN) {
                     wndState = WND_STATE.FULL_SCREEN
-                    // 
                 } else if (isMaximized && state !== WND_STATE.MAXIMIZED) {
                     wndState = WND_STATE.MAXIMIZED
                     app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.add("maxed")`)
@@ -258,18 +225,172 @@ const handler = {
             })
         }
 
+        app.win.on('close', (event) => {
+
+            if (!app.isQuiting || process.platform === "darwin") {
+                event.preventDefault();
+                if (typeof app.win.hide === 'function') {
+                    app.win.hide();
+                }
+            } else {
+                event.preventDefault();
+                if (typeof app.win.destroy === 'function') {
+                    app.win.destroy();
+                }
+            }
+
+        });
+
+        app.win.on('show', () => {
+            app.ame.win.SetContextMenu(true)
+            app.ame.win.SetButtons()
+            if (app.win.isVisible()) {
+                app.win.focus()
+            }
+            // if (app.win.StoredWebsite) app.win.loadURL(app.win.StoredWebsite)
+        });
+
+        app.win.on('hide', () => {
+            app.ame.win.SetContextMenu(false)
+            if (app.pluginsEnabled) {
+                app.win.webContents.executeJavaScript(`_plugins.execute('OnHide')`)
+            }
+            // app.win.StoredWebsite = app.win.webContents.getURL();
+        });
+
+        // For macOS Link Handling
+        app.on('open-url', function (event, url) {
+            event.preventDefault()
+            if (url.includes('ame://') || url.includes('itms://') || url.includes('itmss://') || url.includes('musics://') || url.includes('music://')) {
+                handler.LinkHandler(url)
+            }
+        })
+
+    },
+
+    SettingsHandler: function () {
+        console.verbose('[SettingsHandler] Started.');
+        let DialogMessage = false,
+            cachedPreferences = app.preferences._preferences,
+            storedChanges = [];
+
+        if (app.preferences.value('visual.useOperatingSystemAccent').includes(true)) {
+            systemPreferences.on('accent-color-changed', (event, color) => {
+                if (color) {
+                    const accent = '#' + color.slice(0, -2)
+                    app.win.webContents.insertCSS(`
+                :root {
+                    --keyColor: ${accent} !important;
+                    --systemAccentBG: ${accent} !important;
+                    --keyColor-rgb: ${app.ame.utils.hexToRgb(accent).r} ${app.ame.utils.hexToRgb(accent).g} ${app.ame.utils.hexToRgb(accent).b} !important;
+                }
+            }
+            `).catch((e) => console.error(e));
+                }
+            })
+        }
+
+
+        app.preferences.on('save', (updatedPreferences) => {
+            let currentChanges = []
+
+            for (const [categoryTitle, categoryContents] of Object.entries(updatedPreferences)) {
+                if (categoryContents !== cachedPreferences[categoryTitle]) { // This has gotten the changed category
+                    for (const [settingTitle, settingValue] of Object.entries(updatedPreferences[categoryTitle])) {
+                        if (JSON.stringify(settingValue) !== JSON.stringify(cachedPreferences[categoryTitle][settingTitle])) {
+                            currentChanges.push(`${categoryTitle}.${settingTitle}`)
+                            if (!storedChanges.includes(`${categoryTitle}.${settingTitle}`)) {
+                                storedChanges.push(`${categoryTitle}.${settingTitle}`)
+                            }
+                        }
+                    }
+                }
+            }
+
+            console.verbose(`[SettingsHandler] Found changes: ${currentChanges} | Total Changes: ${storedChanges}`);
+
+            // Theme Changes
+            if (currentChanges.includes('visual.theme')) {
+                app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`).catch((e) => console.error(e));
+                const updatedVibrancy = app.ame.utils.fetchTransparencyOptions();
+                if (app.transparency && updatedVibrancy && process.platform !== 'darwin') app.win.setVibrancy(updatedVibrancy);
+            }
+            // Transparency Changes
+            else if (currentChanges.includes('visual.transparencyEffect') || currentChanges.includes('visual.transparencyTheme') || currentChanges.includes('visual.transparencyDisableBlur') || currentChanges.includes('visual.transparencyMaximumRefreshRate')) {
+                const updatedVibrancy = app.ame.utils.fetchTransparencyOptions()
+                if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
+                    app.win.setVibrancy(updatedVibrancy);
+                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(true);`).catch((e) => console.error(e));
+                } else {
+                    app.win.setVibrancy();
+                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(false);`).catch((e) => console.error(e));
+                }
+            }
+            // Reload scripts
+            else if (currentChanges.includes('visual.removeUpsell') || currentChanges.includes('visual.removeAppleLogo') || currentChanges.includes('visual.removeFooter') || currentChanges.includes('visual.useOperatingSystemAccent')) {
+                app.ame.load.LoadFiles();
+            }
+            // closeButtonMinimize
+            else if (currentChanges.includes('window.closeButtonMinimize')) {
+                app.isQuiting = !app.preferences.value('window.closeButtonMinimize').includes(true);
+            }
+            // IncognitoMode Changes
+            else if (currentChanges.includes('general.incognitoMode')) {
+                if (app.preferences.value('general.incognitoMode').includes(true)) {
+                    console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
+                }
+            }
+            // The rest ask for a restart
+            else if (!DialogMessage && !currentChanges.includes('general.lastfmAuthKey')) {
+                DialogMessage = dialog.showMessageBox(app.win, {
+                    title: "Relaunch Required",
+                    message: "A relaunch is required in order for the settings you have changed to apply.",
+                    type: "warning",
+                    buttons: ['Relaunch Now', 'Relaunch Later']
+                }).then(({response}) => {
+                    if (response === 0) {
+                        app.relaunch()
+                        app.quit()
+                    }
+                })
+            }
+
+            cachedPreferences = updatedPreferences
+        });
+    },
+
+    RendererListenerHandlers: () => {
+
+        // Themes Listing Update
+        ipcMain.on('updateThemesListing', () => {
+            const themesListing = app.ame.utils.fetchThemesListing();
+            app.win.webContents.send('updatedThemesListing', themesListing);
+        });
+
+        // Initial Acrylic Check
+        ipcMain.on('isAcrylicSupported', () => {
+            const acrylicSupported = app.ame.utils.isAcrylicSupported();
+            app.win.webContents.send('acrylicSupport', acrylicSupported);
+        });
+
+        // Update Themes
+        ipcMain.on('updateThemes', (_event) => {
+            app.ame.utils.updateThemes().then(() => {
+                setTimeout(() => {
+                    const themesListing = app.ame.utils.fetchThemesListing();
+                    app.win.webContents.send('themesUpdated', themesListing);
+                }, 2000)
+            });
+        });
+
+        // Window Navigation - Minimize
         ipcMain.on('minimize', () => { // listen for minimize event
             if (typeof app.win.minimize === 'function') {
                 app.win.minimize()
             }
-        })
+        });
 
-        ipcMain.on('back', () => { // listen for back event
-            if (app.win.webContents.canGoBack()) {
-                app.win.webContents.goBack()
-            }
-        })
-
+        // Window Navigation - Maximize
         ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
             if (app.win.miniplayerActive) {
                 return
@@ -288,6 +409,7 @@ const handler = {
             }
         })
 
+        // Window Navigation - Close
         ipcMain.on('close', () => { // listen for close event
             if (app.win.miniplayerActive) {
                 ipcMain.emit("set-miniplayer", false);
@@ -296,10 +418,19 @@ const handler = {
             app.win.close();
         })
 
+        // Window Navigation - Back
+        ipcMain.on('back', () => { // listen for back event
+            if (app.win.webContents.canGoBack()) {
+                app.win.webContents.goBack()
+            }
+        })
+
+        // Window Navigation - Resize
         ipcMain.on("resize-window", (event, width, height) => {
             app.win.setSize(width, height)
         })
 
+        // miniPlayer
         const minSize = app.win.getMinimumSize()
         ipcMain.on("set-miniplayer", (event, val) => {
             if (val) {
@@ -365,144 +496,6 @@ const handler = {
                 }
             })
         })
-
-        app.win.on('close', (event) => {
-
-            if (!app.isQuiting || process.platform === "darwin") {
-                event.preventDefault();
-                if (typeof app.win.hide === 'function') {
-                    app.win.hide();
-                }
-            } else {
-                event.preventDefault();
-                if (typeof app.win.destroy === 'function') {
-                    app.win.destroy();
-                }
-            }
-
-        });
-
-        app.win.on('show', () => {
-            app.funcs.SetContextMenu(true)
-            app.funcs.SetButtons()
-            if (app.win.isVisible()) {
-                app.win.focus()
-            }
-            // if (app.win.StoredWebsite) app.win.loadURL(app.win.StoredWebsite)
-        });
-
-        app.win.on('hide', () => {
-            app.funcs.SetContextMenu(false)
-            if (app.pluginsEnabled) {
-                app.win.webContents.executeJavaScript(`_plugins.execute('OnHide')`)
-            }
-            // app.win.StoredWebsite = app.win.webContents.getURL();
-        });
-
-        // For macOS Link Handling
-        app.on('open-url', function (event, url) {
-            event.preventDefault()
-            if (url.includes('ame://') || url.includes('itms://') || url.includes('itmss://') || url.includes('musics://') || url.includes('music://')) {
-                handler.LinkHandler(url)
-            }
-        })
-
-    },
-
-    SettingsHandler: function () {
-        console.verbose('[SettingsHandler] Started.');
-        let DialogMessage = false,
-            cachedPreferences = app.preferences._preferences,
-            storedChanges = [];
-
-        const {
-            fetchTransparencyOptions
-        } = require('./CreateBrowserWindow')
-
-        if (app.preferences.value('visual.useOperatingSystemAccent').includes(true)) {
-            systemPreferences.on('accent-color-changed', (event, color) => {
-                if (color) {
-                    const accent = '#' + color.slice(0, -2)
-                    app.win.webContents.insertCSS(`
-                :root {
-                    --keyColor: ${accent} !important;
-                    --keyColor-rgb: ${hexToRgb(accent).r} ${hexToRgb(accent).g} ${hexToRgb(accent).b} !important;
-                }
-            }
-            `).catch((e) => console.error(e));
-                }
-            })
-        }
-
-
-        app.preferences.on('save', (updatedPreferences) => {
-            let currentChanges = []
-
-            for (const [categoryTitle, categoryContents] of Object.entries(updatedPreferences)) {
-                if (categoryContents !== cachedPreferences[categoryTitle]) { // This has gotten the changed category
-                    for (const [settingTitle, settingValue] of Object.entries(updatedPreferences[categoryTitle])) {
-                        if (JSON.stringify(settingValue) !== JSON.stringify(cachedPreferences[categoryTitle][settingTitle])) {
-                            currentChanges.push(`${categoryTitle}.${settingTitle}`)
-                            if (!storedChanges.includes(`${categoryTitle}.${settingTitle}`)) {
-                                storedChanges.push(`${categoryTitle}.${settingTitle}`)
-                            }
-                        }
-                    }
-                }
-            }
-
-            console.verbose(`[SettingsHandler] Found changes: ${currentChanges} | Total Changes: ${storedChanges}`);
-
-            // Theme Changes
-            if (currentChanges.includes('visual.theme')) {
-                app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`).catch((e) => console.error(e));
-                const updatedVibrancy = fetchTransparencyOptions();
-                if (app.transparency && updatedVibrancy && process.platform !== 'darwin') app.win.setVibrancy(updatedVibrancy);
-            }
-            // Transparency Changes
-            else if (currentChanges.includes('visual.transparencyEffect') || currentChanges.includes('visual.transparencyTheme') || currentChanges.includes('visual.transparencyDisableBlur') || currentChanges.includes('visual.transparencyMaximumRefreshRate')) {
-                const updatedVibrancy = fetchTransparencyOptions()
-                if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
-                    app.win.setVibrancy(updatedVibrancy);
-                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(true);`).catch((e) => console.error(e));
-                } else {
-                    app.win.setVibrancy();
-                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(false);`).catch((e) => console.error(e));
-                }
-            } else if (currentChanges.includes('visual.removeUpsell') || currentChanges.includes('visual.removeAppleLogo') || currentChanges.includes('visual.removeFooter') || currentChanges.includes('visual.useOperatingSystemAccent')) {
-                app.win.webContents.executeJavaScript('AMJavaScript.LoadCustom()').catch((e) => console.error(e));
-            }
-            // Frame Type Changes (TBA)
-            else if (currentChanges.includes('visual.frameType')) {
-                //    run js function to unload / load new frame
-            } else if (currentChanges.includes('window.closeButtonMinimize')) {
-                app.isQuiting = !app.preferences.value('window.closeButtonMinimize').includes(true);
-            }
-            // IncognitoMode Changes
-            else if (currentChanges.includes('general.incognitoMode')) {
-                if (app.preferences.value('general.incognitoMode').includes(true)) {
-                    console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
-                }
-            }
-            // The rest ask for a restart
-            else if (!DialogMessage && !currentChanges.includes('general.lastfmAuthKey')) {
-                DialogMessage = dialog.showMessageBox(app.win, {
-                    title: "Relaunch Required",
-                    message: "A relaunch is required in order for the settings you have changed to apply.",
-                    type: "warning",
-                    buttons: ['Relaunch Now', 'Relaunch Later']
-                }).then(({
-                    response
-                }) => {
-                    if (response === 0) {
-                        app.relaunch()
-                        app.quit()
-                    }
-                })
-            }
-
-            cachedPreferences = updatedPreferences
-        });
     },
 
     LinkHandler: function (startArgs) {
@@ -640,7 +633,7 @@ const handler = {
             app.win.send('truelyrics', data);
             app.win.send('albumart', artworkURL);
         });
-        ipcMain.on('LyricsMXMFailed', function (event, data) {
+        ipcMain.on('LyricsMXMFailed', function (_event, _data) {
             app.win.send('backuplyrics', '');
         });
         ipcMain.on('ProgressTimeUpdateFromLyrics', function (event, data) {

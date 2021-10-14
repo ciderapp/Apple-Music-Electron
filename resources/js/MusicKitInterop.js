@@ -1,5 +1,4 @@
 // preload.js
-const { app } = require('electron');
 const electron = require('electron');
 
 let cache = {playParams: {id: 0}, status: null, remainingTime: 0},
@@ -61,6 +60,22 @@ const MusicKitInterop = {
         cache = a;
         if (playbackCheck) playbackCache = {status: a.status, time: a.remainingTime};
         return true;
+    },
+
+    pausePlay: function () {
+        if (MusicKit.getInstance().isPlaying) {
+            MusicKit.getInstance().pause();
+        } else if (MusicKit.getInstance().nowPlayingItem != null) {
+            MusicKit.getInstance().play().then(r => console.log(`[MusicKitInterop] Playing ${r}`));
+        }
+    },
+
+    nextTrack: function () {
+        MusicKit.getInstance().skipToNextItem().then(r => console.log(`[MusicKitInterop] Skipping to Next ${r}`));
+    },
+
+    previousTrack: function () {
+        MusicKit.getInstance().skipToPreviousItem().then(r => console.log(`[MusicKitInterop] Skipping to Previous ${r}`));
     }
 
 }
