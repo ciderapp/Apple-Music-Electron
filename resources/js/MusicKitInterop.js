@@ -15,14 +15,23 @@ const MusicKitInterop = {
                 var nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
                 if(typeof nowPlayingItem != "undefined") {
                     if(nowPlayingItem["type"] == "musicVideo") {
-                        AMThemes.loadTheme();
-                    }else
-                    {
-                        AMThemes.loadTheme(preferences.visual.theme);
+                        document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: none !important');     
+                    }else {
+                        document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: flex !important');
                     }
                 }
             }else{
-                AMThemes.loadTheme(preferences.visual.theme);
+                document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: flex !important');
+                try{
+                    var nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
+                    if(typeof nowPlayingItem != "undefined") {
+                        if(nowPlayingItem["type"] == "musicVideo") {
+                            document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: none !important');     
+                        }else {
+                            document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: flex !important');
+                        }
+                    }
+                }catch(e){}
             }
         });
 
