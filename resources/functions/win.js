@@ -295,7 +295,7 @@ module.exports = {
 
 
         app.ipc.existingNotification.addListener('action', (_event) => {
-            app.win.webContents.executeJavaScript("MusicKit.getInstance().skipToNextItem()").then(() => console.log("[CreateNotification] skipToNextItem"))
+            app.ame.utils.media.nextTrack()
         });
     },
 

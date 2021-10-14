@@ -4,6 +4,7 @@ const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPre
     {readFile, existsSync, truncate} = require('fs'),
     rimraf = require('rimraf'),
     {initAnalytics} = require('./utils');
+const {auth} = require("lastfmapi");
 initAnalytics();
 
 const handler = {
@@ -376,6 +377,14 @@ const handler = {
             const acrylicSupported = app.ame.utils.isAcrylicSupported();
             app.win.webContents.send('acrylicSupport', acrylicSupported);
         });
+
+        // Authorization
+        ipcMain.on('authorizationStatusDidChange', (_event, authorized) => {
+            console.log(`authorization updated. status: ${authorized}`)
+            app.win.reload()
+            app.ame.load.LoadFiles()
+            app.isAuthorized = (authorized === 3)
+        })
 
         // Update Themes
         ipcMain.on('updateThemes', (_event) => {

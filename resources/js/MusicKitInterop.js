@@ -41,6 +41,10 @@ const MusicKitInterop = {
                 AMThemes.updateMeta()
             }
         });
+
+        MusicKit.getInstance().addEventListener(MusicKit.Events.authorizationStatusDidChange, () => {
+            global.ipcRenderer.send('authorizationStatusDidChange', MusicKit.getInstance().authorizationStatus)
+        })
     },
 
     getAttributes: function () {

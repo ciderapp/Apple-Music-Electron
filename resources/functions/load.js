@@ -58,9 +58,9 @@ module.exports = {
 
         app.locale = app.ame.init.LocaleInit();
         const [region, language] = app.locale,
-            urlBase = (app.preferences.value('advanced.useBetaSite').includes(true)) ? `https://beta.music.apple.com/${region}` : `https://music.apple.com/${region}`,
-            urlFallback = `https://music.apple.com/${region}?l=${language}`,
-            urlLanguage = `${urlBase}?l=${language}`;
+            urlBase = (app.preferences.value('advanced.useBetaSite').includes(true)) ? `https://beta.music.apple.com` : `https://music.apple.com`,
+            urlFallback = `https://music.apple.com/`,
+            urlLanguage = `${urlBase}`;
 
         console.log(`[LoadWebsite] Attempting to load '${urlLanguage}'`)
         win.loadURL(urlLanguage).then(() => {
@@ -178,7 +178,7 @@ module.exports = {
         }
 
         /* Load the Startup JavaScript Function */
-        app.win.webContents.executeJavaScript('AMJavaScript.LoadCustom()').catch((e) => console.error(e));
+        app.win.webContents.executeJavaScript('if (AMJavaScript) { AMJavaScript.LoadCustom(); }').catch((e) => console.error(e));
     },
 
     LoadOneTimeFiles: function () {
