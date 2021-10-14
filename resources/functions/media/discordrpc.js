@@ -1,10 +1,11 @@
-const {app} = require('electron')
-const DiscordRPC = require('discord-rpc');
-const SentryInit = require("../init").SentryInit;
-SentryInit()
+const {app} = require('electron'),
+    DiscordRPC = require('discord-rpc'),
+    {initAnalytics} = require('../utils');
+initAnalytics();
 
 module.exports = {
     connect: function (clientId) {
+        app.discord = {isConnected: false};
         if (!app.preferences.value('general.discordRPC')) return;
 
         DiscordRPC.register(clientId) // Apparently needed for ask to join, join, spectate etc.
@@ -46,7 +47,7 @@ module.exports = {
     },
 
     updateActivity: function (attributes) {
-        if (!app.preferences.value('general.discordRPC')) return;
+        if (!app.preferences.value('general.discordRPC') || app.preferences.value('general.incognitoMode').includes(true)) return;
 
         if (!app.discord.isConnected) {
             this.connect()
@@ -63,27 +64,20 @@ module.exports = {
             state: `by ${attributes.artistName}`,
             startTimestamp: attributes.startTime,
             endTimestamp: attributes.endTime,
-            largeImageKey: 'logo',
+            largeImageKey: ((app.preferences.value('general.discordRPC') === 'am-title') ? 'apple' : 'logo'),
             largeImageText: attributes.albumName,
-            smallImageKey: 'nightly',
-            smallImageText: 'Playing',
+            smallImageKey: (attributes.status ? 'play' : 'pause'),
+            smallImageText: (attributes.status ? 'Playing': 'Paused'),
             instance: true,
             buttons: [
-                {label: "Open in AME", url: listenURL},
+                {label: "Listen on AME", url: listenURL},
             ]
         };
         console.verbose(`[LinkHandler] Listening URL has been set to: ${listenURL}`);
 
-        // clear Activity Values
         if (app.preferences.value('general.discordClearActivityOnPause').includes(true)) {
-            ActivityObject.largeImageKey = 'apple'
-            ActivityObject.largeImageText = attributes.albumName
-            ActivityObject.smallImageKey = app.getVersion().includes('nightly') ? 'nightlylarge' : 'logo'
-            ActivityObject.smallImageText = `Apple Music Electron v${app.getVersion()}`
-        } else {
-            if (app.getVersion().includes('nightly')) {
-                ActivityObject.largeImageKey = 'nightly'
-            }
+            delete ActivityObject.smallImageKey
+            delete ActivityObject.smallImageText
         }
 
         // Check all the values work
