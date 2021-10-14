@@ -1,6 +1,8 @@
 const {app, globalShortcut, protocol} = require("electron"),
     {join, resolve} = require("path"),
-    fs = require("fs");
+    fs = require("fs"),
+    ElectronPreferences = require("electron-preferences"),
+    Store = require('electron-store');
 
 module.exports = () => {
 
@@ -2118,7 +2120,6 @@ module.exports = () => {
     app.userThemesPath = resolve(app.getPath('userData'), 'themes');
     app.userPluginsPath = resolve(app.getPath('userData'), 'plugins');
 
-    const ElectronPreferences = require("electron-preferences");
     app.preferences = new ElectronPreferences({
         'dataStore': resolve(app.getPath('userData'), 'preferences.json'),
         /* Default Values */
@@ -2275,6 +2276,46 @@ module.exports = () => {
     })
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+
+    const storeSchema = {
+        exampleNumber: {
+            type: 'number',
+            maximum: 100,
+            minimum: 1,
+            default: 50
+        },
+        exampleUrl: {
+            type: 'string',
+            format: 'url'
+        }
+    }
+    const storeDefaults = {
+        test: false
+    }
+
+    /* Set Migration Variables to be used on older versions */
+    const storeMigrations = {
+        '0.0.1': store => {
+			store.set('debugPhase', true);
+		},
+		'1.0.0': store => {
+			store.delete('debugPhase');
+			store.set('phase', '1.0.0');
+		},
+		'1.0.2': store => {
+			store.set('phase', '1.0.2');
+		},
+		'>=2.0.0': store => {
+			store.set('phase', '>=2.0.0');
+		}
+    }
+
+    app.cfg = new Store({
+        defaults: storeDefaults, 
+        schema: storeSchema,
+        migrations: storeMigrations
+    })
 
     const handlersFuncs = require('./handler'),
         initFuncs = require('./init'),

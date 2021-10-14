@@ -226,6 +226,10 @@ const handler = {
         }
 
         app.win.on('close', (event) => {
+            if (app.win.miniplayerActive) {
+                ipcMain.emit("set-miniplayer", false);
+                return;
+            }
 
             if (!app.isQuiting || process.platform === "darwin") {
                 event.preventDefault();
@@ -411,10 +415,6 @@ const handler = {
 
         // Window Navigation - Close
         ipcMain.on('close', () => { // listen for close event
-            if (app.win.miniplayerActive) {
-                ipcMain.emit("set-miniplayer", false);
-                return;
-            }
             app.win.close();
         })
 

@@ -7,6 +7,92 @@ initAnalytics();
 
 module.exports = {
 
+    SetApplicationMenu: () => {
+        if (process.platform !== "darwin") return;
+
+        Menu.setApplicationMenu(Menu.buildFromTemplate([
+            {
+                label: app.getName(),
+                submenu: [
+                    { role: 'about' },
+                    { type: 'separator' },
+                    { role: 'services' },
+                    { type: 'separator' },
+                    { role: 'hide' },
+                    { role: 'hideOthers' },
+                    { role: 'unhide' },
+                    { type: 'separator' },
+                    { role: 'quit' }
+                  ]
+            },
+            {
+                label: 'View',
+                submenu: [
+                  { role: 'reload' },
+                  { role: 'forceReload' },
+                  { role: 'toggleDevTools' },
+                  { type: 'separator' },
+                  { role: 'resetZoom' },
+                  { role: 'zoomIn' },
+                  { role: 'zoomOut' },
+                  { type: 'separator' },
+                  { role: 'togglefullscreen' }
+                ]
+              },
+            {
+                label: 'Window',
+                role: 'window',
+                submenu: [
+                    { role: 'minimize' },
+                    { role: 'zoom' },
+                    { type: 'separator' },
+                    { role: 'front' },
+                    { type: 'separator' },
+                    { role: 'window' }
+                  ]
+            },
+            {
+                label: 'Support',
+                role: 'help',
+                submenu: [
+                    {
+                        label: 'Discord',
+                        click() {
+                            require("shell").openExternal("https://discord.gg/CezHYdXHEM")
+                        }
+                    },
+                    {
+                        label: 'GitHub Wiki',
+                        click() {
+                            require("shell").openExternal("https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki")
+                        }
+                    },
+                    { type: 'separator' },
+                    {
+                        label: 'View License',
+                        click() {
+                            require("shell").openExternal("https://github.com/Apple-Music-Electron/Apple-Music-Electron/blob/master/LICENSE")
+                        }
+                    },
+                    { type: 'separator' },
+                    {
+                        label: 'Toggle Developer Tools',
+                        accelerator: 'Option+CommandOrControl+I',
+                        click() {
+                            app.win.webContents.openDevTools()
+                        }
+                    },
+                    {
+                        label: 'Show Preferences',
+                        click() {
+                            app.preferences.show()
+                        }
+                    }
+                ]
+            },
+        ]));
+    },
+
     SetContextMenu: (visibility) => {
 
         if (visibility) {

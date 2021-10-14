@@ -27,6 +27,7 @@ function CreateWindow() {
 
     if (process.platform === 'win32' && app.transparency) { app.win.show() } // Show the window so SetThumbarButtons doesnt break
     app.ame.win.SetButtons() // Set Inactive Thumbnail Toolbar Icons or TouchBar
+    app.ame.win.SetApplicationMenu()
 }
 
 // When its Ready call it all
@@ -44,10 +45,6 @@ app.on('ready', () => {
     
     console.log('[Apple-Music-Electron] Application is Ready. Creating Window.')
     CreateWindow()
-});
-
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit()
 });
 
 app.on('activate', () => {
@@ -75,12 +72,15 @@ app.on('widevine-error', (error) => {
     process.exit(1)
 })
 
+app.on('window-all-closed', app.quit);
+
 app.on('before-quit', () => {
+    app.isQuiting = true;
+    app.win.removeAllListeners('close');
+    app.win.close();
     app.ame.mpris.clearActivity()
     app.ame.discord.disconnect()
     console.log('---------------------------------------------------------------------')
     console.log('Application Closing...')
     console.log('---------------------------------------------------------------------')
-    app.isQuiting = true;
-    globalShortcut.unregisterAll()
 });
