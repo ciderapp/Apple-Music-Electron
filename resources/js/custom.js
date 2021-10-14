@@ -405,6 +405,14 @@ try {
     /* Bulk AME JavaScript Functions */
     if (typeof AMJavaScript == "undefined") {
         var AMJavaScript = {
+            getRequest(url, callback = ()=>{}) {
+                const xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    callback(this.responseText);
+                };
+                xhttp.open("GET", url, true);
+                xhttp.send();
+            },
             LoadCustomStartup: () => {
                 const preferences = ipcRenderer.sendSync('getPreferences');
 
