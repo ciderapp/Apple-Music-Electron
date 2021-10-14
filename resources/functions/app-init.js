@@ -2277,7 +2277,7 @@ module.exports = () => {
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-
+    // not really needed atm
     const storeSchema = {
         exampleNumber: {
             type: 'number',
@@ -2291,7 +2291,57 @@ module.exports = () => {
         }
     }
     const storeDefaults = {
-        test: false
+        general: {
+            language: "",
+            incognitoMode: false,
+            playbackNotifications: "minimized",
+            trayTooltipSongName: true,
+            startupPage: "browse",
+            discordRPC: "ame-title",
+            discordClearActivityOnPause: true,
+            lastfmEnabled: false,
+            lastfmAuthKey: "Put your Auth Key here.",
+            lastfmRemoveFeaturingArtists: true,
+            analyticsEnabled: true
+        },
+        visual: {
+            theme: "default",
+            frameType: "",
+            transparencyEffect: "",
+            transparencyTheme: "appearance-based",
+            transparencyDisableBlur: true,
+            transparencyMaximumRefreshRate: "",
+            streamerMode: false,
+            removeUpsell: true,
+            removeAppleLogo: true,
+            removeFooter: true,
+            useOperatingSystemAccent: false,
+            mxmon: false,
+            mxmlanguage: "en"
+        },
+        audio: {
+            audioQuality: "auto",
+            gaplessEnabled: true
+        },
+        window: {
+            appStartupBehavior: "",
+            closeButtonMinimize: true,
+            alwaysOnTop: false
+        },
+        advanced: {
+            forceApplicationRegion: "",
+            forceApplicationMode: "system",
+            verboseLogging: false,
+            autoUpdaterBetaBuilds: false,
+            useBetaSite: true,
+            preventMediaKeyHijacking: false,
+            menuBarVisible: false,
+            removeScrollbars: true,
+            devTools: false,
+            devToolsOpenDetached: false,
+            allowMultipleInstances: false,
+            allowOldMenuAccess: false
+        }
     }
 
     /* Set Migration Variables to be used on older versions */
