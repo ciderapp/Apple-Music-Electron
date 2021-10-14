@@ -37,7 +37,7 @@
 
         /* hide the later ones*/
         for (i = self.totalLines; i < self.totalLines; i++) {
-            document.getElementById(self.lineidPrefix + i).style.display = "flex";
+            document.getElementById(self.lineidPrefix + i).style.display = "block";
         }
     };
     const moveToLine = function (self, line) {
@@ -46,9 +46,11 @@
         for (let i = 0; i < self.totalLines; i++) {
             const li = document.getElementById(self.lineidPrefix + i);
             if (i >= startShow && i <= endShow) {
-                li.style.display = "flex";
+                try{
+                li.style.display = "block";}
+                catch(e){}
             } else {
-                li.style.display = "flex";
+                li.style.display = "block";
             }
             if (i === line) {
                 li.classList.add(self.currentcss);
@@ -120,7 +122,9 @@
         let line = "";
         for (i = 0; i < this.lrc.length; i++) {
             endTime = parseFloat(this.lrc[i].startTime);
-            this.rangeLrc.push({"startTime": startTime, "endTime": endTime, "line": line});
+            if (startTime == 10 && line == 'lrcInstrumental') startTime=0; 
+            if (!this.rangeLrc.includes({"startTime": startTime, "endTime": endTime, "line": line})){               
+            this.rangeLrc.push({"startTime": startTime, "endTime": endTime, "line": line});} else {console.log('blocked');}
             startTime = endTime;
             line = this.lrc[i].line;
         }
@@ -130,6 +134,7 @@
         /* 	this.rangeLrc.push( { "startTime": -1, "endTime": 0, "line": "&nbsp;" } );
         /* };*/
         this.totalLines = this.rangeLrc.length;
+        console.log(this.rangeLrc);
 
         /* set html and move to start*/
         setHtml(this);

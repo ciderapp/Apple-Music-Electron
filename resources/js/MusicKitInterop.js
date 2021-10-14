@@ -1,12 +1,10 @@
 // preload.js
-const { app } = require('electron');
 const electron = require('electron');
 
 let cache = {playParams: {id: 0}, status: null, remainingTime: 0},
     playbackCache = {status: null, time: Date.now()};
 
 const MusicKitInterop = {
-
     init: function () {
         MusicKit.getInstance().addEventListener(MusicKit.Events.playbackStateDidChange, () => {
             if (MusicKitInterop.filterTrack(MusicKitInterop.getAttributes(), true, false)) {
@@ -14,6 +12,26 @@ const MusicKitInterop = {
                 if(typeof _plugins != "undefined") {
                     _plugins.execute("OnPlaybackStateChanged", {Attributes: MusicKitInterop.getAttributes()})
                 }
+                var nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
+                if(typeof nowPlayingItem != "undefined") {
+                    if(nowPlayingItem["type"] == "musicVideo") {
+                        document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: none !important');     
+                    }else {
+                        document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: flex !important');
+                    }
+                }
+            }else{
+                document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: flex !important');
+                try{
+                    var nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
+                    if(typeof nowPlayingItem != "undefined") {
+                        if(nowPlayingItem["type"] == "musicVideo") {
+                            document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: none !important');     
+                        }else {
+                            document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: flex !important');
+                        }
+                    }
+                }catch(e){}
             }
         });
 
@@ -61,6 +79,22 @@ const MusicKitInterop = {
         cache = a;
         if (playbackCheck) playbackCache = {status: a.status, time: a.remainingTime};
         return true;
+    },
+
+    pausePlay: function () {
+        if (MusicKit.getInstance().isPlaying) {
+            MusicKit.getInstance().pause();
+        } else if (MusicKit.getInstance().nowPlayingItem != null) {
+            MusicKit.getInstance().play().then(r => console.log(`[MusicKitInterop] Playing ${r}`));
+        }
+    },
+
+    nextTrack: function () {
+        MusicKit.getInstance().skipToNextItem().then(r => console.log(`[MusicKitInterop] Skipping to Next ${r}`));
+    },
+
+    previousTrack: function () {
+        MusicKit.getInstance().skipToPreviousItem().then(r => console.log(`[MusicKitInterop] Skipping to Previous ${r}`));
     }
 
 }

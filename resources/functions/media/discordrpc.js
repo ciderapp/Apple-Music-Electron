@@ -1,7 +1,7 @@
-const {app} = require('electron')
-const DiscordRPC = require('discord-rpc');
-const SentryInit = require("../init").SentryInit;
-SentryInit()
+const {app} = require('electron'),
+    DiscordRPC = require('discord-rpc'),
+    {initAnalytics} = require('../utils');
+initAnalytics();
 
 module.exports = {
     connect: function (clientId) {
@@ -70,7 +70,7 @@ module.exports = {
             smallImageText: (attributes.status ? 'Playing': 'Paused'),
             instance: true,
             buttons: [
-                {label: "Open in AME", url: listenURL},
+                {label: "Listen on AME", url: listenURL},
             ]
         };
         console.verbose(`[LinkHandler] Listening URL has been set to: ${listenURL}`);

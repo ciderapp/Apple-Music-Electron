@@ -14,37 +14,54 @@
 	</div>
 	<script type="text/javascript">
 	const { ipcRenderer } = require('electron');
-	
-
-	function changeStylesheetRule(stylesheet, selector, property, value) {
-	selector = selector.toLowerCase();
-	property = property.toLowerCase();
-	value = value.toLowerCase();
-
-	for(var i = 0; i < stylesheet.cssRules.length; i++) {
-		var rule = stylesheet.cssRules[i];
-		if(rule.selectorText === selector) {
-			rule.style[property] = value;
-			return;
-		}
-	}
-  
-	stylesheet.insertRule(selector + " { " + property + ": " + value + "; }", 0);
-    }
 
 	var text = "";
 	var lrcfile = "";
 	var lrc = new Lyricer();
-    var token = '';
+	var prevartist = '';
+	var prevtrack = '';
+	var prevlyrics = ['','','','','']; //track, artist, songid, lyrics, translated lyrics
+    var globaltoken = '';
 	function revisedRandId() {
      return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10);
     }
-	function u(track, artist, lang) {
-		try{
-		// var artist = encodeURIComponent('joji');
-        // var track =  encodeURIComponent('slow danicng in the dark');
-		var language_code = lang;
-
+	/* get token */
+	function getToken(mode, track, artist, songid, lang) {
+		    var url  = "https://apic-desktop.musixmatch.com/ws/1.1/token.get?app_id=web-desktop-app-v1.0&t="+revisedRandId();
+			var req = new XMLHttpRequest();  
+			req.overrideMimeType("application/json");
+			req.open('GET', url, true);
+			req.setRequestHeader("authority", "apic-desktop.musixmatch.com");
+			req.onload  = function() {	
+			var jsonResponse = JSON.parse(this.responseText);
+			var status2 = jsonResponse["message"]["header"]["status_code"] ;
+		    if (status2 == 200){
+			token = jsonResponse["message"]["body"]["user_token"] ?? '';
+			if (token != "" && token != "UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly"){
+				console.log('200 token');
+				// token good
+				globaltoken = token;
+				if (mode == 1){
+                    getMXMSubs(track, artist, token, lang);
+				} else {
+					getMXMTrans(songid, lang, token);
+				}
+			} else {
+				console.log('fake 200 token');
+				if (mode == 1){
+					ipcRenderer.send('LyricsMXMFailed','');
+			    }
+		    }} else {
+				console.log('token 4xx');
+				if (mode == 1){
+					ipcRenderer.send('LyricsMXMFailed','');
+				}
+	        }
+		    
+	    }
+		req.send();
+    }
+	function getMXMSubs(track, artist, token, lang) {
 		var usertoken = encodeURIComponent(token);
 		var url  = "https://apic-desktop.musixmatch.com/ws/1.1/macro.subtitles.get?format=json&namespace=lyrics_richsynched&subtitle_format=lrc&q_artist="+artist+"&q_track="+track+"&usertoken="+usertoken+"&app_id=web-desktop-app-v1.0&t="+revisedRandId();
 		var req = new XMLHttpRequest();  
@@ -55,152 +72,103 @@
         var jsonResponse = JSON.parse(this.responseText);
 		console.log(jsonResponse);
 		var status1 = jsonResponse["message"]["header"]["status_code"] ;
-		if (status1 != 401){     
-        var id = jsonResponse["message"]["body"]["macro_calls"]["matcher.track.get"]["message"]["body"]["track"]["track_id"];
-		try{
-		lrcfile = jsonResponse["message"]["body"]["macro_calls"]["track.subtitles.get"]["message"]["body"]["subtitle_list"][0]["subtitle"]["subtitle_body"];
-		if (lrcfile == ""){
-			   ipcRenderer.send('LyricsMXMFailed','');
-		} else{
-			lrcfile = lrcfile.concat("\r\n"); 
-			var timearr = lrcfile.match(/\[([0-9]+):([0-9.]+)]/g);
-			timearr.unshift('[00:00.000]');
-			
-            for (i = 0; i < timearr.length -1 ; i++){
-				var rawTime = timearr[i+1].match(/(\d+:)?(\d+:)?(\d+)?(\.\d+)/);
-                var hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
-                var minutes =
-                    (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:")
-                ;
-                var seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
-                var milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
-                var lrcTime = minutes + seconds + milliseconds;
-                var rawTime2 = timearr[i].match(/(\d+:)?(\d+:)?(\d+)?(\.\d+)/);
-                var hours2 = (rawTime2[2] != null) ? (rawTime2[1].replace(":", "")) : "0";
-                var minutes2 = (rawTime2[2] != null) ? (hours2 * 60 + rawTime2[2].replace(":", "") * 1 + ":") : ((rawTime2[1] != null) ? rawTime2[1] : "00:");
-                var seconds2 = (rawTime2[3] != null) ? (rawTime2[3]) : "00";
-                var milliseconds2 = (rawTime2[4] != null) ? (rawTime2[4]) : ".000";
-                var lrcTime2 = minutes2 + seconds2 + milliseconds2;
-				console.log(minutes.replace(":","") * 60 + seconds * 1  - minutes2.replace(":","") * 60 - seconds2 * 1);
-                if ( minutes.replace(":","") * 60 + seconds * 1  - minutes2.replace(":","") * 60 - seconds2 * 1  > 10) {
-					var x = (i == 0) ? '00:00.000' : minutes2 + (seconds2*1+10) + milliseconds2 ;
-                    lrcfile = lrcfile.concat(`[${x}]lrcInstrumental` + "\r\n");
-                };
+		if (status1 == 200){    
+			var id = '';
+			try{
+				if (jsonResponse["message"]["body"]["macro_calls"]["matcher.track.get"]["message"]["header"]["status_code"] == 200){
+					prevartist = artist;
+					prevtrack = track;
+					id = jsonResponse["message"]["body"]["macro_calls"]["matcher.track.get"]["message"]["body"]["track"]["track_id"] ?? '';
+					lrcfile = jsonResponse["message"]["body"]["macro_calls"]["track.subtitles.get"]["message"]["body"]["subtitle_list"][0]["subtitle"]["subtitle_body"];}
+					if (lrcfile == "" || id == ''){
+						// track not found 
+			            console.log('track not found');
+						prevlyrics = [track,artist,'','',''];
+						ipcRenderer.send('LyricsMXMFailed','');
+					} else {
+						lrcfile = lrcfile.concat("\r\n"); 
+						var timearr = lrcfile.match(/\[([0-9]+):([0-9.]+)]/g);
+						timearr.unshift('[00:00.000]');			
+						for (i = 0; i < timearr.length -1 ; i++){
+							var rawTime = timearr[i+1].match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
+							var hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
+							var minutes =(rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:");
+							var seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
+							var milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
+							var lrcTime = minutes + seconds + milliseconds;
+							
+							var rawTime2 = timearr[i].match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
+							var hours2 = (rawTime2[2] != null) ? (rawTime2[1].replace(":", "")) : "0";
+							var minutes2 = (rawTime2[2] != null) ? (hours2 * 60 + rawTime2[2].replace(":", "") * 1 + ":") : ((rawTime2[1] != null) ? rawTime2[1] : "00:");
+							var seconds2 = (rawTime2[3] != null) ? (rawTime2[3]) : "00";
+							var milliseconds2 = (rawTime2[4] != null) ? (rawTime2[4]) : ".000";
+							var lrcTime2 = minutes2 + seconds2 + milliseconds2;
+							
+							if ( minutes.replace(":","") * 60 + seconds * 1  - minutes2.replace(":","") * 60 - seconds2 * 1  > 10) {
+								
+								if (minutes2 + (seconds2*1+10) + milliseconds2 != '00:10.000'){
+								lrcfile = lrcfile.concat(`[${minutes2 + (seconds2*1+10) + milliseconds2}]lrcInstrumental` + "\r\n");}
+								else {lrcfile = lrcfile.concat(`[00:00.00]lrcInstrumental` + "\r\n");}
+							};
+						}
+						console.log(lrcfile);
+						ipcRenderer.send('LyricsHandlerNE',lrcfile);
+						if(lrcfile != null && lrcfile != ''){
+							// load translation
+							getMXMTrans(id, lang, token);
+						}
+		            }
+	        }catch(e){
+			console.log(e); 	
+			// track not found ?? 
+			console.log('track not found ??');
+			ipcRenderer.send('LyricsMXMFailed','');
 			}
-			console.log(lrcfile);
-			ipcRenderer.send('LyricsHandlerNE',lrcfile);
+		} else { //4xx rejected
+			getToken(1, track, artist, '', lang);}
 		}
-			
-		} catch (e){console.error(e);}
-		if (lrcfile!= "" && language_code != "disabled"){
-			console.log("no");
-			var url2  = "https://apic-desktop.musixmatch.com/ws/1.1/crowd.track.translations.get?translation_fields_set=minimal&selected_language="+language_code+"&track_id="+id+"&comment_format=text&part=user&format=json&usertoken="+usertoken+"&app_id=web-desktop-app-v1.0&t="+revisedRandId();			
+		req.send(); 
+    }
+	function getMXMTrans(id, lang, token){
+		if (lang != "disabled" && id != ''){
+			var usertoken = encodeURIComponent(token);
+			var url2  = "https://apic-desktop.musixmatch.com/ws/1.1/crowd.track.translations.get?translation_fields_set=minimal&selected_language="+lang+"&track_id="+id+"&comment_format=text&part=user&format=json&usertoken="+usertoken+"&app_id=web-desktop-app-v1.0&t="+revisedRandId();			
 			var req2 = new XMLHttpRequest();  
 			req2.overrideMimeType("application/json");
 			req2.open('GET', url2, true);
 			req2.setRequestHeader("authority", "apic-desktop.musixmatch.com");
 			req2.onload  = function() {
-			var jsonResponse2 = JSON.parse(this.responseText);
-			console.log(jsonResponse2); 
-			var status2 = jsonResponse2["message"]["header"]["status_code"] ;
-		    if (status2 != 401){  
-			var lyrics = jsonResponse2["message"]["body"]["translations_list"];
-			console.log(lyrics);
-			ipcRenderer.send('LyricsHandlerTranslation',lyrics);} else {
-			var url  = "https://apic-desktop.musixmatch.com/ws/1.1/token.get?app_id=web-desktop-app-v1.0&t="+revisedRandId();
-			var req3 = new XMLHttpRequest();  
-			req3.overrideMimeType("application/json");
-			req3.open('GET', url, true);
-			req3.setRequestHeader("authority", "apic-desktop.musixmatch.com");
-			req3.onload  = function() {	
-			var jsonResponse = JSON.parse(this.responseText);
-			var status2 = jsonResponse3["message"]["header"]["status_code"] ;
-		    if (status2 != 401){
-			token = jsonResponse3["message"]["body"]["user_token"] ?? '';
-			if (token != "" && token != "UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly"){
-				u(track, artist, lang);
-			} else {
-				
-			}
+				var jsonResponse2 = JSON.parse(this.responseText);
+				console.log(jsonResponse2); 
+				var status2 = jsonResponse2["message"]["header"]["status_code"] ;
+				if (status2 == 200){
+					try{  
+					var lyrics = jsonResponse2["message"]["body"]["translations_list"];
+					console.log(lyrics);
+					if (lyrics.length > 0) {
+						ipcRenderer.send('LyricsHandlerTranslation',lyrics);}
+				    }catch(e){
+				      /// not found trans -> ignore		
+					}
+				} else { //4xx rejected
+			        getToken(2,'', '', id, lang);   
+				}
 		    }
-			 else {}
-	        }
-		    req.send();
-			}	
-		    // window.close();
-	    };
-        req2.send();
-	    } 
-        } else {var url  = "https://apic-desktop.musixmatch.com/ws/1.1/token.get?app_id=web-desktop-app-v1.0&t="+revisedRandId();
-			var req = new XMLHttpRequest();  
-			req.overrideMimeType("application/json");
-			req.open('GET', url, true);
-			req.setRequestHeader("authority", "apic-desktop.musixmatch.com");
-			req.onload  = function() {	
-			var jsonResponse = JSON.parse(this.responseText);
-			var status2 = jsonResponse["message"]["header"]["status_code"] ;
-		    if (status2 != 401){
-			token = jsonResponse["message"]["body"]["user_token"] ?? '';
-			if (token != "" && token != "UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly"){
-				u(track, artist, lang);
-			}else {
-				ipcRenderer.send('LyricsMXMFailed','');
-			}
-		    } else {ipcRenderer.send('LyricsMXMFailed','');}
-	        }
-		    req.send();window.close();}
-		};
-		req.send();
-		}catch(e){
-			console.log('borked');
-			console.log(e);
-			var url  = "https://apic-desktop.musixmatch.com/ws/1.1/token.get?app_id=web-desktop-app-v1.0&t="+revisedRandId();
-			var req = new XMLHttpRequest();  
-			req.overrideMimeType("application/json");
-			req.open('GET', url, true);
-			req.setRequestHeader("authority", "apic-desktop.musixmatch.com");
-			req.onload  = function() {	
-			var jsonResponse = JSON.parse(this.responseText);
-			var status2 = jsonResponse["message"]["header"]["status_code"] ;
-		    if (status2 != 401){
-			token = jsonResponse["message"]["body"]["user_token"] ?? '';
-			if (token != "" && token != "UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly"){
-				u(track, artist, lang);
-			} else {
-				ipcRenderer.send('LyricsMXMFailed','');
-			}
-		    } else {ipcRenderer.send('LyricsMXMFailed','');}
-	        }
-		    req.send();
-		//  window.close();		
-		}
+			req2.send();
+		}		
+	}
 
-
-    } 
 	ipcRenderer.on('mxmcors', function (event, track, artist, lang) {
 		console.log("hello");
-	   if (token!=null && token!= '' )
-        {u(track, artist, lang);}
-		else{
-		var url  = "https://apic-desktop.musixmatch.com/ws/1.1/token.get?app_id=web-desktop-app-v1.0&t="+revisedRandId();
-		var req = new XMLHttpRequest();  
-        req.overrideMimeType("application/json");
-        req.open('GET', url, true);
-		req.setRequestHeader("authority", "apic-desktop.musixmatch.com");
-        req.onload  = function() {	
-        var jsonResponse = JSON.parse(this.responseText);
-		var status2 = jsonResponse["message"]["header"]["status_code"] ;
-		if (status2 != 401){
-	    token = jsonResponse["message"]["body"]["user_token"] ?? '';
-			if (token != "" && token != "UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly"){
-				u(track, artist, lang);
+		if (track != ""& track != "No Title Found" && artist != ''){
+			if ( globaltoken != null && globaltoken != '' ) {
+			console.log("we good");
+			getMXMSubs(track, artist, token, lang)
 			} else {
-				ipcRenderer.send('LyricsMXMFailed','');
+			console.log("get token");
+			getToken(1,track, artist, '', lang);
 			}
-		} else {ipcRenderer.send('LyricsMXMFailed','');}
-	    }
-		req.send();
-		}
+		}	
     });
 	
 

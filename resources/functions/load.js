@@ -1,18 +1,8 @@
-const {join} = require("path");
-const {app, ipcMain, systemPreferences} = require("electron");
-const SentryInit = require("./init").SentryInit;
-SentryInit()
-const {readFile, constants, chmodSync} = require("fs");
-const {LocaleInit} = require("./init");
-
-function hexToRgb(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
-}
+const {join} = require("path"),
+    {app, ipcMain, systemPreferences} = require("electron"),
+    {readFile, constants, chmodSync} = require("fs"),
+    {initAnalytics} = require('./utils');
+initAnalytics();
 
 module.exports = {
 
@@ -63,15 +53,17 @@ module.exports = {
         });
     },
 
-    LoadWebsite: function () {
-        const [region, language] = LocaleInit()
-        app.locale = [region, language]
-        const urlBase = (app.preferences.value('advanced.useBetaSite').includes(true)) ? `https://beta.music.apple.com/${region}` : `https://music.apple.com/${region}`;
-        const urlFallback = `https://music.apple.com/${region}?l=${language}`;
-        const urlLanguage = `${urlBase}?l=${language}`;
-        console.log(`[LoadWebsite] Attempting to load '${urlLanguage}'`)
+    LoadWebsite: function (win) {
+        if (!win) return;
 
-        app.win.loadURL(urlLanguage).then(() => {
+        app.locale = app.ame.init.LocaleInit();
+        const [region, language] = app.locale,
+            urlBase = (app.preferences.value('advanced.useBetaSite').includes(true)) ? `https://beta.music.apple.com/${region}` : `https://music.apple.com/${region}`,
+            urlFallback = `https://music.apple.com/${region}?l=${language}`,
+            urlLanguage = `${urlBase}?l=${language}`;
+
+        console.log(`[LoadWebsite] Attempting to load '${urlLanguage}'`)
+        win.loadURL(urlLanguage).then(() => {
             let authedUrl;
 
             ipcMain.once('authorized', (e, args) => {
@@ -80,21 +72,21 @@ module.exports = {
             })
 
             if (app.preferences.value('general.startupPage') !== "browse") {
-                app.funcs.LoadJS('checkAuth.js')
+                app.ame.load.LoadJS('checkAuth.js')
                 if (app.isAuthorized) {
-                    app.win.webContents.clearHistory()
+                    win.webContents.clearHistory()
                     console.log(`[LoadWebsite] User is authenticated. Loading '${app.preferences.value('general.startupPage')}'. (${authedUrl}).`)
                 }
             } else {
                 console.log(`[LoadWebsite] Loaded '${urlLanguage}'`)
             }
         }).catch((err) => {
-            app.win.loadURL(urlFallback).then(() => console.error(`[LoadWebsite] '${urlLanguage}' was unavailable, falling back to '${urlFallback}' | ${err}`))
+            win.loadURL(urlFallback).then(() => console.error(`[LoadWebsite] '${urlLanguage}' was unavailable, falling back to '${urlFallback}' | ${err}`))
         })
     },
 
     LoadFiles: function () {
-        app.funcs.LoadJS('settingsPage.js');
+        app.ame.load.LoadJS('settingsPage.js');
         if (app.preferences.value('visual.removeAppleLogo').includes(true)) {
             app.win.webContents.insertCSS(`
             @media only screen and (max-width: 483px) {
@@ -112,22 +104,25 @@ module.exports = {
                 app.win.webContents.insertCSS(`
                 :root {
                         --keyColor: ${accent} !important;
-                        --keyColor-rgb: ${hexToRgb(accent).r} ${hexToRgb(accent).g} ${hexToRgb(accent).b} !important;
+                        --systemAccentBG: ${accent} !important;
+                        --keyColor-rgb: ${app.ame.utils.hexToRgb(accent).r} ${app.ame.utils.hexToRgb(accent).g} ${app.ame.utils.hexToRgb(accent).b} !important;
                     }
                 }
                 `).catch((e) => console.error(e));
             }
+        } else {
+
         }
 
         /* Load Window Frame */
         if (app.preferences.value('visual.frameType') === 'mac') {
-            app.funcs.LoadJS('frame_macOS.js')
+            app.ame.load.LoadJS('frame_macOS.js')
         } else if ((app.preferences.value('visual.frameType') === 'mac-right')) {
-            app.funcs.LoadJS('frame_Windows.js')
+            app.ame.load.LoadJS('frame_Windows.js')
         } else if (process.platform === 'darwin' && !app.preferences.value('visual.frameType')) {
-            app.funcs.LoadJS('frame_macOS.js')
+            app.ame.load.LoadJS('frame_macOS.js')
         } else if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
-            app.funcs.LoadJS('frame_Windows.js')
+            app.ame.load.LoadJS('frame_Windows.js')
             if (app.win.isMaximized()) {
                 app.win.webContents.executeJavaScript(`if (document.querySelector("#maximize")) { document.querySelector("#maximize").classList.add("maxed"); }`).catch((e) => console.error(e));
             }
@@ -176,7 +171,7 @@ module.exports = {
 
         /* Load Back Button */
         if (!backButtonChecks() && app.win.webContents.canGoBack()) {
-            app.funcs.LoadJS('backButton.js')
+            app.ame.load.LoadJS('backButton.js')
         } else {
             /* Remove it if user cannot go back */
             app.win.webContents.executeJavaScript(`if (document.querySelector('#backButtonBar')) { document.getElementById('backButtonBar').remove() };`).catch((e) => console.error(e));
@@ -188,26 +183,30 @@ module.exports = {
 
     LoadOneTimeFiles: function () {
         // Inject the custom stylesheet
-        app.funcs.LoadCSS('custom-stylesheet.css')
+        app.ame.load.LoadCSS('custom-stylesheet.css')
 
         // Inject Plugin Interaction
         if(app.pluginsEnabled) {
-            app.funcs.LoadJS('pluginSystem.js', false)
+            app.ame.load.LoadJS('pluginSystem.js', false)
         }
 
         // Lyrics
-        app.funcs.LoadJS('lyrics.js')
+        app.ame.load.LoadJS('lyrics.js')
+
+        // Vue Test
+        // app.ame.load.LoadJS('vue-managed.js')
+        // app.ame.load.LoadJS('vue.js')
 
         // Bulk JavaScript Functions
-        app.funcs.LoadJS('custom.js')
+        app.ame.load.LoadJS('custom.js')
 
         // Window Frames
         if (app.preferences.value('visual.frameType') === 'mac') {
-            app.funcs.LoadCSS('frame_macOS_emulation.css')
+            app.ame.load.LoadCSS('frame_macOS_emulation.css')
         } else if (app.preferences.value('visual.frameType') === 'mac-right') {
-            app.funcs.LoadCSS('frame_macOS_emulation_right.css')
+            app.ame.load.LoadCSS('frame_macOS_emulation_right.css')
         } else if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
-            app.funcs.LoadCSS('frame_Windows.css')
+            app.ame.load.LoadCSS('frame_Windows.css')
         }
 
         // Set the settings variables if needed
@@ -218,17 +217,17 @@ module.exports = {
 
         // Streamer Mode
         if (app.preferences.value('visual.streamerMode').includes(true)) {
-            app.funcs.LoadCSS('streamerMode.css')
+            app.ame.load.LoadCSS('streamerMode.css')
         }
 
         /* Remove the Scrollbar */
         if (app.preferences.value('advanced.removeScrollbars').includes(true)) {
             app.win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
         } else {
-            app.funcs.LoadCSS('macosScrollbar.css')
+            app.ame.load.LoadCSS('macosScrollbar.css')
         }
 
         /* Inject the MusicKitInterop file */
-        app.win.webContents.executeJavaScript('MusicKitInterop.init()').catch((e) => console.error(e))
+        app.win.webContents.executeJavaScript('MusicKitInterop.init()').catch((e) => console.error(e));
     }
 }
