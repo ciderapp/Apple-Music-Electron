@@ -89,7 +89,7 @@ const Utils = {
             app.transparency = true;
             return "fullscreen-ui"
         } else if (!app.preferences.value('visual.transparencyEffect') || !Utils.isVibrancySupported()) {
-            console.verbose(`[fetchTransparencyOptions] Vibrancy not created. Required options not met. (transparencyEffect: ${app.preferences.value('visual.transparencyEffect')} | isVibrancySupported: ${isVibrancySupported()})`);
+            console.verbose(`[fetchTransparencyOptions] Vibrancy not created. Required options not met. (transparencyEffect: ${app.preferences.value('visual.transparencyEffect')} | isVibrancySupported: ${Utils.isVibrancySupported()})`);
             app.transparency = false;
             return false
         }
