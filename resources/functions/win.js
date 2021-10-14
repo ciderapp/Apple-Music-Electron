@@ -345,7 +345,7 @@ module.exports = {
 
         // Create the Browser Window
         console.log('[CreateBrowserWindow] Creating BrowserWindow.')
-        if (process.platform === "darwin") {
+        if (process.platform === "darwin" || process.platform === "linux") {
             win = new BrowserWindow(options)
         } else {
             const {BrowserWindow} = require("electron-acrylic-window");
