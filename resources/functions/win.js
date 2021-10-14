@@ -114,7 +114,6 @@ module.exports = {
                 {
                     label: 'Quit',
                     click: function () {
-                        app.isQuiting = true
                         app.quit();
                     }
                 }
@@ -138,7 +137,6 @@ module.exports = {
                 {
                     label: 'Quit',
                     click: function () {
-                        app.isQuiting = true
                         app.quit();
                     }
                 }

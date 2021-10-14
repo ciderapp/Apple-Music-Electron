@@ -4,7 +4,6 @@ const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPre
     {readFile, existsSync, truncate} = require('fs'),
     rimraf = require('rimraf'),
     {initAnalytics} = require('./utils');
-const {auth} = require("lastfmapi");
 initAnalytics();
 
 const handler = {
@@ -234,14 +233,7 @@ const handler = {
 
             if (!app.isQuiting || process.platform === "darwin") {
                 event.preventDefault();
-                if (typeof app.win.hide === 'function') {
-                    app.win.hide();
-                }
-            } else {
-                event.preventDefault();
-                if (typeof app.win.destroy === 'function') {
-                    app.win.destroy();
-                }
+                app.win.hide();
             }
 
         });
@@ -523,7 +515,7 @@ const handler = {
             console.warn(`[LinkHandler] Attempting to load song id: ${formattedSongID}`);
             // Someone look into why playMediaItem doesn't work thanks - cryptofyre
 
-            app.win.webContents.executeJavaScript(`MusicKit.getInstance().api.library.song('${formattedSongID}')`)
+            // app.win.webContents.executeJavaScript(`MusicKit.getInstance().api.library.song('${formattedSongID}')`)
             app.win.webContents.executeJavaScript(`MusicKit.getInstance().changeToMediaItem('${formattedSongID}')`)
         }
 

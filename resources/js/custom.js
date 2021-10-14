@@ -543,6 +543,8 @@ try {
                 AMThemes.loadTheme(preferences["visual"]["theme"]);
                 if (preferences["visual"]["transparencyEffect"] !== "") {
                     AMThemes.setTransparency(true);
+                } else {
+                    AMThemes.setTransparency(false);
                 }
 
 
