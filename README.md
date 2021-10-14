@@ -5,11 +5,11 @@
   <img src="https://img.shields.io/github/forks/Apple-Music-Electron/Apple-Music-Electron" alt="GitHub Forks"/>
   <img src="https://img.shields.io/github/downloads/Apple-Music-Electron/Apple-Music-Electron/total.svg?color=23B14D" alt="GitHub Downloads"/>
   <img src="https://badges.depfu.com/badges/121fff86821ca5a2bf9741f80b8f0a68/overview.svg" alt="Depfu Dependencies"/>
-  <a target="_blank" href="https://ko-fi.com/cryptofyre"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee"/></a>
+  <a target="_blank" href="https://ko-fi.com/cryptofyre"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-B48C69" alt="Buy Me A Coffee"/></a>
   <br>
   <a target="_blank" href="https://discord.gg/CezHYdXHEM"><img src="https://img.shields.io/discord/843954443845238864?label=Discord&color=5865F2&logo=discord&logoColor=white&style=flat" alt="Discord"/></a>
   <a target="_blank" href="https://twitter.com/AppleElectron"><img src="https://img.shields.io/twitter/follow/AppleElectron?label=Twitter&color=%231DA1F2&logo=twitter&style=flat" alt="Twitter"/></a>
-  <a target="_blank" href="https://reddit.com/r/applemusicelectron"><img src="https://img.shields.io/reddit/subreddit-subscribers/applemusicelectron?label=Reddit&color=FF5700&logo=reddit&logoColor=white&style=flat" alt="Reddit"/></a>
+  <a target="_blank" href="https://reddit.com/r/applemusicelectron"><img src="https://custom-icon-badges.herokuapp.com/reddit/subreddit-subscribers/applemusicelectron?label=Reddit&color=FF5700&logo=redditnew" alt="Reddit"/></a>
   <br><br>
   <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-win.yml/badge.svg" alt="Windows Build Status"/>
   <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-linux.yml/badge.svg" alt="Linux Build Status"/>
@@ -27,7 +27,7 @@
 
 [![Get it from the Microsoft Store](https://img.shields.io/badge/Get_It_From_The_Microsoft_Store-100000?style=for-the-badge&logo=microsoft)](https://www.youtube.com/watch?v=dQw4w9WgXcQ) <sup>[1](#ComingSoon)</sup>
 
-[![Get it from Windows Package Manager](https://img.shields.io/badge/Get_It_via_Winget-100000?style=for-the-badge&logo=microsoft)](https://winstall.app/apps/cryptofyre.AppleMusicElectron)
+[![Get it from Windows Package Manager](https://custom-icon-badges.herokuapp.com/badge/Get_It_via_Winget-100000?style=for-the-badge&logo=winstall)](https://winstall.app/apps/cryptofyre.AppleMusicElectron)
 
 [![Get it from the Snap Store](https://img.shields.io/badge/Get_It_From_The_Snap_Store-100000?style=for-the-badge&logo=snapcraft)](https://snapcraft.io/apple-music-electron)
 
@@ -45,7 +45,11 @@ for any legal concerns contact me at <a href="mailto:cryptofyre@protonmail.com">
 
 <p align="center">
   <br>
-  <img width="300px" src="https://user-images.githubusercontent.com/33162551/124784795-df5d4c80-df0b-11eb-99a7-dc2b1cfb81bd.png" alt="MacStadium">
+  <a> Project Supporters </a>
+  <br>
+  <br>
+  <img href="https://www.jetbrains.com/" width="120px" height="125px" src="https://logonoid.com/images/jetbrains-logo.png" alt="JetBrains">
+  <img href="https://www.macstadium.com/" width="300px" src="https://user-images.githubusercontent.com/33162551/124784795-df5d4c80-df0b-11eb-99a7-dc2b1cfb81bd.png" alt="MacStadium">
 </p>
 
 <i><a name="ComingSoon">1</a> - Coming Soon</i>

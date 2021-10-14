@@ -1,74 +1,39 @@
 require('v8-compile-cache');
 const {app, globalShortcut, session} = require('electron');
 
+// Initialize the Preferences so verbose doesnt fuck up
+const appFuncs = require('./resources/functions/app-init');
+app.ame = appFuncs()
+
 // Run all the Before App is Ready Stuff
-const {PreferencesInit} = require('./resources/functions/init');
-PreferencesInit()
-
-const {LaunchHandler} = require('./resources/functions/handler')
-LaunchHandler()
-
-const {LoggingInit} = require('./resources/functions/init')
-LoggingInit()
-
-const {BaseInit} = require('./resources/functions/init')
-BaseInit()
-
-const winFuncs = require('./resources/functions/win')
-const loadFuncs = require('./resources/functions/load')
-app.funcs = Object.assign(winFuncs, loadFuncs)
-app.funcs.discord = require('./resources/functions/media/discordrpc')
-app.funcs.lastfm = require('./resources/functions/media/lastfm')
-app.funcs.mpris = require('./resources/functions/media/mpris')
-
-const {VersionHandler} = require('./resources/functions/handler');
-VersionHandler()
+app.ame.init.LoggingInit();
+app.ame.handler.LaunchHandler();
+app.ame.handler.InstanceHandler();
+app.ame.init.BaseInit();
+app.ame.handler.VersionHandler();
 
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {
-    console.verbose('[CreateWindow] Started.');
-    const InstanceHandler = require('./resources/functions/handler').InstanceHandler
-    const ExistingInstance = InstanceHandler()
-    if (ExistingInstance === true) {
-        console.warn('[Apple-Music-Electron][InstanceHandler] Existing Instance Found. Terminating.');
-        app.quit()
-        return;
-    } else {
-        console.warn('[Apple-Music-Electron][InstanceHandler] No existing instances found.');
-    }
+    if (app.isQuiting) { app.quit(); return; }
 
-    const {LinkHandler} = require('./resources/functions/handler')
-    LinkHandler() // Handles Protocols
+    app.win = app.ame.win.CreateBrowserWindow() // Create the BrowserWindow
 
-    const {CreateBrowserWindow} = require('./resources/functions/CreateBrowserWindow')
-    app.win = CreateBrowserWindow() // Create the Browser Window
-
-    app.funcs.LoadWebsite() // Load the Website
-
-    const {SettingsHandler} = require('./resources/functions/handler')
-    SettingsHandler() // Handles updates to settings
-
-    const {WindowStateHandler} = require('./resources/functions/handler')
-    WindowStateHandler() // Handling the Window
-
-    const {PlaybackStateHandler} = require('./resources/functions/handler')
-    PlaybackStateHandler() // IPCMain
-
-    const {MediaStateHandler} = require('./resources/functions/handler')
-    MediaStateHandler() // IPCMain
+    app.ame.handler.SettingsHandler(); // Handles updates to settings
+    app.ame.handler.WindowStateHandler(); // Handling the Window
+    app.ame.handler.PlaybackStateHandler(); // Playback Change Listener
+    app.ame.handler.MediaStateHandler(); // Media Change Listener
+    app.ame.handler.LyricsHandler(); // Lyrics Handling
+    app.ame.handler.RendererListenerHandlers(); // Renderer Listeners
 
     if (process.platform === 'win32' && app.transparency) { app.win.show() } // Show the window so SetThumbarButtons doesnt break
-    app.funcs.SetThumbarButtons(null) // Set Inactive Thumbnail Toolbar Icons
-
-    app.funcs.SetDockMenu() // Set the Dock for macOS
-    app.funcs.SetApplicationMenu() // Set the Menu for OS's that use it (macOS)
-    
-    const {LaunchHandlerPostWin} = require('./resources/functions/handler')
-    LaunchHandlerPostWin()
+    app.ame.win.SetButtons() // Set Inactive Thumbnail Toolbar Icons or TouchBar
+    app.ame.win.SetApplicationMenu()
 }
 
 // When its Ready call it all
 app.on('ready', () => {
+    if (app.isQuiting) { app.quit(); return; }
+
     // Apple Header tomfoolery.
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
         details.responseHeaders['Content-Security-Policy'] = 'unsafe-inline'
@@ -80,10 +45,6 @@ app.on('ready', () => {
     
     console.log('[Apple-Music-Electron] Application is Ready. Creating Window.')
     CreateWindow()
-});
-
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit()
 });
 
 app.on('activate', () => {
@@ -111,15 +72,15 @@ app.on('widevine-error', (error) => {
     process.exit(1)
 })
 
-app.on('before-quit', function () {
-    app.funcs.mpris.clearActivity()
-    app.funcs.discord.disconnect()
+app.on('window-all-closed', app.quit);
+
+app.on('before-quit', () => {
+    app.isQuiting = true;
+    app.win.removeAllListeners('close');
+    app.win.close();
+    app.ame.mpris.clearActivity()
+    app.ame.discord.disconnect()
     console.log('---------------------------------------------------------------------')
     console.log('Application Closing...')
     console.log('---------------------------------------------------------------------')
-    app.isQuiting = true;
-    globalShortcut.unregisterAll()
 });
-
-
-
