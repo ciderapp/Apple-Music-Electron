@@ -101,7 +101,7 @@ try {
                         document.querySelector('#lyricsButton').style.fill = 'var(--playerPlatterButtonIconFill)';
                         document.querySelector('#lyricsButton').style.boxShadow = '0 1px 1px rgb(0 0 0 / 10%)';
                         document.querySelector('#lyricsButton').style.background = 'var(--playerPlatterButtonBGFill)';
-                        if (document.getElementById('lyricer').childNodes[0].childNodes.length != null || document.getElementById('lyricer').childNodes[0].childNodes.length <= 1){
+                        if (document.getElementById('lyricer').childNodes[0].childNodes.length == null || document.getElementById('lyricer').childNodes[0].childNodes.length <= 1){   
                         _lyrics.GetLyrics(1,false);}
                     }
 

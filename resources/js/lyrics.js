@@ -46,7 +46,9 @@
         for (let i = 0; i < self.totalLines; i++) {
             const li = document.getElementById(self.lineidPrefix + i);
             if (i >= startShow && i <= endShow) {
-                li.style.display = "block";
+                try{
+                li.style.display = "block";}
+                catch(e){}
             } else {
                 li.style.display = "block";
             }
