@@ -9,29 +9,31 @@ const MusicKitInterop = {
         MusicKit.getInstance().addEventListener(MusicKit.Events.playbackStateDidChange, () => {
             if (MusicKitInterop.filterTrack(MusicKitInterop.getAttributes(), true, false)) {
                 global.ipcRenderer.send('playbackStateDidChange', MusicKitInterop.getAttributes())
-                if(typeof _plugins != "undefined") {
+                if (typeof _plugins != "undefined") {
                     _plugins.execute("OnPlaybackStateChanged", {Attributes: MusicKitInterop.getAttributes()})
                 }
-                var nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
-                if(typeof nowPlayingItem != "undefined") {
-                    if(nowPlayingItem["type"] == "musicVideo") {
-                        document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: none !important');     
-                    }else {
-                        document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: flex !important');
+                const nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
+                if (typeof nowPlayingItem != "undefined") {
+                    if (nowPlayingItem["type"] === "musicVideo") {
+                        document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'display: none !important');
+                    } else {
+                        document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'display: flex !important');
                     }
                 }
-            }else{
-                document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: flex !important');
-                try{
-                    var nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
-                    if(typeof nowPlayingItem != "undefined") {
-                        if(nowPlayingItem["type"] == "musicVideo") {
-                            document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: none !important');     
-                        }else {
-                            document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style','display: flex !important');
+            } else {
+                document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'display: flex !important');
+                try {
+                    const nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
+                    if (typeof nowPlayingItem != "undefined") {
+                        if (nowPlayingItem["type"] === "musicVideo") {
+                            document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'display: none !important');
+                        } else {
+                            document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'display: flex !important');
                         }
                     }
-                }catch(e){}
+                } catch (e) {
+                    console.error(e);
+                }
             }
         });
 
@@ -41,6 +43,10 @@ const MusicKitInterop = {
                 AMThemes.updateMeta()
             }
         });
+
+        MusicKit.getInstance().addEventListener(MusicKit.Events.authorizationStatusDidChange, () => {
+            global.ipcRenderer.send('authorizationStatusDidChange', MusicKit.getInstance().authorizationStatus)
+        })
     },
 
     getAttributes: function () {
@@ -102,6 +108,9 @@ const MusicKitInterop = {
 process.once('loaded', () => {
     global.ipcRenderer = electron.ipcRenderer;
     global.MusicKitInterop = MusicKitInterop;
+    if (!MusicKit.getInstance().isAuthorized) {
+        MusicKit.getInstance().authorize()
+    }
 });
 
 // MusicKit.getInstance().addEventListener( MusicKit.Events.queueItemsDidChange,logIt );

@@ -233,14 +233,7 @@ const handler = {
 
             if (!app.isQuiting || process.platform === "darwin") {
                 event.preventDefault();
-                if (typeof app.win.hide === 'function') {
-                    app.win.hide();
-                }
-            } else {
-                event.preventDefault();
-                if (typeof app.win.destroy === 'function') {
-                    app.win.destroy();
-                }
+                app.win.hide();
             }
 
         });
@@ -376,6 +369,14 @@ const handler = {
             const acrylicSupported = app.ame.utils.isAcrylicSupported();
             app.win.webContents.send('acrylicSupport', acrylicSupported);
         });
+
+        // Authorization
+        ipcMain.on('authorizationStatusDidChange', (_event, authorized) => {
+            console.log(`authorization updated. status: ${authorized}`)
+            app.win.reload()
+            app.ame.load.LoadFiles()
+            app.isAuthorized = (authorized === 3)
+        })
 
         // Update Themes
         ipcMain.on('updateThemes', (_event) => {
@@ -514,7 +515,7 @@ const handler = {
             console.warn(`[LinkHandler] Attempting to load song id: ${formattedSongID}`);
             // Someone look into why playMediaItem doesn't work thanks - cryptofyre
 
-            app.win.webContents.executeJavaScript(`MusicKit.getInstance().api.library.song('${formattedSongID}')`)
+            // app.win.webContents.executeJavaScript(`MusicKit.getInstance().api.library.song('${formattedSongID}')`)
             app.win.webContents.executeJavaScript(`MusicKit.getInstance().changeToMediaItem('${formattedSongID}')`)
         }
 
