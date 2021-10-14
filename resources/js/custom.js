@@ -4,6 +4,16 @@ try {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     }
 
+    var setInnerHTML = function(elm, html) {
+        elm.innerHTML = html;
+        Array.from(elm.querySelectorAll("script")).forEach( oldScript => {
+            const newScript = document.createElement("script");
+            Array.from(oldScript.attributes).forEach( attr => newScript.setAttribute(attr.name, attr.value) );
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+        };
+
     function matchRuleShort(str, rule) {
         var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
         return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
@@ -412,6 +422,25 @@ try {
                 };
                 xhttp.open("GET", url, true);
                 xhttp.send();
+            },
+            makeModal(content) {
+                var backdrop = document.createElement("div");
+                var modalWin = document.createElement("div");
+                var modalCloseBtn = document.createElement("button");
+                var modalContent = document.createElement("div");
+                backdrop.classList.add("ameModal-Backdrop");
+                modalWin.classList.add("ameModal");
+                modalCloseBtn.classList.add("ameModal-Close");
+                modalCloseBtn.innerHTML = ("Close");
+                modalCloseBtn.addEventListener("click", ()=>{
+                    backdrop.remove();
+                });
+                setInnerHTML(modalContent, content);
+                modalWin.appendChild(modalCloseBtn);
+                modalWin.appendChild(modalContent);
+                backdrop.appendChild(modalWin);
+                document.body.appendChild(backdrop);
+                return backdrop;
             },
             LoadCustomStartup: () => {
                 const preferences = ipcRenderer.sendSync('getPreferences');

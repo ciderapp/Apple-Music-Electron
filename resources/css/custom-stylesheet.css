@@ -469,3 +469,29 @@ body {
       transform: scale(0.95);
     }
 }
+
+.ameModal-Backdrop {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    background: rgb(0 0 0 / 45%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ameModal {
+    width: 80%;
+    height: 80%;
+    padding: 16px;
+    border-radius: 10px;
+    background: rgb(50 50 50);
+    overflow: overlay;
+}
+
+.ameModal-Close {
+    float:right;
+}

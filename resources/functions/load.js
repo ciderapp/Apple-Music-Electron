@@ -193,6 +193,10 @@ module.exports = {
         // Lyrics
         app.ame.load.LoadJS('lyrics.js')
 
+        // Vue Test
+        // app.ame.load.LoadJS('vue-managed.js')
+        // app.ame.load.LoadJS('vue.js')
+
         // Bulk JavaScript Functions
         app.ame.load.LoadJS('custom.js')
 
