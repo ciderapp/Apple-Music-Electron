@@ -108,6 +108,9 @@ const MusicKitInterop = {
 process.once('loaded', () => {
     global.ipcRenderer = electron.ipcRenderer;
     global.MusicKitInterop = MusicKitInterop;
+    if (!MusicKit.getInstance().isAuthorized) {
+        MusicKit.getInstance().authorize()
+    }
 });
 
 // MusicKit.getInstance().addEventListener( MusicKit.Events.queueItemsDidChange,logIt );
