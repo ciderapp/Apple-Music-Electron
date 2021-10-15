@@ -234,6 +234,12 @@ const handler = {
             else { app.quit() }
         })
 
+        app.win.on('maximize', (e) => {
+            if (app.isMiniplayerActive) {
+                e.preventDefault()
+            }
+        })
+
         app.win.on('show', () => {
             app.ame.win.SetContextMenu(true)
             app.ame.win.SetButtons()
@@ -380,12 +386,9 @@ const handler = {
 
         // Window Navigation - Maximize
         ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
-            if (app.isMiniplayerActive) {
-                return
-            } // Here we would setup a function to open the fullscreen player with lyrics
-
+            
             if (app.win.isMaximized()) {
-                app.win.restore()
+                app.win.unmaximize()
                 if (process.platform !== "win32") {
                     app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.remove("maxed")`)
                 }
@@ -418,19 +421,20 @@ const handler = {
         const minSize = app.win.getMinimumSize()
         ipcMain.on("set-miniplayer", (event, val) => {
             if (val) {
-                app.isMiniplayerActive = true
-                app.win.setSize(300, 300)
-                app.win.setMinimumSize(300, 55)
-                app.win.setMaximumSize(300, 300)
-                app.win.setMaximizable(false)
-                app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(true)")
+                app.isMiniplayerActive = true;
+                app.win.setSize(300, 300);
+                app.win.setMinimumSize(300, 55);
+                app.win.setMaximumSize(300, 300);
+                app.win.maximizable = false;
+                app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(true)").catch((e) => console.error(e));
+                if (app.win.isMaximized) { app.win.unmaximize(); }
             } else {
-                app.isMiniplayerActive = false
-                app.win.setMaximumSize(9999, 9999)
-                app.win.setMinimumSize(minSize[0], minSize[1])
-                app.win.setSize(1024, 600)
-                app.win.setMaximizable(true)
-                app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(false)")
+                app.isMiniplayerActive = false;
+                app.win.setMaximumSize(9999, 9999);
+                app.win.setMinimumSize(minSize[0], minSize[1]);
+                app.win.setSize(1024, 600);
+                app.win.maximizable = true;
+                app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(false)").catch((e) => console.error(e));
             }
         })
 

@@ -102,6 +102,7 @@ try {
                 /* Lyrics Button Click Event Handling */
                 const upNextSideBarTogglePath = (preferences.visual.frameType === 'mac' ? '/html/body/div[4]/div/div[3]/div/div[3]/div[3]/button' : '/html/body/div[4]/div[3]/div[3]/div/div[3]/div[3]/button');
                 const upNextSideBarToggle = mediaControlsElement.childNodes[5].getElementsByTagName('button')[0];
+                let clonedElement;
                 if (document.querySelector("#lyricsButton") && upNextSideBarToggle) {
 
                     function openLyrics() {
@@ -111,8 +112,9 @@ try {
                         document.querySelector('#lyricsButton').style.fill = 'var(--playerPlatterButtonIconFill)';
                         document.querySelector('#lyricsButton').style.boxShadow = '0 1px 1px rgb(0 0 0 / 10%)';
                         document.querySelector('#lyricsButton').style.background = 'var(--playerPlatterButtonBGFill)';
-                        if (document.getElementById('lyricer').childNodes[0].childNodes.length == null || document.getElementById('lyricer').childNodes[0].childNodes.length <= 1){   
-                        _lyrics.GetLyrics(1,false);}
+                        if (document.getElementById('lyricer').childNodes[0].childNodes.length == null || document.getElementById('lyricer').childNodes[0].childNodes.length <= 1) {
+                            _lyrics.GetLyrics(1, false);
+                        }
                     }
 
                     function closeLyrics() {
@@ -124,9 +126,8 @@ try {
                         document.querySelector('#lyricsButton').style.background = '0 0';
                     }
 
-                        clonedElement = document.querySelector('#lyricsButton').cloneNode(true);
-                        document.querySelector('#lyricsButton').replaceWith(clonedElement);
-                    
+                    clonedElement = document.querySelector('#lyricsButton').cloneNode(true);
+                    document.querySelector('#lyricsButton').replaceWith(clonedElement);
 
                     document.getElementById("lyricsButton").addEventListener('click', function () {
                         if (document.querySelector('.web-chrome-drawer').querySelector('.web-navigation__up-next.web-chrome-up-next.up-next') == null) {
@@ -169,15 +170,17 @@ try {
                                 } else {
                                     lrc.setLrc(lrcfile);
                                 }
-
                             });
+
                             ipcRenderer.on('lyricstranslation', function (event, data) {
                                 console.log(data);
                                 lrc.setMXMTranslation(data);
                             });
+
                             ipcRenderer.on('backuplyrics', function (_event, _data) {
                                 _lyrics.GetLyrics(1, true);
                             });
+
                             ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
                                 if (data < 0) {
                                     data = 0
@@ -215,10 +218,13 @@ try {
                 const songID = (MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["_songId"] ?? -1 : -1;
                 console.log('mxmon' + preferences.visual.mxmon);
                 console.log('mxmon' + preferences.visual.mxmon);
+
+                /* MusixMatch Lyrics*/
                 if (!mxmfail && preferences.visual.mxmon.includes(true)) {
-                    /* get MXM lyrics and translation */
                     ipcRenderer.send('MXMTranslation', trackName, artistName, preferences.visual.mxmlanguage);
-                } else if (songID !== -1) {
+                }
+                /* Apple Lyrics (from api lyric query) */
+                else if (songID !== -1) {
                     MusicKit.getInstance().api.lyric(songID)
                         .then(function (response) {
                             let seconds,
@@ -271,14 +277,13 @@ try {
                                         }
                                     }
                                     console.log("AM lyrics:" + lyrics);
-                                    let artworkURL = ((musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem.artworkURL : '').replace("{w}", 256).replace("{h}", 256);
+                                    let artworkURL = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artworkURL : '').replace("{w}", 256).replace("{h}", 256);
                                     if (artworkURL == null) {
                                         artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
                                     }
                                     if (mode === 1) {
                                         ipcRenderer.send('LyricsUpdate', lyrics, artworkURL);
                                     } else {
-                                        console.log(lyrics);
                                         ipcRenderer.send('LyricsHandler', lyrics, artworkURL);
                                     }
                                 } catch (e) {
@@ -303,9 +308,9 @@ try {
                             }
                         }
                     );
-
-                } else {
-                    console.log('yo');
+                }
+                /* Apple Lyrics (from api song query */
+                else {
                     try {
                         MusicKit.getInstance().api.library.song(MusicKit.getInstance().nowPlayingItem.id).then((data) => {
                             if (data != null && data !== "") {
@@ -418,12 +423,11 @@ try {
             updateMeta() {
                 console.warn("[Custom] Refreshed Meta CSS");
                 /** Exposes artwork and other metadata to CSS for themes */
-                const musicKit = MusicKit.getInstance();
-                let artwork = musicKit.nowPlayingItem["attributes"]["artwork"]["url"];
+                let artwork = MusicKit.getInstance().nowPlayingItem["attributes"]["artwork"]["url"];
                 /* Fix Itunes Match album arts not showing */
                 if (artwork === '' || !artwork) {
                     try {
-                        musicKit.api.library.song(musicKit.nowPlayingItem.id).then((data) => {
+                        MusicKit.getInstance().api.library.song(MusicKit.getInstance().nowPlayingItem.id).then((data) => {
                             if (data !== "") {
                                 artwork = data["artwork"]["url"];
                                 document.querySelector('#ember13').getElementsByTagName('img')[0].src = artwork;
