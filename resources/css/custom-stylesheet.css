@@ -496,10 +496,6 @@ body {
     float:right;
 }
 
-body::before {
-    display: none;
-}
-
 .micaBackground {
     width: 100%;
     height: 100%;

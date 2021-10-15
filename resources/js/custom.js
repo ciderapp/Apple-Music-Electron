@@ -361,10 +361,7 @@ try {
                         --screenWidth: ${screen.width}px;
                     }
                     body::before {
-                        background: var(--user-wallpaper);
-                        background-position: calc(var(--screenX) * -1) calc(var(--screenY) * -1)!important;
-                        background-size: var(--screenWidth) var(--screenHeight);
-                        background-repeat:repeat;
+                        display: none;
                     }
                 `);
                 this.refresh();
