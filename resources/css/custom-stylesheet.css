@@ -291,7 +291,7 @@ span.app-prefs-title {
 
 /* Artwork CSS (for miniPlayer) */
 
-#ember13.media-artwork-v2--downloaded::after {
+.web-chrome-playback-lcd #ember13.media-artwork-v2--downloaded::after {
     content: '';
     position: absolute;
     top: 0;
@@ -301,7 +301,7 @@ span.app-prefs-title {
     pointer-events: none;
 }
 
-#ember13.media-artwork-v2--downloaded:hover::after {
+.web-chrome-playback-lcd #ember13.media-artwork-v2--downloaded:hover::after {
     content: '';
     position: absolute;
     top: 0;

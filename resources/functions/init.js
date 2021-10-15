@@ -145,6 +145,7 @@ const init = {
 
         app.pluginsEnabled = false;
         app.isAuthorized = false;
+        app.isMiniplayerActive = false;
         app.media = {status: false, playParams: {id: 'no-id-found'}};
 
 

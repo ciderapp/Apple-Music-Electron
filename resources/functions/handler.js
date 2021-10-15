@@ -225,7 +225,7 @@ const handler = {
         }
 
         app.win.on('close', (e) => {
-            if (app.win.miniplayerActive) {
+            if (app.isMiniplayerActive) {
                 ipcMain.emit("set-miniplayer", false);
                 e.preventDefault()
             }
@@ -382,7 +382,7 @@ const handler = {
 
         // Window Navigation - Maximize
         ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
-            if (app.win.miniplayerActive) {
+            if (app.isMiniplayerActive) {
                 return
             } // Here we would setup a function to open the fullscreen player with lyrics
 
@@ -420,14 +420,14 @@ const handler = {
         const minSize = app.win.getMinimumSize()
         ipcMain.on("set-miniplayer", (event, val) => {
             if (val) {
-                app.win.miniplayerActive = true
+                app.isMiniplayerActive = true
                 app.win.setSize(300, 300)
                 app.win.setMinimumSize(300, 55)
                 app.win.setMaximumSize(300, 300)
                 app.win.setMaximizable(false)
                 app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(true)")
             } else {
-                app.win.miniplayerActive = false
+                app.isMiniplayerActive = false
                 app.win.setMaximumSize(9999, 9999)
                 app.win.setMinimumSize(minSize[0], minSize[1])
                 app.win.setSize(1024, 600)
