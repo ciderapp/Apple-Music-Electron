@@ -50,7 +50,7 @@
   "build": {
     "electronVersion": "15.1.2",
     "electronDownload": {
-      "version": "15.1.2",
+      "version": "15.1.2-wvvmp",
       "mirror": "https://github.com/castlabs/electron-releases/releases/download/v"
     },
     "appId": "apple-music",
