@@ -327,10 +327,6 @@ const handler = {
             else if (currentChanges.includes('visual.removeUpsell') || currentChanges.includes('visual.removeAppleLogo') || currentChanges.includes('visual.removeFooter') || currentChanges.includes('visual.useOperatingSystemAccent')) {
                 app.ame.load.LoadFiles();
             }
-            // closeButtonMinimize
-            else if (currentChanges.includes('window.closeButtonMinimize')) {
-                app.isQuiting = !app.preferences.value('window.closeButtonMinimize').includes(true);
-            }
             // IncognitoMode Changes
             else if (currentChanges.includes('general.incognitoMode')) {
                 if (app.preferences.value('general.incognitoMode').includes(true)) {
