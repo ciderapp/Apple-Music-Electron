@@ -146,7 +146,6 @@ const handler = {
 
     WindowStateHandler: function () {
         console.verbose('[WindowStateHandler] Started.');
-        app.previousPage = app.win.webContents.getURL()
 
         app.win.webContents.setWindowOpenHandler(({url}) => {
             shell.openExternal(url).then(() => console.log(`[WindowStateHandler] User has opened ${url} which has been redirected to browser.`));
@@ -243,7 +242,6 @@ const handler = {
             if (app.win.isVisible()) {
                 app.win.focus()
             }
-            // if (app.win.StoredWebsite) app.win.loadURL(app.win.StoredWebsite)
         });
 
         app.win.on('hide', () => {
@@ -251,7 +249,6 @@ const handler = {
             if (app.pluginsEnabled) {
                 app.win.webContents.executeJavaScript(`_plugins.execute('OnHide')`)
             }
-            // app.win.StoredWebsite = app.win.webContents.getURL();
         });
 
         // For macOS Link Handling
@@ -354,34 +351,27 @@ const handler = {
     RendererListenerHandlers: () => {
 
         // Themes Listing Update
-        ipcMain.on('updateThemesListing', () => {
-            const themesListing = app.ame.utils.fetchThemesListing();
-            app.win.webContents.send('updatedThemesListing', themesListing);
+        ipcMain.handle('updateThemesListing', (_event) => {
+            return app.ame.utils.fetchThemesListing();
+        })
+
+        // Acrylic Check
+        ipcMain.handle('isAcrylicSupported', (_event) => {
+            return app.ame.utils.isAcrylicSupported();
+        })
+
+        // Update Themes
+        ipcMain.on('updateThemes', (_event) => {
+            app.ame.utils.updateThemes().catch((e) => console.error(e))
         });
 
-        // Initial Acrylic Check
-        ipcMain.on('isAcrylicSupported', () => {
-            const acrylicSupported = app.ame.utils.isAcrylicSupported();
-            app.win.webContents.send('acrylicSupport', acrylicSupported);
-        });
-
-        // Authorization
+        // Authorization (This needs to be cleaned up a bit, an alternative to reload() would be good )
         ipcMain.on('authorizationStatusDidChange', (_event, authorized) => {
             console.log(`authorization updated. status: ${authorized}`)
             app.win.reload()
             app.ame.load.LoadFiles()
             app.isAuthorized = (authorized === 3)
         })
-
-        // Update Themes
-        ipcMain.on('updateThemes', (_event) => {
-            app.ame.utils.updateThemes().then(() => {
-                setTimeout(() => {
-                    const themesListing = app.ame.utils.fetchThemesListing();
-                    app.win.webContents.send('themesUpdated', themesListing);
-                }, 2000)
-            });
-        });
 
         // Window Navigation - Minimize
         ipcMain.on('minimize', () => { // listen for minimize event

@@ -513,7 +513,7 @@ try {
                 document.body.appendChild(backdrop);
                 return backdrop;
             },
-            LoadCustomStartup: () => {
+            LoadCustomStartup: async () => {
                 const preferences = ipcRenderer.sendSync('getPreferences');
 
                 /** Plugins */
@@ -580,8 +580,8 @@ try {
                     }
 
                     const sidebar = document.querySelector('.web-chrome-drawer');
-                    if (sidebar && document.body.classList.contains('web-chrome-drawer-open')){
-                        _lyrics.GetLyrics(1,false);
+                    if (sidebar && document.body.classList.contains('web-chrome-drawer-open')) {
+                        _lyrics.GetLyrics(1, false);
                     }
 
                 });
@@ -613,17 +613,8 @@ try {
                     AMStyling.setTransparency(false);
                 }
 
-
-                ipcRenderer.send('updateThemesListing');
-                ipcRenderer.on('updatedThemesListing', (event, listing) => {
-                    AM.themesListing = listing;
-                });
-
-                ipcRenderer.send('isAcrylicSupported');
-                ipcRenderer.on('acrylicSupport', (event, supported) => {
-                    AM.acrylicSupported = supported;
-                });
-
+                AM.themesListing = await ipcRenderer.invoke('updateThemesListing');
+                AM.acrylicSupported = await ipcRenderer.invoke('isAcrylicSupported')
             },
 
             LoadCustom: () => {
@@ -806,7 +797,7 @@ try {
         };
 
         /* Load the Startup Files as This is the First Time its been Run */
-        AMJavaScript.LoadCustomStartup();
+        AMJavaScript.LoadCustomStartup().catch((e) => console.error(e));
     }
 
     /* Functions used in Settings Page */
@@ -867,14 +858,13 @@ try {
                     console.info('[updateThemes] Themes Listing Updated!');
                 },
                 updateThemes: () => {
-                    ipcRenderer.send('updateThemes');
                     document.getElementById('updateThemes').innerText = 'Updating...';
-                    ipcRenderer.on('themesUpdated', (_event, themesListing) => {
-                        document.getElementById('updateThemes').innerText = (themesListing ? 'Themes Updated' : 'Error');
-                        console.log(themesListing);
-                        if (!themesListing) return;
-                        AMSettings.themes.updateThemesListing(themesListing);
-                    });
+                    ipcRenderer.send('updateThemes');
+                    setTimeout(async () => {
+                        AM.themesListing = await ipcRenderer.invoke('updateThemesListing');
+                        AMSettings.themes.updateThemesListing(AM.themesListing);
+                        document.getElementById('updateThemes').innerText = (AM.themesListing ? 'Themes Updated' : 'Error');
+                    }, 2000)
                 }
             },
 
