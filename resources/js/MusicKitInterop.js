@@ -15,7 +15,7 @@ const MusicKitInterop = {
                 const nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
                 if (typeof nowPlayingItem != "undefined") {
                     if (nowPlayingItem["type"] === "musicVideo") {
-                        document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'height: 25px !important');
+                        document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'height: 20px !important');
                     } else {
                         document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'height: 55px !important');
                     }
@@ -26,7 +26,7 @@ const MusicKitInterop = {
                     const nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
                     if (typeof nowPlayingItem != "undefined") {
                         if (nowPlayingItem["type"] === "musicVideo") {
-                            document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'height: 25px !important');
+                            document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'height: 20px !important');
                         } else {
                             document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'height: 55px !important');
                         }
