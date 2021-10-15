@@ -3,11 +3,12 @@ var _vues = {
     killVue(id) {
         let self = this
         this.instances = this.instances.filter((instance) => {
+            console.warn(`Requested destroy: ${id}`)
             if (instance["_amID"] != id) {
                 console.warn("Found vue")
                 console.warn("Destroying Vue")
                 instance.$destroy()
-            }else{
+            } else {
                 return instance
             }
         })
@@ -17,6 +18,11 @@ var _vues = {
         if (needsGC) {
             this.instances = []
         }
+    },
+    destroy(vue) {
+        vue.$destroy()
+        vue = undefined
+        console.info("Destroyed Vue instance")
     },
     killAll() {
         // Kill all Vue instances
@@ -40,7 +46,6 @@ class AMEModal {
         this.OnClose = OnClose
         this.OnCreate = OnCreate
         this.modal = this.create()
-        this.VueModel = null
     }
 
     create() {
@@ -57,6 +62,7 @@ class AMEModal {
             self.close()
             backdrop.remove()
         })
+        modalContent.style.height = "100%"
         setInnerHTML(modalContent, this.content)
         modalWin.appendChild(modalCloseBtn)
         modalWin.appendChild(modalContent)
@@ -67,9 +73,6 @@ class AMEModal {
     }
 
     close() {
-        if (this.VueModel != null) {
-            _vues.killVue(this.VueModel._amID)
-        }
         this.OnClose()
         this.modal.remove()
     }

@@ -1,0 +1,198 @@
+<div id="oobe-vue">
+    <transition name="fade">
+        <template v-if="page == 'welcome'">
+            <div class="md-container">
+                <div class="md-header">
+                    <h1 class="md-h1">Welcome to Apple Music Electron</h1>
+                </div>
+                <div class="md-body">
+                    something here
+                </div>
+                <div class="md-footer">
+                    <button class="md-btn" @click="close()">Close</button>
+                    <button class="md-btn md-btn-primary" @click="page = 'region'">Next</button>
+                </div>
+            </div>
+        </template>
+    </transition>
+    <transition name="fade">
+        <template v-if="page == 'region'">
+            <div class="md-container">
+                <div class="md-header">
+                    <h1 class="md-h1">Localization and Region</h1>
+                </div>
+                <div class="md-body">
+                    Select your region and preferred language
+                    <br>
+                    <label>
+                        Region
+                        <select class="md-select" style="width:100%;">
+                            <option v-for="(val, key) in languages" :value="key">
+                                {{ val }}
+                            </option>
+                        </select>
+                    </label>
+                    <label>
+                        Language
+                        <select class="md-select" style="width:100%;">
+                            <option v-for="(val, key) in languages" :value="key">
+                                {{ val }}
+                            </option>
+                        </select>
+                    </label>
+                </div>
+                <div class="md-footer">
+                    <button class="md-btn" @click="page = 'welcome'">Back</button>
+                    <button class="md-btn md-btn-primary" @click="page = 'theme'">Next</button>
+                </div>
+            </div>
+        </template>
+    </transition>
+    <transition name="fade">
+        <template v-if="page == 'theme'">
+            <div class="md-container">
+                <div class="md-header">
+                    <h1 class="md-h1">Appearance</h1>
+                </div>
+                <div class="md-body">
+                    <label>
+                        Theme
+                        <select class="md-select" v-model="theme" @change="AMThemes.loadTheme(theme)"
+                                style="width:100%;">
+                            <option v-for="(theme, id) in AM.themesListing" :value="id">{{ theme.name }} by {{
+                                theme.author }}
+                            </option>
+                        </select>
+                    </label>
+                    <label>
+                        Transparency
+                        <select class="md-select" style="width:100%;">
+                            <option value=''>Disabled</option>
+                            <option value='blur'>Blur Behind</option>
+                            <option value='acrylic'>Acrylic</option>
+                        </select>
+                    </label>
+                    <label>
+                        Screen Refresh Rate
+                        <select class="md-select" style="width:100%;">
+                            <option value='30'>30</option>
+                            <option value='60'>60</option>
+                            <option value='144'>144</option>
+                            <option value='175'>175</option>
+                            <option value='240'>240</option>
+                            <option value='360'>30</option>
+                        </select>
+                    </label>
+                    <br>
+                    <label style="width:100%;">
+                        <input type="checkbox" /> Use OS Accent as Application Accent
+                        <br>
+                        <small>Force the application to use your operating systems' accent.</small>
+                    </label>
+                </div>
+                <div class="md-footer">
+                    <button class="md-btn" @click="page = 'region'">Back</button>
+                    <button class="md-btn md-btn-primary" @click="page = 'otherSettings'">Next</button>
+                </div>
+            </div>
+        </template>
+    </transition>
+    <transition name="fade">
+        <template v-if="page == 'otherSettings'">
+            <div class="md-container">
+                <div class="md-header">
+                    <h1 class="md-h1">Settings</h1>
+                </div>
+                <div class="md-body">
+                    <label>
+                        Audio Quality
+                        <select class="md-select" style="width:100%;">
+                            <option value='auto'>Automatic (Default)</option>
+                            <option value='extreme'>Extreme (990kbps)</option>
+                            <option value='high'>High (256kbps)</option>
+                            <option value='standard'>Standard (64kbps)</option>
+                        </select>
+                    </label>
+                    <br>
+                    <label style="width:100%;">
+                        <input type="checkbox" /> Enable Musixmatch Lyrics<br>
+                        <small>Less stable, but allows for lyrics translation and better lyrics detection</small>
+                    </label>
+                    <br>
+                    <label>
+                        Musixmatch lyrics translation language
+                        <select class="md-select" style="width:100%;">
+                        </select>
+                    </label>
+                </div>
+                <div class="md-footer">
+                    <button class="md-btn" @click="page = 'region'">Back</button>
+                    <button class="md-btn md-btn-primary" @click="page = 'welcome'">Next</button>
+                </div>
+            </div>
+        </template>
+    </transition>
+</div>
+
+<style>
+    .fade-enter-active, .fade-leave-active {
+        transition: all .5s;
+    }
+    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    .md-h1 {
+        font-size: 3em;
+        text-align: center;
+    }
+
+    #oobe-vue {
+        height: 100%;
+    }
+
+    .md-header {
+        padding: 16px;
+    }
+
+    .md-footer {
+        padding: 16px;
+        text-align: center;
+    }
+
+    .md-btn {
+        background: rgba(100, 100, 100, 0.5);
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 1.25em;
+    }
+
+    .md-select, .md-select > option {
+        padding: 8px 16px;
+        font-size: 1em;
+        font-family: inherit;
+    }
+
+    .md-btn.md-btn-primary {
+        background: var(--keyColor);
+        color: white;
+    }
+
+    .md-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: absolute;
+        top:0px;
+        left:0px;
+        width:100%;
+        padding: 16px;
+    }
+
+    .md-body {
+        height: 100%;
+        padding: 16px;
+        font-size: 1.25em;
+    }
+</style>

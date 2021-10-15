@@ -490,10 +490,14 @@ body {
     border-radius: 10px;
     background: rgb(50 50 50);
     overflow: overlay;
+    position: relative;
 }
 
 .ameModal-Close {
-    float:right;
+    position:absolute;
+    top:16px;
+    right:16px;
+    z-index: 2;
 }
 
 .micaBackground {
