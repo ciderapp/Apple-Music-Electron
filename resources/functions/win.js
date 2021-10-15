@@ -170,21 +170,21 @@ module.exports = {
                         tooltip: 'Previous',
                         icon: app.ame.utils.icons.previousTrack,
                         click() {
-                            app.ame.utils.previousTrack()
+                            app.ame.utils.media.previousTrack()
                         }
                     },
                     {
                         tooltip: app.media.status ? 'Pause' : 'Play',
                         icon: app.media.status ? app.ame.utils.icons.pause : app.ame.utils.icons.play,
                         click() {
-                            app.ame.utils.pausePlay()
+                            app.ame.utils.media.pausePlay()
                         }
                     },
                     {
                         tooltip: 'Next',
                         icon: app.ame.utils.icons.nextTrack,
                         click() {
-                            app.ame.utils.nextTrack()
+                            app.ame.utils.media.nextTrack()
                         }
                     }
                 ]);
@@ -213,21 +213,21 @@ module.exports = {
             const nextTrack = new TouchBarButton({
                 icon: app.ame.utils.icons.nextTrack,
                 click: () => {
-                    app.ame.utils.nextTrack()
+                    app.ame.utils.media.nextTrack()
                 }
             })
 
             const previousTrack = new TouchBarButton({
                 icon: app.ame.utils.icons.previousTrack,
                 click: () => {
-                    app.ame.utils.previousTrack()
+                    app.ame.utils.media.previousTrack()
                 }
             })
 
             const playPause = new TouchBarButton({
                 icon: app.media.status ? app.ame.utils.icons.pause : app.ame.utils.icons.play,
                 click: () => {
-                    app.ame.utils.pausePlay()
+                    app.ame.utils.media.pausePlay()
                 }
             })
 
