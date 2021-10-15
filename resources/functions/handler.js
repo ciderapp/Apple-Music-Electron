@@ -329,7 +329,7 @@ const handler = {
             }
             // The rest ask for a restart
             else if (!DialogMessage && !currentChanges.includes('general.lastfmAuthKey')) {
-                DialogMessage = dialog.showMessageBox(null, {
+                DialogMessage = dialog.showMessageBox({
                     title: "Relaunch Required",
                     message: "A relaunch is required in order for the settings you have changed to apply.",
                     type: "warning",
