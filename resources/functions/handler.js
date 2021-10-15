@@ -307,7 +307,7 @@ const handler = {
 
             // Theme Changes
             if (currentChanges.includes('visual.theme')) {
-                app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`).catch((e) => console.error(e));
+                app.win.webContents.executeJavaScript(`AMStyling.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`).catch((e) => console.error(e));
                 const updatedVibrancy = app.ame.utils.fetchTransparencyOptions();
                 if (app.transparency && updatedVibrancy && process.platform !== 'darwin') app.win.setVibrancy(updatedVibrancy);
             }
@@ -316,10 +316,10 @@ const handler = {
                 const updatedVibrancy = app.ame.utils.fetchTransparencyOptions()
                 if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
                     app.win.setVibrancy(updatedVibrancy);
-                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(true);`).catch((e) => console.error(e));
+                    app.win.webContents.executeJavaScript(`AMStyling.setTransparency(true);`).catch((e) => console.error(e));
                 } else {
                     app.win.setVibrancy();
-                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(false);`).catch((e) => console.error(e));
+                    app.win.webContents.executeJavaScript(`AMStyling.setTransparency(false);`).catch((e) => console.error(e));
                 }
             }
             // Reload scripts

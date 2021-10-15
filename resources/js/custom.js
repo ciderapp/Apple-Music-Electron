@@ -328,12 +328,10 @@ try {
         }
 
     }
-    function lerp(start, end, l) {
-        return start + (end - start) * l;
-    }
-    /* Create the AMThemes Functions */
-    if (typeof AMThemes == "undefined") {
-        var AMThemes = {
+
+    /* Create the AMStyling Functions */
+    if (typeof AMStyling == "undefined") {
+        var AMStyling = {
             _styleSheets: {
                 Transparency: new CSSStyleSheet(),
                 Theme: new CSSStyleSheet(),
@@ -472,6 +470,9 @@ try {
             },
             refresh() {
                 document.adoptedStyleSheets = Object.values(this._styleSheets);
+            },
+            lerp: (start, end, l) => {
+                return start + (end - start) * l;
             }
         };
     }
@@ -605,11 +606,11 @@ try {
                 observer.observe(document.body, {childList: true});
 
                 /* Load Themes and Transparency */
-                AMThemes.loadTheme(preferences["visual"]["theme"]);
+                AMStyling.loadTheme(preferences["visual"]["theme"]);
                 if (preferences["visual"]["transparencyEffect"] !== "") {
-                    AMThemes.setTransparency(true);
+                    AMStyling.setTransparency(true);
                 } else {
-                    AMThemes.setTransparency(false);
+                    AMStyling.setTransparency(false);
                 }
 
 

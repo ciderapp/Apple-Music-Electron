@@ -7,7 +7,7 @@
     
     <h2>Appearance</h2>
     <label>Theme Applied</label>
-    <select v-model="theme" @change="AMThemes.loadTheme(theme)" style="width:100%;">
+    <select v-model="theme" @change="AMStyling.loadTheme(theme)" style="width:100%;">
         <option v-for="(theme, id) in AM.themesListing" :value="id">{{ theme.name }} by {{ theme.author }}</option>
     </select>
     <button @click="btn()">Button</button>

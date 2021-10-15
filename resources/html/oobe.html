@@ -57,7 +57,7 @@
                 <div class="md-body">
                     <label>
                         Theme
-                        <select class="md-select" v-model="theme" @change="AMThemes.loadTheme(theme)"
+                        <select class="md-select" v-model="theme" @change="AMStyling.loadTheme(theme)"
                                 style="width:100%;">
                             <option v-for="(theme, id) in AM.themesListing" :value="id">{{ theme.name }} by {{
                                 theme.author }}

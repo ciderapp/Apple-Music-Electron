@@ -40,7 +40,7 @@ const MusicKitInterop = {
         MusicKit.getInstance().addEventListener(MusicKit.Events.nowPlayingItemDidChange, () => {
             if (MusicKitInterop.filterTrack(MusicKitInterop.getAttributes(), false, true)) {
                 global.ipcRenderer.send('nowPlayingItemDidChange', MusicKitInterop.getAttributes());
-                AMThemes.updateMeta()
+                AMStyling.updateMeta()
             }
         });
 
