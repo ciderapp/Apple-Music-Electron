@@ -240,7 +240,7 @@ const Utils = {
         autoUpdater.on('update-downloaded', (updateInfo) => {
             console.warn('[checkUpdates] New version downloaded. Starting user prompt.');
 
-            dialog.showMessageBox(app.win, {
+            dialog.showMessageBox(null, {
                 type: 'info',
                 title: 'Updates Available',
                 message: `Update was found and downloaded, would you like to install the update now?`,

@@ -155,9 +155,7 @@ const handler = {
         })
 
         app.win.webContents.on('unresponsive', async () => {
-            const {
-                response
-            } = await dialog.showMessageBox({
+            const {response} = await dialog.showMessageBox({
                 message: 'Apple Music has become unresponsive',
                 title: 'Do you want to try forcefully reloading the app?',
                 buttons: ['Yes', 'Quit', 'No'],
@@ -331,7 +329,7 @@ const handler = {
             }
             // The rest ask for a restart
             else if (!DialogMessage && !currentChanges.includes('general.lastfmAuthKey')) {
-                DialogMessage = dialog.showMessageBox(app.win, {
+                DialogMessage = dialog.showMessageBox(null, {
                     title: "Relaunch Required",
                     message: "A relaunch is required in order for the settings you have changed to apply.",
                     type: "warning",
