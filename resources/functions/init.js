@@ -42,7 +42,7 @@ const init = {
         if (process.platform === "linux") app.commandLine.appendSwitch('disable-features', 'MediaSessionService');
 
         // Assign Default Variables
-        app.isQuiting = false;
+        app.isQuiting = (app.isQuiting ? app.isQuiting : false);
         app.win = '';
         app.ipc = {
             existingNotification: false
@@ -144,8 +144,7 @@ const init = {
         app.ame.discord.connect(app.preferences.value('general.discordRPC') === 'ame-title' ? '749317071145533440' : '886578863147192350'); // Discord
 
         app.pluginsEnabled = false;
-        app.isAuthorized = false
-        app.isQuiting = false;
+        app.isAuthorized = false;
         app.media = {status: false, playParams: {id: 'no-id-found'}};
 
 

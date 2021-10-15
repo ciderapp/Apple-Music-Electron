@@ -86,7 +86,7 @@ try {
     if (typeof _lyrics == "undefined") {
         var _lyrics = {
             CreateButton: () => {
-                var mediaControlsElement = document.getElementsByClassName('web-chrome-controls-container')[0];
+                const mediaControlsElement = document.getElementsByClassName('web-chrome-controls-container')[0];
                 /* Lyrics Button */
                 if (!document.querySelector('#lyricsButton') && mediaControlsElement) {
                     const lyricsButton = document.createElement("div");
@@ -209,14 +209,13 @@ try {
             },
 
             GetLyrics: (mode, mxmfail) => {
-                const musicKit = MusicKit.getInstance();
-                const trackName = encodeURIComponent((musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem.title ?? '' : '');
-                const artistName = encodeURIComponent((musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem.artistName ?? '' : '');
+                const trackName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.title ?? '' : '');
+                const artistName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
                 const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
-                const songID = (musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem["_songId"] ?? -1 : -1;
+                const songID = (MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["_songId"] ?? -1 : -1;
                 console.log('mxmon' + preferences.visual.mxmon);
                 console.log('mxmon' + preferences.visual.mxmon);
-                if (!mxmfail && preferences.visual.mxmon[0] == true) {
+                if (!mxmfail && preferences.visual.mxmon.includes(true)) {
                     /* get MXM lyrics and translation */
                     ipcRenderer.send('MXMTranslation', trackName, artistName, preferences.visual.mxmlanguage);
                 } else if (songID !== -1) {
@@ -366,7 +365,7 @@ try {
             },
             enableMica() {
                 let self = this;
-                if(this.lastTheme != "winui") {
+                if(this.lastTheme !== "winui") {
                     if(confirm("This feature currently requires the Eleven theme, enable now?")) {
                         this.loadTheme("winui");
                     }else{
@@ -397,7 +396,7 @@ try {
                 });
             },
             loadTheme(path = "") {
-                if(path == this.lastTheme) {
+                if(path === this.lastTheme) {
                     return;
                 }
                 this.lastTheme = path;
@@ -480,7 +479,7 @@ try {
     /* Bulk AME JavaScript Functions */
     if (typeof AMJavaScript == "undefined") {
         var AMJavaScript = {
-            getRequest(url, callback = ()=>{}) {
+            getRequest: (url, callback = ()=>{}) => {
                 const xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     callback(this.responseText);
@@ -488,11 +487,7 @@ try {
                 xhttp.open("GET", url, true);
                 xhttp.send();
             },
-            makeModal({
-                content = "",
-                onClose = ()=>{},
-                onCreate = ()=>{}
-            }) {
+            makeModal: ({ content = "", onClose = ()=>{}, onCreate = ()=>{}}) => {
                 var backdrop = document.createElement("div");
                 var modalWin = document.createElement("div");
                 var modalCloseBtn = document.createElement("button");
@@ -616,7 +611,6 @@ try {
                 AM.themesListing = await ipcRenderer.invoke('updateThemesListing');
                 AM.acrylicSupported = await ipcRenderer.invoke('isAcrylicSupported')
             },
-
             LoadCustom: () => {
                 const preferences = ipcRenderer.sendSync('getPreferences');
 
