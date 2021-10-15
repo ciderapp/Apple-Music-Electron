@@ -72,7 +72,9 @@ app.on('widevine-error', (error) => {
     process.exit(1)
 })
 
-app.on('window-all-closed', app.quit);
+app.on('window-all-closed', () => {
+    app.quit()
+});
 
 app.on('before-quit', () => {
     app.win.removeAllListeners('close');

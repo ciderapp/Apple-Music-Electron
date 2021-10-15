@@ -227,11 +227,11 @@ const handler = {
                 ipcMain.emit("set-miniplayer", false);
                 e.preventDefault()
             }
-
-            if (app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === "darwin") {
+            else if (app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === "darwin") {
                 app.win.hide()
                 e.preventDefault()
             }
+            else { app.quit() }
         })
 
         app.win.on('show', () => {
@@ -328,7 +328,7 @@ const handler = {
                 }
             }
             // The rest ask for a restart
-            else if (!DialogMessage && !currentChanges.includes('general.lastfmAuthKey')) {
+            else if (!DialogMessage && !currentChanges.includes('general.lastfmAuthKey') && !currentChanges.includes('window.closeButtonMinimize')) {
                 DialogMessage = dialog.showMessageBox({
                     title: "Relaunch Required",
                     message: "A relaunch is required in order for the settings you have changed to apply.",
