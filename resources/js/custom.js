@@ -112,6 +112,15 @@ try {
                         document.querySelector('#lyricsButton').style.fill = 'var(--playerPlatterButtonIconFill)';
                         document.querySelector('#lyricsButton').style.boxShadow = '0 1px 1px rgb(0 0 0 / 10%)';
                         document.querySelector('#lyricsButton').style.background = 'var(--playerPlatterButtonBGFill)';
+                        if (MusicKit.getInstance().nowPlayingItem == null){
+                            try{
+                                document.getElementById('lyrics_none').classList.remove('lyrics_none_hidden');
+                            } catch (e){}
+                        } else {
+                            try{
+                                document.getElementById('lyrics_none').classList.add('lyrics_none_hidden');
+                            } catch (e){}                            
+                        }
                         if (document.getElementById('lyricer').childNodes[0].childNodes.length == null || document.getElementById('lyricer').childNodes[0].childNodes.length <= 1) {
                             _lyrics.GetLyrics(1, false);
                         }
@@ -159,7 +168,7 @@ try {
 
                             const sidebar = document.querySelector('.web-chrome-drawer');
                             if (sidebar) {
-                                sidebar.innerHTML = `<div id="lyricer"></div>`;
+                                sidebar.innerHTML = `<div id="lyrics_none">Play a song to see the lyrics here.</div><div id="lyricer"></div>`;
                             }
 
                             let text = "";
@@ -313,9 +322,12 @@ try {
                 else {
                     try {
                         MusicKit.getInstance().api.library.song(MusicKit.getInstance().nowPlayingItem.id).then((data) => {
+                            try{
                             if (data != null && data !== "") {
                                 artworkURL = data["artwork"]["url"];
                             } else {
+                                artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
+                            }} catch(e){
                                 artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
                             }
                             if (mode === 1) {
@@ -325,7 +337,12 @@ try {
                             }
                         });
                     } catch (e) {
-                        console.error(e)
+                        console.error(e);
+                        if (mode === 1) {
+                            ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, '');
+                        } else {
+                            ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, '');
+                        }
                     }
                 }
             }
@@ -421,6 +438,17 @@ try {
                 xhttp.send();
             },
             updateMeta() {
+                
+                if (MusicKit.getInstance().nowPlayingItem == null){
+                    try{
+                        document.getElementById('lyrics_none').classList.remove('lyrics_none_hidden');
+                    } catch (e){}
+                } else {
+                    try{
+                        document.getElementById('lyrics_none').classList.add('lyrics_none_hidden');
+                    } catch (e){}                            
+                }
+
                 console.warn("[Custom] Refreshed Meta CSS");
                 /** Exposes artwork and other metadata to CSS for themes */
                 let artwork = MusicKit.getInstance().nowPlayingItem["attributes"]["artwork"]["url"];
@@ -582,6 +610,7 @@ try {
                     if (sidebar && document.body.classList.contains('web-chrome-drawer-open')) {
                         _lyrics.GetLyrics(1, false);
                     }
+
 
                 });
 
