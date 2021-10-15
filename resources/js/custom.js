@@ -328,7 +328,9 @@ try {
         }
 
     }
-
+    function lerp(start, end, l) {
+        return start + (end - start) * l;
+    }
     /* Create the AMThemes Functions */
     if (typeof AMThemes == "undefined") {
         var AMThemes = {
@@ -336,8 +338,69 @@ try {
                 Transparency: new CSSStyleSheet(),
                 Theme: new CSSStyleSheet(),
                 Meta: new CSSStyleSheet(),
+                Metrics: new CSSStyleSheet()
             },
+            wallpaper: "",
             lastTheme: "",
+            metrics: {
+                lastScreenX: 0,
+                lastScreenY: 0
+            },
+            getWallpaper() {
+                let self = this;
+                this.wallpaper = ipcRenderer.sendSync("get-wallpaper");
+                this.updateMetrics()
+            },
+            updateMetrics () {
+                this._styleSheets.Metrics.replaceSync(`
+                    :root {
+                        --user-wallpaper: url('${this.wallpaper}');
+                        --screenX: ${window.screenX}px;
+                        --screenY: ${window.screenY}px;
+                        --screenHeight: ${screen.height}px;
+                        --screenWidth: ${screen.width}px;
+                    }
+                    body::before {
+                        background: var(--user-wallpaper);
+                        background-position: calc(var(--screenX) * -1) calc(var(--screenY) * -1)!important;
+                        background-size: var(--screenWidth) var(--screenHeight);
+                        background-repeat:repeat;
+                    }
+                `);
+                this.refresh();
+            },
+            enableMica() {
+                let self = this;
+                if(this.lastTheme != "winui") {
+                    if(confirm("This feature currently requires the Eleven theme, enable now?")) {
+                        this.loadTheme("winui");
+                    }else{
+                        return;
+                    }
+                }
+                var micaDOM = document.createElement("div");
+                micaDOM.classList.add("micaBackground");
+                document.body.appendChild(micaDOM);
+                this.getWallpaper();
+                function onScreenMove(cb) {
+                    var lastScreenX;
+                    var lastScreenY;
+                    var fps = 60;
+                    function detectScreenMove() {
+                        if (lastScreenY !== window.screenY || lastScreenX !== window.screenX) {
+                            lastScreenY = window.screenY;
+                            lastScreenX = window.screenX;
+                            cb();
+                        }
+                        requestAnimationFrame(detectScreenMove);
+                    }
+                    requestAnimationFrame(detectScreenMove);
+                }
+                onScreenMove(function() {
+                    micaDOM.style.backgroundPosition = `${window.screenX * -1}px ${window.screenY * -1}px`;
+                    micaDOM.style.backgroundSize = `${screen.width}px ${screen.height}px`;
+                });
+            },
             loadTheme(path = "") {
                 if(path == this.lastTheme) {
                     return;
@@ -411,7 +474,6 @@ try {
                 }
             },
             refresh() {
-                console.warn("[Custom] Refresh");
                 document.adoptedStyleSheets = Object.values(this._styleSheets);
             }
         };
@@ -428,7 +490,11 @@ try {
                 xhttp.open("GET", url, true);
                 xhttp.send();
             },
-            makeModal(content) {
+            makeModal({
+                content = "",
+                onClose = ()=>{},
+                onCreate = ()=>{}
+            }) {
                 var backdrop = document.createElement("div");
                 var modalWin = document.createElement("div");
                 var modalCloseBtn = document.createElement("button");
@@ -438,9 +504,11 @@ try {
                 modalCloseBtn.classList.add("ameModal-Close");
                 modalCloseBtn.innerHTML = ("Close");
                 modalCloseBtn.addEventListener("click", ()=>{
+                    onClose();
                     backdrop.remove();
                 });
                 setInnerHTML(modalContent, content);
+                onCreate();
                 modalWin.appendChild(modalCloseBtn);
                 modalWin.appendChild(modalContent);
                 backdrop.appendChild(modalWin);

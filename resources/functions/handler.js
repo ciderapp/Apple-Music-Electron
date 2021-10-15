@@ -1,7 +1,7 @@
 const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences} = require('electron'),
     {LoadOneTimeFiles, LoadFiles} = require('./load'),
     {join, resolve} = require('path'),
-    {readFile, existsSync, truncate} = require('fs'),
+    {readFile, readFileSync, existsSync, truncate} = require('fs'),
     rimraf = require('rimraf'),
     {initAnalytics} = require('./utils');
 initAnalytics();
@@ -496,6 +496,28 @@ const handler = {
                     console.error(`[Plugins] error reading plugin: ${path} - Error: ${error}`)
                 }
             })
+        })
+
+        // Get Wallpaper
+        ipcMain.on("get-wallpaper", (event)=>{
+            function base64_encode(file) {
+                var bitmap = readFileSync(file)
+                return `data:image/png;base64,${new Buffer(bitmap).toString('base64')}`
+            }
+            var spawn = require("child_process").spawn,child
+            child = spawn("powershell.exe",[`Get-ItemProperty -Path Registry::"HKCU\\Control Panel\\Desktop\\" -Name "Wallpaper" | ConvertTo-JSON`])
+            child.stdout.on("data",function(data){
+                console.log("Powershell Data: " + data)
+                var parsed = JSON.parse(data)
+                event.returnValue = base64_encode(parsed["WallPaper"])
+            })
+            child.stderr.on("data",function(data){
+                console.log("Powershell Errors: " + data)
+            })
+            child.on("exit",function(){
+                console.log("Powershell Script finished")
+            })
+            child.stdin.end()
         })
     },
 
