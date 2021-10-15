@@ -225,18 +225,17 @@ const handler = {
             })
         }
 
-        app.win.on('close', (event) => {
+        app.win.on('close', (e) => {
             if (app.win.miniplayerActive) {
                 ipcMain.emit("set-miniplayer", false);
-                return;
+                e.preventDefault()
             }
 
-            if (!app.isQuiting || process.platform === "darwin") {
-                event.preventDefault();
-                app.win.hide();
+            if (app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === "darwin") {
+                app.win.hide()
+                e.preventDefault()
             }
-
-        });
+        })
 
         app.win.on('show', () => {
             app.ame.win.SetContextMenu(true)

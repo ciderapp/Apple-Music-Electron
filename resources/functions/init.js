@@ -42,7 +42,7 @@ const init = {
         if (process.platform === "linux") app.commandLine.appendSwitch('disable-features', 'MediaSessionService');
 
         // Assign Default Variables
-        app.isQuiting = !app.preferences.value('window.closeButtonMinimize').includes(true);
+        app.isQuiting = false;
         app.win = '';
         app.ipc = {
             existingNotification: false
