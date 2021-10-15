@@ -109,7 +109,7 @@
 								if (minutes2 + (seconds2*1+10) + milliseconds2 != '00:10.000'){
 								lrcfile = lrcfile.concat(`[${minutes2 + (seconds2*1+10) + milliseconds2}]lrcInstrumental` + "\r\n");}
 								else {lrcfile = lrcfile.concat(`[00:00.00]lrcInstrumental` + "\r\n");}
-							};
+							}
 						}
 						console.log(lrcfile);
 						ipcRenderer.send('LyricsHandlerNE',lrcfile);
