@@ -40,7 +40,7 @@ For more information surrounding configuration, compiling and other developer do
 ![Contributors](https://contrib.rocks/image?repo=Apple-Music-Electron/Apple-Music-Electron)
 
 ### Disclaimer
-*This project is NOT affliated with Apple in anyway shape or form. The project is open source and free to use (with an Apple Music subscription)
+*This project is NOT affiliated with Apple in any way shape or form. The project is open source and free to use (with an Apple Music subscription)
 for any legal concerns contact me at <a href="mailto:cryptofyre@protonmail.com">cryptofyre@protonmail.com</a>.*
 
 <p align="center">

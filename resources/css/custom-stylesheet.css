@@ -291,7 +291,7 @@ span.app-prefs-title {
 
 /* Artwork CSS (for miniPlayer) */
 
-#ember13.media-artwork-v2--downloaded::after {
+.web-chrome-playback-lcd #ember13.media-artwork-v2--downloaded::after {
     content: '';
     position: absolute;
     top: 0;
@@ -301,7 +301,7 @@ span.app-prefs-title {
     pointer-events: none;
 }
 
-#ember13.media-artwork-v2--downloaded:hover::after {
+.web-chrome-playback-lcd #ember13.media-artwork-v2--downloaded:hover::after {
     content: '';
     position: absolute;
     top: 0;
@@ -490,8 +490,43 @@ body {
     border-radius: 10px;
     background: rgb(50 50 50);
     overflow: overlay;
+    position: relative;
 }
 
 .ameModal-Close {
-    float:right;
+    position:absolute;
+    top:16px;
+    right:16px;
+    z-index: 2;
+}
+
+.micaBackground {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top:0;
+    left:0;
+    pointer-events: none;
+    z-index: -1;
+    background: var(--user-wallpaper);
+    background-repeat:repeat;
+    filter: blur(180px) saturate(180%) brightness(0.25);
+}
+
+#lyrics_none {
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+#lyrics_none.lyrics_none_hidden {
+    display: none;
+    height: 0%;
 }

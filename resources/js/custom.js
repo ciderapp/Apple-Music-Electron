@@ -86,7 +86,7 @@ try {
     if (typeof _lyrics == "undefined") {
         var _lyrics = {
             CreateButton: () => {
-                var mediaControlsElement = document.getElementsByClassName('web-chrome-controls-container')[0];
+                const mediaControlsElement = document.getElementsByClassName('web-chrome-controls-container')[0];
                 /* Lyrics Button */
                 if (!document.querySelector('#lyricsButton') && mediaControlsElement) {
                     const lyricsButton = document.createElement("div");
@@ -102,6 +102,7 @@ try {
                 /* Lyrics Button Click Event Handling */
                 const upNextSideBarTogglePath = (preferences.visual.frameType === 'mac' ? '/html/body/div[4]/div/div[3]/div/div[3]/div[3]/button' : '/html/body/div[4]/div[3]/div[3]/div/div[3]/div[3]/button');
                 const upNextSideBarToggle = mediaControlsElement.childNodes[5].getElementsByTagName('button')[0];
+                let clonedElement;
                 if (document.querySelector("#lyricsButton") && upNextSideBarToggle) {
 
                     function openLyrics() {
@@ -111,8 +112,18 @@ try {
                         document.querySelector('#lyricsButton').style.fill = 'var(--playerPlatterButtonIconFill)';
                         document.querySelector('#lyricsButton').style.boxShadow = '0 1px 1px rgb(0 0 0 / 10%)';
                         document.querySelector('#lyricsButton').style.background = 'var(--playerPlatterButtonBGFill)';
-                        if (document.getElementById('lyricer').childNodes[0].childNodes.length == null || document.getElementById('lyricer').childNodes[0].childNodes.length <= 1){   
-                        _lyrics.GetLyrics(1,false);}
+                        if (MusicKit.getInstance().nowPlayingItem == null){
+                            try{
+                                document.getElementById('lyrics_none').classList.remove('lyrics_none_hidden');
+                            } catch (e){}
+                        } else {
+                            try{
+                                document.getElementById('lyrics_none').classList.add('lyrics_none_hidden');
+                            } catch (e){}                            
+                        }
+                        if (document.getElementById('lyricer').childNodes[0].childNodes.length == null || document.getElementById('lyricer').childNodes[0].childNodes.length <= 1) {
+                            _lyrics.GetLyrics(1, false);
+                        }
                     }
 
                     function closeLyrics() {
@@ -124,9 +135,8 @@ try {
                         document.querySelector('#lyricsButton').style.background = '0 0';
                     }
 
-                        clonedElement = document.querySelector('#lyricsButton').cloneNode(true);
-                        document.querySelector('#lyricsButton').replaceWith(clonedElement);
-                    
+                    clonedElement = document.querySelector('#lyricsButton').cloneNode(true);
+                    document.querySelector('#lyricsButton').replaceWith(clonedElement);
 
                     document.getElementById("lyricsButton").addEventListener('click', function () {
                         if (document.querySelector('.web-chrome-drawer').querySelector('.web-navigation__up-next.web-chrome-up-next.up-next') == null) {
@@ -158,7 +168,7 @@ try {
 
                             const sidebar = document.querySelector('.web-chrome-drawer');
                             if (sidebar) {
-                                sidebar.innerHTML = `<div id="lyricer"></div>`;
+                                sidebar.innerHTML = `<div id="lyrics_none">Play a song to see the lyrics here.</div><div id="lyricer"></div>`;
                             }
 
                             let text = "";
@@ -169,15 +179,17 @@ try {
                                 } else {
                                     lrc.setLrc(lrcfile);
                                 }
-
                             });
+
                             ipcRenderer.on('lyricstranslation', function (event, data) {
                                 console.log(data);
                                 lrc.setMXMTranslation(data);
                             });
+
                             ipcRenderer.on('backuplyrics', function (_event, _data) {
                                 _lyrics.GetLyrics(1, true);
                             });
+
                             ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
                                 if (data < 0) {
                                     data = 0
@@ -209,17 +221,19 @@ try {
             },
 
             GetLyrics: (mode, mxmfail) => {
-                const musicKit = MusicKit.getInstance();
-                const trackName = encodeURIComponent((musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem.title ?? '' : '');
-                const artistName = encodeURIComponent((musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem.artistName ?? '' : '');
+                const trackName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.title ?? '' : '');
+                const artistName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
                 const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
-                const songID = (musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem["_songId"] ?? -1 : -1;
+                const songID = (MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["_songId"] ?? -1 : -1;
                 console.log('mxmon' + preferences.visual.mxmon);
                 console.log('mxmon' + preferences.visual.mxmon);
-                if (!mxmfail && preferences.visual.mxmon[0] == true) {
-                    /* get MXM lyrics and translation */
+
+                /* MusixMatch Lyrics*/
+                if (!mxmfail && preferences.visual.mxmon.includes(true)) {
                     ipcRenderer.send('MXMTranslation', trackName, artistName, preferences.visual.mxmlanguage);
-                } else if (songID !== -1) {
+                }
+                /* Apple Lyrics (from api lyric query) */
+                else if (songID !== -1) {
                     MusicKit.getInstance().api.lyric(songID)
                         .then(function (response) {
                             let seconds,
@@ -272,14 +286,13 @@ try {
                                         }
                                     }
                                     console.log("AM lyrics:" + lyrics);
-                                    let artworkURL = ((musicKit.nowPlayingItem != null) ? musicKit.nowPlayingItem.artworkURL : '').replace("{w}", 256).replace("{h}", 256);
+                                    let artworkURL = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artworkURL : '').replace("{w}", 256).replace("{h}", 256);
                                     if (artworkURL == null) {
                                         artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
                                     }
                                     if (mode === 1) {
                                         ipcRenderer.send('LyricsUpdate', lyrics, artworkURL);
                                     } else {
-                                        console.log(lyrics);
                                         ipcRenderer.send('LyricsHandler', lyrics, artworkURL);
                                     }
                                 } catch (e) {
@@ -304,14 +317,17 @@ try {
                             }
                         }
                     );
-
-                } else {
-                    console.log('yo');
+                }
+                /* Apple Lyrics (from api song query */
+                else {
                     try {
                         MusicKit.getInstance().api.library.song(MusicKit.getInstance().nowPlayingItem.id).then((data) => {
+                            try{
                             if (data != null && data !== "") {
                                 artworkURL = data["artwork"]["url"];
                             } else {
+                                artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
+                            }} catch(e){
                                 artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
                             }
                             if (mode === 1) {
@@ -321,7 +337,12 @@ try {
                             }
                         });
                     } catch (e) {
-                        console.error(e)
+                        console.error(e);
+                        if (mode === 1) {
+                            ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, '');
+                        } else {
+                            ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, '');
+                        }
                     }
                 }
             }
@@ -329,17 +350,75 @@ try {
 
     }
 
-    /* Create the AMThemes Functions */
-    if (typeof AMThemes == "undefined") {
-        var AMThemes = {
+    /* Create the AMStyling Functions */
+    if (typeof AMStyling == "undefined") {
+        var AMStyling = {
             _styleSheets: {
                 Transparency: new CSSStyleSheet(),
                 Theme: new CSSStyleSheet(),
                 Meta: new CSSStyleSheet(),
+                Metrics: new CSSStyleSheet()
             },
+            wallpaper: "",
             lastTheme: "",
+            metrics: {
+                lastScreenX: 0,
+                lastScreenY: 0
+            },
+            getWallpaper() {
+                let self = this;
+                this.wallpaper = ipcRenderer.sendSync("get-wallpaper");
+                this.updateMetrics()
+            },
+            updateMetrics () {
+                this._styleSheets.Metrics.replaceSync(`
+                    :root {
+                        --user-wallpaper: url('${this.wallpaper}');
+                        --screenX: ${window.screenX}px;
+                        --screenY: ${window.screenY}px;
+                        --screenHeight: ${screen.height}px;
+                        --screenWidth: ${screen.width}px;
+                    }
+                    body::before {
+                        display: none;
+                    }
+                `);
+                this.refresh();
+            },
+            enableMica() {
+                let self = this;
+                if(this.lastTheme !== "winui") {
+                    if(confirm("This feature currently requires the Eleven theme, enable now?")) {
+                        this.loadTheme("winui");
+                    }else{
+                        return;
+                    }
+                }
+                var micaDOM = document.createElement("div");
+                micaDOM.classList.add("micaBackground");
+                document.body.appendChild(micaDOM);
+                this.getWallpaper();
+                function onScreenMove(cb) {
+                    var lastScreenX;
+                    var lastScreenY;
+                    var fps = 60;
+                    function detectScreenMove() {
+                        if (lastScreenY !== window.screenY || lastScreenX !== window.screenX) {
+                            lastScreenY = window.screenY;
+                            lastScreenX = window.screenX;
+                            cb();
+                        }
+                        requestAnimationFrame(detectScreenMove);
+                    }
+                    requestAnimationFrame(detectScreenMove);
+                }
+                onScreenMove(function() {
+                    micaDOM.style.backgroundPosition = `${window.screenX * -1}px ${window.screenY * -1}px`;
+                    micaDOM.style.backgroundSize = `${screen.width}px ${screen.height}px`;
+                });
+            },
             loadTheme(path = "") {
-                if(path == this.lastTheme) {
+                if(path === this.lastTheme) {
                     return;
                 }
                 this.lastTheme = path;
@@ -359,14 +438,24 @@ try {
                 xhttp.send();
             },
             updateMeta() {
+                
+                if (MusicKit.getInstance().nowPlayingItem == null){
+                    try{
+                        document.getElementById('lyrics_none').classList.remove('lyrics_none_hidden');
+                    } catch (e){}
+                } else {
+                    try{
+                        document.getElementById('lyrics_none').classList.add('lyrics_none_hidden');
+                    } catch (e){}                            
+                }
+
                 console.warn("[Custom] Refreshed Meta CSS");
                 /** Exposes artwork and other metadata to CSS for themes */
-                const musicKit = MusicKit.getInstance();
-                let artwork = musicKit.nowPlayingItem["attributes"]["artwork"]["url"];
+                let artwork = MusicKit.getInstance().nowPlayingItem["attributes"]["artwork"]["url"];
                 /* Fix Itunes Match album arts not showing */
                 if (artwork === '' || !artwork) {
                     try {
-                        musicKit.api.library.song(musicKit.nowPlayingItem.id).then((data) => {
+                        MusicKit.getInstance().api.library.song(MusicKit.getInstance().nowPlayingItem.id).then((data) => {
                             if (data !== "") {
                                 artwork = data["artwork"]["url"];
                                 document.querySelector('#ember13').getElementsByTagName('img')[0].src = artwork;
@@ -411,8 +500,10 @@ try {
                 }
             },
             refresh() {
-                console.warn("[Custom] Refresh");
                 document.adoptedStyleSheets = Object.values(this._styleSheets);
+            },
+            lerp: (start, end, l) => {
+                return start + (end - start) * l;
             }
         };
     }
@@ -420,7 +511,7 @@ try {
     /* Bulk AME JavaScript Functions */
     if (typeof AMJavaScript == "undefined") {
         var AMJavaScript = {
-            getRequest(url, callback = ()=>{}) {
+            getRequest: (url, callback = ()=>{}) => {
                 const xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     callback(this.responseText);
@@ -428,7 +519,7 @@ try {
                 xhttp.open("GET", url, true);
                 xhttp.send();
             },
-            makeModal(content) {
+            makeModal: ({ content = "", onClose = ()=>{}, onCreate = ()=>{}}) => {
                 var backdrop = document.createElement("div");
                 var modalWin = document.createElement("div");
                 var modalCloseBtn = document.createElement("button");
@@ -438,16 +529,18 @@ try {
                 modalCloseBtn.classList.add("ameModal-Close");
                 modalCloseBtn.innerHTML = ("Close");
                 modalCloseBtn.addEventListener("click", ()=>{
+                    onClose();
                     backdrop.remove();
                 });
                 setInnerHTML(modalContent, content);
+                onCreate();
                 modalWin.appendChild(modalCloseBtn);
                 modalWin.appendChild(modalContent);
                 backdrop.appendChild(modalWin);
                 document.body.appendChild(backdrop);
                 return backdrop;
             },
-            LoadCustomStartup: () => {
+            LoadCustomStartup: async () => {
                 const preferences = ipcRenderer.sendSync('getPreferences');
 
                 /** Plugins */
@@ -514,9 +607,10 @@ try {
                     }
 
                     const sidebar = document.querySelector('.web-chrome-drawer');
-                    if (sidebar && document.body.classList.contains('web-chrome-drawer-open')){
-                        _lyrics.GetLyrics(1,false);
+                    if (sidebar && document.body.classList.contains('web-chrome-drawer-open')) {
+                        _lyrics.GetLyrics(1, false);
                     }
+
 
                 });
 
@@ -540,26 +634,16 @@ try {
                 observer.observe(document.body, {childList: true});
 
                 /* Load Themes and Transparency */
-                AMThemes.loadTheme(preferences["visual"]["theme"]);
+                AMStyling.loadTheme(preferences["visual"]["theme"]);
                 if (preferences["visual"]["transparencyEffect"] !== "") {
-                    AMThemes.setTransparency(true);
+                    AMStyling.setTransparency(true);
                 } else {
-                    AMThemes.setTransparency(false);
+                    AMStyling.setTransparency(false);
                 }
 
-
-                ipcRenderer.send('updateThemesListing');
-                ipcRenderer.on('updatedThemesListing', (event, listing) => {
-                    AM.themesListing = listing;
-                });
-
-                ipcRenderer.send('isAcrylicSupported');
-                ipcRenderer.on('acrylicSupport', (event, supported) => {
-                    AM.acrylicSupported = supported;
-                });
-
+                AM.themesListing = await ipcRenderer.invoke('updateThemesListing');
+                AM.acrylicSupported = await ipcRenderer.invoke('isAcrylicSupported')
             },
-
             LoadCustom: () => {
                 const preferences = ipcRenderer.sendSync('getPreferences');
 
@@ -740,7 +824,7 @@ try {
         };
 
         /* Load the Startup Files as This is the First Time its been Run */
-        AMJavaScript.LoadCustomStartup();
+        AMJavaScript.LoadCustomStartup().catch((e) => console.error(e));
     }
 
     /* Functions used in Settings Page */
@@ -801,14 +885,13 @@ try {
                     console.info('[updateThemes] Themes Listing Updated!');
                 },
                 updateThemes: () => {
-                    ipcRenderer.send('updateThemes');
                     document.getElementById('updateThemes').innerText = 'Updating...';
-                    ipcRenderer.on('themesUpdated', (_event, themesListing) => {
-                        document.getElementById('updateThemes').innerText = (themesListing ? 'Themes Updated' : 'Error');
-                        console.log(themesListing);
-                        if (!themesListing) return;
-                        AMSettings.themes.updateThemesListing(themesListing);
-                    });
+                    ipcRenderer.send('updateThemes');
+                    setTimeout(async () => {
+                        AM.themesListing = await ipcRenderer.invoke('updateThemesListing');
+                        AMSettings.themes.updateThemesListing(AM.themesListing);
+                        document.getElementById('updateThemes').innerText = (AM.themesListing ? 'Themes Updated' : 'Error');
+                    }, 2000)
                 }
             },
 

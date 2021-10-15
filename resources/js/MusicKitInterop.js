@@ -15,20 +15,20 @@ const MusicKitInterop = {
                 const nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
                 if (typeof nowPlayingItem != "undefined") {
                     if (nowPlayingItem["type"] === "musicVideo") {
-                        document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'display: none !important');
+                        document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'height: 20px !important');
                     } else {
-                        document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'display: flex !important');
+                        document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'height: 55px !important');
                     }
                 }
             } else {
-                document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'display: flex !important');
+                document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'height: 55px !important');
                 try {
                     const nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
                     if (typeof nowPlayingItem != "undefined") {
                         if (nowPlayingItem["type"] === "musicVideo") {
-                            document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'display: none !important');
+                            document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'height: 20px !important');
                         } else {
-                            document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'display: flex !important');
+                            document.querySelector(`div[aria-label="Media Controls"]`).setAttribute('style', 'height: 55px !important');
                         }
                     }
                 } catch (e) {
@@ -40,7 +40,7 @@ const MusicKitInterop = {
         MusicKit.getInstance().addEventListener(MusicKit.Events.nowPlayingItemDidChange, () => {
             if (MusicKitInterop.filterTrack(MusicKitInterop.getAttributes(), false, true)) {
                 global.ipcRenderer.send('nowPlayingItemDidChange', MusicKitInterop.getAttributes());
-                AMThemes.updateMeta()
+                AMStyling.updateMeta()
             }
         });
 
@@ -108,9 +108,6 @@ const MusicKitInterop = {
 process.once('loaded', () => {
     global.ipcRenderer = electron.ipcRenderer;
     global.MusicKitInterop = MusicKitInterop;
-    if (!MusicKit.getInstance().isAuthorized) {
-        MusicKit.getInstance().authorize()
-    }
 });
 
 // MusicKit.getInstance().addEventListener( MusicKit.Events.queueItemsDidChange,logIt );

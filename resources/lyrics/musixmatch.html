@@ -75,11 +75,19 @@
 		if (status1 == 200){    
 			var id = '';
 			try{
-				if (jsonResponse["message"]["body"]["macro_calls"]["matcher.track.get"]["message"]["header"]["status_code"] == 200){
+                if (jsonResponse["message"]["body"]["macro_calls"]["matcher.track.get"]["message"]["header"]["status_code"] == 200 && jsonResponse["message"]["body"]["macro_calls"]["track.subtitles.get"]["message"]["header"]["status_code"] == 200) {
 					prevartist = artist;
 					prevtrack = track;
 					id = jsonResponse["message"]["body"]["macro_calls"]["matcher.track.get"]["message"]["body"]["track"]["track_id"] ?? '';
 					lrcfile = jsonResponse["message"]["body"]["macro_calls"]["track.subtitles.get"]["message"]["body"]["subtitle_list"][0]["subtitle"]["subtitle_body"];}
+				
+				// /*  MXM Instrumentals detection */	
+				// else if (jsonResponse["message"]["body"]["macro_calls"]["track.subtitles.get"]["message"]["header"]["instrumental"] == 1){
+				// 	print('Nah');
+				// 	ipcRenderer.send('LyricsHandlerNE','[00:00] Instrumental. / Lyrics not found.');
+				// 	return '';
+				// }
+
 					if (lrcfile == "" || id == ''){
 						// track not found 
 			            console.log('track not found');
@@ -109,7 +117,7 @@
 								if (minutes2 + (seconds2*1+10) + milliseconds2 != '00:10.000'){
 								lrcfile = lrcfile.concat(`[${minutes2 + (seconds2*1+10) + milliseconds2}]lrcInstrumental` + "\r\n");}
 								else {lrcfile = lrcfile.concat(`[00:00.00]lrcInstrumental` + "\r\n");}
-							};
+							}
 						}
 						console.log(lrcfile);
 						ipcRenderer.send('LyricsHandlerNE',lrcfile);
@@ -117,8 +125,8 @@
 							// load translation
 							getMXMTrans(id, lang, token);
 						}
-		            }
-	        }catch(e){
+		        } 
+	        } catch(e) {
 			console.log(e); 	
 			// track not found ?? 
 			console.log('track not found ??');
@@ -160,7 +168,7 @@
 
 	ipcRenderer.on('mxmcors', function (event, track, artist, lang) {
 		console.log("hello");
-		if (track != ""& track != "No Title Found" && artist != ''){
+		if (track != "" & track != "No Title Found"){
 			if ( globaltoken != null && globaltoken != '' ) {
 			console.log("we good");
 			getMXMSubs(track, artist, token, lang)

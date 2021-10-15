@@ -1,5 +1,5 @@
 require('v8-compile-cache');
-const {app, globalShortcut, session} = require('electron');
+const {app, session} = require('electron');
 
 // Initialize the Preferences so verbose doesnt fuck up
 const appFuncs = require('./resources/functions/app-init');
@@ -72,10 +72,11 @@ app.on('widevine-error', (error) => {
     process.exit(1)
 })
 
-app.on('window-all-closed', app.quit);
+app.on('window-all-closed', () => {
+    app.quit()
+});
 
 app.on('before-quit', () => {
-    app.isQuiting = true;
     app.win.removeAllListeners('close');
     app.win.close();
     app.ame.mpris.clearActivity()

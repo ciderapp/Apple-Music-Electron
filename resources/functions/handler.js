@@ -1,7 +1,7 @@
 const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences} = require('electron'),
     {LoadOneTimeFiles, LoadFiles} = require('./load'),
     {join, resolve} = require('path'),
-    {readFile, existsSync, truncate} = require('fs'),
+    {readFile, readFileSync, existsSync, truncate} = require('fs'),
     rimraf = require('rimraf'),
     {initAnalytics} = require('./utils');
 initAnalytics();
@@ -146,7 +146,6 @@ const handler = {
 
     WindowStateHandler: function () {
         console.verbose('[WindowStateHandler] Started.');
-        app.previousPage = app.win.webContents.getURL()
 
         app.win.webContents.setWindowOpenHandler(({url}) => {
             shell.openExternal(url).then(() => console.log(`[WindowStateHandler] User has opened ${url} which has been redirected to browser.`));
@@ -156,9 +155,7 @@ const handler = {
         })
 
         app.win.webContents.on('unresponsive', async () => {
-            const {
-                response
-            } = await dialog.showMessageBox({
+            const {response} = await dialog.showMessageBox({
                 message: 'Apple Music has become unresponsive',
                 title: 'Do you want to try forcefully reloading the app?',
                 buttons: ['Yes', 'Quit', 'No'],
@@ -225,18 +222,23 @@ const handler = {
             })
         }
 
-        app.win.on('close', (event) => {
-            if (app.win.miniplayerActive) {
+        app.win.on('close', (e) => {
+            if (app.isMiniplayerActive) {
                 ipcMain.emit("set-miniplayer", false);
-                return;
+                e.preventDefault()
             }
-
-            if (!app.isQuiting || process.platform === "darwin") {
-                event.preventDefault();
-                app.win.hide();
+            else if (app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === "darwin") {
+                app.win.hide()
+                e.preventDefault()
             }
+            else { app.quit() }
+        })
 
-        });
+        app.win.on('maximize', (e) => {
+            if (app.isMiniplayerActive) {
+                e.preventDefault()
+            }
+        })
 
         app.win.on('show', () => {
             app.ame.win.SetContextMenu(true)
@@ -244,7 +246,6 @@ const handler = {
             if (app.win.isVisible()) {
                 app.win.focus()
             }
-            // if (app.win.StoredWebsite) app.win.loadURL(app.win.StoredWebsite)
         });
 
         app.win.on('hide', () => {
@@ -252,7 +253,6 @@ const handler = {
             if (app.pluginsEnabled) {
                 app.win.webContents.executeJavaScript(`_plugins.execute('OnHide')`)
             }
-            // app.win.StoredWebsite = app.win.webContents.getURL();
         });
 
         // For macOS Link Handling
@@ -308,7 +308,7 @@ const handler = {
 
             // Theme Changes
             if (currentChanges.includes('visual.theme')) {
-                app.win.webContents.executeJavaScript(`AMThemes.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`).catch((e) => console.error(e));
+                app.win.webContents.executeJavaScript(`AMStyling.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`).catch((e) => console.error(e));
                 const updatedVibrancy = app.ame.utils.fetchTransparencyOptions();
                 if (app.transparency && updatedVibrancy && process.platform !== 'darwin') app.win.setVibrancy(updatedVibrancy);
             }
@@ -317,19 +317,15 @@ const handler = {
                 const updatedVibrancy = app.ame.utils.fetchTransparencyOptions()
                 if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
                     app.win.setVibrancy(updatedVibrancy);
-                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(true);`).catch((e) => console.error(e));
+                    app.win.webContents.executeJavaScript(`AMStyling.setTransparency(true);`).catch((e) => console.error(e));
                 } else {
                     app.win.setVibrancy();
-                    app.win.webContents.executeJavaScript(`AMThemes.setTransparency(false);`).catch((e) => console.error(e));
+                    app.win.webContents.executeJavaScript(`AMStyling.setTransparency(false);`).catch((e) => console.error(e));
                 }
             }
             // Reload scripts
             else if (currentChanges.includes('visual.removeUpsell') || currentChanges.includes('visual.removeAppleLogo') || currentChanges.includes('visual.removeFooter') || currentChanges.includes('visual.useOperatingSystemAccent')) {
                 app.ame.load.LoadFiles();
-            }
-            // closeButtonMinimize
-            else if (currentChanges.includes('window.closeButtonMinimize')) {
-                app.isQuiting = !app.preferences.value('window.closeButtonMinimize').includes(true);
             }
             // IncognitoMode Changes
             else if (currentChanges.includes('general.incognitoMode')) {
@@ -338,8 +334,8 @@ const handler = {
                 }
             }
             // The rest ask for a restart
-            else if (!DialogMessage && !currentChanges.includes('general.lastfmAuthKey')) {
-                DialogMessage = dialog.showMessageBox(app.win, {
+            else if (!DialogMessage && !currentChanges.includes('general.lastfmAuthKey') && !currentChanges.includes('window.closeButtonMinimize')) {
+                DialogMessage = dialog.showMessageBox({
                     title: "Relaunch Required",
                     message: "A relaunch is required in order for the settings you have changed to apply.",
                     type: "warning",
@@ -359,34 +355,27 @@ const handler = {
     RendererListenerHandlers: () => {
 
         // Themes Listing Update
-        ipcMain.on('updateThemesListing', () => {
-            const themesListing = app.ame.utils.fetchThemesListing();
-            app.win.webContents.send('updatedThemesListing', themesListing);
+        ipcMain.handle('updateThemesListing', (_event) => {
+            return app.ame.utils.fetchThemesListing();
+        })
+
+        // Acrylic Check
+        ipcMain.handle('isAcrylicSupported', (_event) => {
+            return app.ame.utils.isAcrylicSupported();
+        })
+
+        // Update Themes
+        ipcMain.on('updateThemes', (_event) => {
+            app.ame.utils.updateThemes().catch((e) => console.error(e))
         });
 
-        // Initial Acrylic Check
-        ipcMain.on('isAcrylicSupported', () => {
-            const acrylicSupported = app.ame.utils.isAcrylicSupported();
-            app.win.webContents.send('acrylicSupport', acrylicSupported);
-        });
-
-        // Authorization
+        // Authorization (This needs to be cleaned up a bit, an alternative to reload() would be good )
         ipcMain.on('authorizationStatusDidChange', (_event, authorized) => {
             console.log(`authorization updated. status: ${authorized}`)
             app.win.reload()
             app.ame.load.LoadFiles()
             app.isAuthorized = (authorized === 3)
         })
-
-        // Update Themes
-        ipcMain.on('updateThemes', (_event) => {
-            app.ame.utils.updateThemes().then(() => {
-                setTimeout(() => {
-                    const themesListing = app.ame.utils.fetchThemesListing();
-                    app.win.webContents.send('themesUpdated', themesListing);
-                }, 2000)
-            });
-        });
 
         // Window Navigation - Minimize
         ipcMain.on('minimize', () => { // listen for minimize event
@@ -397,12 +386,9 @@ const handler = {
 
         // Window Navigation - Maximize
         ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
-            if (app.win.miniplayerActive) {
-                return
-            } // Here we would setup a function to open the fullscreen player with lyrics
-
+            
             if (app.win.isMaximized()) {
-                app.win.restore()
+                app.win.unmaximize()
                 if (process.platform !== "win32") {
                     app.win.webContents.executeJavaScript(`document.querySelector("#maximize").classList.remove("maxed")`)
                 }
@@ -435,19 +421,20 @@ const handler = {
         const minSize = app.win.getMinimumSize()
         ipcMain.on("set-miniplayer", (event, val) => {
             if (val) {
-                app.win.miniplayerActive = true
-                app.win.setSize(300, 300)
-                app.win.setMinimumSize(300, 55)
-                app.win.setMaximumSize(300, 300)
-                app.win.setMaximizable(false)
-                app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(true)")
+                app.isMiniplayerActive = true;
+                app.win.setSize(300, 300);
+                app.win.setMinimumSize(300, 55);
+                app.win.setMaximumSize(300, 300);
+                app.win.maximizable = false;
+                app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(true)").catch((e) => console.error(e));
+                if (app.win.isMaximized) { app.win.unmaximize(); }
             } else {
-                app.win.miniplayerActive = false
-                app.win.setMaximumSize(9999, 9999)
-                app.win.setMinimumSize(minSize[0], minSize[1])
-                app.win.setSize(1024, 600)
-                app.win.setMaximizable(true)
-                app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(false)")
+                app.isMiniplayerActive = false;
+                app.win.setMaximumSize(9999, 9999);
+                app.win.setMinimumSize(minSize[0], minSize[1]);
+                app.win.setSize(1024, 600);
+                app.win.maximizable = true;
+                app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(false)").catch((e) => console.error(e));
             }
         })
 
@@ -496,6 +483,28 @@ const handler = {
                     console.error(`[Plugins] error reading plugin: ${path} - Error: ${error}`)
                 }
             })
+        })
+
+        // Get Wallpaper
+        ipcMain.on("get-wallpaper", (event)=>{
+            function base64_encode(file) {
+                var bitmap = readFileSync(file)
+                return `data:image/png;base64,${new Buffer(bitmap).toString('base64')}`
+            }
+            var spawn = require("child_process").spawn,child
+            child = spawn("powershell.exe",[`Get-ItemProperty -Path Registry::"HKCU\\Control Panel\\Desktop\\" -Name "Wallpaper" | ConvertTo-JSON`])
+            child.stdout.on("data",function(data){
+                console.log("Powershell Data: " + data)
+                var parsed = JSON.parse(data)
+                event.returnValue = base64_encode(parsed["WallPaper"])
+            })
+            child.stderr.on("data",function(data){
+                console.log("Powershell Errors: " + data)
+            })
+            child.on("exit",function(){
+                console.log("Powershell Script finished")
+            })
+            child.stdin.end()
         })
     },
 
