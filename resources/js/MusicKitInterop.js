@@ -47,6 +47,10 @@ const MusicKitInterop = {
         MusicKit.getInstance().addEventListener(MusicKit.Events.authorizationStatusDidChange, () => {
             global.ipcRenderer.send('authorizationStatusDidChange', MusicKit.getInstance().authorizationStatus)
         })
+
+        MusicKit.getInstance().addEventListener(MusicKit.Events.mediaPlaybackError, (e) => {
+            console.warn(`[mediaPlaybackError] ${e}`);
+        })
     },
 
     getAttributes: function () {

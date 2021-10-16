@@ -69,12 +69,10 @@ app.on('widevine-update-pending', (currentVersion, pendingVersion) => {
 
 app.on('widevine-error', (error) => {
     console.log('[Apple-Music-Electron][Widevine] Widevine installation encountered an error: ' + error)
-    process.exit(1)
+    app.exit()
 })
 
-app.on('window-all-closed', () => {
-    app.quit()
-});
+app.on("window-all-closed", app.quit);
 
 app.on('before-quit', () => {
     app.win.removeAllListeners('close');

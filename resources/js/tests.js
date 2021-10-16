@@ -1,19 +1,23 @@
 var _tests = {
-    oobe() {
+    oobe(skipIntro = false) {
         AMJavaScript.getRequest("ameres://html/oobe.html", (content) => {
             var vm = null
             var modal = new AMEModal({
                 content: content,
+                CloseButton: false,
                 OnCreate() {
                     vm = new Vue({
                         el: "#oobe-vue",
                         data: {
-                            languages: {
-                                "us": "English (US)",
-                                "gb": "English (UK)"
+                            prefs: {
+                                audioQuality: "auto",
+                                language: "us",
+                                region: "",
+                                mxm: false,
+                                mxmlanguage: "en",
+                                theme: preferences.visual.theme
                             },
-                            page: "welcome",
-                            theme: preferences.visual.theme
+                            page: "intro",
                         },
                         methods: {
                             btn() {
@@ -21,9 +25,20 @@ var _tests = {
                             },
                             close() {
                                 modal.close()
+                            },
+                            init () {
+                                let self = this
+                                document.getElementById('introVideo').addEventListener('ended',()=>{
+                                    self.page = "welcome"
+                                },false);
                             }
                         }
                     })
+                    if(skipIntro) {
+                        vm.page = "welcome"
+                    }else{
+                        vm.init()
+                    }
                 },
                 OnClose() {
                     _vues.destroy(vm)

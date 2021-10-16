@@ -361,7 +361,7 @@ module.exports = {
         }
 
         // alwaysOnTop
-        if (!app.preferences.value('advanced.alwaysOnTop').includes(true)) {
+        if (!app.preferences.value('window.alwaysOnTop').includes(true)) {
             win.setAlwaysOnTop(false)
         } else {
             win.setAlwaysOnTop(true)
