@@ -79,7 +79,7 @@ const Utils = {
             }
         }
 
-        console.verbose(`[fetchThemeMeta] Returning ${fileMeta.toString()}`);
+        console.verbose(`[fetchThemeMeta] Returning ${JSON.stringify(fileMeta)}`);
         return fileMeta
     },
 

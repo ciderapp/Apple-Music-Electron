@@ -68,13 +68,13 @@ module.exports = () => {
             "appStartupBehavior": "",
             "closeButtonMinimize": [
                 true
-            ]
+            ],
+            "alwaysOnTop": [],
         },
         "advanced": {
             "forceApplicationRegion": "",
             "forceApplicationMode": "system",
             "verboseLogging": [],
-            "alwaysOnTop": [],
             "autoUpdaterBetaBuilds": [],
             "useBetaSite": [
                 true
@@ -1355,7 +1355,15 @@ module.exports = () => {
                 'label': 'Close button should minimize Apple Music',
                 'value': true
             }]
-        }
+        },
+        {
+            'key': 'alwaysOnTop',
+            'type': 'checkbox',
+            'options': [{
+                'label': 'Display window on top of others',
+                'value': true
+            }]
+        },
     ];
     fields.advanced = [
         {
@@ -2362,7 +2370,7 @@ module.exports = () => {
     }
 
     app.cfg = new Store({
-        defaults: storeDefaults, 
+        defaults: storeDefaults,
         schema: storeSchema,
         migrations: storeMigrations
     })
