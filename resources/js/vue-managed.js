@@ -40,8 +40,10 @@ class AMEModal {
                     OnCreate = () => {
                     },
                     OnClose = () => {
-                    }
+                    },
+                    CloseButton = true
                 }) {
+        this.closeButton = CloseButton
         this.content = content
         this.OnClose = OnClose
         this.OnCreate = OnCreate
@@ -64,7 +66,9 @@ class AMEModal {
         })
         modalContent.style.height = "100%"
         setInnerHTML(modalContent, this.content)
-        modalWin.appendChild(modalCloseBtn)
+        if(this.closeButton) {
+            modalWin.appendChild(modalCloseBtn)
+        }
         modalWin.appendChild(modalContent)
         backdrop.appendChild(modalWin)
         document.body.appendChild(backdrop)
