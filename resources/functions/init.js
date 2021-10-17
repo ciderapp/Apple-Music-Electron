@@ -102,7 +102,9 @@ const init = {
     },
 
     PluginInstallation: function () {
-        if (!fs.existsSync(resolve(app.getPath("userData"), "plugins"))) { return; }
+        if (!fs.existsSync(resolve(app.getPath("userData"), "plugins"))) {
+            return;
+        }
 
         // Check if the plugins folder exists and check permissions
         app.pluginsEnabled = true;
@@ -234,7 +236,7 @@ const init = {
             console.error("[GetLocale] No Language found, setting locale language to 'us'.")
         }
 
-        return [Region, Language]
+        return {language: Language, region: Region}
     },
 
     SettingsInit: function () {

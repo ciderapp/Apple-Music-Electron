@@ -38,7 +38,7 @@ module.exports = {
             if (!error) {
                 try {
                     let formattedData = data
-                    if(formatting) {
+                    if (formatting) {
                         formattedData = data.replace(/\s{2,10}/g, ' ').trim();
                     }
                     app.win.webContents.executeJavaScript(formattedData).then(() => {
@@ -57,31 +57,19 @@ module.exports = {
         if (!win) return;
 
         app.locale = app.ame.init.LocaleInit();
-        const [region, language] = app.locale,
-            urlBase = (app.preferences.value('advanced.useBetaSite').includes(true)) ? `https://beta.music.apple.com` : `https://music.apple.com`,
-            urlFallback = `https://music.apple.com/`,
-            urlLanguage = `${urlBase}`;
+        const urlBase = `${(app.preferences.value('advanced.useBetaSite').includes(true)) ? `https://beta.music.apple.com` : `https://music.apple.com`}?l=${app.locale.language}`,
+            urlFallback = `https://music.apple.com/`;
 
-        console.log(`[LoadWebsite] Attempting to load '${urlLanguage}'`)
-        win.loadURL(urlLanguage).then(() => {
-            let authedUrl;
+        ipcMain.once('userAuthorized', (e, args) => {
+            app.isAuthorized = true
+            console.log(`[LoadWebsite] User Authenticated. Setting page to: ${args}`)
+            win.webContents.clearHistory()
+        })
 
-            ipcMain.once('authorized', (e, args) => {
-                app.isAuthorized = true
-                authedUrl = args
-            })
-
-            if (app.preferences.value('general.startupPage') !== "browse") {
-                app.ame.load.LoadJS('checkAuth.js')
-                if (app.isAuthorized) {
-                    win.webContents.clearHistory()
-                    console.log(`[LoadWebsite] User is authenticated. Loading '${app.preferences.value('general.startupPage')}'. (${authedUrl}).`)
-                }
-            } else {
-                console.log(`[LoadWebsite] Loaded '${urlLanguage}'`)
-            }
+        win.loadURL(urlBase).then(() => {
+            app.ame.load.LoadJS('checkAuth.js')
         }).catch((err) => {
-            win.loadURL(urlFallback).then(() => console.error(`[LoadWebsite] '${urlLanguage}' was unavailable, falling back to '${urlFallback}' | ${err}`))
+            win.loadURL(urlFallback).then(() => console.error(`[LoadWebsite] '${urlBase}' was unavailable, falling back to '${urlFallback}' | ${err}`))
         })
     },
 
@@ -127,7 +115,7 @@ module.exports = {
                 app.win.webContents.executeJavaScript(`if (document.querySelector("#maximize")) { document.querySelector("#maximize").classList.add("maxed"); }`).catch((e) => console.error(e));
             }
         }
-        
+
         function matchRuleShort(str, rule) {
             var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
             return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
@@ -135,9 +123,9 @@ module.exports = {
 
         const urlBase = (app.preferences.value('advanced.useBetaSite')) ? `https://beta.music.apple.com` : `https://music.apple.com`;
         const backButtonBlacklist = [
-            `${urlBase}/${app.locale[0]}/listen-now?l=${app.locale[1]}`,
-            `${urlBase}/${app.locale[0]}/browse?l=${app.locale[1]}`,
-            `${urlBase}/${app.locale[0]}/radio?l=${app.locale[1]}`,
+            `${urlBase}/${app.locale[0]}/listen-now?l=*`,
+            `${urlBase}/${app.locale[0]}/browse?l=*`,
+            `${urlBase}/${app.locale[0]}/radio?l=*`,
 
             `${urlBase}/${app.locale[0]}/listen-now`,
             `${urlBase}/${app.locale[0]}/browse`,
@@ -146,10 +134,10 @@ module.exports = {
             `${urlBase}/${app.locale[0]}/search`,
             `${urlBase}/${app.locale[0]}/search?*`,
 
-            `${urlBase}/library/recently-added?l=${app.locale[1]}`,
-            `${urlBase}/library/albums?l=${app.locale[1]}`,
-            `${urlBase}/library/songs?l=${app.locale[1]}`,
-            `${urlBase}/library/made-for-you?l=${app.locale[1]}`,
+            `${urlBase}/library/recently-added?l=*`,
+            `${urlBase}/library/albums?l=*`,
+            `${urlBase}/library/songs?l=*`,
+            `${urlBase}/library/made-for-you?l=*`,
 
             `${urlBase}/library/recently-added`,
             `${urlBase}/library/albums`,
@@ -186,7 +174,7 @@ module.exports = {
         app.ame.load.LoadCSS('custom-stylesheet.css')
 
         // Inject Plugin Interaction
-        if(app.pluginsEnabled) {
+        if (app.pluginsEnabled) {
             app.ame.load.LoadJS('pluginSystem.js', false)
         }
 

@@ -1,20 +1,21 @@
 try {
+    const preferences = ipcRenderer.sendSync('getPreferences');
+
     if (MusicKit.getInstance().isAuthorized) {
+        let url = window.location.href;
+        console.log(url);
 
-        let urlToLoad = window.location.href;
-        const preferences = ipcRenderer.sendSync('getPreferences');
-
-        urlToLoad = `${(preferences.advanced.useBetaSite.includes(true)) ? `https://beta.music.apple.com` : `https://music.apple.com`}/${preferences.general.startupPage}?${urlToLoad.split('?')[1]}`;
-
-        /*if (preferences.general.startupPage.includes('library/'))
-            urlToLoad = `${(preferences.advanced.useBetaSite.includes(true)) ? `https://beta.music.apple.com` : `https://music.apple.com`}/${preferences.general.startupPage}?${urlToLoad.split('?')[1]}`;
-        else {
-            if (window.location.href.includes())
-            urlToLoad = urlToLoad.substring(0, urlToLoad.lastIndexOf("?")) + `/${preferences.general.startupPage}` + urlToLoad.substring(urlToLoad.lastIndexOf("?"));
-        }*/
-
-        window.location.href = urlToLoad;
-        ipcRenderer.send('authorized', urlToLoad);
+        if (preferences.general.startupPage !== "browse") {
+            if (preferences.general.startupPage.includes('library/')) {
+                url = `${window.location.origin}/${preferences.general.startupPage}?${url.split('?')[1]}`;
+            } else {
+                url = `${window.location.origin}/${MusicKit.getInstance().storefrontId}/${preferences.general.startupPage}?${url.split('?')[1]}`;
+            }
+            window.location.href = url;
+            ipcRenderer.send('userAuthorized', url);
+        } else {
+            ipcRenderer.send('userAuthorized', url);
+        }
     }
 } catch (e) {
     console.error("[JS] Error while trying to apply CheckAuth.js", e);
