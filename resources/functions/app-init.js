@@ -2375,6 +2375,8 @@ module.exports = () => {
         migrations: storeMigrations
     })
 
+    app.isQuiting = false;
+
     const handlersFuncs = require('./handler'),
         initFuncs = require('./init'),
         loadFuncs = require('./load'),

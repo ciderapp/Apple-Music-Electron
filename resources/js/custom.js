@@ -4,15 +4,15 @@ try {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     }
 
-    var setInnerHTML = function(elm, html) {
+    var setInnerHTML = function (elm, html) {
         elm.innerHTML = html;
-        Array.from(elm.querySelectorAll("script")).forEach( oldScript => {
+        Array.from(elm.querySelectorAll("script")).forEach(oldScript => {
             const newScript = document.createElement("script");
-            Array.from(oldScript.attributes).forEach( attr => newScript.setAttribute(attr.name, attr.value) );
+            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
             newScript.appendChild(document.createTextNode(oldScript.innerHTML));
             oldScript.parentNode.replaceChild(newScript, oldScript);
         });
-        };
+    };
 
     function matchRuleShort(str, rule) {
         var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
@@ -112,14 +112,16 @@ try {
                         document.querySelector('#lyricsButton').style.fill = 'var(--playerPlatterButtonIconFill)';
                         document.querySelector('#lyricsButton').style.boxShadow = '0 1px 1px rgb(0 0 0 / 10%)';
                         document.querySelector('#lyricsButton').style.background = 'var(--playerPlatterButtonBGFill)';
-                        if (MusicKit.getInstance().nowPlayingItem == null){
-                            try{
+                        if (MusicKit.getInstance().nowPlayingItem == null) {
+                            try {
                                 document.getElementById('lyrics_none').classList.remove('lyrics_none_hidden');
-                            } catch (e){}
+                            } catch (e) {
+                            }
                         } else {
-                            try{
+                            try {
                                 document.getElementById('lyrics_none').classList.add('lyrics_none_hidden');
-                            } catch (e){}                            
+                            } catch (e) {
+                            }
                         }
                         if (document.getElementById('lyricer').childNodes[0].childNodes.length == null || document.getElementById('lyricer').childNodes[0].childNodes.length <= 1) {
                             _lyrics.GetLyrics(1, false);
@@ -161,7 +163,7 @@ try {
                                     document.querySelector('.web-chrome-drawer').removeEventListener('animationend', closeLyrics, true);
                                 }
                             } catch (e) {
-                                console.error(e)
+                                console.error(e);
                             }
                         }
                         if (!document.getElementById("lyricer")) {
@@ -182,7 +184,6 @@ try {
                             });
 
                             ipcRenderer.on('lyricstranslation', function (event, data) {
-                                console.log(data);
                                 lrc.setMXMTranslation(data);
                             });
 
@@ -201,7 +202,6 @@ try {
                             lrc.setLrc(text);
                             document.addEventListener("lyricerclick", function (e) {
                                 ipcRenderer.send('ProgressTimeUpdateFromLyrics', e.detail.time);
-                                console.log('clicked on ' + e.detail.time);
                                 document.body.setAttribute("background-color", `var(--systemToolbarTitlebarMaterialSover-inactive)`);
                             });
 
@@ -225,8 +225,6 @@ try {
                 const artistName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
                 const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
                 const songID = (MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["_songId"] ?? -1 : -1;
-                console.log('mxmon' + preferences.visual.mxmon);
-                console.log('mxmon' + preferences.visual.mxmon);
 
                 /* MusixMatch Lyrics*/
                 if (!mxmfail && preferences.visual.mxmon.includes(true)) {
@@ -235,7 +233,7 @@ try {
                 /* Apple Lyrics (from api lyric query) */
                 else if (songID !== -1) {
                     MusicKit.getInstance().api.lyric(songID)
-                        .then(function (response) {
+                        .then((response) => {
                             let seconds,
                                 minutes,
                                 hours,
@@ -244,68 +242,67 @@ try {
                                 lrcTime;
 
                             try {
-                                    const ttmlLyrics = response["ttml"];
-                                    let lyrics = "";
-                                    const parser = new DOMParser();
-                                    const doc = parser.parseFromString(ttmlLyrics, "text/xml");
-                                    const lyricsLines = doc.getElementsByTagName('p');
-                                    const endTime = [0];
-                                    try {
-                                        for (let element of lyricsLines) {
-                                            rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
-                                            hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
-                                            minutes = (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:");
-                                            seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
-                                            milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
-                                            lrcTime = minutes + seconds + milliseconds;
-                                            const rawTime2 = element.getAttribute('end').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
-                                            const hours2 = (rawTime2[2] != null) ? (rawTime2[1].replace(":", "")) : "0";
-                                            const minutes2 = (rawTime2[2] != null) ? (hours2 * 60 + rawTime2[2].replace(":", "") * 1 + ":") : ((rawTime2[1] != null) ? rawTime2[1] : "00:");
-                                            const seconds2 = (rawTime2[3] != null) ? (rawTime2[3]) : "00";
-                                            const milliseconds2 = (rawTime2[4] != null) ? (rawTime2[4]) : ".000";
-                                            const lrcTime2 = minutes2 + seconds2 + milliseconds2;
-                                            if (minutes.replace(":", "") * 60 + seconds * 1 - endTime[endTime.length - 1] > 10) {
-                                                const time = endTime[endTime.length - 1];
-                                                const minutes = Math.floor(time / 60);
-                                                const secs = time - minutes * 60;
-                                                lyrics = lyrics.concat(`[${minutes}:${secs}]lrcInstrumental` + "\r\n");
-                                            }
-                                            endTime.push(minutes2.replace(":", "") * 60 + seconds2 * 1);
-                                            lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
+                                const ttmlLyrics = response["ttml"];
+                                let lyrics = "";
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(ttmlLyrics, "text/xml");
+                                const lyricsLines = doc.getElementsByTagName('p');
+                                const endTime = [0];
+                                try {
+                                    for (let element of lyricsLines) {
+                                        rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
+                                        hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
+                                        minutes = (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:");
+                                        seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
+                                        milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
+                                        lrcTime = minutes + seconds + milliseconds;
+                                        const rawTime2 = element.getAttribute('end').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
+                                        const hours2 = (rawTime2[2] != null) ? (rawTime2[1].replace(":", "")) : "0";
+                                        const minutes2 = (rawTime2[2] != null) ? (hours2 * 60 + rawTime2[2].replace(":", "") * 1 + ":") : ((rawTime2[1] != null) ? rawTime2[1] : "00:");
+                                        const seconds2 = (rawTime2[3] != null) ? (rawTime2[3]) : "00";
+                                        const milliseconds2 = (rawTime2[4] != null) ? (rawTime2[4]) : ".000";
+                                        const lrcTime2 = minutes2 + seconds2 + milliseconds2;
+                                        if (minutes.replace(":", "") * 60 + seconds * 1 - endTime[endTime.length - 1] > 10) {
+                                            const time = endTime[endTime.length - 1];
+                                            const minutes = Math.floor(time / 60);
+                                            const secs = time - minutes * 60;
+                                            lyrics = lyrics.concat(`[${minutes}:${secs}]lrcInstrumental` + "\r\n");
                                         }
-                                    } catch {
-                                        lyrics = "";
-                                        for (let element of lyricsLines) {
-                                            rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
-                                            hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
-                                            minutes = (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:");
-                                            seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
-                                            milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
-                                            lrcTime = minutes + seconds + milliseconds;
-                                            lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
-                                        }
+                                        endTime.push(minutes2.replace(":", "") * 60 + seconds2 * 1);
+                                        lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
                                     }
-                                    console.log("AM lyrics:" + lyrics);
-                                    let artworkURL = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artworkURL : '').replace("{w}", 256).replace("{h}", 256);
-                                    if (artworkURL == null) {
-                                        artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
-                                    }
-                                    if (mode === 1) {
-                                        ipcRenderer.send('LyricsUpdate', lyrics, artworkURL);
-                                    } else {
-                                        ipcRenderer.send('LyricsHandler', lyrics, artworkURL);
-                                    }
-                                } catch (e) {
-                                    console.error(e);
-                                    if (mode === 1) {
-                                        ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
-                                    } else {
-                                        ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
+                                } catch {
+                                    lyrics = "";
+                                    for (let element of lyricsLines) {
+                                        rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
+                                        hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
+                                        minutes = (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:");
+                                        seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
+                                        milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
+                                        lrcTime = minutes + seconds + milliseconds;
+                                        lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
                                     }
                                 }
+                                let artworkURL = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artworkURL : '').replace("{w}", 256).replace("{h}", 256);
+                                if (artworkURL == null) {
+                                    artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
+                                }
+                                if (mode === 1) {
+                                    ipcRenderer.send('LyricsUpdate', lyrics, artworkURL);
+                                } else {
+                                    ipcRenderer.send('LyricsHandler', lyrics, artworkURL);
+                                }
+                            } catch (e) {
+                                console.error(e);
+                                if (mode === 1) {
+                                    ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
+                                } else {
+                                    ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
+                                }
                             }
-                        ).catch((_error) => {
-                            console.log(_error);
+                        })
+                        .catch((err) => {
+                            console.log(err);
                             let artworkURL = (MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256);
                             if (artworkURL == null) {
                                 artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
@@ -315,19 +312,19 @@ try {
                             } else {
                                 ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
                             }
-                        }
-                    );
+                        });
                 }
                 /* Apple Lyrics (from api song query */
                 else {
                     try {
                         MusicKit.getInstance().api.library.song(MusicKit.getInstance().nowPlayingItem.id).then((data) => {
-                            try{
-                            if (data != null && data !== "") {
-                                artworkURL = data["artwork"]["url"];
-                            } else {
-                                artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
-                            }} catch(e){
+                            try {
+                                if (data != null && data !== "") {
+                                    artworkURL = data["artwork"]["url"];
+                                } else {
+                                    artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
+                                }
+                            } catch (e) {
                                 artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
                             }
                             if (mode === 1) {
@@ -370,7 +367,7 @@ try {
                 this.wallpaper = ipcRenderer.sendSync("get-wallpaper");
                 this.updateMetrics()
             },
-            updateMetrics () {
+            updateMetrics() {
                 this._styleSheets.Metrics.replaceSync(`
                     :root {
                         --user-wallpaper: url('${this.wallpaper}');
@@ -387,10 +384,10 @@ try {
             },
             enableMica() {
                 let self = this;
-                if(this.lastTheme !== "winui") {
-                    if(confirm("This feature currently requires the Eleven theme, enable now?")) {
+                if (this.lastTheme !== "winui") {
+                    if (confirm("This feature currently requires the Eleven theme, enable now?")) {
                         this.loadTheme("winui");
-                    }else{
+                    } else {
                         return;
                     }
                 }
@@ -398,10 +395,12 @@ try {
                 micaDOM.classList.add("micaBackground");
                 document.body.appendChild(micaDOM);
                 this.getWallpaper();
+
                 function onScreenMove(cb) {
                     var lastScreenX;
                     var lastScreenY;
                     var fps = 60;
+
                     function detectScreenMove() {
                         if (lastScreenY !== window.screenY || lastScreenX !== window.screenX) {
                             lastScreenY = window.screenY;
@@ -410,15 +409,17 @@ try {
                         }
                         requestAnimationFrame(detectScreenMove);
                     }
+
                     requestAnimationFrame(detectScreenMove);
                 }
-                onScreenMove(function() {
+
+                onScreenMove(function () {
                     micaDOM.style.backgroundPosition = `${window.screenX * -1}px ${window.screenY * -1}px`;
                     micaDOM.style.backgroundSize = `${screen.width}px ${screen.height}px`;
                 });
             },
             loadTheme(path = "") {
-                if(path === this.lastTheme) {
+                if (path === this.lastTheme) {
                     return;
                 }
                 this.lastTheme = path;
@@ -438,15 +439,17 @@ try {
                 xhttp.send();
             },
             updateMeta() {
-                
-                if (MusicKit.getInstance().nowPlayingItem == null){
-                    try{
+
+                if (MusicKit.getInstance().nowPlayingItem == null) {
+                    try {
                         document.getElementById('lyrics_none').classList.remove('lyrics_none_hidden');
-                    } catch (e){}
+                    } catch (e) {
+                    }
                 } else {
-                    try{
+                    try {
                         document.getElementById('lyrics_none').classList.add('lyrics_none_hidden');
-                    } catch (e){}                            
+                    } catch (e) {
+                    }
                 }
 
                 console.warn("[Custom] Refreshed Meta CSS");
@@ -511,7 +514,8 @@ try {
     /* Bulk AME JavaScript Functions */
     if (typeof AMJavaScript == "undefined") {
         var AMJavaScript = {
-            getRequest: (url, callback = ()=>{}) => {
+            getRequest: (url, callback = () => {
+            }) => {
                 const xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     callback(this.responseText);
@@ -519,7 +523,11 @@ try {
                 xhttp.open("GET", url, true);
                 xhttp.send();
             },
-            makeModal: ({ content = "", onClose = ()=>{}, onCreate = ()=>{}}) => {
+            makeModal: ({
+                            content = "", onClose = () => {
+                }, onCreate = () => {
+                }
+                        }) => {
                 var backdrop = document.createElement("div");
                 var modalWin = document.createElement("div");
                 var modalCloseBtn = document.createElement("button");
@@ -528,7 +536,7 @@ try {
                 modalWin.classList.add("ameModal");
                 modalCloseBtn.classList.add("ameModal-Close");
                 modalCloseBtn.innerHTML = ("Close");
-                modalCloseBtn.addEventListener("click", ()=>{
+                modalCloseBtn.addEventListener("click", () => {
                     onClose();
                     backdrop.remove();
                 });
@@ -563,25 +571,20 @@ try {
                 });
 
                 /* Audio Quality Selector */
-                if (preferences.audio.audioQuality === 'auto') {
-                    if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to auto, dynamically setting bitrate between 64 and 256.");
-                } else if (preferences.audio.audioQuality === 'extreme') {
-                    if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to extreme, forcing bitrate to 990..");
-                    MusicKit.PlaybackBitrate = 990;
+                if (preferences.audio.audioQuality === 'extreme') {
+                    console.warn("[Custom] Setting bitrate to 990.");
                     MusicKit.getInstance().bitrate = 990;
                 } else if (preferences.audio.audioQuality === 'high') {
-                    if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to high, forcing bitrate to 256.");
-                    MusicKit.PlaybackBitrate = 256;
+                    console.warn("[Custom] Setting bitrate to 256.");
                     MusicKit.getInstance().bitrate = 256;
                 } else if (preferences.audio.audioQuality === 'standard') {
-                    if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] AudioQuality set to standard, forcing bitrate to 64.");
-                    MusicKit.PlaybackBitrate = 64;
+                    console.warn("[Custom] Setting bitrate to 64.");
                     MusicKit.getInstance().bitrate = 64;
                 }
 
-                /* Gapless Playback */
+                /* Seemless (Apple dont know how to spell) Audio Playback */
                 if (preferences.audio.gaplessEnabled.includes(true)) {
-                    if (preferences.advanced.verboseLogging.includes(true)) console.log("[JS] Gapless Playback enabled, songs will now preload before ending reducing load times.");
+                    console.warn("[Custom] Seemless Audio Transitions enabled.");
                     MusicKit.getInstance()._bag.features["seemless-audio-transitions"] = true;
                 }
 
@@ -882,7 +885,7 @@ try {
                         themesListingHTML = themesListingHTML + `\n<option value="${fileName}">${theme.name}</option>`;
                     }
                     document.getElementById('theme').innerHTML = themesListingHTML;
-                    console.info('[updateThemes] Themes Listing Updated!');
+                    console.warn('[Custom][updateThemes] Themes Listing Updated!');
                 },
                 updateThemes: () => {
                     document.getElementById('updateThemes').innerText = 'Updating...';

@@ -28,9 +28,17 @@ function CreateWindow() {
     if (process.platform === 'win32' && app.transparency) { app.win.show() } // Show the window so SetThumbarButtons doesnt break
     app.ame.win.SetButtons() // Set Inactive Thumbnail Toolbar Icons or TouchBar
     app.ame.win.SetApplicationMenu()
+    app.ame.win.SetTaskList()
+    app.ame.utils.checkForUpdates()
+
+    app.ame.win.HandleBrowserWindow();
 }
 
-// When its Ready call it all
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* App Event Handlers
+* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
 app.on('ready', () => {
     if (app.isQuiting) { app.quit(); return; }
 
@@ -47,6 +55,7 @@ app.on('ready', () => {
     CreateWindow()
 });
 
+// macOS Activate Handler
 app.on('activate', () => {
     if (app.win === null) {
         CreateWindow()
@@ -55,6 +64,24 @@ app.on('activate', () => {
     }
 })
 
+// Also for macOS, quits the app when all windows are closed
+
+
+app.on('before-quit', () => {
+    console.verbose('before-quit');
+    app.isQuiting = true;
+    app.ame.mpris.clearActivity();
+    app.ame.discord.disconnect();
+    console.log('---------------------------------------------------------------------');
+    console.warn(`${app.getName()} has closed.`);
+    console.log('---------------------------------------------------------------------');
+});
+
+app.on('will-quit', () => { console.verbose('will-quit'); })
+app.on('quit', () => { console.verbose('quit'); })
+app.on("window-all-closed", () => { console.verbose('window-all-closed'); app.quit(); });
+
+// Widevine Stuff
 app.on('widevine-ready', (version, lastVersion) => {
     if (null !== lastVersion) {
         console.log('[Apple-Music-Electron][Widevine] Widevine ' + version + ', upgraded from ' + lastVersion + ', is ready to be used!')
@@ -71,15 +98,3 @@ app.on('widevine-error', (error) => {
     console.log('[Apple-Music-Electron][Widevine] Widevine installation encountered an error: ' + error)
     app.exit()
 })
-
-app.on("window-all-closed", app.quit);
-
-app.on('before-quit', () => {
-    app.win.removeAllListeners('close');
-    app.win.close();
-    app.ame.mpris.clearActivity()
-    app.ame.discord.disconnect()
-    console.log('---------------------------------------------------------------------')
-    console.log('Application Closing...')
-    console.log('---------------------------------------------------------------------')
-});

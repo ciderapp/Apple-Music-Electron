@@ -127,7 +127,7 @@ module.exports = {
                     }
                 },
                 {
-                    label: 'Show Apple Music',
+                    label: `Show ${app.getName()}`,
                     click: function () {
                         if (typeof app.win.show === 'function') {
                             app.win.show();
@@ -155,7 +155,7 @@ module.exports = {
                 arguments: '--force-quit',
                 iconPath: process.execPath,
                 iconIndex: 0,
-                title: 'Quit Apple Music'
+                title: `Quit ${app.getName()}`
             }
         ]);
         return true
@@ -314,7 +314,7 @@ module.exports = {
             minWidth: (app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300),
             minHeight: ((app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') ? (app.preferences.value('visual.streamerMode').includes(true) ? 55 : 300) : (app.preferences.value('visual.streamerMode').includes(true) ? 115 : 300)),
             frame: (process.platform !== 'win32' && !(app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right')),
-            title: "Apple Music",
+            title: app.getName(),
             resizable: true,
             // Enables DRM
             webPreferences: {
@@ -343,6 +343,7 @@ module.exports = {
 
         // Create the Browser Window
         console.log('[CreateBrowserWindow] Creating BrowserWindow.')
+        let win;
         if (process.platform === "darwin" || process.platform === "linux") {
             win = new BrowserWindow(options)
         } else {
@@ -378,5 +379,23 @@ module.exports = {
         app.ame.load.LoadWebsite(win)
 
         return win
+    },
+
+    HandleBrowserWindow: () => {
+        // Detect if the application has been opened with --minimized
+        if (app.commandLine.hasSwitch('minimized') || process.argv.includes('--minimized')) {
+            console.log("[Apple-Music-Electron] Application opened with '--minimized'");
+            if (typeof app.win.minimize === 'function') {
+                app.win.minimize();
+            }
+        }
+
+        // Detect if the application has been opened with --hidden
+        if (app.commandLine.hasSwitch('hidden') || process.argv.includes('--hidden')) {
+            console.log("[Apple-Music-Electron] Application opened with '--hidden'");
+            if (typeof app.win.hide === 'function') {
+                app.win.hide()
+            }
+        }
     }
 }

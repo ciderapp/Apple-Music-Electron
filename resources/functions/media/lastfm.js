@@ -46,7 +46,7 @@ const lfm = {
                             console.log("[LastFM][fs] File was written successfully.")
                             lfm.authenticateFromFile()
                             new Notification({
-                                title: "Apple Music",
+                                title: app.getName(),
                                 body: "Successfully logged into LastFM using Authentication Key."
                             }).show()
                         }

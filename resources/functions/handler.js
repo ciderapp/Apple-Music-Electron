@@ -28,27 +28,8 @@ const handler = {
 
         // Detects if the application has been opened with --force-quit
         if (app.commandLine.hasSwitch('force-quit')) {
-            console.log("[Apple-Music-Electron] User has closed the application via --force-quit");
-            app.quit()
+            app.exit()
         }
-
-        app.on('browser-window-created', (_event, _window) => {
-            // Detect if the application has been opened with --minimized
-            if (app.commandLine.hasSwitch('minimized') || process.argv.includes('--minimized')) {
-                console.log("[Apple-Music-Electron] Application opened with '--minimized'");
-                if (typeof app.win.minimize === 'function') {
-                    app.win.minimize();
-                }
-            }
-
-            // Detect if the application has been opened with --hidden
-            if (app.commandLine.hasSwitch('hidden') || process.argv.includes('--hidden')) {
-                console.log("[Apple-Music-Electron] Application opened with '--hidden'");
-                if (typeof app.win.hide === 'function') {
-                    app.win.hide()
-                }
-            }
-        });
     },
 
     VersionHandler: function () {
@@ -156,7 +137,7 @@ const handler = {
 
         app.win.webContents.on('unresponsive', async () => {
             const {response} = await dialog.showMessageBox({
-                message: 'Apple Music has become unresponsive',
+                message: `${app.getName()} has become unresponsive`,
                 title: 'Do you want to try forcefully reloading the app?',
                 buttons: ['Yes', 'Quit', 'No'],
                 cancelId: 1
@@ -223,15 +204,19 @@ const handler = {
         }
 
         app.win.on('close', (e) => {
-            if (app.isMiniplayerActive) {
-                ipcMain.emit("set-miniplayer", false);
-                e.preventDefault()
+            if (!app.isQuiting) {
+                if (app.isMiniplayerActive) {
+                    ipcMain.emit("set-miniplayer", false);
+                    e.preventDefault()
+                } else if (app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === "darwin") {
+                    app.win.hide()
+                    e.preventDefault()
+                }
             }
-            else if (app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === "darwin") {
-                app.win.hide()
-                e.preventDefault()
-            }
-            else { app.quit() }
+
+            app.win.destroy()
+            app.lyrics.mxmWin.destroy()
+            app.lyrics.neteaseWin.destroy()
         })
 
         app.win.on('maximize', (e) => {
@@ -386,7 +371,7 @@ const handler = {
 
         // Window Navigation - Maximize
         ipcMain.on('maximize', () => { // listen for maximize event and perform restore/maximize depending on window state
-            
+
             if (app.win.isMaximized()) {
                 app.win.unmaximize()
                 if (process.platform !== "win32") {
@@ -486,22 +471,23 @@ const handler = {
         })
 
         // Get Wallpaper
-        ipcMain.on("get-wallpaper", (event)=>{
+        ipcMain.on("get-wallpaper", (event) => {
             function base64_encode(file) {
                 var bitmap = readFileSync(file)
                 return `data:image/png;base64,${new Buffer(bitmap).toString('base64')}`
             }
-            var spawn = require("child_process").spawn,child
-            child = spawn("powershell.exe",[`Get-ItemProperty -Path Registry::"HKCU\\Control Panel\\Desktop\\" -Name "Wallpaper" | ConvertTo-JSON`])
-            child.stdout.on("data",function(data){
+
+            let spawn = require("child_process").spawn, child;
+            child = spawn("powershell.exe", [`Get-ItemProperty -Path Registry::"HKCU\\Control Panel\\Desktop\\" -Name "Wallpaper" | ConvertTo-JSON`])
+            child.stdout.on("data", function (data) {
                 console.log("Powershell Data: " + data)
-                var parsed = JSON.parse(data)
+                const parsed = JSON.parse(data);
                 event.returnValue = base64_encode(parsed["WallPaper"])
             })
-            child.stderr.on("data",function(data){
+            child.stderr.on("data", function (data) {
                 console.log("Powershell Errors: " + data)
             })
-            child.on("exit",function(){
+            child.on("exit", function () {
                 console.log("Powershell Script finished")
             })
             child.stdin.end()
@@ -530,8 +516,10 @@ const handler = {
 
     },
 
-    LyricsHandler: function (lyrics) {
-        let win = new BrowserWindow({
+    LyricsHandler: function () {
+        app.lyrics = {neteaseWin: null, mxmWin: null}
+
+        app.lyrics.neteaseWin = new BrowserWindow({
             width: 1,
             height: 1,
             show: false,
@@ -541,7 +529,7 @@ const handler = {
                 contextIsolation: false
             }
         });
-        let win2 = new BrowserWindow({
+        app.lyrics.mxmWin = new BrowserWindow({
             width: 1,
             height: 1,
             show: false,
@@ -552,11 +540,11 @@ const handler = {
 
             }
         });
+
         ipcMain.on('MXMTranslation', function (event, track, artist, lang) {
-            console.log('bruh0');
             try {
-                if (win2 == null) {
-                    win2 = new BrowserWindow({
+                if (app.lyrics.mxmWin == null) {
+                    app.lyrics.mxmWin = new BrowserWindow({
                         width: 1,
                         height: 1,
                         show: false,
@@ -570,34 +558,33 @@ const handler = {
 
 
                 } else {
-                    win2.webContents.send('mxmcors', track, artist, lang);
+                    app.lyrics.mxmWin.webContents.send('mxmcors', track, artist, lang);
                 }
                 // try{
 
                 // const cookie = { url: 'https://apic-desktop.musixmatch.com/', name: 'x-mxm-user-id', value: '' }
-                // win2.webContents.session.defaultSession.cookies.set(cookie);
+                // app.lyrics.mxmWin.webContents.session.defaultSession.cookies.set(cookie);
                 // } catch (e){}
-                if (!win2.webContents.getURL().includes('musixmatch.html')) {
-                    win2.loadFile(join(__dirname, '../lyrics/musixmatch.html'));
-                    win2.webContents.on('did-finish-load', () => {
-                        console.log('bruh1a');
-                        win2.webContents.send('mxmcors', track, artist, lang);
+                if (!app.lyrics.mxmWin.webContents.getURL().includes('musixmatch.html')) {
+                    app.lyrics.mxmWin.loadFile(join(__dirname, '../lyrics/musixmatch.html'));
+                    app.lyrics.mxmWin.webContents.on('did-finish-load', () => {
+                        app.lyrics.mxmWin.webContents.send('mxmcors', track, artist, lang);
                     });
                 }
 
-                win2.on('closed', () => {
-                    win2 = null
+                app.lyrics.mxmWin.on('closed', () => {
+                    app.lyrics.mxmWin = null
                 });
 
             } catch (e) {
-                console.log(e);
+                console.error(e)
             }
         });
 
         ipcMain.on('NetEaseLyricsHandler', function (event, data) {
             try {
-                if (win == null) {
-                    win = new BrowserWindow({
+                if (app.lyrics.neteaseWin == null) {
+                    app.lyrics.neteaseWin = new BrowserWindow({
                         width: 100,
                         height: 100,
                         show: false,
@@ -608,17 +595,17 @@ const handler = {
 
                         }
                     });
-                    win.webContents.on('did-finish-load', () => {
-                        win.webContents.send('neteasecors', data);
+                    app.lyrics.neteaseWin.webContents.on('did-finish-load', () => {
+                        app.lyrics.neteaseWin.webContents.send('neteasecors', data);
                     });
                 } else {
-                    win.webContents.on('did-finish-load', () => {
-                        win.webContents.send('neteasecors', data);
+                    app.lyrics.neteaseWin.webContents.on('did-finish-load', () => {
+                        app.lyrics.neteaseWin.webContents.send('neteasecors', data);
                     });
                 }
-                win.loadFile(join(__dirname, '../lyrics/netease.html'));
-                win.on('closed', () => {
-                    win = null
+                app.lyrics.neteaseWin.loadFile(join(__dirname, '../lyrics/netease.html'));
+                app.lyrics.neteaseWin.on('closed', () => {
+                    app.lyrics.neteaseWin = null
                 });
 
             } catch (e) {
@@ -626,26 +613,33 @@ const handler = {
                 app.win.send('truelyrics', '[00:00] Instrumental. / Lyrics not found.');
             }
         });
+
         ipcMain.on('LyricsHandler', function (event, data, artworkURL) {
             app.win.send('truelyrics', data);
             app.win.send('albumart', artworkURL);
         });
+
         ipcMain.on('LyricsHandlerNE', function (event, data) {
             app.win.send('truelyrics', data);
         });
+
         ipcMain.on('LyricsHandlerTranslation', function (event, data) {
             app.win.send('lyricstranslation', data);
         });
+
         ipcMain.on('LyricsTimeUpdate', function (event, data) {
             app.win.send('ProgressTimeUpdate', data);
         });
+
         ipcMain.on('LyricsUpdate', function (event, data, artworkURL) {
             app.win.send('truelyrics', data);
             app.win.send('albumart', artworkURL);
         });
+
         ipcMain.on('LyricsMXMFailed', function (_event, _data) {
             app.win.send('backuplyrics', '');
         });
+
         ipcMain.on('ProgressTimeUpdateFromLyrics', function (event, data) {
             app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`).catch((e) => console.error(e));
         });

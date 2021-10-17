@@ -36,7 +36,7 @@ const init = {
         }
 
         // Sets the ModelId (For windows notifications)
-        if (process.platform === "win32") app.setAppUserModelId("Apple Music");
+        if (process.platform === "win32") app.setAppUserModelId(app.getName());
 
         // Disable the Media Session to allow MPRIS to be the primary service
         if (process.platform === "linux") app.commandLine.appendSwitch('disable-features', 'MediaSessionService');
@@ -147,14 +147,6 @@ const init = {
         app.isAuthorized = false;
         app.isMiniplayerActive = false;
         app.media = {status: false, playParams: {id: 'no-id-found'}};
-
-
-        // On Window Creation
-        app.on('browser-window-created', (_event, _window) => {
-            app.ame.utils.checkForUpdates()
-            app.ame.win.SetTaskList()
-        })
-
     },
 
     TrayInit: function () {
@@ -182,7 +174,7 @@ const init = {
         }
 
         app.tray = new Tray(trayIcon)
-        app.tray.setToolTip('Apple Music');
+        app.tray.setToolTip(app.getName());
         app.ame.win.SetContextMenu(true);
 
         app.tray.on('double-click', () => {
