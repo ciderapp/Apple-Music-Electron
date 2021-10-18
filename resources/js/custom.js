@@ -225,122 +225,123 @@ try {
                 const artistName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
                 const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
                 const songID = (MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["_songId"] ?? -1 : -1;
+                if(trackName != '' && !(trackName == "No Title Found" && artistName == '')){
+                    /* MusixMatch Lyrics*/
+                    if (!mxmfail && preferences.visual.mxmon.includes(true)) {
+                        ipcRenderer.send('MXMTranslation', trackName, artistName, preferences.visual.mxmlanguage);
+                    }
+                    /* Apple Lyrics (from api lyric query) */
+                    else if (songID !== -1) {
+                        MusicKit.getInstance().api.lyric(songID)
+                            .then((response) => {
+                                let seconds,
+                                    minutes,
+                                    hours,
+                                    rawTime,
+                                    milliseconds,
+                                    lrcTime;
 
-                /* MusixMatch Lyrics*/
-                if (!mxmfail && preferences.visual.mxmon.includes(true)) {
-                    ipcRenderer.send('MXMTranslation', trackName, artistName, preferences.visual.mxmlanguage);
-                }
-                /* Apple Lyrics (from api lyric query) */
-                else if (songID !== -1) {
-                    MusicKit.getInstance().api.lyric(songID)
-                        .then((response) => {
-                            let seconds,
-                                minutes,
-                                hours,
-                                rawTime,
-                                milliseconds,
-                                lrcTime;
-
-                            try {
-                                const ttmlLyrics = response["ttml"];
-                                let lyrics = "";
-                                const parser = new DOMParser();
-                                const doc = parser.parseFromString(ttmlLyrics, "text/xml");
-                                const lyricsLines = doc.getElementsByTagName('p');
-                                const endTime = [0];
                                 try {
-                                    for (let element of lyricsLines) {
-                                        rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
-                                        hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
-                                        minutes = (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:");
-                                        seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
-                                        milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
-                                        lrcTime = minutes + seconds + milliseconds;
-                                        const rawTime2 = element.getAttribute('end').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
-                                        const hours2 = (rawTime2[2] != null) ? (rawTime2[1].replace(":", "")) : "0";
-                                        const minutes2 = (rawTime2[2] != null) ? (hours2 * 60 + rawTime2[2].replace(":", "") * 1 + ":") : ((rawTime2[1] != null) ? rawTime2[1] : "00:");
-                                        const seconds2 = (rawTime2[3] != null) ? (rawTime2[3]) : "00";
-                                        const milliseconds2 = (rawTime2[4] != null) ? (rawTime2[4]) : ".000";
-                                        const lrcTime2 = minutes2 + seconds2 + milliseconds2;
-                                        if (minutes.replace(":", "") * 60 + seconds * 1 - endTime[endTime.length - 1] > 10) {
-                                            const time = endTime[endTime.length - 1];
-                                            const minutes = Math.floor(time / 60);
-                                            const secs = time - minutes * 60;
-                                            lyrics = lyrics.concat(`[${minutes}:${secs}]lrcInstrumental` + "\r\n");
+                                    const ttmlLyrics = response["ttml"];
+                                    let lyrics = "";
+                                    const parser = new DOMParser();
+                                    const doc = parser.parseFromString(ttmlLyrics, "text/xml");
+                                    const lyricsLines = doc.getElementsByTagName('p');
+                                    const endTime = [0];
+                                    try {
+                                        for (let element of lyricsLines) {
+                                            rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
+                                            hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
+                                            minutes = (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:");
+                                            seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
+                                            milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
+                                            lrcTime = minutes + seconds + milliseconds;
+                                            const rawTime2 = element.getAttribute('end').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
+                                            const hours2 = (rawTime2[2] != null) ? (rawTime2[1].replace(":", "")) : "0";
+                                            const minutes2 = (rawTime2[2] != null) ? (hours2 * 60 + rawTime2[2].replace(":", "") * 1 + ":") : ((rawTime2[1] != null) ? rawTime2[1] : "00:");
+                                            const seconds2 = (rawTime2[3] != null) ? (rawTime2[3]) : "00";
+                                            const milliseconds2 = (rawTime2[4] != null) ? (rawTime2[4]) : ".000";
+                                            const lrcTime2 = minutes2 + seconds2 + milliseconds2;
+                                            if (minutes.replace(":", "") * 60 + seconds * 1 - endTime[endTime.length - 1] > 10) {
+                                                const time = endTime[endTime.length - 1];
+                                                const minutes = Math.floor(time / 60);
+                                                const secs = time - minutes * 60;
+                                                lyrics = lyrics.concat(`[${minutes}:${secs}]lrcInstrumental` + "\r\n");
+                                            }
+                                            endTime.push(minutes2.replace(":", "") * 60 + seconds2 * 1);
+                                            lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
                                         }
-                                        endTime.push(minutes2.replace(":", "") * 60 + seconds2 * 1);
-                                        lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
+                                    } catch {
+                                        lyrics = "";
+                                        for (let element of lyricsLines) {
+                                            rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
+                                            hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
+                                            minutes = (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:");
+                                            seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
+                                            milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
+                                            lrcTime = minutes + seconds + milliseconds;
+                                            lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
+                                        }
                                     }
-                                } catch {
-                                    lyrics = "";
-                                    for (let element of lyricsLines) {
-                                        rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
-                                        hours = (rawTime[2] != null) ? (rawTime[1].replace(":", "")) : "0";
-                                        minutes = (rawTime[2] != null) ? (hours * 60 + rawTime[2].replace(":", "") * 1 + ":") : ((rawTime[1] != null) ? rawTime[1] : "00:");
-                                        seconds = (rawTime[3] != null) ? (rawTime[3]) : "00";
-                                        milliseconds = (rawTime[4] != null) ? (rawTime[4]) : ".000";
-                                        lrcTime = minutes + seconds + milliseconds;
-                                        lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
+                                    let artworkURL = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artworkURL : '').replace("{w}", 256).replace("{h}", 256);
+                                    if (artworkURL == null) {
+                                        artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
+                                    }
+                                    if (mode === 1) {
+                                        ipcRenderer.send('LyricsUpdate', lyrics, artworkURL);
+                                    } else {
+                                        ipcRenderer.send('LyricsHandler', lyrics, artworkURL);
+                                    }
+                                } catch (e) {
+                                    console.error(e);
+                                    if (mode === 1) {
+                                        ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
+                                    } else {
+                                        ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
                                     }
                                 }
-                                let artworkURL = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artworkURL : '').replace("{w}", 256).replace("{h}", 256);
+                            })
+                            .catch((err) => {
+                                console.log(err);
+                                let artworkURL = (MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256);
                                 if (artworkURL == null) {
                                     artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
                                 }
-                                if (mode === 1) {
-                                    ipcRenderer.send('LyricsUpdate', lyrics, artworkURL);
-                                } else {
-                                    ipcRenderer.send('LyricsHandler', lyrics, artworkURL);
-                                }
-                            } catch (e) {
-                                console.error(e);
                                 if (mode === 1) {
                                     ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
                                 } else {
                                     ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
                                 }
-                            }
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                            let artworkURL = (MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256);
-                            if (artworkURL == null) {
-                                artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
-                            }
-                            if (mode === 1) {
-                                ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
-                            } else {
-                                ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
-                            }
-                        });
-                }
-                /* Apple Lyrics (from api song query */
-                else {
-                    try {
-                        MusicKit.getInstance().api.library.song(MusicKit.getInstance().nowPlayingItem.id).then((data) => {
-                            try {
-                                if (data != null && data !== "") {
-                                    artworkURL = data["artwork"]["url"];
-                                } else {
+                            });
+                    }
+                    /* Apple Lyrics (from api song query */
+                    else {
+                        try {
+                            MusicKit.getInstance().api.library.song(MusicKit.getInstance().nowPlayingItem.id).then((data) => {
+                                try {
+                                    if (data != null && data !== "") {
+                                        artworkURL = data["artwork"]["url"];
+                                    } else {
+                                        artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
+                                    }
+                                } catch (e) {
                                     artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
                                 }
-                            } catch (e) {
-                                artworkURL = "https://beta.music.apple.com/assets/product/MissingArtworkMusic.svg";
-                            }
+                                if (mode === 1) {
+                                    ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
+                                } else {
+                                    ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
+                                }
+                            });
+                        } catch (e) {
+                            console.error(e);
                             if (mode === 1) {
-                                ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, artworkURL);
+                                ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, '');
                             } else {
-                                ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, artworkURL);
+                                ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, '');
                             }
-                        });
-                    } catch (e) {
-                        console.error(e);
-                        if (mode === 1) {
-                            ipcRenderer.send('LyricsUpdate', "netease=" + trackName + " " + artistName, '');
-                        } else {
-                            ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, '');
                         }
-                    }
+                    }    
                 }
             }
         }
