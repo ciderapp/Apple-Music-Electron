@@ -183,7 +183,7 @@ module.exports = {
 
         // Vue Test
         // app.ame.load.LoadJS('vue.js')
-        // app.ame.load.LoadJS('vue-managed.js', false)
+        // app.ame.load.LoadJS('utils.js', false)
         // app.ame.load.LoadJS('tests.js', false)
 
         // Bulk JavaScript Functions
