@@ -189,7 +189,7 @@ module.exports = {
         // Bulk JavaScript Functions
         app.ame.load.LoadJS('custom.js')
 
-        // Bulk JavaScript Functions
+        // Audio Manuipulation Stuff
         app.ame.load.LoadJS('eq.js')
 
         // Window Frames
