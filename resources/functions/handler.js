@@ -644,13 +644,14 @@ const handler = {
             app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`).catch((e) => console.error(e));
         });
 
-        ipcMain.on('writePCM' , function (event, buffer) { 
-            //console.log(buffer);
-            var k = Float32Array.from(buffer);
-            writeFile(join(app.getPath('userData'), 'buffer.raw'), Float32Array.from(buffer),{flag: 'a+'}, function (err) {
-                if (err) throw err;
-                console.log('It\'s saved!');
-            });
+        ipcMain.on('writePCM' , function (event, leftpcm, rightpcm) { 
+            
+            // do anything with stereo pcm here
+
+            // writeFile(join(app.getPath('userData'), 'buffer.raw'), Float32Array.from(leftpcm),{flag: 'a+'}, function (err) {
+            //     if (err) throw err;
+            //     console.log('It\'s saved!');
+            // });
         })
     }
 }
