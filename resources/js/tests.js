@@ -1,10 +1,48 @@
 var _tests = {
-    oobe(skipIntro = false) {
+    stats() {
+        var container = document.createElement("div")
+        var frameRate = document.createElement("div")
+        var listeners = document.createElement("div")
+        Object.assign(container.style,
+            {
+                textAlign: "center",
+                position: "absolute",
+                fontSize: "18px",
+                bottom: "16px",
+                right: "16px",
+                pointerEvents: "none",
+                zIndex: 99991,
+                color: "white",
+                webkitTextStroke: "0.2px black"
+            })
+        document.body.appendChild(container)
+        container.appendChild(frameRate)
+        container.appendChild(listeners)
+
+        const times = [];
+        let fps;
+
+        function refreshLoop() {
+            window.requestAnimationFrame(() => {
+                const now = performance.now();
+                while (times.length > 0 && times[0] <= now - 1000) {
+                    times.shift();
+                }
+                times.push(now);
+                fps = times.length;
+                frameRate.innerText = `${fps} FPS`
+                refreshLoop();
+            });
+        }
+
+        refreshLoop();
+    },
+    oobe(skipIntro = false, closeBtn = false) {
         AMJavaScript.getRequest("ameres://html/oobe.html", (content) => {
             var vm = null
             var modal = new AMEModal({
                 content: content,
-                CloseButton: false,
+                CloseButton: closeBtn,
                 OnCreate() {
                     vm = new Vue({
                         el: "#oobe-vue",
@@ -26,17 +64,17 @@ var _tests = {
                             close() {
                                 modal.close()
                             },
-                            init () {
+                            init() {
                                 let self = this
-                                document.getElementById('introVideo').addEventListener('ended',()=>{
+                                document.getElementById('introVideo').addEventListener('ended', () => {
                                     self.page = "welcome"
-                                },false);
+                                }, false);
                             }
                         }
                     })
-                    if(skipIntro) {
+                    if (skipIntro) {
                         vm.page = "welcome"
-                    }else{
+                    } else {
                         vm.init()
                     }
                 },

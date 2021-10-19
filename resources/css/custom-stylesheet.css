@@ -437,36 +437,36 @@ body {
     font-weight: 300;
 }
 
-.lyricWaiting{
+.lyricWaiting {
     display: none;
 }
 
-.lyricer-current-line .lyricWaiting{
+.lyricer-current-line .lyricWaiting {
     display: inline-flex;
     animation: lyricWaitingLine 6s cubic-bezier(0.42, 0, 0.58, 1) infinite;
 }
 
-  
-.lyricWaiting>div {
+
+.lyricWaiting > div {
     width: 10px;
     height: 10px;
     background: var(--systemPrimary);
     border-radius: 50%;
     margin: 3px;
 }
-  
+
 @keyframes lyricWaitingLine {
     0% {
-      opacity: 0;
-      transform: scale(0.95);
+        opacity: 0;
+        transform: scale(0.95);
     }
     50% {
-      opacity: 1;
-      transform: scale(1);
+        opacity: 1;
+        transform: scale(1);
     }
     100% {
-      opacity: 0;
-      transform: scale(0.95);
+        opacity: 0;
+        transform: scale(0.95);
     }
 }
 
@@ -491,25 +491,46 @@ body {
     background: rgb(50 50 50);
     overflow: overlay;
     position: relative;
+    box-shadow: 0 2px 20px rgb(0 0 0 / 24%);
+    animation: ameModalIn 0.25s var(--appleEase);
+}
+
+@keyframes ameModalIn {
+    0% {
+        transform: scale(0.85);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1.0);
+        opacity: 1;
+    }
 }
 
 .ameModal-Close {
-    position:absolute;
-    top:16px;
-    right:16px;
+    position: absolute;
+    top: 24px;
+    left: 24px;
     z-index: 2;
+    -webkit-mask-image: url("ameres://icons/webui/close.svg");
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    background-color: white;
+    opacity: 0.75;
+    -webkit-mask-size: contain;
+    height: 18px;
+    width: 18px;
 }
 
 .micaBackground {
     width: 100%;
     height: 100%;
     position: absolute;
-    top:0;
-    left:0;
+    top: 0;
+    left: 0;
     pointer-events: none;
     z-index: -1;
     background: var(--user-wallpaper);
-    background-repeat:repeat;
+    background-repeat: repeat;
     filter: blur(180px) saturate(180%) brightness(0.25);
 }
 

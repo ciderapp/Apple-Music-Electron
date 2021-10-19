@@ -25,7 +25,7 @@
 ### Install Sources
 [![Get it from Github](https://img.shields.io/badge/Get_It_From_GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/apple-music-electron/apple-music-electron/releases/latest)
 
-[![Get it from the Microsoft Store](https://img.shields.io/badge/Get_It_From_The_Microsoft_Store-100000?style=for-the-badge&logo=microsoft)](https://www.youtube.com/watch?v=dQw4w9WgXcQ) <sup>[1](#ComingSoon)</sup>
+[![Get it from the Microsoft Store](https://img.shields.io/badge/Get_It_From_The_Microsoft_Store-100000?style=for-the-badge&logo=microsoft)](https://www.youtube.com/watch?v=dQw4w9WgXcQ) (Coming Soon)
 
 [![Get it from Windows Package Manager](https://custom-icon-badges.herokuapp.com/badge/Get_It_via_Winget-100000?style=for-the-badge&logo=winstall)](https://winstall.app/apps/cryptofyre.AppleMusicElectron)
 
