@@ -1,7 +1,7 @@
 const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences} = require('electron'),
     {LoadOneTimeFiles, LoadFiles} = require('./load'),
     {join, resolve} = require('path'),
-    {readFile, readFileSync, existsSync, truncate} = require('fs'),
+    {readFile, readFileSync, existsSync, truncate, writeFile} = require('fs'),
     rimraf = require('rimraf'),
     {initAnalytics} = require('./utils');
 initAnalytics();
@@ -643,6 +643,15 @@ const handler = {
         ipcMain.on('ProgressTimeUpdateFromLyrics', function (event, data) {
             app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`).catch((e) => console.error(e));
         });
+
+        ipcMain.on('writePCM' , function (event, buffer) { 
+            //console.log(buffer);
+            var k = Float32Array.from(buffer);
+            writeFile(join(app.getPath('userData'), 'buffer.raw'), Float32Array.from(buffer),{flag: 'a+'}, function (err) {
+                if (err) throw err;
+                console.log('It\'s saved!');
+            });
+        })
     }
 }
 

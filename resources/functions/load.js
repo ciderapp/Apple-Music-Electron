@@ -189,6 +189,9 @@ module.exports = {
         // Bulk JavaScript Functions
         app.ame.load.LoadJS('custom.js')
 
+        // Bulk JavaScript Functions
+        app.ame.load.LoadJS('eq.js')
+
         // Window Frames
         if (app.preferences.value('visual.frameType') === 'mac') {
             app.ame.load.LoadCSS('frame_macOS_emulation.css')
