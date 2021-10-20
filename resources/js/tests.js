@@ -1,4 +1,7 @@
 var _tests = {
+    usermenu() {
+
+    },
     stats() {
         var container = document.createElement("div")
         var frameRate = document.createElement("div")
@@ -38,11 +41,12 @@ var _tests = {
         refreshLoop();
     },
     oobe(skipIntro = false, closeBtn = false) {
-        AMJavaScript.getRequest("ameres://html/oobe.html", (content) => {
+        AMJavaScript.getRequest("ameres://html/oobe/oobe.html", (content) => {
             var vm = null
             var modal = new AMEModal({
                 content: content,
                 CloseButton: closeBtn,
+                Dismissible: !closeBtn,
                 OnCreate() {
                     vm = new Vue({
                         el: "#oobe-vue",
@@ -62,7 +66,7 @@ var _tests = {
                                 console.info("Button clicked")
                             },
                             setPrefs() {
-                                
+
                             },
                             close() {
                                 modal.close()
@@ -72,6 +76,16 @@ var _tests = {
                                 document.getElementById('introVideo').addEventListener('ended', () => {
                                     self.page = "welcome"
                                 }, false);
+                            },
+                            enableBlur() {
+                                modal.setStyle("backdrop", {
+                                    backdropFilter: "blur(16px) saturate(180%)"
+                                })
+                            },
+                            disableBlur() {
+                                modal.setStyle("backdrop", {
+                                    backdropFilter: "blur(0px)"
+                                })
                             }
                         }
                     })
