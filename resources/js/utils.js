@@ -43,14 +43,14 @@ class AMEModal {
                     },
                     CloseButton = true,
                     Style = {},
-                    Dismissable = true
+                    Dismissible = true
                 }) {
         this.Style = Style
         this.closeButton = CloseButton
         this.content = content
         this.OnClose = OnClose
         this.OnCreate = OnCreate
-        this.Dismissible = Dismissable
+        this.Dismissible = Dismissible
         this.modal = {}
         this.create()
     }
@@ -94,6 +94,7 @@ class AMEModal {
             backdrop.appendChild(dismissArea)
         }
         modalWin.appendChild(modalContent)
+        Object.assign(modalWin.style, this.Style)
         backdrop.appendChild(modalWin)
         document.body.appendChild(backdrop)
         this.modal = {

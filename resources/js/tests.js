@@ -41,54 +41,53 @@ var _tests = {
         refreshLoop();
     },
     oobe(skipIntro = false, closeBtn = false) {
-        AMJavaScript.getRequest("ameres://html/oobe/oobe.html", (content) => {
-            var vm = null
+        AMJavaScript.getRequest("ameres://html/oobe.html", (content) => {
+            var vm = new Vue({
+                data: {
+                    prefs: {
+                        audioQuality: "auto",
+                        language: "us",
+                        region: "",
+                        mxm: false,
+                        mxmlanguage: "en",
+                        theme: preferences.visual.theme
+                    },
+                    page: "intro",
+                },
+                methods: {
+                    btn() {
+                        console.info("Button clicked")
+                    },
+                    setPrefs() {
+
+                    },
+                    close() {
+                        modal.close()
+                    },
+                    init() {
+                        let self = this
+                        document.getElementById('introVideo').addEventListener('ended', () => {
+                            self.page = "welcome"
+                        }, false);
+                    },
+                    enableBlur() {
+                        modal.setStyle("backdrop", {
+                            backdropFilter: "blur(16px) saturate(180%)"
+                        })
+                    },
+                    disableBlur() {
+                        modal.setStyle("backdrop", {
+                            backdropFilter: "blur(0px)"
+                        })
+                    }
+                }
+            })
             var modal = new AMEModal({
                 content: content,
                 CloseButton: closeBtn,
-                Dismissible: !closeBtn,
+                Dismissible: closeBtn,
                 OnCreate() {
-                    vm = new Vue({
-                        el: "#oobe-vue",
-                        data: {
-                            prefs: {
-                                audioQuality: "auto",
-                                language: "us",
-                                region: "",
-                                mxm: false,
-                                mxmlanguage: "en",
-                                theme: preferences.visual.theme
-                            },
-                            page: "intro",
-                        },
-                        methods: {
-                            btn() {
-                                console.info("Button clicked")
-                            },
-                            setPrefs() {
-
-                            },
-                            close() {
-                                modal.close()
-                            },
-                            init() {
-                                let self = this
-                                document.getElementById('introVideo').addEventListener('ended', () => {
-                                    self.page = "welcome"
-                                }, false);
-                            },
-                            enableBlur() {
-                                modal.setStyle("backdrop", {
-                                    backdropFilter: "blur(16px) saturate(180%)"
-                                })
-                            },
-                            disableBlur() {
-                                modal.setStyle("backdrop", {
-                                    backdropFilter: "blur(0px)"
-                                })
-                            }
-                        }
-                    })
+                    vm.$mount("#oobe-vue")
                     if (skipIntro) {
                         vm.page = "welcome"
                     } else {

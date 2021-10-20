@@ -389,9 +389,11 @@
                                 Theme
                             </div>
                             <div class="md-option-segment md-option-line_auto">
-                                <select class="md-select" v-model="prefs.theme" @change="AMStyling.loadTheme(prefs.theme)"
+                                <select class="md-select" v-model="prefs.theme"
+                                        @change="AMStyling.loadTheme(prefs.theme)"
                                         style="width:180px;">
-                                    <option v-for="(theme, id) in AM.themesListing" :value="id">{{ theme.name }}</option>
+                                    <option v-for="(theme, id) in AM.themesListing" :value="id">{{ theme.name }}
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -479,7 +481,8 @@
                             <div class="md-option-segment">
                                 Enable Musixmatch Lyrics
                                 <br>
-                                <small>Less stable, but allows for lyrics translation and better lyrics detection.</small>
+                                <small>Less stable, but allows for lyrics translation and better lyrics
+                                    detection.</small>
                             </div>
                             <div class="md-option-segment md-option-line_auto">
                                 <input type="checkbox" v-model="prefs.mxm" switch/>
@@ -780,7 +783,8 @@
                         These logs when enabled allow us to fix bugs and
                         errors that may occur during your listening sessions to better improve the application. We
                         understand if you're not comfortable with them on, but it helps us out immensely in figuring out
-                        widespread issues. (Note: We do not gather personal information, only stuff that shows to you as an
+                        widespread issues. (Note: We do not gather personal information, only stuff that shows to you as
+                        an
                         error in the code.)
                     </p>
                 </div>
@@ -892,28 +896,30 @@
 </div>
 
 <style>
-
     .md-option-container {
         border-radius: 10px;
         overflow: hidden;
     }
+
     .md-option-line {
         display: flex;
-        width:100%;
+        width: 100%;
         padding: 14px;
         background: var(--opaquePageBGColor);
         border-bottom: 1px solid rgb(0 0 0 / 35%);
+        font-size: 0.85em;
     }
 
     .md-option-segment.md-option-line_auto {
         width: auto;
     }
+
     .md-option-container .md-option-line:not(:last-child) {
         border-bottom: 1px solid rgb(0 0 0 / 35%);
     }
 
     .md-option-segment {
-        width:100%;
+        width: 100%;
         display: flex;
         justify-content: center;
         flex-direction: column;
@@ -953,8 +959,7 @@
         transition: all .5s;
     }
 
-    .fade_simple-enter, .fade_simple-leave-to
-    {
+    .fade_simple-enter, .fade_simple-leave-to {
         opacity: 0;
     }
 
@@ -962,8 +967,7 @@
         transition: all .5s;
     }
 
-    .fade-enter, .fade-leave-to
-    {
+    .fade-enter, .fade-leave-to {
         opacity: 0;
         transform: scale(0.95);
     }

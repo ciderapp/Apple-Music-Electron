@@ -363,6 +363,74 @@ try {
                 lastScreenX: 0,
                 lastScreenY: 0
             },
+            showThemeOptions () {
+                function throwNoTheme () {
+                    new AMEModal({
+                        content: `<div style="text-align:center;display:flex;justify-content: center;align-items: center;height:100%;">This theme has no available options.</div>`,
+                        Style: {
+                            width: "325px",
+                            height: "200px"
+                        }
+                    });
+                }
+                if(this.lastTheme == "default" || this.lastTheme == "") {
+                    throwNoTheme();
+                    return;
+                }
+                if(AM.themesListing[AMStyling.lastTheme]["options"].length == 0) {
+                    throwNoTheme();
+                    return;
+                }
+                AMJavaScript.getRequest("ameres://html/theme-options.html", (content)=>{
+                    var vm = new Vue({
+                        data: {
+                            options: AM.themesListing[AMStyling.lastTheme]["options"],
+                            userOptions: AMStyling.getThemeOptions(AMStyling.lastTheme),
+                            theme: AM.themesListing[AMStyling.lastTheme]["name"]
+                        },
+                        methods: {
+                            saveOptions() {
+                                AMStyling.setThemeOptions(AMStyling.lastTheme, this.userOptions);
+                            }
+                        }
+                    });
+                    var modal = new AMEModal({
+                        content: content,
+                        OnCreate() {
+                            vm.$mount("#themeOptions-vue")
+                        },
+                        OnClose() {
+                            _vues.destroy(vm)
+                        },
+                        Style: {
+                            width: "50%",
+                            height: "80%"
+                        }
+                    })
+                });
+            },
+            getThemeOptions(theme) {
+                if(!localStorage.getItem("ThemeOptions")) {
+                    localStorage.setItem("ThemeOptions", "{}");
+                }
+                var userOptions = JSON.parse(localStorage.getItem("ThemeOptions"));
+                if(!userOptions[theme]) {
+                    userOptions[theme] = {};
+                }
+                return userOptions[theme];
+            },
+            setThemeOptions(theme, options = {}) {
+                if(!localStorage.getItem("ThemeOptions")) {
+                    localStorage.setItem("ThemeOptions", "{}");
+                }
+                var userOptions = JSON.parse(localStorage.getItem("ThemeOptions"));
+                if(!userOptions[theme]) {
+                    userOptions[theme] = {};
+                }
+                userOptions[theme] = options;
+                localStorage.setItem("ThemeOptions", JSON.stringify(userOptions));
+                this.refresh();
+            },
             getWallpaper() {
                 let self = this;
                 this.wallpaper = ipcRenderer.sendSync("get-wallpaper");
@@ -505,6 +573,15 @@ try {
             },
             refresh() {
                 document.adoptedStyleSheets = Object.values(this._styleSheets);
+                /** Theme Options **/
+                var themeOptions = (this.getThemeOptions(this.lastTheme));
+                Object.keys(themeOptions).forEach((option)=>{
+                    if(themeOptions[option]) {
+                        document.body.setAttribute(`theme-${option}`, 1);
+                    }else{
+                        document.body.removeAttribute(`theme-${option}`);
+                    }
+                })
             },
             lerp: (start, end, l) => {
                 return start + (end - start) * l;

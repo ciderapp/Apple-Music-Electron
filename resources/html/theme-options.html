@@ -1,0 +1,156 @@
+<div class="md-container" id="themeOptions-vue">
+    <div class="md-header">
+        <h1 class="md-h1">{{ theme }}<br><small>Theme Options</small></h1>
+    </div>
+    <div class="md-body" style="overflow-y: overlay">
+        <div class="md-option-container">
+            <div class="md-option-line" v-for="(option) in options">
+                <div class="md-option-segment">
+                    {{ option.name }}
+                </div>
+                <div class="md-option-segment md-option-line_auto">
+                    <input type="checkbox" v-model="userOptions[option.key]" @change="saveOptions()" switch/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="md-footer">
+    </div>
+</div>
+
+<style>
+
+    .md-option-container {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .md-option-line {
+        display: flex;
+        width:100%;
+        padding: 14px;
+        background: var(--opaquePageBGColor);
+        border-bottom: 1px solid rgb(0 0 0 / 35%);
+        font-size: 0.85em;
+    }
+
+    .md-option-segment.md-option-line_auto {
+        width: auto;
+    }
+    .md-option-container .md-option-line:not(:last-child) {
+        border-bottom: 1px solid rgb(0 0 0 / 35%);
+    }
+
+    .md-option-segment {
+        width:100%;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .md-video {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        object-fit: cover;
+        pointer-events: none;
+    }
+
+    .md-contributors {
+        display: block;
+        object-fit: contain;
+        padding: 20px;
+        width: 90%;
+        max-width: 900px;
+        transition: all .25s var(--appleEase);
+        border-radius: 10px;
+        box-shadow: 0px 0px 0px rgb(0 0 0 / 25%);
+        background: rgb(200 200 200 / 10%);
+        will-change: transform;
+        cursor: pointer;
+    }
+
+    .md-contributors:hover {
+        transform: scale(1.02);
+        background: #eee;
+        box-shadow: 0px 10px 10px rgb(0 0 0 / 25%);
+    }
+
+    .fade_simple-enter-active, .fade_simple-leave-active {
+        transition: all .5s;
+    }
+
+    .fade_simple-enter, .fade_simple-leave-to
+    {
+        opacity: 0;
+    }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: all .5s;
+    }
+
+    .fade-enter, .fade-leave-to
+    {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    .md-h1 {
+        font-size: 3em;
+        text-align: center;
+    }
+
+    #oobe-vue {
+        height: 100%;
+    }
+
+    .md-header {
+        padding: 16px;
+    }
+
+    .md-footer {
+        padding: 16px;
+        text-align: center;
+    }
+
+    .md-btn {
+        background: rgba(100, 100, 100, 0.5);
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 1.25em;
+    }
+
+    .md-select, .md-select > option {
+        padding: 8px 16px;
+        font-size: 1em;
+        font-family: inherit;
+    }
+
+    .md-select > option {
+        font-size: 1em;
+        font-family: inherit;
+    }
+
+    .md-btn.md-btn-primary {
+        background: var(--keyColor);
+        color: white;
+    }
+
+    .md-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        padding: 32px;
+    }
+
+    .md-body {
+        height: 100%;
+        padding: 16px;
+        font-size: 1.25em;
+    }
+</style>
