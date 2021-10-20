@@ -400,10 +400,13 @@ module.exports = {
         }
     },
 
-    InjectCSSFile: (fileName, filePermissionCheck = false, removePreviousInject = true, filePath = join(__dirname, '../css/'), priority = false) => {
+    InjectCSS: (fileName, filePath = join(__dirname, '../css/'), filePermissionCheck = false, removePreviousInject = true, priority = false) => {
+
         const path = join(filePath, fileName);
+
+        // Check that the File Exists
         if (!existsSync(path)) {
-            console.log(`[InjectCSS] ${path} not found.`)
+            console.warn(`[InjectCSS] ${path} not found.`)
             return
         }
 
@@ -411,7 +414,7 @@ module.exports = {
         if (filePermissionCheck) {
             access(path, constants.R_OK | constants.W_OK, (err) => {
                 if (err) {
-                    console.error(`[InjectCSS] File Permissions Check Failed on ${fileName}.`)
+                    console.error(`[InjectCSS] File Permissions Check Failed on ${fileName}. (${err})`)
                     try {
                         chmodSync(path, constants.S_IRUSR | constants.S_IWUSR);
                     } catch (err) {
