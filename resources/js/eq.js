@@ -250,14 +250,14 @@ var _amOT = {
         document.body.appendChild(backdrop);
     },
     getRawPCM: function(){
-        var x = AMEx.context.createScriptProcessor(16384,1,1);
+        var x = AMEx.result.context.createScriptProcessor(16384,2,1);
 
         x.onaudioprocess = function(e){
             if (!override){
             console.log('hmm');
             var leftpcm = e.inputBuffer.getChannelData(0);
-          /*  var rightpcm = e.inputBuffer.getChannelData(1); */
-            ipcRenderer.send('writePCM',leftpcm);
+            var rightpcm = e.inputBuffer.getChannelData(1);
+            ipcRenderer.send('writePCM',leftpcm,rightpcm);
         }
         };
         AMEx.result.source.connect(x);x.connect(AMEx.context.destination);
@@ -279,4 +279,6 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
+
+    
 _amOT.init();
