@@ -68,7 +68,7 @@ class AMEModal {
         modalCloseBtn.innerHTML = ("Close")
         modalCloseBtn.addEventListener("click", () => {
             self.close()
-        })
+        }, {once: true})
         Object.assign(dismissArea.style, {
             width: "100%",
             height: "100%",
