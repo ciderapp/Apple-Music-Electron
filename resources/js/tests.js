@@ -61,6 +61,9 @@ var _tests = {
                             btn() {
                                 console.info("Button clicked")
                             },
+                            setPrefs() {
+                                
+                            },
                             close() {
                                 modal.close()
                             },

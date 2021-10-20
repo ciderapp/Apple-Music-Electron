@@ -41,13 +41,22 @@ class AMEModal {
                     },
                     OnClose = () => {
                     },
-                    CloseButton = true
+                    CloseButton = true,
+                    Style = {}
                 }) {
+        this.Style = Style
         this.closeButton = CloseButton
         this.content = content
         this.OnClose = OnClose
         this.OnCreate = OnCreate
         this.modal = this.create()
+        this.modalWindow = null
+    }
+
+    setStyle (style) {
+        style.forEach((style) => {
+
+        })
     }
 
     create() {
