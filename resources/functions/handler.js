@@ -648,6 +648,9 @@ const handler = {
 
     },
     AudioHandler: function(){
+
+
+
         let api = RtAudioApi.UNSPECIFIED;
 
         switch (process.platform){
@@ -664,7 +667,7 @@ const handler = {
         const rtAudio = new RtAudio(api);
         rtAudio.openStream(
             { deviceId: 0, // Need to change to get wrote
-            nChannels: 1, // Number of channels
+            nChannels: 2, // Number of channels
             firstChannel: 0 // First channel index on device (default = 0).
             },null,
             RtAudioFormat.RTAUDIO_FLOAT32,
@@ -673,11 +676,26 @@ const handler = {
         );
 
         rtAudio.start();
+
+        // mix the channels
+        function interleave(leftChannel, rightChannel){
+            var length = leftChannel.length + rightChannel.length;
+            var result = new Float32Array(length);
+            
+            var inputIndex = 0;
+            
+            for (var index = 0; index < length; ){
+             result[index++] = leftChannel[inputIndex];
+             result[index++] = rightChannel[inputIndex];
+             inputIndex++;
+            }
+            return result;
+        }
+
         ipcMain.on('writePCM' , function (event, leftpcm, rightpcm) { 
-            buf = [256, 512, 1024, 2048, 4096, 8192, 16384]
             // do anything with stereo pcm here
 
-            buffer = Buffer.from(new Int8Array(Float32Array.from(leftpcm).buffer));
+            buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm),Float32Array.from(rightpcm)).buffer));
             rtAudio.write(buffer);
 
       
