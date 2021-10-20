@@ -250,14 +250,14 @@ var _amOT = {
         document.body.appendChild(backdrop);
     },
     getRawPCM: function(){
-        var x = AMEx.context.createScriptProcessor(16384,2,1);
+        var x = AMEx.context.createScriptProcessor(16384,1,1);
 
         x.onaudioprocess = function(e){
             if (!override){
             console.log('hmm');
             var leftpcm = e.inputBuffer.getChannelData(0);
-            var rightpcm = e.inputBuffer.getChannelData(1);
-            ipcRenderer.send('writePCM',leftpcm,rightpcm);
+          /*  var rightpcm = e.inputBuffer.getChannelData(1); */
+            ipcRenderer.send('writePCM',leftpcm);
         }
         };
         AMEx.result.source.connect(x);x.connect(AMEx.context.destination);
