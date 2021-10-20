@@ -25,11 +25,6 @@ const handler = {
             console.log(join(app.getPath('userData'), 'logs'))
             app.exit()
         }
-
-        // Detects if the application has been opened with --force-quit
-        if (app.commandLine.hasSwitch('force-quit')) {
-            app.exit()
-        }
     },
 
     VersionHandler: function () {
