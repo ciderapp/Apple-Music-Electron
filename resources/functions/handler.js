@@ -89,7 +89,7 @@ const handler = {
         console.verbose('[playbackStateDidChange] Started.');
 
         ipcMain.on('playbackStateDidChange', (_event, a) => {
-            console.warn('[handler] playbackStateDidChange received.');
+            console.verbose('[handler] playbackStateDidChange received.');
             app.media = a;
 
             app.ame.win.SetButtons()
@@ -101,10 +101,10 @@ const handler = {
     },
 
     MediaStateHandler: function () {
-        console.verbose('[nowPlayingItemDidChange] Started.');
+        console.verbose('[MediaStateHandler] Started.');
 
         ipcMain.on('nowPlayingItemDidChange', (_event, a) => {
-            console.warn('[handler] mediaItemStateDidChange received.');
+            console.verbose('[handler] nowPlayingItemDidChange received.');
             app.media = a;
 
             app.ame.win.CreateNotification(a);
@@ -197,7 +197,7 @@ const handler = {
         })
 
         app.win.on('page-title-updated', (event, title) => {
-            console.log(`[page-title-updated] Title updated Running necessary files. ('${title}')`)
+            console.verbose(`[page-title-updated] Title updated Running necessary files. ('${title}')`)
             LoadFiles();
         })
 
@@ -503,13 +503,16 @@ const handler = {
                 app.win.webContents.send('LastfmAuthenticated', authKey);
             }
         } else {
-            console.log(startArgs)
-            let formattedSongID = startArgs.replace(/\D+/g, '');
+            if (!app.isAuthorized) return
+            const formattedSongID = startArgs.replace('ame://', '').replace('/', '');
             console.warn(`[LinkHandler] Attempting to load song id: ${formattedSongID}`);
-            // Someone look into why playMediaItem doesn't work thanks - cryptofyre
 
-            // app.win.webContents.executeJavaScript(`MusicKit.getInstance().api.library.song('${formattedSongID}')`)
-            app.win.webContents.executeJavaScript(`MusicKit.getInstance().changeToMediaItem('${formattedSongID}')`)
+            // setQueue can be done with album, song, url, playlist id
+            app.win.webContents.executeJavaScript(`
+                MusicKit.getInstance().setQueue({ song: '${formattedSongID}'}).then(function(queue) {
+                    MusicKit.getInstance().play();
+                });
+            `).catch((err) => console.error(err));
         }
 
     },
