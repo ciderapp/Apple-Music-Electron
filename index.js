@@ -64,9 +64,6 @@ app.on('activate', () => {
     }
 })
 
-// Also for macOS, quits the app when all windows are closed
-
-
 app.on('before-quit', () => {
     console.verbose('before-quit');
     app.isQuiting = true;

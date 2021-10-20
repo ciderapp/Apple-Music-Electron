@@ -836,15 +836,15 @@ try {
                                 if ((MusicKit.getInstance().volume + 0.05) > 1) {
                                     MusicKit.getInstance().volume = 1
                                 } else {
-                                    MusicKit.getInstance().volume = MusicKit.getInstance().volume + 0.05
+                                    MusicKit.getInstance().volume = MusicKit.getInstance().volume + 0.05;
                                 }
                             }
                         } else {
                             if (MusicKit.getInstance().volume >= 0) {
                                 if ((MusicKit.getInstance().volume - 0.05) < 0) {
-                                    MusicKit.getInstance().volume = 0
+                                    MusicKit.getInstance().volume = 0;
                                 } else {
-                                    MusicKit.getInstance().volume = MusicKit.getInstance().volume - 0.05
+                                    MusicKit.getInstance().volume = MusicKit.getInstance().volume - 0.05;
                                 }
                             }
                         }

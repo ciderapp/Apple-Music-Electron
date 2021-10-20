@@ -135,42 +135,23 @@ const handler = {
             }
         })
 
-        app.win.webContents.on('unresponsive', async () => {
-            const {response} = await dialog.showMessageBox({
-                message: `${app.getName()} has become unresponsive`,
-                title: 'Do you want to try forcefully reloading the app?',
-                buttons: ['Yes', 'Quit', 'No'],
-                cancelId: 1
-            })
-            if (response === 0) {
-                app.win.contents.forcefullyCrashRenderer()
-                app.win.contents.reload()
-            } else if (response === 1) {
-                console.log("[WindowStateHandler] Application has become unresponsive and has been closed.")
-                app.exit();
-            }
-        })
-
-        app.win.webContents.on('did-finish-load', async () => {
-            console.verbose('[WindowStateHandler] Page finished loading.')
-            LoadOneTimeFiles()
+        app.win.webContents.on('did-finish-load', () => {
+            console.verbose('[did-finish-load] Completed.');
+            LoadOneTimeFiles();
 
             if (app.preferences.value('general.incognitoMode').includes(true)) {
                 new Notification({
-                    title: 'Incognito Mode',
-                    body: `Incognito Mode enabled. DiscordRPC and LastFM are disabled.`
+                    title: 'Incognito Mode Enabled',
+                    body: `Listening activity is hidden.`
                 }).show()
-                console.verbose('[Incognito] Incognito Mode enabled for Apple Music Website. [DiscordRPC and LastFM are disabled].');
             }
         });
 
-        app.win.webContents.on('did-start-loading', async () => {
-            app.previousPage = app.win.webContents.getURL()
-        });
-
-        app.win.webContents.on('page-title-updated', function (event) { // Prevents the Window Title from being Updated
-            LoadFiles()
-            event.preventDefault()
+        app.win.webContents.on('did-fail-load', (event, errCode, errDesc, url, mainFrame) => {
+            console.error(`Error Code: ${errCode}\nLoading: ${url}\n${errDesc}`)
+            if (mainFrame) {
+                app.exit()
+            }
         });
 
         // Windows specific: Handles window states
@@ -203,6 +184,28 @@ const handler = {
             })
         }
 
+        app.win.on('unresponsive', () => {
+            dialog.showMessageBox({
+                message: `${app.getName()} has become unresponsive`,
+                title: 'Do you want to try forcefully reloading the app?',
+                buttons: ['Yes', 'Quit', 'No'],
+                cancelId: 1
+            }).then(({response}) => {
+                if (response === 0) {
+                    app.win.contents.forcefullyCrashRenderer()
+                    app.win.contents.reload()
+                } else if (response === 1) {
+                    console.log("[WindowStateHandler] Application has become unresponsive and has been closed.")
+                    app.exit();
+                }
+            })
+        })
+
+        app.win.on('page-title-updated', (event, title) => {
+            console.log(`[page-title-updated] Title updated Running necessary files. ('${title}')`)
+            LoadFiles();
+        })
+
         app.win.on('close', (e) => {
             if (!app.isQuiting) {
                 if (app.isMiniplayerActive) {
@@ -212,11 +215,11 @@ const handler = {
                     app.win.hide()
                     e.preventDefault()
                 }
+            } else {
+                app.win.destroy()
+                if (app.lyrics.mxmWin) { app.lyrics.mxmWin.destroy(); }
+                if (app.lyrics.neteaseWin) { app.lyrics.neteaseWin.destroy(); }
             }
-
-            app.win.destroy()
-            app.lyrics.mxmWin.destroy()
-            app.lyrics.neteaseWin.destroy()
         })
 
         app.win.on('maximize', (e) => {
