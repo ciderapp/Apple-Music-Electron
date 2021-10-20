@@ -108,12 +108,11 @@ class AMEModal {
 
     close() {
         this.OnClose()
-        this.modal.backdrop.style.pointerEvents = "none"
         this.modal.backdrop.style.background = "transparent"
         this.modal.window.classList.add("ameModal-closing")
         setTimeout(()=>{
             this.modal.backdrop.remove()
-        }, 500)
+        }, 250)
     }
 
     setStyle (element, style = {}) {
