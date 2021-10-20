@@ -3,7 +3,8 @@ const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPre
     {join, resolve} = require('path'),
     {readFile, readFileSync, existsSync, truncate, writeFile} = require('fs'),
     rimraf = require('rimraf'),
-    {initAnalytics} = require('./utils');
+    {initAnalytics} = require('./utils'),
+    { RtAudio, RtAudioFormat, RtAudioApi } = require("audify");
 initAnalytics();
 
 const handler = {
@@ -644,11 +645,45 @@ const handler = {
             app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`).catch((e) => console.error(e));
         });
 
+
+    },
+    AudioHandler: function(){
+        let api = RtAudioApi.UNSPECIFIED;
+
+        switch (process.platform){
+            case "win32":
+                api = RtAudioApi.WINDOWS_WASAPI;
+                break;    
+            case "linux":
+                api = RtAudioApi.LINUX_ALSA;
+                break; 
+            case "darwin":
+                api = RtAudioApi.MACOSX_CORE;
+                break; 
+        }
+        const rtAudio = new RtAudio(api);
+        rtAudio.openStream(
+            { deviceId: 0, // Need to change to get wrote
+            nChannels: 1, // Number of channels
+            firstChannel: 0 // First channel index on device (default = 0).
+            },null,
+            RtAudioFormat.RTAUDIO_FLOAT32,
+            48000,
+            16384,"Apple Music Electron",
+        );
+
+        rtAudio.start();
         ipcMain.on('writePCM' , function (event, leftpcm, rightpcm) { 
-            
+            buf = [256, 512, 1024, 2048, 4096, 8192, 16384]
             // do anything with stereo pcm here
 
-            // writeFile(join(app.getPath('userData'), 'buffer.raw'), Float32Array.from(leftpcm),{flag: 'a+'}, function (err) {
+            buffer = Buffer.from(new Int8Array(Float32Array.from(leftpcm).buffer));
+            rtAudio.write(buffer);
+
+      
+        
+
+            // writeFile(join(app.getPath('userData'), 'buffer.raw'), Buffer.from(new Int8Array(Float32Array.from(leftpcm).buffer)),{flag: 'a+'}, function (err) {
             //     if (err) throw err;
             //     console.log('It\'s saved!');
             // });
