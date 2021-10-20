@@ -213,6 +213,15 @@ span.app-prefs-title {
     border-width: 1px;
 }
 
+/*Theme Options*/
+.settings-list li #themeOptions {
+    color: var(--systemPrimary);
+    border-color: #424245;
+    background-color: hsla(0, 0%, 100%, .04);
+    border-style: solid;
+    border-width: 1px;
+}
+
 /* Toggle Slider */
 .settings-list li .slider {
     position: absolute;

@@ -417,6 +417,21 @@ try {
                 if(!userOptions[theme]) {
                     userOptions[theme] = {};
                 }
+
+                function parseBool (val) {
+                    if(val == 0 || val == "false" || val == false) {
+                        return false;
+                    }else{
+                        return true;
+                    }
+                }
+
+                AM.themesListing[theme]["options"].forEach((option)=>{
+                    if(!userOptions[theme][option.key]) {
+                        userOptions[theme][option.key] = parseBool(option.defaultValue);
+                    }
+                });
+                localStorage.setItem("ThemeOptions", JSON.stringify(userOptions));
                 return userOptions[theme];
             },
             setThemeOptions(theme, options = {}) {
