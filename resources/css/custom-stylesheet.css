@@ -454,6 +454,7 @@ body {
     background: rgb(200 200 200 / 10%);
     pointer-events: none;
     border-radius: 10px;
+    -webkit-backface-visibility: hidden;
 }
 
 #lyricer .lyricer-current-line {
