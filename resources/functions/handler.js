@@ -1,13 +1,15 @@
 const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences, ipcRenderer} = require('electron'),
     {LoadOneTimeFiles, LoadFiles} = require('./load'),
     {join, resolve} = require('path'),
-    {readFile, readFileSync, existsSync, truncate, writeFile} = require('fs'),
+    {readFile, readFileSync, existsSync, truncate, writeFile, createReadStream} = require('fs'),
     rimraf = require('rimraf'),
     {initAnalytics} = require('./utils'),
-    {mdns} = require('mdns'),
-    {AirTunes} = require('airtunes'), 
+    { Readable, Stream ,Writable } = require('stream'),
     { RtAudio, RtAudioFormat, RtAudioApi } = require("audify");
-  
+
+const AirTunes = require('airtunes'); 
+const mdns = require('mdns');
+
 initAnalytics();
 
 const handler = {
@@ -699,6 +701,34 @@ const handler = {
             }
             return result;
         }
+        function bitratechange(e){
+            var t = e.length;
+            sampleRate = 48.0;
+            outputSampleRate = 44.1;
+            var s = 0,
+            o = sampleRate / outputSampleRate,
+            u = Math.ceil(t * outputSampleRate / sampleRate),
+            a = new Int16Array(u);
+            for (i = 0; i < u; i++) {
+              a[i] = e[Math.floor(s)];
+              s += o;
+            }
+      
+            return a;
+         }
+        function interleave16(leftChannel, rightChannel){
+            var length = leftChannel.length + rightChannel.length;
+            var result = new Int16Array(length);
+            
+            var inputIndex = 0;
+            
+            for (var index = 0; index < length; ){
+             result[index++] = leftChannel[inputIndex];
+             result[index++] = rightChannel[inputIndex];
+             inputIndex++;
+            }
+            return result;
+        }
         ipcMain.on('changeAudioMode' , function (event, mode) {
           console.log(rtAudio.getApi());
         });
@@ -717,7 +747,7 @@ const handler = {
             // });
         });
 
-        ipcMain.on("getAirplayDevice" , function (event ) {
+        ipcMain.on("getAirplayDevice" , function (event, data) {
             const browser = mdns.createBrowser(mdns.tcp('raop'));
             browser.on('serviceUp', service => {
             console.log(
@@ -728,9 +758,12 @@ const handler = {
             setTimeout(() => {browser.stop()},300);
         });
         
-        ipcMain.on("performAirplayPCM" , function (event, ipv4 , ipport, audiobuffer) {
+        var ok = 1;
+           
+        ipcMain.on("performAirplayPCM" , function (event, ipv4 , ipport, leftpcm, rightpcm) {
             
-            if (ipv4 != ipairplay || ipport != portairplay){
+            if (ipv4 != ipairplay || ipport != portairplay ){
+                if (airtunes = null)
                 ipairplay = ipv4;
                 portairplay = ipport;
                 device = airtunes.add(ipv4, {
@@ -739,25 +772,26 @@ const handler = {
                     password: ''
                   });
                 device.on('status', function(status) {
-                    pipebuffer();
-                });  
-            }
-            function pipebuffer(){
-            var TARGET_SAMPLE_RATE = 44100;
+                    console.log('uh oh');
+                    if (ok == 1){ok == 2}
+                    
 
-            var offlineCtx = new OfflineAudioContext(audiobuffer.numberOfChannels,
-                                                     audiobuffer.duration * TARGET_SAMPLE_RATE,
-                                                     TARGET_SAMPLE_RATE);
+                }); 
+
+            } 
+                // convert 32bit float,48k to 16bit signed , 44.1k 
+                newbuffer = Buffer.from(new Int8Array(interleave16(bitratechange(Int16Array.from(leftpcm, x => x * 32767)),bitratechange(Int16Array.from(rightpcm, x => x * 32767))).buffer));  
+                airtunes.circularBuffer.write(newbuffer);
+
+                
             
-            // Play it from the beginning.
-            var offlineSource = offlineCtx.createBufferSource();
-            offlineSource.buffer = source;
-            offlineSource.connect(offlineCtx.destination);
-            offlineSource.start();
-            offlineCtx.startRendering().then((resampled) => {
-                newbuffer = Buffer.from(new Int8Array(interleave(Int16Array.from(resampled.getChannelData(0).buffer),Int16Array.from(resampled.getChannelData(1).buffer)).buffer))
-                buffer.pipe(airtunes);
-            });}
+        });
+
+        ipcMain.on('disconnectAirplay' , function (event){
+            airtunes.end();
+            airtunes = null;
+            ipairplay = '';
+            portairplay = '';
         });
     }
 }
