@@ -1,4 +1,4 @@
-const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences} = require('electron'),
+const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences, ipcRenderer} = require('electron'),
     {LoadOneTimeFiles, LoadFiles} = require('./load'),
     {join, resolve} = require('path'),
     {readFile, readFileSync, existsSync, truncate, writeFile} = require('fs'),
@@ -665,6 +665,7 @@ const handler = {
                 break; 
         }
         const rtAudio = new RtAudio(api);
+        console.log(rtAudio.getDevices());
         rtAudio.openStream(
             { deviceId: 0, // Need to change to get wrote
             nChannels: 2, // Number of channels
@@ -691,10 +692,12 @@ const handler = {
             }
             return result;
         }
-
+        ipcMain.on('changeAudioMode' , function (event, mode) {
+          console.log(rtAudio.getApi());
+        });
+        console.log(rtAudio.getApi());
         ipcMain.on('writePCM' , function (event, leftpcm, rightpcm) { 
             // do anything with stereo pcm here
-
             buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm),Float32Array.from(rightpcm)).buffer));
             rtAudio.write(buffer);
 

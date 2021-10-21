@@ -39,7 +39,9 @@
     "rimraf": "^3.0.2",
     "source-map-support": "^0.5.16",
     "v8-compile-cache": "^2.1.1",
-    "audify": "^1.6.3"
+    "audify": "^1.6.3",
+    "airtunes": "github:vapormusic/node_airtunes2",
+    "mdns": "^2.7.2"
   },
   "devDependencies": {
     "electron": "https://github.com/castlabs/electron-releases.git",
