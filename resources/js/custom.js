@@ -355,7 +355,8 @@ try {
                 Transparency: new CSSStyleSheet(),
                 Theme: new CSSStyleSheet(),
                 Meta: new CSSStyleSheet(),
-                Metrics: new CSSStyleSheet()
+                Metrics: new CSSStyleSheet(),
+                Scaling: new CSSStyleSheet()
             },
             wallpaper: "",
             lastTheme: "",
@@ -587,6 +588,13 @@ try {
                 }
             },
             refresh() {
+                if(preferences["visual"]["scaling"] != 1) {
+                    this._styleSheets.Scaling.replaceSync(`
+                        body {
+                            zoom: ${preferences["visual"]["scaling"]};
+                        }
+                    `);
+                }
                 document.adoptedStyleSheets = Object.values(this._styleSheets);
                 /** Theme Options **/
                 var themeOptions = (this.getThemeOptions(this.lastTheme));

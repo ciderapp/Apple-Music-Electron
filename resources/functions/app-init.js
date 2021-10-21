@@ -55,6 +55,7 @@ module.exports = () => {
                 true
             ],
             "useOperatingSystemAccent": [],
+            "scaling": 1,
             "mxmon": [],
             "mxmlanguage": "en",
         },
@@ -1006,6 +1007,15 @@ module.exports = () => {
             'options': [{
                 'label': "Force the application to use your operating systems' accent",
                 'value': true
+            }]
+        },
+        { // Scaling
+            'label': 'Scaling',
+            'key': 'scaling',
+            'type': 'checkbox',
+            'options': [{
+                'label': "Force the application to use a specific scaling value",
+                'value': 1
             }]
         },
         { // Musixmatch Lyrics
@@ -2324,6 +2334,7 @@ module.exports = () => {
             removeAppleLogo: true,
             removeFooter: true,
             useOperatingSystemAccent: false,
+            scaling: 1,
             mxmon: false,
             mxmlanguage: "en"
         },
