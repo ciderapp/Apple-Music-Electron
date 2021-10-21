@@ -261,6 +261,19 @@ var _amOT = {
         }
         };
         AMEx.result.source.connect(x);x.connect(AMEx.context.destination);
+    },
+    getAirPlayDevice: function(){
+        ipcRenderer.send('getAirplayDevice',leftpcm,rightpcm);
+    },
+    playAirPlay: function(ipv4,port){
+        var x = AMEx.result.context.createScriptProcessor(16384,2,1);
+
+        x.onaudioprocess = function(e){
+            if (!override){
+            ipcRenderer.send('performAirplayPCM', ipv4 , port, e.inputBuffer);
+        }
+        };
+        AMEx.result.source.connect(x);x.connect(AMEx.context.destination);
     }
 };
 

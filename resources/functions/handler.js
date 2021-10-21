@@ -4,7 +4,10 @@ const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPre
     {readFile, readFileSync, existsSync, truncate, writeFile} = require('fs'),
     rimraf = require('rimraf'),
     {initAnalytics} = require('./utils'),
+    {mdns} = require('mdns'),
+    {AirTunes} = require('airtunes'), 
     { RtAudio, RtAudioFormat, RtAudioApi } = require("audify");
+  
 initAnalytics();
 
 const handler = {
@@ -652,6 +655,10 @@ const handler = {
 
 
         let api = RtAudioApi.UNSPECIFIED;
+        var ipairplay = "";
+        var portairplay = "";
+        var airtunes = new AirTunes();
+        var device;
 
         switch (process.platform){
             case "win32":
@@ -708,7 +715,50 @@ const handler = {
             //     if (err) throw err;
             //     console.log('It\'s saved!');
             // });
-        })
+        });
+
+        ipcMain.on("getAirplayDevice" , function (event ) {
+            const browser = mdns.createBrowser(mdns.tcp('raop'));
+            browser.on('serviceUp', service => {
+            console.log(
+                `${service.name} ${service.host}:${service.port} ${service.addresses} `
+            );
+            });
+            browser.start();
+            setTimeout(() => {browser.stop()},300);
+        });
+        
+        ipcMain.on("performAirplayPCM" , function (event, ipv4 , ipport, audiobuffer) {
+            
+            if (ipv4 != ipairplay || ipport != portairplay){
+                ipairplay = ipv4;
+                portairplay = ipport;
+                device = airtunes.add(ipv4, {
+                    port: ipport,
+                    volume: 100,
+                    password: ''
+                  });
+                device.on('status', function(status) {
+                    pipebuffer();
+                });  
+            }
+            function pipebuffer(){
+            var TARGET_SAMPLE_RATE = 44100;
+
+            var offlineCtx = new OfflineAudioContext(audiobuffer.numberOfChannels,
+                                                     audiobuffer.duration * TARGET_SAMPLE_RATE,
+                                                     TARGET_SAMPLE_RATE);
+            
+            // Play it from the beginning.
+            var offlineSource = offlineCtx.createBufferSource();
+            offlineSource.buffer = source;
+            offlineSource.connect(offlineCtx.destination);
+            offlineSource.start();
+            offlineCtx.startRendering().then((resampled) => {
+                newbuffer = Buffer.from(new Int8Array(interleave(Int16Array.from(resampled.getChannelData(0).buffer),Int16Array.from(resampled.getChannelData(1).buffer)).buffer))
+                buffer.pipe(airtunes);
+            });}
+        });
     }
 }
 
