@@ -1,4 +1,11 @@
 var _tests = {
+    zoo () {
+        AMJavaScript.getRequest("ameres://html/zoo.html", (content)=>{
+            var modal = new AMEModal({
+                content: content
+            })
+        })
+    },
     usermenu() {
 
     },
@@ -93,31 +100,6 @@ var _tests = {
                     } else {
                         vm.init()
                     }
-                },
-                OnClose() {
-                    _vues.destroy(vm)
-                }
-            })
-        })
-    },
-    vueTest() {
-        AMJavaScript.getRequest("ameres://html/vue-test.html", (content) => {
-            var vm = null
-            var modal = new AMEModal({
-                content: content,
-                OnCreate() {
-                    vm = new Vue({
-                        el: "#vue-model",
-                        data: {
-                            theme: preferences.visual.theme,
-                            rangeTest: 0
-                        },
-                        methods: {
-                            btn() {
-                                console.info("Button clicked")
-                            }
-                        }
-                    })
                 },
                 OnClose() {
                     _vues.destroy(vm)

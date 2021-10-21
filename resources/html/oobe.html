@@ -388,7 +388,7 @@
                             <div class="md-option-segment">
                                 Theme
                             </div>
-                            <div class="md-option-segment md-option-line_auto">
+                            <div class="md-option-segment md-option-segment_auto">
                                 <select class="md-select" v-model="prefs.theme"
                                         @change="AMStyling.loadTheme(prefs.theme)"
                                         style="width:180px;">
@@ -401,7 +401,7 @@
                             <div class="md-option-segment">
                                 Transparency
                             </div>
-                            <div class="md-option-segment md-option-line_auto">
+                            <div class="md-option-segment md-option-segment_auto">
                                 <select class="md-select" style="width:180px;">
                                     <option value=''>Disabled</option>
                                     <option value='blur'>Blur Behind</option>
@@ -415,7 +415,7 @@
                                 <br>
                                 <small>Force the application to use your operating systems' accent.</small>
                             </div>
-                            <div class="md-option-segment md-option-line_auto">
+                            <div class="md-option-segment md-option-segment_auto">
                                 <input type="checkbox" switch/>
                             </div>
                         </div>
@@ -423,7 +423,7 @@
                             <div class="md-option-segment">
                                 Remove Scrollbars
                             </div>
-                            <div class="md-option-segment md-option-line_auto">
+                            <div class="md-option-segment md-option-segment_auto">
                                 <input type="checkbox" switch/>
                             </div>
                         </div>
@@ -448,7 +448,7 @@
                             <div class="md-option-segment">
                                 Audio Quality
                             </div>
-                            <div class="md-option-segment md-option-line_auto">
+                            <div class="md-option-segment md-option-segment_auto">
                                 <select v-model="prefs.audioQuality" class="md-select" style="width:180px;">
                                     <option value='auto'>Automatic</option>
                                     <option value='extreme'>Extreme (990kbps)</option>
@@ -461,7 +461,7 @@
                             <div class="md-option-segment">
                                 Discord Rich Presence
                             </div>
-                            <div class="md-option-segment md-option-line_auto">
+                            <div class="md-option-segment md-option-segment_auto">
                                 <select class="md-select" style="width:180px;">
                                     <option>Disabled</option>
                                     <option>Enabled as "Apple Music"</option>
@@ -473,7 +473,7 @@
                             <div class="md-option-segment">
                                 Close button should minimize Apple Music Electron
                             </div>
-                            <div class="md-option-segment md-option-line_auto">
+                            <div class="md-option-segment md-option-segment_auto">
                                 <input type="checkbox" switch/>
                             </div>
                         </div>
@@ -484,7 +484,7 @@
                                 <small>Less stable, but allows for lyrics translation and better lyrics
                                     detection.</small>
                             </div>
-                            <div class="md-option-segment md-option-line_auto">
+                            <div class="md-option-segment md-option-segment_auto">
                                 <input type="checkbox" v-model="prefs.mxm" switch/>
                             </div>
                         </div>
@@ -492,7 +492,7 @@
                             <div class="md-option-segment">
                                 Musixmatch Lyrics Translation Language
                             </div>
-                            <div class="md-option-segment md-option-line_auto">
+                            <div class="md-option-segment md-option-segment_auto">
                                 <select v-model="prefs.mxmlanguage" class="md-select" style="width:180px;">
                                     <option value='disabled'>Disabled</option>
                                     <option value='ab'>Abkhazian</option>
@@ -795,7 +795,7 @@
                                 Allow statistics to be collected when errors or crashes
                                 occur
                             </div>
-                            <div class="md-option-segment md-option-line_auto">
+                            <div class="md-option-segment md-option-segment_auto">
                                 <input type="checkbox" switch/>
                             </div>
                         </div>
@@ -896,34 +896,6 @@
 </div>
 
 <style>
-    .md-option-container {
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .md-option-line {
-        display: flex;
-        width: 100%;
-        padding: 14px;
-        background: var(--opaquePageBGColor);
-        border-bottom: 1px solid rgb(0 0 0 / 35%);
-        font-size: 0.85em;
-    }
-
-    .md-option-segment.md-option-line_auto {
-        width: auto;
-    }
-
-    .md-option-container .md-option-line:not(:last-child) {
-        border-bottom: 1px solid rgb(0 0 0 / 35%);
-    }
-
-    .md-option-segment {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-    }
 
     .md-video {
         width: 100%;
@@ -955,79 +927,7 @@
         box-shadow: 0px 10px 10px rgb(0 0 0 / 25%);
     }
 
-    .fade_simple-enter-active, .fade_simple-leave-active {
-        transition: all .5s;
-    }
-
-    .fade_simple-enter, .fade_simple-leave-to {
-        opacity: 0;
-    }
-
-    .fade-enter-active, .fade-leave-active {
-        transition: all .5s;
-    }
-
-    .fade-enter, .fade-leave-to {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-
-    .md-h1 {
-        font-size: 3em;
-        text-align: center;
-    }
-
     #oobe-vue {
         height: 100%;
-    }
-
-    .md-header {
-        padding: 16px;
-    }
-
-    .md-footer {
-        padding: 16px;
-        text-align: center;
-    }
-
-    .md-btn {
-        background: rgba(100, 100, 100, 0.5);
-        padding: 8px 16px;
-        border-radius: 4px;
-        font-size: 1.25em;
-    }
-
-    .md-select, .md-select > option {
-        padding: 8px 16px;
-        font-size: 1em;
-        font-family: inherit;
-    }
-
-    .md-select > option {
-        font-size: 1em;
-        font-family: inherit;
-    }
-
-    .md-btn.md-btn-primary {
-        background: var(--keyColor);
-        color: white;
-    }
-
-    .md-container {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        position: absolute;
-        top: 0px;
-        left: 0px;
-        width: 100%;
-        padding: 32px;
-        font-family: 'SF Pro', system-ui;
-    }
-
-    .md-body {
-        height: 100%;
-        padding: 16px;
-        font-size: 1.25em;
     }
 </style>
