@@ -112,7 +112,7 @@ class AMEModal {
         this.modal.window.classList.add("ameModal-closing")
         setTimeout(()=>{
             this.modal.backdrop.remove()
-        }, 250)
+        }, 100)
     }
 
     setStyle (element, style = {}) {

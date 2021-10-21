@@ -427,7 +427,7 @@ try {
                 }
 
                 AM.themesListing[theme]["options"].forEach((option)=>{
-                    if(!userOptions[theme][option.key]) {
+                    if(typeof userOptions[theme][option.key] == "undefined" || typeof userOptions[theme][option.key] == "null") {
                         userOptions[theme][option.key] = parseBool(option.defaultValue);
                     }
                 });

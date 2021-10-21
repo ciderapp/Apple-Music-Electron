@@ -502,12 +502,12 @@ body {
     overflow: overlay;
     position: relative;
     box-shadow: 0 2px 20px rgb(0 0 0 / 24%);
-    animation: ameModalIn 0.25s var(--appleEase);
+    animation: ameModalIn 0.10s var(--appleEase);
     will-change: opacity, transform;
 }
 
 .ameModal-closing {
-    animation: ameModalOut 0.25s var(--appleEase) forwards;
+    animation: ameModalOut 0.10s var(--appleEase) forwards;
 }
 
 @keyframes ameModalIn {
