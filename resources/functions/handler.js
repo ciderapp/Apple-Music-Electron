@@ -1,7 +1,7 @@
 const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences, ipcRenderer} = require('electron'),
     {LoadOneTimeFiles, LoadFiles} = require('./load'),
     {join, resolve} = require('path'),
-    {readFile, readFileSync, existsSync, truncate, writeFile, createReadStream} = require('fs'),
+    {readFile, readFileSync, existsSync, truncate} = require('fs'),
     rimraf = require('rimraf'),
     {initAnalytics} = require('./utils'),
     { Readable, Stream ,Writable } = require('stream'),
@@ -9,6 +9,7 @@ const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPre
 
 const AirTunes = require('airtunes'); 
 const mdns = require('mdns');
+const https = require('https');
 
 initAnalytics();
 
@@ -765,10 +766,10 @@ const handler = {
         
         var ok = 1;
            
-        ipcMain.on("performAirplayPCM" , function (event, ipv4 , ipport, leftpcm, rightpcm) {
+        ipcMain.on("performAirplayPCM" , function (event, ipv4 , ipport, leftpcm, rightpcm, title, artist, album, artworkURL) {
             
             if (ipv4 != ipairplay || ipport != portairplay ){
-                if (airtunes = null)
+                if (airtunes == null){airtunes = new AirTunes();}
                 ipairplay = ipv4;
                 portairplay = ipport;
                 device = airtunes.add(ipv4, {
@@ -778,10 +779,17 @@ const handler = {
                   });
                 device.on('status', function(status) {
                     console.log('uh oh');
-                    if (ok == 1){ok == 2}
+                    setTimeout(function() {
+                        if (ok == 1){
+                            console.log(device.key,title,artist,album);
+                            airtunes.setTrackInfo(device.key,title,artist,album);
+                            uploadImageAirplay(artworkURL);
+                            console.log('done');
+                            ok == 2}
+                      }, 1000);
                     
 
-                }); 
+                });
 
             } 
                 // convert 32bit float,48k to 16bit signed , 44.1k 
@@ -795,9 +803,39 @@ const handler = {
         ipcMain.on('disconnectAirplay' , function (event){
             airtunes.end();
             airtunes = null;
+            device = null;
             ipairplay = '';
             portairplay = '';
+            ok=1;
         });
+
+        ipcMain.on('updateAirplayInfo', function (event,title,artist,album,artworkURL){
+          if (airtunes && device){
+           console.log(device.key,title,artist,album);
+           airtunes.setTrackInfo(device.key,title,artist,album);
+           uploadImageAirplay(artworkURL)
+        }
+        });
+
+        function uploadImageAirplay(url){
+            try{
+            if(url!=null && url != ''){  
+            console.log(join(app.getPath('userData'), 'temp.png'), url);
+            https.get(url, function(res)  {
+                var data = [];
+        
+                res.on('data', function(chunk) {
+                    data.push(chunk);
+                }).on('end', function() {
+                    //at this point data is an array of Buffers
+                    //so Buffer.concat() can make us a new Buffer
+                    //of all of them together
+                    var buffer = Buffer.concat(data);
+                    airtunes.setArtwork(device.key, buffer, "image/png");
+                });
+              })
+            }} catch(e){console.log(e)}
+        }
     }
 }
 
