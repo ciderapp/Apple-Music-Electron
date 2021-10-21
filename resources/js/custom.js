@@ -597,14 +597,16 @@ try {
                 }
                 document.adoptedStyleSheets = Object.values(this._styleSheets);
                 /** Theme Options **/
-                var themeOptions = (this.getThemeOptions(this.lastTheme));
-                Object.keys(themeOptions).forEach((option)=>{
-                    if(themeOptions[option]) {
-                        document.body.setAttribute(`theme-${option}`, 1);
-                    }else{
-                        document.body.removeAttribute(`theme-${option}`);
-                    }
-                })
+                if(AM.themesListing[this.lastTheme]) {
+                    var themeOptions = (this.getThemeOptions(this.lastTheme));
+                    Object.keys(themeOptions).forEach((option)=>{
+                        if(themeOptions[option]) {
+                            document.body.setAttribute(`theme-${option}`, 1);
+                        }else{
+                            document.body.removeAttribute(`theme-${option}`);
+                        }
+                    })
+                }
             },
             lerp: (start, end, l) => {
                 return start + (end - start) * l;
