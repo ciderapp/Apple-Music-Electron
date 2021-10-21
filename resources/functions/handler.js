@@ -133,7 +133,7 @@ const handler = {
         app.win.webContents.on('did-finish-load', () => {
             console.verbose('[did-finish-load] Completed.');
             LoadOneTimeFiles();
-
+            app.win.webContents.setZoomFactor(app.preferences.value("visual.scaling"))
             if (app.preferences.value('general.incognitoMode').includes(true)) {
                 new Notification({
                     title: 'Incognito Mode Enabled',

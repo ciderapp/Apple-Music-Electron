@@ -588,9 +588,6 @@ try {
                 }
             },
             refresh() {
-                if(preferences["visual"]["scaling"] != 1) {
-                    ipcRenderer.send("set-zoom-factor", preferences["visual"]["scaling"]);
-                }
                 document.adoptedStyleSheets = Object.values(this._styleSheets);
                 /** Theme Options **/
                 if(AM.themesListing[this.lastTheme]) {
