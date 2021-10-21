@@ -28,6 +28,8 @@ const init = {
 
         // Disable CORS
         app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
+        app.commandLine.appendSwitch('high-dpi-support', 'true')
+        app.commandLine.appendSwitch('force-device-scale-factor', '1')
 
         // Media Key Hijacking
         if (app.preferences.value('advanced.preventMediaKeyHijacking').includes(true)) {
