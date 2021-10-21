@@ -490,6 +490,10 @@ const handler = {
             })
             child.stdin.end()
         })
+
+        ipcMain.on("set-zoom-factor", (event, factor)=>{
+            app.win.webContents.setZoomFactor(factor)
+        })
     },
 
     LinkHandler: function (startArgs) {

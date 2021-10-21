@@ -589,11 +589,7 @@ try {
             },
             refresh() {
                 if(preferences["visual"]["scaling"] != 1) {
-                    this._styleSheets.Scaling.replaceSync(`
-                        body {
-                            zoom: ${preferences["visual"]["scaling"]};
-                        }
-                    `);
+                    ipcRenderer.send("set-zoom-factor", preferences["visual"]["scaling"]);
                 }
                 document.adoptedStyleSheets = Object.values(this._styleSheets);
                 /** Theme Options **/
