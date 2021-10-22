@@ -839,18 +839,18 @@ try {
                     function volumeChange(event) {
                         if (checkScrollDirectionIsUp(event)) {
                             if (MusicKit.getInstance().volume <= 1) {
-                                if ((MusicKit.getInstance().volume + 0.05) > 1) {
+                                if ((MusicKit.getInstance().volume + 0.02) > 1) {
                                     MusicKit.getInstance().volume = 1
                                 } else {
-                                    MusicKit.getInstance().volume = MusicKit.getInstance().volume + 0.05;
+                                    MusicKit.getInstance().volume = MusicKit.getInstance().volume + 0.02;
                                 }
                             }
                         } else {
                             if (MusicKit.getInstance().volume >= 0) {
-                                if ((MusicKit.getInstance().volume - 0.05) < 0) {
+                                if ((MusicKit.getInstance().volume - 0.02) < 0) {
                                     MusicKit.getInstance().volume = 0;
                                 } else {
-                                    MusicKit.getInstance().volume = MusicKit.getInstance().volume - 0.05;
+                                    MusicKit.getInstance().volume = MusicKit.getInstance().volume - 0.02;
                                 }
                             }
                         }
