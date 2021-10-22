@@ -112,7 +112,7 @@ const init = {
         app.pluginsEnabled = true;
         console.log("[PluginInstallation][existsSync] Plugins folder exists!");
         app.ame.utils.permissionsCheck(app.userPluginsPath, '/');
-        app.ame.utils.updatePluginsListing();
+        app.ame.utils.fetchPluginsListing();
 
         // Save all the file names to array and log it
         console.log(`[PluginInstallation] Files found in Plugins Directory: [${fs.readdirSync(resolve(app.getPath("userData"), "plugins")).join(', ')}]`);
@@ -120,6 +120,7 @@ const init = {
 
     AppReady: function () {
         console.verbose('[ApplicationReady] Started.');
+        app.pluginsEnabled = false;
 
         // Run the Functions
         init.ThemeInstallation()
@@ -147,7 +148,6 @@ const init = {
         app.ame.lastfm.authenticate(); // LastFM
         app.ame.discord.connect(app.preferences.value('general.discordRPC') === 'ame-title' ? '749317071145533440' : '886578863147192350'); // Discord
 
-        app.pluginsEnabled = false;
         app.isAuthorized = false;
         app.isMiniplayerActive = false;
         app.injectedCSS = {}
