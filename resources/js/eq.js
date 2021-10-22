@@ -1,6 +1,7 @@
 
 var override = false;
 var APOverride = false;
+var APstream;
 var AMEx = {
     context: new AudioContext(),
     result: {},
@@ -267,24 +268,28 @@ var _amOT = {
         ipcRenderer.send('getAirplayDevice','');
 
     },
-    playAirPlay: function(ipv4,port){
+    playAirPlay: function(ipv4, port, password){
+        if(APstream)
+        APstream.disconnect();
         APOverride = false;
-        var x = AMEx.result.context.createScriptProcessor(16384,2,1);
+        APstream = AMEx.context.createScriptProcessor(16384,2,1);
 
-        x.onaudioprocess = function(e){
+        APstream.onaudioprocess = function(e){
 
             if (!APOverride){
                 var leftpcm = e.inputBuffer.getChannelData(0);
                 var rightpcm = e.inputBuffer.getChannelData(1);
-            ipcRenderer.send('performAirplayPCM', ipv4 , port, leftpcm, rightpcm, MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,MusicKit.getInstance().nowPlayingItem["attributes"]["artwork"]["url"]);
+            ipcRenderer.send('performAirplayPCM', ipv4 , port, password, leftpcm, rightpcm, MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,(MusicKit.getInstance().nowPlayingItem["attributes"]["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256));
 
         }
         };
-        AMEx.result.source.connect(x);x.connect(AMEx.context.destination);
+        AMEx.result.source.connect(APstream);APstream.connect(AMEx.context.destination);
     },
     stopAirPlay: function(){
         ipcRenderer.send('disconnectAirplay', '');
         APOverride = true;
+        if(APstream)
+        APstream.disconnect();
     }
 };
 
