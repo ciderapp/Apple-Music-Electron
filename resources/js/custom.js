@@ -653,9 +653,12 @@ try {
 
                 /** Plugins */
                 if (typeof _plugins != "undefined") {
-                    Object.keys(preferences.availablePlugins).forEach((plugin) => {
-                        _plugins.loadPlugin(plugin);
-                    });
+                    await ipcRenderer.invoke("fetchPluginsListing").then((plugins)=>{
+                        console.log(plugins);
+                        plugins.forEach((plugin) => {
+                            _plugins.loadPlugin(plugin);
+                        });
+                    })
                 }
                 /** End Plugins */
 

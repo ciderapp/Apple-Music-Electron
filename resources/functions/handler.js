@@ -349,6 +349,11 @@ const handler = {
             return app.ame.utils.fetchThemesListing();
         })
 
+        // Plugins Listing Update
+        ipcMain.handle('fetchPluginsListing', (_event) => {
+            return app.ame.utils.fetchPluginsListing();
+        })
+
         // Acrylic Check
         ipcMain.handle('isAcrylicSupported', (_event) => {
             return app.ame.utils.isAcrylicSupported();
@@ -498,9 +503,11 @@ const handler = {
             child.stdin.end()
         })
 
+        // Set BrowserWindow zoom factor
         ipcMain.on("set-zoom-factor", (event, factor)=>{
             app.win.webContents.setZoomFactor(factor)
         })
+
     },
 
     LinkHandler: function (startArgs) {

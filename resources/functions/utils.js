@@ -175,6 +175,24 @@ const Utils = {
         return themesListing
     },
 
+    /* fetchPluginsListing - Fetches the plugins directory listing (Lists .js files) */
+    fetchPluginsListing: () => {
+        if (!existsSync(resolve(app.getPath("userData"), "plugins"))) return;
+
+        let pluginsFileNames = [], pluginsListing = {};
+
+
+        readdirSync(resolve(app.getPath("userData"), "plugins")).forEach((value) => {
+            if (value.split('.').pop() === 'js') {
+                pluginsFileNames.push(value.split('.').shift())
+            }
+        });
+
+        console.log(pluginsFileNames)
+
+        return pluginsFileNames
+    },
+
     /* fetchOperatingSystem - Fetches the operating system name */
     fetchOperatingSystem: () => {
         if (process.platform === "win32") {
