@@ -349,6 +349,11 @@ const handler = {
             return app.ame.utils.fetchThemesListing();
         })
 
+        // Plugins Listing Update
+        ipcMain.handle('fetchPluginsListing', (_event) => {
+            return app.ame.utils.fetchPluginsListing();
+        })
+
         // Acrylic Check
         ipcMain.handle('isAcrylicSupported', (_event) => {
             return app.ame.utils.isAcrylicSupported();
@@ -498,9 +503,11 @@ const handler = {
             child.stdin.end()
         })
 
+        // Set BrowserWindow zoom factor
         ipcMain.on("set-zoom-factor", (event, factor)=>{
             app.win.webContents.setZoomFactor(factor)
         })
+
     },
 
     LinkHandler: function (startArgs) {
@@ -658,6 +665,7 @@ const handler = {
 
 
     },
+
     AudioHandler: function(){
 
 
@@ -756,9 +764,9 @@ const handler = {
         ipcMain.on("getAirplayDevice" , function (event, data) {
             const browser = mdns.createBrowser(mdns.tcp('raop'));
             browser.on('serviceUp', service => {
-            console.log(
-                `${service.name} ${service.host}:${service.port} ${service.addresses} `
-            );
+                app.win.webContents.executeJavaScript(`console.log(
+                "${service.name} ${service.host}:${service.port} ${service.addresses}"
+            )`);
             });
             browser.start();
             setTimeout(() => {browser.stop()},300);
@@ -766,7 +774,7 @@ const handler = {
         
         var ok = 1;
            
-        ipcMain.on("performAirplayPCM" , function (event, ipv4 , ipport, leftpcm, rightpcm, title, artist, album, artworkURL) {
+        ipcMain.on("performAirplayPCM" , function (event, ipv4 , ipport, sepassword, leftpcm, rightpcm, title, artist, album, artworkURL) {
             
             if (ipv4 != ipairplay || ipport != portairplay ){
                 if (airtunes == null){airtunes = new AirTunes();}
@@ -775,10 +783,20 @@ const handler = {
                 device = airtunes.add(ipv4, {
                     port: ipport,
                     volume: 100,
-                    password: ''
-                  });
+                    password: sepassword,
+                });  
                 device.on('status', function(status) {
-                    console.log('uh oh');
+                    console.log('device status',status);
+                    if (status == 'stopped'){
+                        airtunes.stopAll(function() {
+                            console.log('end');
+                          });
+                      airtunes = null;
+                      device = null;
+                      ipairplay = '';
+                      portairplay = '';
+                      ok=1;
+                    } else {
                     setTimeout(function() {
                         if (ok == 1){
                             console.log(device.key,title,artist,album);
@@ -786,7 +804,7 @@ const handler = {
                             uploadImageAirplay(artworkURL);
                             console.log('done');
                             ok == 2}
-                      }, 1000);
+                      }, 1000);}
                     
 
                 });
@@ -801,7 +819,9 @@ const handler = {
         });
 
         ipcMain.on('disconnectAirplay' , function (event){
-            airtunes.end();
+            airtunes.stopAll(function() {
+                  console.log('end');
+                });
             airtunes = null;
             device = null;
             ipairplay = '';

@@ -75,6 +75,7 @@
 .md-select > option {
     font-size: 1em;
     font-family: inherit;
+    padding: 8px 16px;
 }
 
 .md-btn.md-btn-primary {
