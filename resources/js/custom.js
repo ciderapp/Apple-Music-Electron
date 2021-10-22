@@ -555,8 +555,6 @@ try {
                                         --musicKit-artwork: url("${artwork.replace("{w}", 2000).replace("{h}", 2000)}");
                                     }
                                 `);
-                                if (MusicKit.getInstance().nowPlayingItem.title != "" & !(MusicKit.getInstance().nowPlayingItem.title == "No Title Found" && MusicKit.getInstance().nowPlayingItem.artistName == "")){
-                                    ipcRenderer.send('updateAirplayInfo',MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,artwork.replace("{w}", 256).replace("{h}", 256));}
                                 this.refresh();
                             }
                         });
@@ -573,8 +571,6 @@ try {
                     --musicKit-artwork: url("${artwork.replace("{w}", 2000).replace("{h}", 2000)}");
                 }
             `);
-            if (MusicKit.getInstance().nowPlayingItem.title != "" & !(MusicKit.getInstance().nowPlayingItem.title == "No Title Found" && MusicKit.getInstance().nowPlayingItem.artistName == "")){
-            ipcRenderer.send('updateAirplayInfo',MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,artwork.replace("{w}", 256).replace("{h}", 256));}
                 this.refresh();
             },
             setTransparency(val) {

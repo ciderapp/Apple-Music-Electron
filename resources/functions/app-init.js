@@ -64,8 +64,6 @@ module.exports = () => {
             "gaplessEnabled": [
                 true
             ],
-            "audioMode": "",
-            "audioDevice" : "",
         },
         "window": {
             "appStartupBehavior": "",
@@ -1338,27 +1336,7 @@ module.exports = () => {
                 'value': true
             }],
             'help': `Reduces or completely removes the delay between songs providing a smooth audio experience.`
-        },
-        { // Setting Your Theme
-            'label': 'Audio mode:',
-            'key': 'audioMode',
-            'type': 'dropdown',
-            'options': [{
-                'label': 'Default',
-                'value': 'default'
-            },],
-            'help': 'Audio modes'
-        },
-        { // Setting Your Theme
-            'label': 'Audio device:',
-            'key': 'audioDevice',
-            'type': 'dropdown',
-            'options': [{
-                'label': 'Default',
-                'value': 'default'
-            },],
-            'help': 'Audio devices'
-        },
+        }
     ];
     fields.window = [
         { // Open Apple Music on Startup
@@ -2362,9 +2340,7 @@ module.exports = () => {
         },
         audio: {
             audioQuality: "auto",
-            gaplessEnabled: true,
-            audioMode: "default",
-            audioDevice : "default",
+            gaplessEnabled: true
         },
         window: {
             appStartupBehavior: "",

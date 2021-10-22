@@ -21,8 +21,6 @@
   },
   "dependencies": {
     "@sentry/electron": "^2.5.1",
-    "airtunes": "github:vapormusic/node_airtunes2",
-    "audify": "^1.6.3",
     "chmodr": "^1.2.0",
     "discord-rpc": "^4.0.1",
     "electron-acrylic-window": "^0.5.9",
@@ -33,7 +31,6 @@
     "electron-window-state": "^5.0.3",
     "git-clone": "^0.2.0",
     "lastfmapi": "^0.1.1",
-    "mdns": "^2.7.2",
     "mpris-service": "^2.1.2",
     "node-fetch": "^3.0.0",
     "react": "^17.0.2",
