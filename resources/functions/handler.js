@@ -1,10 +1,16 @@
-const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences} = require('electron'),
+const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences, ipcRenderer} = require('electron'),
     {LoadOneTimeFiles, LoadFiles} = require('./load'),
     {join, resolve} = require('path'),
-    {readFile, readFileSync, existsSync, truncate, writeFile} = require('fs'),
+    {readFile, readFileSync, existsSync, truncate} = require('fs'),
     rimraf = require('rimraf'),
     {initAnalytics} = require('./utils'),
+    { Readable, Stream ,Writable } = require('stream'),
     { RtAudio, RtAudioFormat, RtAudioApi } = require("audify");
+
+const AirTunes = require('airtunes'); 
+const mdns = require('mdns');
+const https = require('https');
+
 initAnalytics();
 
 const handler = {
@@ -24,11 +30,6 @@ const handler = {
         // Log File Location
         if (app.commandLine.hasSwitch('log') || app.commandLine.hasSwitch('l')) {
             console.log(join(app.getPath('userData'), 'logs'))
-            app.exit()
-        }
-
-        // Detects if the application has been opened with --force-quit
-        if (app.commandLine.hasSwitch('force-quit')) {
             app.exit()
         }
     },
@@ -95,7 +96,7 @@ const handler = {
         console.verbose('[playbackStateDidChange] Started.');
 
         ipcMain.on('playbackStateDidChange', (_event, a) => {
-            console.warn('[handler] playbackStateDidChange received.');
+            console.verbose('[handler] playbackStateDidChange received.');
             app.media = a;
 
             app.ame.win.SetButtons()
@@ -107,10 +108,10 @@ const handler = {
     },
 
     MediaStateHandler: function () {
-        console.verbose('[nowPlayingItemDidChange] Started.');
+        console.verbose('[MediaStateHandler] Started.');
 
         ipcMain.on('nowPlayingItemDidChange', (_event, a) => {
-            console.warn('[handler] mediaItemStateDidChange received.');
+            console.verbose('[handler] nowPlayingItemDidChange received.');
             app.media = a;
 
             app.ame.win.CreateNotification(a);
@@ -136,42 +137,23 @@ const handler = {
             }
         })
 
-        app.win.webContents.on('unresponsive', async () => {
-            const {response} = await dialog.showMessageBox({
-                message: `${app.getName()} has become unresponsive`,
-                title: 'Do you want to try forcefully reloading the app?',
-                buttons: ['Yes', 'Quit', 'No'],
-                cancelId: 1
-            })
-            if (response === 0) {
-                app.win.contents.forcefullyCrashRenderer()
-                app.win.contents.reload()
-            } else if (response === 1) {
-                console.log("[WindowStateHandler] Application has become unresponsive and has been closed.")
-                app.exit();
-            }
-        })
-
-        app.win.webContents.on('did-finish-load', async () => {
-            console.verbose('[WindowStateHandler] Page finished loading.')
-            LoadOneTimeFiles()
-
+        app.win.webContents.on('did-finish-load', () => {
+            console.verbose('[did-finish-load] Completed.');
+            LoadOneTimeFiles();
+            app.win.webContents.setZoomFactor(app.preferences.value("visual.scaling"))
             if (app.preferences.value('general.incognitoMode').includes(true)) {
                 new Notification({
-                    title: 'Incognito Mode',
-                    body: `Incognito Mode enabled. DiscordRPC and LastFM are disabled.`
+                    title: 'Incognito Mode Enabled',
+                    body: `Listening activity is hidden.`
                 }).show()
-                console.verbose('[Incognito] Incognito Mode enabled for Apple Music Website. [DiscordRPC and LastFM are disabled].');
             }
         });
 
-        app.win.webContents.on('did-start-loading', async () => {
-            app.previousPage = app.win.webContents.getURL()
-        });
-
-        app.win.webContents.on('page-title-updated', function (event) { // Prevents the Window Title from being Updated
-            LoadFiles()
-            event.preventDefault()
+        app.win.webContents.on('did-fail-load', (event, errCode, errDesc, url, mainFrame) => {
+            console.error(`Error Code: ${errCode}\nLoading: ${url}\n${errDesc}`)
+            if (mainFrame) {
+                app.exit()
+            }
         });
 
         // Windows specific: Handles window states
@@ -204,6 +186,28 @@ const handler = {
             })
         }
 
+        app.win.on('unresponsive', () => {
+            dialog.showMessageBox({
+                message: `${app.getName()} has become unresponsive`,
+                title: 'Do you want to try forcefully reloading the app?',
+                buttons: ['Yes', 'Quit', 'No'],
+                cancelId: 1
+            }).then(({response}) => {
+                if (response === 0) {
+                    app.win.contents.forcefullyCrashRenderer()
+                    app.win.contents.reload()
+                } else if (response === 1) {
+                    console.log("[WindowStateHandler] Application has become unresponsive and has been closed.")
+                    app.exit();
+                }
+            })
+        })
+
+        app.win.on('page-title-updated', (event, title) => {
+            console.verbose(`[page-title-updated] Title updated Running necessary files. ('${title}')`)
+            LoadFiles();
+        })
+
         app.win.on('close', (e) => {
             if (!app.isQuiting) {
                 if (app.isMiniplayerActive) {
@@ -213,11 +217,11 @@ const handler = {
                     app.win.hide()
                     e.preventDefault()
                 }
+            } else {
+                app.win.destroy()
+                if (app.lyrics.mxmWin) { app.lyrics.mxmWin.destroy(); }
+                if (app.lyrics.neteaseWin) { app.lyrics.neteaseWin.destroy(); }
             }
-
-            app.win.destroy()
-            app.lyrics.mxmWin.destroy()
-            app.lyrics.neteaseWin.destroy()
         })
 
         app.win.on('maximize', (e) => {
@@ -493,6 +497,10 @@ const handler = {
             })
             child.stdin.end()
         })
+
+        ipcMain.on("set-zoom-factor", (event, factor)=>{
+            app.win.webContents.setZoomFactor(factor)
+        })
     },
 
     LinkHandler: function (startArgs) {
@@ -506,13 +514,16 @@ const handler = {
                 app.win.webContents.send('LastfmAuthenticated', authKey);
             }
         } else {
-            console.log(startArgs)
-            let formattedSongID = startArgs.replace(/\D+/g, '');
+            if (!app.isAuthorized) return
+            const formattedSongID = startArgs.replace('ame://', '').replace('/', '');
             console.warn(`[LinkHandler] Attempting to load song id: ${formattedSongID}`);
-            // Someone look into why playMediaItem doesn't work thanks - cryptofyre
 
-            // app.win.webContents.executeJavaScript(`MusicKit.getInstance().api.library.song('${formattedSongID}')`)
-            app.win.webContents.executeJavaScript(`MusicKit.getInstance().changeToMediaItem('${formattedSongID}')`)
+            // setQueue can be done with album, song, url, playlist id
+            app.win.webContents.executeJavaScript(`
+                MusicKit.getInstance().setQueue({ song: '${formattedSongID}'}).then(function(queue) {
+                    MusicKit.getInstance().play();
+                });
+            `).catch((err) => console.error(err));
         }
 
     },
@@ -652,6 +663,10 @@ const handler = {
 
 
         let api = RtAudioApi.UNSPECIFIED;
+        var ipairplay = "";
+        var portairplay = "";
+        var airtunes = new AirTunes();
+        var device;
 
         switch (process.platform){
             case "win32":
@@ -665,6 +680,7 @@ const handler = {
                 break; 
         }
         const rtAudio = new RtAudio(api);
+        console.log(rtAudio.getDevices());
         rtAudio.openStream(
             { deviceId: 0, // Need to change to get wrote
             nChannels: 2, // Number of channels
@@ -691,10 +707,40 @@ const handler = {
             }
             return result;
         }
-
+        function bitratechange(e){
+            var t = e.length;
+            sampleRate = 48.0;
+            outputSampleRate = 44.1;
+            var s = 0,
+            o = sampleRate / outputSampleRate,
+            u = Math.ceil(t * outputSampleRate / sampleRate),
+            a = new Int16Array(u);
+            for (i = 0; i < u; i++) {
+              a[i] = e[Math.floor(s)];
+              s += o;
+            }
+      
+            return a;
+         }
+        function interleave16(leftChannel, rightChannel){
+            var length = leftChannel.length + rightChannel.length;
+            var result = new Int16Array(length);
+            
+            var inputIndex = 0;
+            
+            for (var index = 0; index < length; ){
+             result[index++] = leftChannel[inputIndex];
+             result[index++] = rightChannel[inputIndex];
+             inputIndex++;
+            }
+            return result;
+        }
+        ipcMain.on('changeAudioMode' , function (event, mode) {
+          console.log(rtAudio.getApi());
+        });
+        console.log(rtAudio.getApi());
         ipcMain.on('writePCM' , function (event, leftpcm, rightpcm) { 
             // do anything with stereo pcm here
-
             buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm),Float32Array.from(rightpcm)).buffer));
             rtAudio.write(buffer);
 
@@ -705,7 +751,91 @@ const handler = {
             //     if (err) throw err;
             //     console.log('It\'s saved!');
             // });
-        })
+        });
+
+        ipcMain.on("getAirplayDevice" , function (event, data) {
+            const browser = mdns.createBrowser(mdns.tcp('raop'));
+            browser.on('serviceUp', service => {
+            console.log(
+                `${service.name} ${service.host}:${service.port} ${service.addresses} `
+            );
+            });
+            browser.start();
+            setTimeout(() => {browser.stop()},300);
+        });
+        
+        var ok = 1;
+           
+        ipcMain.on("performAirplayPCM" , function (event, ipv4 , ipport, leftpcm, rightpcm, title, artist, album, artworkURL) {
+            
+            if (ipv4 != ipairplay || ipport != portairplay ){
+                if (airtunes == null){airtunes = new AirTunes();}
+                ipairplay = ipv4;
+                portairplay = ipport;
+                device = airtunes.add(ipv4, {
+                    port: ipport,
+                    volume: 100,
+                    password: ''
+                  });
+                device.on('status', function(status) {
+                    console.log('uh oh');
+                    setTimeout(function() {
+                        if (ok == 1){
+                            console.log(device.key,title,artist,album);
+                            airtunes.setTrackInfo(device.key,title,artist,album);
+                            uploadImageAirplay(artworkURL);
+                            console.log('done');
+                            ok == 2}
+                      }, 1000);
+                    
+
+                });
+
+            } 
+                // convert 32bit float,48k to 16bit signed , 44.1k 
+                newbuffer = Buffer.from(new Int8Array(interleave16(bitratechange(Int16Array.from(leftpcm, x => x * 32767)),bitratechange(Int16Array.from(rightpcm, x => x * 32767))).buffer));  
+                airtunes.circularBuffer.write(newbuffer);
+
+                
+            
+        });
+
+        ipcMain.on('disconnectAirplay' , function (event){
+            airtunes.end();
+            airtunes = null;
+            device = null;
+            ipairplay = '';
+            portairplay = '';
+            ok=1;
+        });
+
+        ipcMain.on('updateAirplayInfo', function (event,title,artist,album,artworkURL){
+          if (airtunes && device){
+           console.log(device.key,title,artist,album);
+           airtunes.setTrackInfo(device.key,title,artist,album);
+           uploadImageAirplay(artworkURL)
+        }
+        });
+
+        function uploadImageAirplay(url){
+            try{
+            if(url!=null && url != ''){  
+            console.log(join(app.getPath('userData'), 'temp.png'), url);
+            https.get(url, function(res)  {
+                var data = [];
+        
+                res.on('data', function(chunk) {
+                    data.push(chunk);
+                }).on('end', function() {
+                    //at this point data is an array of Buffers
+                    //so Buffer.concat() can make us a new Buffer
+                    //of all of them together
+                    var buffer = Buffer.concat(data);
+                    airtunes.setArtwork(device.key, buffer, "image/png");
+                });
+              })
+            }} catch(e){console.log(e)}
+        }
     }
 }
 

@@ -42,26 +42,23 @@ class AMEModal {
                     OnClose = () => {
                     },
                     CloseButton = true,
-                    Style = {}
+                    Style = {},
+                    Dismissible = true
                 }) {
         this.Style = Style
         this.closeButton = CloseButton
         this.content = content
         this.OnClose = OnClose
         this.OnCreate = OnCreate
-        this.modal = this.create()
-        this.modalWindow = null
-    }
-
-    setStyle (style) {
-        style.forEach((style) => {
-
-        })
+        this.Dismissible = Dismissible
+        this.modal = {}
+        this.create()
     }
 
     create() {
         let self = this
         var backdrop = document.createElement("div")
+        var dismissArea = document.createElement("div")
         var modalWin = document.createElement("div")
         var modalCloseBtn = document.createElement("button")
         var modalContent = document.createElement("div")
@@ -71,23 +68,59 @@ class AMEModal {
         modalCloseBtn.innerHTML = ("Close")
         modalCloseBtn.addEventListener("click", () => {
             self.close()
-            backdrop.remove()
+        }, {once: true})
+        Object.assign(dismissArea.style, {
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            top: "0px",
+            left: "0px",
+            cursor: "pointer"
         })
         modalContent.style.height = "100%"
         setInnerHTML(modalContent, this.content)
         if(this.closeButton) {
             modalWin.appendChild(modalCloseBtn)
         }
+        if(this.Dismissible) {
+            dismissArea.addEventListener("click",()=>{
+                self.close()
+            }, {once: true})
+            document.addEventListener("keyup", (e)=>{
+                if(e.key == "Escape") {
+                    self.close()
+                }
+            }, {once: true})
+            backdrop.appendChild(dismissArea)
+        }
         modalWin.appendChild(modalContent)
+        Object.assign(modalWin.style, this.Style)
         backdrop.appendChild(modalWin)
         document.body.appendChild(backdrop)
+        this.modal = {
+            backdrop: backdrop,
+            window: modalWin,
+            content: modalContent,
+            closeBtn: modalCloseBtn
+        }
         this.OnCreate()
-        return backdrop
     }
 
     close() {
         this.OnClose()
-        this.modal.remove()
+        this.modal.backdrop.style.background = "transparent"
+        this.modal.window.classList.add("ameModal-closing")
+        setTimeout(()=>{
+            this.modal.backdrop.remove()
+        }, 100)
+    }
+
+    setStyle (element, style = {}) {
+        if(this.modal[element]) {
+            Object.assign(this.modal[element].style, style)
+        }else{
+            console.warn(`Undefined modal element "${element}", available modals are: "backdrop", "window", "closeBtn"`)
+        }
     }
 
     OnCreate() {
@@ -96,30 +129,5 @@ class AMEModal {
 
     OnClose() {
 
-    }
-};
-
-class AMEVue {
-    constructor(options = {}) {
-        var configured = {
-            unmounted() {
-            },
-            beforeUnmount() {
-            },
-            deactivated() {
-            }
-        }
-        var options = Object.assign(configured, options)
-        var newVue = new Vue(options)
-        newVue._amID = this.getID()
-        _vues.instances.push(newVue)
-        return newVue
-    }
-
-    getID() {
-        var S4 = function () {
-            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
-        }
-        return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4())
     }
 };

@@ -21,6 +21,8 @@
   },
   "dependencies": {
     "@sentry/electron": "^2.5.1",
+    "airtunes": "github:vapormusic/node_airtunes2",
+    "audify": "^1.6.3",
     "chmodr": "^1.2.0",
     "discord-rpc": "^4.0.1",
     "electron-acrylic-window": "^0.5.9",
@@ -31,6 +33,7 @@
     "electron-window-state": "^5.0.3",
     "git-clone": "^0.2.0",
     "lastfmapi": "^0.1.1",
+    "mdns": "^2.7.2",
     "mpris-service": "^2.1.2",
     "node-fetch": "^3.0.0",
     "react": "^17.0.2",
@@ -38,15 +41,14 @@
     "register-scheme": "github:devsnek/node-register-scheme",
     "rimraf": "^3.0.2",
     "source-map-support": "^0.5.16",
-    "v8-compile-cache": "^2.1.1",
-    "audify": "^1.6.3"
+    "v8-compile-cache": "^2.1.1"
   },
   "devDependencies": {
     "electron": "https://github.com/castlabs/electron-releases.git",
     "electron-builder": "^22.7.0",
     "electron-webpack": "^2.7.4",
     "musickit-typescript": "^1.2.4",
-    "webpack": "~5.58.1"
+    "webpack": "~5.59.0"
   },
   "build": {
     "electronVersion": "15.2.0",

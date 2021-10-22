@@ -66,17 +66,14 @@ app.on('activate', () => {
     }
 })
 
-// Also for macOS, quits the app when all windows are closed
-
-
 app.on('before-quit', () => {
     console.verbose('before-quit');
     app.isQuiting = true;
     app.ame.mpris.clearActivity();
     app.ame.discord.disconnect();
-    console.log('---------------------------------------------------------------------');
+    console.warn('---------------------------------------------------------------------');
     console.warn(`${app.getName()} has closed.`);
-    console.log('---------------------------------------------------------------------');
+    console.warn('---------------------------------------------------------------------');
 });
 
 app.on('will-quit', () => { console.verbose('will-quit'); })

@@ -172,6 +172,7 @@ module.exports = {
     LoadOneTimeFiles: function () {
         // Inject the custom stylesheet
         app.ame.load.LoadCSS('custom-stylesheet.css')
+        app.ame.load.LoadCSS('ameframework.css')
 
         // Inject Plugin Interaction
         if (app.pluginsEnabled) {
