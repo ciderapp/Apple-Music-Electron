@@ -39,7 +39,13 @@ const Utils = {
 
         if (!file) return;
 
-        let fileMeta = {name: null, author: null, description: null, transparency: {dark: null, light: null}};
+        let fileMeta = {
+            name: null,
+            author: null,
+            description: null,
+            transparency: {dark: null, light: null},
+            options: []
+        };
 
         file.split(/\r?\n/).forEach((line) => {
             if (line.includes("@name")) {
@@ -52,6 +58,15 @@ const Utils = {
 
             if (line.includes("@description")) {
                 fileMeta.description = line.split("@description ")[1]
+            }
+
+            if (line.includes("@option")) {
+                var themeOption = line.split("@option ")[1].trim().split("|")
+                fileMeta.options.push({
+                    key: themeOption[0],
+                    name: themeOption[1],
+                    defaultValue: themeOption[2]
+                })
             }
 
             if (line.includes("--lightTransparency")) {
@@ -233,7 +248,7 @@ const Utils = {
             app.win.setProgressBar(convertedProgress)
         })
 
-        autoUpdater.on("error", function(error) {
+        autoUpdater.on("error", function (error) {
             console.error(`[checkUpdates] Error ${error}`)
         });
 

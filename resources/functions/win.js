@@ -1,6 +1,7 @@
 const {app, Menu, Notification, TouchBar, BrowserWindow} = require("electron"),
     {TouchBarButton, TouchBarLabel, TouchBarSpacer} = TouchBar,
     {join} = require("path"),
+    {readFile, existsSync, chmodSync, constants, access} = require("fs"),
     windowStateKeeper = require("electron-window-state"),
     {initAnalytics} = require('./utils');
 initAnalytics();
@@ -397,5 +398,46 @@ module.exports = {
                 app.win.hide()
             }
         }
+    },
+
+    InjectCSS: (fileName, filePath = join(__dirname, '../css/'), filePermissionCheck = false, removePreviousInject = true, priority = false) => {
+
+        const path = join(filePath, fileName);
+
+        // Check that the File Exists
+        if (!existsSync(path)) {
+            console.warn(`[InjectCSS] ${path} not found.`)
+            return
+        }
+
+        // File Permissions Check (Read & Write)
+        if (filePermissionCheck) {
+            access(path, constants.R_OK | constants.W_OK, (err) => {
+                if (err) {
+                    console.error(`[InjectCSS] File Permissions Check Failed on ${fileName}. (${err})`)
+                    try {
+                        chmodSync(path, constants.S_IRUSR | constants.S_IWUSR);
+                    } catch (err) {
+                        console.error(`[InjectCSS] ${err}`)
+                    }
+                }
+            })
+        }
+
+        // Existing Inject Check
+        if (removePreviousInject && app.injectedCSS[fileName]) {
+            app.win.webContents.removeInsertedCSS(app.injectedCSS[fileName]).then(r => { if (r) console.error(r); });
+        }
+
+        // Inject the File
+        readFile(path, "utf-8", (error, data) => {
+            if (error) return;
+            const formattedData = data.replace(/\s{2,10}/g, ' ').trim();
+
+            app.win.webContents.insertCSS(formattedData, {cssOrigin: (priority ? 'user' : 'author')}).then((key) => {
+                console.verbose(`[InjectCSS] '${fileName}' successfully injected. (${path})`)
+                app.injectedCSS[fileName] = key
+            });
+        });
     }
 }
