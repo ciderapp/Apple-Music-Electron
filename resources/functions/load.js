@@ -56,8 +56,9 @@ module.exports = {
     LoadWebsite: function (win) {
         if (!win) return;
 
-        app.locale = app.ame.init.LocaleInit();
-        const urlBase = `${(app.preferences.value('advanced.useBetaSite').includes(true)) ? `https://beta.music.apple.com` : `https://music.apple.com`}${app.locale.language !== "default" ? `?l=${app.locale.language}` : ''}`,
+        app.locale = {language: app.preferences.value('general.language'), region: app.preferences.value('advanced.forceApplicationRegion')};
+
+        const urlBase = app.preferences.value('advanced.useBetaSite').includes(true) ? 'https://beta.music.apple.com' : 'https://music.apple.com' + ((app.locale.region !== "default" && app.locale.region) ? `/${app.locale.region}/` : '') + ((app.locale.language !== "default" && app.locale.language) ? `?l=${app.locale.language}` : ''),
             urlFallback = `https://music.apple.com/`;
 
         ipcMain.once('userAuthorized', (e, args) => {

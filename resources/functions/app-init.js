@@ -73,7 +73,7 @@ module.exports = () => {
             "alwaysOnTop": [],
         },
         "advanced": {
-            "forceApplicationRegion": "",
+            "forceApplicationRegion": "default",
             "forceApplicationMode": "system",
             "verboseLogging": [],
             "autoUpdaterBetaBuilds": [],
@@ -1390,6 +1390,10 @@ module.exports = () => {
             'type': 'dropdown',
             'options': [
                 {
+                    'label': 'Default (Defaults to your Apple account region)',
+                    'value': 'default'
+                },
+                {
                     'label': 'United Arab Emirates',
                     'value': 'ae'
                 },
@@ -2352,7 +2356,7 @@ module.exports = () => {
             alwaysOnTop: false
         },
         advanced: {
-            forceApplicationRegion: "",
+            forceApplicationRegion: "default",
             forceApplicationMode: "system",
             verboseLogging: false,
             autoUpdaterBetaBuilds: false,

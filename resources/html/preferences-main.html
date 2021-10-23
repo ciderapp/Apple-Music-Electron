@@ -7,7 +7,7 @@
         </div>
         <ul class="settings-list general">
             <li class="app-prefs-dropdown">
-                <span class="typography-title-3-tall">Choose a language for the system to use</span>
+                <label class="typography-title-3-tall" for="language">Choose a language for the system to use</label>
                 <select class="form-dropdown-select list-element" name="language" id="language">
                     <option disabled>Select one</option>
                     <option value='default'>Default (Storefront Language)</option>
@@ -180,9 +180,10 @@
                     This will also disable updates to various additions in the application. (Such as DiscordRPC and LastFM).</span>
             </li>
             <li class="app-prefs-dropdown">
-                <span class="typography-title-3-tall">Show notifications on Song Change</span>
+                <label class="typography-title-3-tall" for="playbackNotifications">Show notifications on Song
+                    Change</label>
                 <select class="form-dropdown-select list-element" name="playbackNotifications"
-                    id="playbackNotifications">
+                        id="playbackNotifications">
                     <option disabled>Select one</option>
                     <option value=''>Disabled</option>
                     <option value=true>Enabled</option>
@@ -202,7 +203,7 @@
                     name in the tooltip on the taskbar when the application is minimized to the tray.</span>
             </li>
             <li class="app-prefs-dropdown">
-                <span class="typography-title-3-tall">Startup page</span>
+                <label class="typography-title-3-tall" for="startupPage">Startup page</label>
                 <select class="form-dropdown-select list-element" name="startupPage" id="startupPage">
                     <option disabled>Select one</option>
                     <option value='browse'>Browse</option>
@@ -236,7 +237,7 @@
                     your Discord settings for the song to be shown.</span>
             </li>
             <li class="app-prefs-dropdown">
-                <span class="typography-title-3-tall">Display song data as activity on Discord</span>
+                <label class="typography-title-3-tall" for="discordRPC">Display song data as activity on Discord</label>
                 <select class="form-dropdown-select list-element" name="discordRPC" id="discordRPC">
                     <option disabled>Select one</option>
                     <option value='am-title'>Enabled (Display 'Apple Music' as title)</option>
@@ -260,7 +261,7 @@
             <li class="app-prefs-button">
                 <span class="typography-title-3-tall">LastFM Account</span>
                 <label id="lfmConnect" class="list-button list-element"
-                    onclick="AMSettings.lastfm.LastFMAuthenticate()">Connect</label>
+                       onclick="AMSettings.lastfm.LastFMAuthenticate()">Connect</label>
             </li>
             <li class="app-prefs-toggle">
                 <span class="typography-title-3-tall">Remove featuring artists from song title</span>
@@ -281,14 +282,14 @@
         </div>
         <ul class="settings-list visual">
             <li class="app-prefs-dropdown">
-                <span class="typography-title-3-tall">Theme</span>
+                <label class="typography-title-3-tall" for="theme">Theme</label>
                 <select class="form-dropdown-select list-element" name="theme" id="theme">
                     <option disabled>Select one</option>
                     <option value='default'>Default</option>
                 </select>
                 <span class="app-prefs-help typography-title-3-tall">You will need to restart the application in order
                     for the default themes to be populated. You can preview all the themes <a href="#"
-                        onclick="window.open('https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki/Theme-Preview-Images')">here</a>.</span>
+                                                                                              onclick="window.open('https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki/Theme-Preview-Images')">here</a>.</span>
             </li>
             <li class="app-prefs-button">
                 <span class="typography-title-3-tall">Theme Options</span>
@@ -299,13 +300,13 @@
             <li class="app-prefs-button">
                 <span class="typography-title-3-tall">Update Themes</span>
                 <label id="updateThemes" class="list-button list-element"
-                    onclick="AMSettings.themes.updateThemes()">Update Themes</label>
+                       onclick="AMSettings.themes.updateThemes()">Update Themes</label>
                 <span class="app-prefs-help typography-title-3-tall" style="color: var(--systemRed);">Running this will
                     delete the 'themes' directory. If you have made a theme, store it elsewhere until it says
                     Updated.</span>
             </li>
             <li class="app-prefs-dropdown">
-                <span class="typography-title-3-tall">Application Frame</span>
+                <label class="typography-title-3-tall" for="frameType">Application Frame</label>
                 <select class="form-dropdown-select list-element" name="frameType" id="frameType">
                     <option disabled>Select one</option>
                     <option value=''>Disabled</option>
@@ -326,7 +327,7 @@
                     is not advised to use transparency on platforms other than Windows or macOS.</span>
             </li>
             <li class="app-prefs-dropdown">
-                <span class="typography-title-3-tall">Transparency Effect</span>
+                <label class="typography-title-3-tall" for="transparencyEffect">Transparency Effect</label>
                 <select class="form-dropdown-select list-element" name="transparencyEffect" id="transparencyEffect">
                     <option disabled>Select one</option>
                     <option value=''>Disabled</option>
@@ -337,8 +338,8 @@
                     improve performance and compatibility with older hardware and systems.</span>
             </li>
             <li class="app-prefs-dropdown">
-                <span class="typography-title-3-tall">Transparency Theme</span>
-                <input class="form-dropdown-select list-element" name="transparencyTheme" id="transparencyTheme" />
+                <label class="typography-title-3-tall" for="transparencyTheme">Transparency Theme</label>
+                <input class="form-dropdown-select list-element" name="transparencyTheme" id="transparencyTheme"/>
                 <span class="app-prefs-help typography-title-3-tall">Sets color of acrylic effect. Can be 'light',
                     'dark', 'appearance-based' or a hex color code with alpha ('#0f0f0f00').</span>
             </li>
@@ -352,9 +353,10 @@
                     the window loses focus, to mimic the behaviour of normal UWP apps.</span>
             </li>
             <li class="app-prefs-dropdown">
-                <span class="typography-title-3-tall">Use Custom Window Refresh Rate</span>
+                <label class="typography-title-3-tall" for="transparencyMaximumRefreshRate">Use Custom Window Refresh
+                    Rate</label>
                 <select class="form-dropdown-select list-element" name="transparencyMaximumRefreshRate"
-                    id="transparencyMaximumRefreshRate">
+                        id="transparencyMaximumRefreshRate">
                     <option disabled>Select one</option>
                     <option value=''>Disabled</option>
                     <option value='30'>30</option>
@@ -381,7 +383,7 @@
                     better lyrics detection</span>
             </li>
             <li class="app-prefs-dropdown">
-                <span class="typography-title-3-tall">Lyrics translation language</span>
+                <label class="typography-title-3-tall" for="mxmlanguage">Lyrics translation language</label>
                 <select class="form-dropdown-select list-element" name="mxmlanguage" id="mxmlanguage">
                     <option value='disabled'>Disabled</option>
                     <option value='ab'>Abkhazian</option>
@@ -712,7 +714,7 @@
         </div>
         <ul class="settings-list audio">
             <li class="app-prefs-dropdown">
-                <span class="typography-title-3-tall">Audio Quality</span>
+                <label class="typography-title-3-tall" for="audioQuality">Audio Quality</label>
                 <select class="form-dropdown-select list-element" name="audioQuality" id="audioQuality">
                     <option disabled>Select one</option>
                     <option value='auto'>Automatic (Default)</option>
@@ -743,7 +745,8 @@
         </div>
         <ul class="settings-list window">
             <li class="app-prefs-dropdown">
-                <span class="typography-title-3-tall">Open Apple Music automatically after login</span>
+                <label class="typography-title-3-tall" for="appStartupBehavior">Open Apple Music automatically after
+                    login</label>
                 <select class="form-dropdown-select list-element" name="appStartupBehavior" id="appStartupBehavior">
                     <option disabled>Select one</option>
                     <option value=''>Disabled</option>
@@ -781,11 +784,12 @@
         </div>
         <ul class="settings-list advanced" id="advanced">
             <li class="app-prefs-dropdown">
-                <span class="typography-title-3-tall">Force Storefront (App Region)</span>
+                <label class="typography-title-3-tall" for="forceApplicationRegion">Force Storefront (App
+                    Region)</label>
                 <select class="form-dropdown-select list-element" name="forceApplicationRegion"
-                    id="forceApplicationRegion">
+                        id="forceApplicationRegion">
                     <option disabled>Select one</option>
-                    <option value=''>Default</option>
+                    <option value='default'>Default</option>
                     <option value='ae'>United Arab Emirates</option>
                     <option value='ag'>Antigua and Barbuda</option>
                     <option value='ai'>Anguilla</option>
