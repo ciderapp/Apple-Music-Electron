@@ -15,7 +15,7 @@ module.exports = () => {
     fields.default = {
         'storedVersion': "",
         "general": {
-            "language": "",
+            "language": "default",
             "incognitoMode": [],
             "playbackNotifications": "minimized",
             "trayTooltipSongName": [
@@ -64,8 +64,6 @@ module.exports = () => {
             "gaplessEnabled": [
                 true
             ],
-            "audioMode": "",
-            "audioDevice" : "",
         },
         "window": {
             "appStartupBehavior": "",
@@ -75,7 +73,7 @@ module.exports = () => {
             "alwaysOnTop": [],
         },
         "advanced": {
-            "forceApplicationRegion": "",
+            "forceApplicationRegion": "default",
             "forceApplicationMode": "system",
             "verboseLogging": [],
             "autoUpdaterBetaBuilds": [],
@@ -99,6 +97,10 @@ module.exports = () => {
             'key': 'language',
             'type': 'dropdown',
             'options': [
+                {
+                    'label': 'Default',
+                    'value': 'default'
+                },
                 {
                     'label': 'English (USA)',
                     'value': 'us'
@@ -1338,27 +1340,7 @@ module.exports = () => {
                 'value': true
             }],
             'help': `Reduces or completely removes the delay between songs providing a smooth audio experience.`
-        },
-        { // Setting Your Theme
-            'label': 'Audio mode:',
-            'key': 'audioMode',
-            'type': 'dropdown',
-            'options': [{
-                'label': 'Default',
-                'value': 'default'
-            },],
-            'help': 'Audio modes'
-        },
-        { // Setting Your Theme
-            'label': 'Audio device:',
-            'key': 'audioDevice',
-            'type': 'dropdown',
-            'options': [{
-                'label': 'Default',
-                'value': 'default'
-            },],
-            'help': 'Audio devices'
-        },
+        }
     ];
     fields.window = [
         { // Open Apple Music on Startup
@@ -1407,6 +1389,10 @@ module.exports = () => {
             'key': 'forceApplicationRegion',
             'type': 'dropdown',
             'options': [
+                {
+                    'label': 'Default (Defaults to your Apple account region)',
+                    'value': 'default'
+                },
                 {
                     'label': 'United Arab Emirates',
                     'value': 'ae'
@@ -2332,7 +2318,7 @@ module.exports = () => {
     }
     const storeDefaults = {
         general: {
-            language: "",
+            language: "default",
             incognitoMode: false,
             playbackNotifications: "minimized",
             trayTooltipSongName: true,
@@ -2362,9 +2348,7 @@ module.exports = () => {
         },
         audio: {
             audioQuality: "auto",
-            gaplessEnabled: true,
-            audioMode: "default",
-            audioDevice : "default",
+            gaplessEnabled: true
         },
         window: {
             appStartupBehavior: "",
@@ -2372,7 +2356,7 @@ module.exports = () => {
             alwaysOnTop: false
         },
         advanced: {
-            forceApplicationRegion: "",
+            forceApplicationRegion: "default",
             forceApplicationMode: "system",
             verboseLogging: false,
             autoUpdaterBetaBuilds: false,

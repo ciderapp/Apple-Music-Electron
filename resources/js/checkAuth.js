@@ -3,13 +3,11 @@ try {
 
     if (MusicKit.getInstance().isAuthorized) {
         let url = window.location.href;
-        console.log(url);
-
         if (preferences.general.startupPage !== "browse") {
             if (preferences.general.startupPage.includes('library/')) {
-                url = `${window.location.origin}/${preferences.general.startupPage}?${url.split('?')[1]}`;
+                url = `${window.location.origin}/${preferences.general.startupPage}`;
             } else {
-                url = `${window.location.origin}/${MusicKit.getInstance().storefrontId}/${preferences.general.startupPage}?${url.split('?')[1]}`;
+                url = `${window.location.origin}/${MusicKit.getInstance().storefrontId}/${preferences.general.startupPage}${preferences.general.language !== "default" ? `?l=${preferences.general.language}` : ''}`;
             }
             window.location.href = url;
             ipcRenderer.send('userAuthorized', url);

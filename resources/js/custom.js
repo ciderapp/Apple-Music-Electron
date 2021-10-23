@@ -555,8 +555,6 @@ try {
                                         --musicKit-artwork: url("${artwork.replace("{w}", 2000).replace("{h}", 2000)}");
                                     }
                                 `);
-                                if (MusicKit.getInstance().nowPlayingItem.title != "" & !(MusicKit.getInstance().nowPlayingItem.title == "No Title Found" && MusicKit.getInstance().nowPlayingItem.artistName == "")){
-                                    ipcRenderer.send('updateAirplayInfo',MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,artwork.replace("{w}", 256).replace("{h}", 256));}
                                 this.refresh();
                             }
                         });
@@ -573,8 +571,6 @@ try {
                     --musicKit-artwork: url("${artwork.replace("{w}", 2000).replace("{h}", 2000)}");
                 }
             `);
-            if (MusicKit.getInstance().nowPlayingItem.title != "" & !(MusicKit.getInstance().nowPlayingItem.title == "No Title Found" && MusicKit.getInstance().nowPlayingItem.artistName == "")){
-            ipcRenderer.send('updateAirplayInfo',MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,artwork.replace("{w}", 256).replace("{h}", 256));}
                 this.refresh();
             },
             setTransparency(val) {
@@ -843,18 +839,18 @@ try {
                     function volumeChange(event) {
                         if (checkScrollDirectionIsUp(event)) {
                             if (MusicKit.getInstance().volume <= 1) {
-                                if ((MusicKit.getInstance().volume + 0.05) > 1) {
+                                if ((MusicKit.getInstance().volume + 0.02) > 1) {
                                     MusicKit.getInstance().volume = 1
                                 } else {
-                                    MusicKit.getInstance().volume = MusicKit.getInstance().volume + 0.05;
+                                    MusicKit.getInstance().volume = MusicKit.getInstance().volume + 0.02;
                                 }
                             }
                         } else {
                             if (MusicKit.getInstance().volume >= 0) {
-                                if ((MusicKit.getInstance().volume - 0.05) < 0) {
+                                if ((MusicKit.getInstance().volume - 0.02) < 0) {
                                     MusicKit.getInstance().volume = 0;
                                 } else {
-                                    MusicKit.getInstance().volume = MusicKit.getInstance().volume - 0.05;
+                                    MusicKit.getInstance().volume = MusicKit.getInstance().volume - 0.02;
                                 }
                             }
                         }
