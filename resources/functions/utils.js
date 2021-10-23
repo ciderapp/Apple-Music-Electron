@@ -21,6 +21,12 @@ const Utils = {
         } : null;
     },
 
+    /* matchRuleShort - Used for wildcards */
+    matchRuleShort: (str, rule) => {
+        var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+        return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
+    },
+
     /* isVibrancySupported - Checks if the operating system support electron-acrylic-window (Windows 10 or greater) */
     isVibrancySupported: () => {
         return (process.platform === 'win32' && parseInt(os.release().split('.')[0]) >= 10)
