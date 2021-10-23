@@ -15,7 +15,7 @@ module.exports = () => {
     fields.default = {
         'storedVersion': "",
         "general": {
-            "language": "",
+            "language": "default",
             "incognitoMode": [],
             "playbackNotifications": "minimized",
             "trayTooltipSongName": [
@@ -97,6 +97,10 @@ module.exports = () => {
             'key': 'language',
             'type': 'dropdown',
             'options': [
+                {
+                    'label': 'Default',
+                    'value': 'default'
+                },
                 {
                     'label': 'English (USA)',
                     'value': 'us'
@@ -2310,7 +2314,7 @@ module.exports = () => {
     }
     const storeDefaults = {
         general: {
-            language: "",
+            language: "default",
             incognitoMode: false,
             playbackNotifications: "minimized",
             trayTooltipSongName: true,

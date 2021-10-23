@@ -57,7 +57,7 @@ module.exports = {
         if (!win) return;
 
         app.locale = app.ame.init.LocaleInit();
-        const urlBase = `${(app.preferences.value('advanced.useBetaSite').includes(true)) ? `https://beta.music.apple.com` : `https://music.apple.com`}?l=${app.locale.language}`,
+        const urlBase = `${(app.preferences.value('advanced.useBetaSite').includes(true)) ? `https://beta.music.apple.com` : `https://music.apple.com`}${app.locale.language !== "default" ? `?l=${app.locale.language}` : ''}`,
             urlFallback = `https://music.apple.com/`;
 
         ipcMain.once('userAuthorized', (e, args) => {
@@ -116,52 +116,23 @@ module.exports = {
             }
         }
 
-        function matchRuleShort(str, rule) {
-            var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-            return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
-        }
-
-        const urlBase = (app.preferences.value('advanced.useBetaSite')) ? `https://beta.music.apple.com` : `https://music.apple.com`;
-        const backButtonBlacklist = [
-            `${urlBase}/${app.locale[0]}/listen-now?l=*`,
-            `${urlBase}/${app.locale[0]}/browse?l=*`,
-            `${urlBase}/${app.locale[0]}/radio?l=*`,
-
-            `${urlBase}/${app.locale[0]}/listen-now`,
-            `${urlBase}/${app.locale[0]}/browse`,
-            `${urlBase}/${app.locale[0]}/radio`,
-
-            `${urlBase}/${app.locale[0]}/search`,
-            `${urlBase}/${app.locale[0]}/search?*`,
-
-            `${urlBase}/library/recently-added?l=*`,
-            `${urlBase}/library/albums?l=*`,
-            `${urlBase}/library/songs?l=*`,
-            `${urlBase}/library/made-for-you?l=*`,
-
-            `${urlBase}/library/recently-added`,
-            `${urlBase}/library/albums`,
-            `${urlBase}/library/songs`,
-            `${urlBase}/library/made-for-you`,
-            `${urlBase}/library/artists/*`,
-            `${urlBase}/library/playlist/*`
-        ];
-
-        function backButtonChecks() {
-            let returnVal = false
-            backButtonBlacklist.forEach(function (item) {
-                if (matchRuleShort(app.win.webContents.getURL(), item) || app.win.webContents.getURL() === item) {
-                    returnVal = true
+        const BackButtonChecks = (url) => {
+            if (!app.win.webContents.canGoBack()) return false
+            const backButtonBlacklist = [`*music.apple.com/*/listen-now*`, `*music.apple.com/*/browse*`, `*music.apple.com/*/radio*`, `*music.apple.com/*/search*`, `*music.apple.com/library/recently-added?l=*`, `*music.apple.com/library/albums?l=*`, `*music.apple.com/library/songs?l=*`, `*music.apple.com/library/made-for-you?l=*`, `*music.apple.com/library/recently-added`, `*music.apple.com/library/albums`, `*music.apple.com/library/made-for-you`, `*music.apple.com/library/songs*`, `*music.apple.com/library/artists/*`, `*music.apple.com/library/playlist/*`];
+            let blacklistPassed = true
+            backButtonBlacklist.forEach((item) => {
+                if (!blacklistPassed) return;
+                if (app.ame.utils.matchRuleShort(url, item) || url === item) {
+                    blacklistPassed = false
                 }
             });
-            return returnVal
+            return blacklistPassed
         }
 
         /* Load Back Button */
-        if (!backButtonChecks() && app.win.webContents.canGoBack()) {
+        if (BackButtonChecks(app.win.webContents.getURL())) {
             app.ame.load.LoadJS('backButton.js')
-        } else {
-            /* Remove it if user cannot go back */
+        } else { /* Removes the button if the check failed. */
             app.win.webContents.executeJavaScript(`if (document.querySelector('#backButtonBar')) { document.getElementById('backButtonBar').remove() };`).catch((e) => console.error(e));
         }
 
