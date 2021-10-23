@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@sentry/electron": "^2.5.1",
-    "airtunes": "github:vapormusic/node_airtunes2",
     "audify": "^1.6.3",
     "chmodr": "^1.2.0",
     "discord-rpc": "^4.0.1",

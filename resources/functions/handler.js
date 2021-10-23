@@ -4,12 +4,8 @@ const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPre
     {readFile, readFileSync, existsSync, truncate} = require('fs'),
     rimraf = require('rimraf'),
     {initAnalytics} = require('./utils'),
-    { Readable, Stream ,Writable } = require('stream'),
     { RtAudio, RtAudioFormat, RtAudioApi } = require("audify");
 
-const AirTunes = require('airtunes'); 
-const mdns = require('mdns');
-const https = require('https');
 
 initAnalytics();
 
@@ -671,10 +667,7 @@ const handler = {
 
 
         let api = RtAudioApi.UNSPECIFIED;
-        var ipairplay = "";
-        var portairplay = "";
-        var airtunes = new AirTunes();
-        var device;
+
 
         switch (process.platform){
             case "win32":
@@ -715,34 +708,7 @@ const handler = {
             }
             return result;
         }
-        function bitratechange(e){
-            var t = e.length;
-            sampleRate = 48.0;
-            outputSampleRate = 44.1;
-            var s = 0,
-            o = sampleRate / outputSampleRate,
-            u = Math.ceil(t * outputSampleRate / sampleRate),
-            a = new Int16Array(u);
-            for (i = 0; i < u; i++) {
-              a[i] = e[Math.floor(s)];
-              s += o;
-            }
-      
-            return a;
-         }
-        function interleave16(leftChannel, rightChannel){
-            var length = leftChannel.length + rightChannel.length;
-            var result = new Int16Array(length);
-            
-            var inputIndex = 0;
-            
-            for (var index = 0; index < length; ){
-             result[index++] = leftChannel[inputIndex];
-             result[index++] = rightChannel[inputIndex];
-             inputIndex++;
-            }
-            return result;
-        }
+
         ipcMain.on('changeAudioMode' , function (event, mode) {
           console.log(rtAudio.getApi());
         });
@@ -751,111 +717,8 @@ const handler = {
             // do anything with stereo pcm here
             buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm),Float32Array.from(rightpcm)).buffer));
             rtAudio.write(buffer);
-
-      
-        
-
-            // writeFile(join(app.getPath('userData'), 'buffer.raw'), Buffer.from(new Int8Array(Float32Array.from(leftpcm).buffer)),{flag: 'a+'}, function (err) {
-            //     if (err) throw err;
-            //     console.log('It\'s saved!');
-            // });
         });
-
-        ipcMain.on("getAirplayDevice" , function (event, data) {
-            const browser = mdns.createBrowser(mdns.tcp('raop'));
-            browser.on('serviceUp', service => {
-                app.win.webContents.executeJavaScript(`console.log(
-                "${service.name} ${service.host}:${service.port} ${service.addresses}"
-            )`);
-            });
-            browser.start();
-            setTimeout(() => {browser.stop()},300);
-        });
-        
-        var ok = 1;
-           
-        ipcMain.on("performAirplayPCM" , function (event, ipv4 , ipport, sepassword, leftpcm, rightpcm, title, artist, album, artworkURL) {
-            
-            if (ipv4 != ipairplay || ipport != portairplay ){
-                if (airtunes == null){airtunes = new AirTunes();}
-                ipairplay = ipv4;
-                portairplay = ipport;
-                device = airtunes.add(ipv4, {
-                    port: ipport,
-                    volume: 100,
-                    password: sepassword,
-                });  
-                device.on('status', function(status) {
-                    console.log('device status',status);
-                    if (status == 'stopped'){
-                        airtunes.stopAll(function() {
-                            console.log('end');
-                          });
-                      airtunes = null;
-                      device = null;
-                      ipairplay = '';
-                      portairplay = '';
-                      ok=1;
-                    } else {
-                    setTimeout(function() {
-                        if (ok == 1){
-                            console.log(device.key,title,artist,album);
-                            airtunes.setTrackInfo(device.key,title,artist,album);
-                            uploadImageAirplay(artworkURL);
-                            console.log('done');
-                            ok == 2}
-                      }, 1000);}
-                    
-
-                });
-
-            } 
-                // convert 32bit float,48k to 16bit signed , 44.1k 
-                newbuffer = Buffer.from(new Int8Array(interleave16(bitratechange(Int16Array.from(leftpcm, x => x * 32767)),bitratechange(Int16Array.from(rightpcm, x => x * 32767))).buffer));  
-                airtunes.circularBuffer.write(newbuffer);
-
-                
-            
-        });
-
-        ipcMain.on('disconnectAirplay' , function (event){
-            airtunes.stopAll(function() {
-                  console.log('end');
-                });
-            airtunes = null;
-            device = null;
-            ipairplay = '';
-            portairplay = '';
-            ok=1;
-        });
-
-        ipcMain.on('updateAirplayInfo', function (event,title,artist,album,artworkURL){
-          if (airtunes && device){
-           console.log(device.key,title,artist,album);
-           airtunes.setTrackInfo(device.key,title,artist,album);
-           uploadImageAirplay(artworkURL)
-        }
-        });
-
-        function uploadImageAirplay(url){
-            try{
-            if(url!=null && url != ''){  
-            console.log(join(app.getPath('userData'), 'temp.png'), url);
-            https.get(url, function(res)  {
-                var data = [];
-        
-                res.on('data', function(chunk) {
-                    data.push(chunk);
-                }).on('end', function() {
-                    //at this point data is an array of Buffers
-                    //so Buffer.concat() can make us a new Buffer
-                    //of all of them together
-                    var buffer = Buffer.concat(data);
-                    airtunes.setArtwork(device.key, buffer, "image/png");
-                });
-              })
-            }} catch(e){console.log(e)}
-        }
+    
     }
 }
 
