@@ -76,7 +76,7 @@ module.exports = {
         const MetaData = {
             'mpris:trackid': app.mpris.objectPath(`track/${attributes.playParams.id.replace(/[.]+/g, "")}`),
             'mpris:length': attributes.durationInMillis * 1000, // In microseconds
-            'mpris:artUrl': (attributes.artwork.url.replace('/{w}x{h}bb', '/35x35bb')).replace('/2000x2000bb', '/35x35bb'),
+            'mpris:artUrl': (attributes.artwork.url.replace('/{w}x{h}bb', '/512x512bb')).replace('/2000x2000bb', '/35x35bb'),
             'xesam:title': `${attributes.name}`,
             'xesam:album': `${attributes.albumName}`,
             'xesam:artist': [`${attributes.artistName}`,],
