@@ -341,6 +341,7 @@ const handler = {
         // Showing the OOBE on first launch
         ipcMain.on('showOOBE', (event) => {
             event.returnValue = app.ame.showOOBE;
+            app.ame.showOOBE = false
         })
 
         // Themes Listing Update

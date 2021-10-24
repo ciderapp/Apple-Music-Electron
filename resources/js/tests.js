@@ -1,5 +1,3 @@
-const shouldOOBEBeShown = ipcRenderer.sendSync('showOOBE');
-
 var _tests = {
     zoo() {
         AMJavaScript.getRequest("ameres://html/zoo.html", (content) => {
@@ -159,8 +157,8 @@ var _tests = {
     }
 };
 
-setTimeout(() => {
-    if (shouldOOBEBeShown) {
+if (ipcRenderer.sendSync('showOOBE')) {
+    setTimeout(() => {
         _tests.oobe();
-    }
-}, 200)
+    }, 200)
+}

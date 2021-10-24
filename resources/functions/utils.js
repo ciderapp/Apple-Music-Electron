@@ -212,13 +212,20 @@ const Utils = {
 
     /* updateThemes - Purges the themes directory and clones a fresh copy of the themes */
     updateThemes: async () => {
-        rimraf(resolve(app.getPath("userData"), "themes"), [], () => {
-            console.warn(`[updateThemes] Themes directory cleared for fresh clone.`)
+        if (existsSync((resolve(app.getPath("userData"), "themes")))) {
+            rimraf(resolve(app.getPath("userData"), "themes"), [], () => {
+                console.warn(`[updateThemes] Themes directory cleared for fresh clone.`)
+                clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', resolve(app.getPath("userData"), "themes"), [], (err) => {
+                    console.verbose(`[updateThemes][clone] ${err ? err : `Re-cloned Themes.`}`)
+                    return Promise.resolve(err)
+                })
+            })
+        } else {
             clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', resolve(app.getPath("userData"), "themes"), [], (err) => {
                 console.verbose(`[updateThemes][clone] ${err ? err : `Re-cloned Themes.`}`)
                 return Promise.resolve(err)
             })
-        })
+        }
     },
 
     /* permissionsCheck - Checks of the file can be read and written to, if it cannot be chmod -r is run on the directory */
