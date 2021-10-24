@@ -1,8 +1,7 @@
+require('rimraf');
 const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences} = require('electron'),
-    {LoadOneTimeFiles, LoadFiles} = require('./load'),
-    {join, resolve} = require('path'),
-    {readFile, readFileSync, existsSync, truncate} = require('fs'),
-    rimraf = require('rimraf'),
+    {join} = require('path'),
+    {readFile, readFileSync} = require('fs'),
     {initAnalytics} = require('./utils');
 initAnalytics();
 
@@ -27,32 +26,6 @@ const handler = {
         }
     },
 
-    VersionHandler: function () {
-        if (!app.preferences.value('storedVersion') || app.preferences.value('storedVersion') === undefined || app.preferences.value('storedVersion') !== app.getVersion()) {
-
-            if (app.preferences.value('storedVersion')) {
-                console.log(`[VersionHandler] Application updated from stored value ${app.preferences.value('storedVersion')} to ${app.getVersion()}`)
-            }
-
-            if (existsSync(resolve(app.getPath('userData'), 'Cache'))) {
-                rimraf(resolve(app.getPath('userData'), 'Cache'), [], () => {
-                    console.log(`[VersionHandler] Outdated / No Version Store Found. Clearing Application Cache. ('${resolve(app.getPath('userData'), 'Cache')}')`)
-                })
-            }
-
-            if (existsSync(resolve(app.getPath('userData'), 'preferences.json'))) {
-                truncate(resolve(app.getPath('userData'), 'preferences.json'), 0, function () {
-                    console.log(`[VersionHandler] Outdated / No Version Store Found. Clearing Preferences File. ('${resolve(app.getPath('userData'), 'preferences.json')}')`)
-                });
-            }
-        }
-
-        if (app.preferences.value('storedVersion') !== app.getVersion()) {
-            console.verbose(`[ApplicationReady] Updating Stored Version to ${app.getVersion()} (Was ${app.preferences.value('storedVersion')}).`);
-            app.preferences.value('storedVersion', app.getVersion())
-        }
-    },
-
     InstanceHandler: function () {
         console.verbose('[InstanceHandler] Started.')
 
@@ -71,14 +44,14 @@ const handler = {
                 console.warn('[InstanceHandler][SecondInstanceHandler] Force Quit found. Quitting App.');
                 app.isQuiting = true
                 app.quit()
-            } else if (app.win && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) { // If a Second Instance has Been Started
+            } else if (app.win && !app.cfg.get('advanced.allowMultipleInstances')) { // If a Second Instance has Been Started
                 console.warn('[InstanceHandler][SecondInstanceHandler] Showing window.');
                 app.win.show()
                 app.win.focus()
             }
         })
 
-        if (!app.requestSingleInstanceLock() && !app.preferences.value('advanced.allowMultipleInstances').includes(true)) {
+        if (!app.requestSingleInstanceLock() && !app.cfg.get('advanced.allowMultipleInstances')) {
             console.warn("[InstanceHandler] Existing Instance is Blocking Second Instance.");
             app.quit();
             app.isQuiting = true
@@ -110,7 +83,7 @@ const handler = {
             app.ame.win.CreateNotification(a);
             app.ame.mpris.updateActivity(a);
 
-            if (app.preferences.value('audio.gaplessEnabled').includes(true)) {
+            if (app.cfg.get('audio.seemlessAudioTransitions')) {
                 app.ame.win.SetButtons()
                 app.ame.win.SetTrayTooltip(a)
                 app.ame.discord.updateActivity(a)
@@ -130,15 +103,18 @@ const handler = {
             }
         })
 
+        let incognitoNotification;
         app.win.webContents.on('did-finish-load', () => {
             console.verbose('[did-finish-load] Completed.');
-            LoadOneTimeFiles();
-            app.win.webContents.setZoomFactor(app.preferences.value("visual.scaling"))
-            if (app.preferences.value('general.incognitoMode').includes(true)) {
-                new Notification({
+            app.ame.load.LoadOneTimeFiles();
+            app.win.webContents.setZoomFactor(parseFloat(app.cfg.get("visual.scaling")))
+            if (app.cfg.get('general.incognitoMode') && !incognitoNotification) {
+                incognitoNotification = new Notification({
                     title: 'Incognito Mode Enabled',
-                    body: `Listening activity is hidden.`
-                }).show()
+                    body: `Listening activity is hidden.`,
+                    icon: join(__dirname, '../icons/icon.png')
+                })
+                incognitoNotification.show()
             }
         });
 
@@ -151,7 +127,7 @@ const handler = {
 
         // Windows specific: Handles window states
         // Needed because Aero Snap events do not send the same way as clicking the frame buttons.
-        if (process.platform === "win32" && app.preferences.value('visual.frameType') !== 'mac' || app.preferences.value('visual.frameType') !== 'mac-right') {
+        if (process.platform === "win32" && app.cfg.get('visual.frameType') !== 'mac' || app.cfg.get('visual.frameType') !== 'mac-right') {
             var WND_STATE = {
                 MINIMIZED: 0,
                 NORMAL: 1,
@@ -198,7 +174,7 @@ const handler = {
 
         app.win.on('page-title-updated', (event, title) => {
             console.verbose(`[page-title-updated] Title updated Running necessary files. ('${title}')`)
-            LoadFiles();
+            app.ame.load.LoadFiles();
         })
 
         app.win.on('close', (e) => {
@@ -206,7 +182,7 @@ const handler = {
                 if (app.isMiniplayerActive) {
                     ipcMain.emit("set-miniplayer", false);
                     e.preventDefault()
-                } else if (app.preferences.value('window.closeButtonMinimize').includes(true) || process.platform === "darwin") {
+                } else if (app.cfg.get('window.closeButtonMinimize') || process.platform === "darwin") {
                     app.win.hide()
                     e.preventDefault()
                 }
@@ -251,33 +227,32 @@ const handler = {
     SettingsHandler: function () {
         console.verbose('[SettingsHandler] Started.');
         let DialogMessage = false,
-            cachedPreferences = app.preferences._preferences,
-            storedChanges = [];
+            storedChanges = [],
+            handledConfigs = [];
 
-        if (app.preferences.value('visual.useOperatingSystemAccent').includes(true)) {
-            systemPreferences.on('accent-color-changed', (event, color) => {
-                if (color) {
-                    const accent = '#' + color.slice(0, -2)
-                    app.win.webContents.insertCSS(`
+        systemPreferences.on('accent-color-changed', (event, color) => {
+            if (color && app.cfg.get('visual.useOperatingSystemAccent')) {
+                const accent = '#' + color.slice(0, -2)
+                app.win.webContents.insertCSS(`
                 :root {
                     --keyColor: ${accent} !important;
                     --systemAccentBG: ${accent} !important;
                     --keyColor-rgb: ${app.ame.utils.hexToRgb(accent).r} ${app.ame.utils.hexToRgb(accent).g} ${app.ame.utils.hexToRgb(accent).b} !important;
-                }
+                }`).catch((e) => console.error(e));
             }
-            `).catch((e) => console.error(e));
-                }
-            })
-        }
+        })
 
+        /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        *  Restart Required Configuration Handling
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-        app.preferences.on('save', (updatedPreferences) => {
-            let currentChanges = []
+        app.cfg.onDidAnyChange((newConfig, oldConfig) => {
+            let currentChanges = [];
 
-            for (const [categoryTitle, categoryContents] of Object.entries(updatedPreferences)) {
-                if (categoryContents !== cachedPreferences[categoryTitle]) { // This has gotten the changed category
-                    for (const [settingTitle, settingValue] of Object.entries(updatedPreferences[categoryTitle])) {
-                        if (JSON.stringify(settingValue) !== JSON.stringify(cachedPreferences[categoryTitle][settingTitle])) {
+            for (const [categoryTitle, categoryContents] of Object.entries(newConfig)) {
+                if (categoryContents !== oldConfig[categoryTitle]) { // This has gotten the changed category
+                    for (const [settingTitle, settingValue] of Object.entries(newConfig[categoryTitle])) {
+                        if (JSON.stringify(settingValue) !== JSON.stringify(oldConfig[categoryTitle][settingTitle])) {
                             currentChanges.push(`${categoryTitle}.${settingTitle}`)
                             if (!storedChanges.includes(`${categoryTitle}.${settingTitle}`)) {
                                 storedChanges.push(`${categoryTitle}.${settingTitle}`)
@@ -289,35 +264,7 @@ const handler = {
 
             console.verbose(`[SettingsHandler] Found changes: ${currentChanges} | Total Changes: ${storedChanges}`);
 
-            // Theme Changes
-            if (currentChanges.includes('visual.theme')) {
-                app.win.webContents.executeJavaScript(`AMStyling.loadTheme("${(updatedPreferences.visual.theme === 'default' || !updatedPreferences.visual.theme) ? '' : updatedPreferences.visual.theme}");`).catch((e) => console.error(e));
-                const updatedVibrancy = app.ame.utils.fetchTransparencyOptions();
-                if (app.transparency && updatedVibrancy && process.platform !== 'darwin') app.win.setVibrancy(updatedVibrancy);
-            }
-            // Transparency Changes
-            else if (currentChanges.includes('visual.transparencyEffect') || currentChanges.includes('visual.transparencyTheme') || currentChanges.includes('visual.transparencyDisableBlur') || currentChanges.includes('visual.transparencyMaximumRefreshRate')) {
-                const updatedVibrancy = app.ame.utils.fetchTransparencyOptions()
-                if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
-                    app.win.setVibrancy(updatedVibrancy);
-                    app.win.webContents.executeJavaScript(`AMStyling.setTransparency(true);`).catch((e) => console.error(e));
-                } else {
-                    app.win.setVibrancy();
-                    app.win.webContents.executeJavaScript(`AMStyling.setTransparency(false);`).catch((e) => console.error(e));
-                }
-            }
-            // Reload scripts
-            else if (currentChanges.includes('visual.removeUpsell') || currentChanges.includes('visual.removeAppleLogo') || currentChanges.includes('visual.removeFooter') || currentChanges.includes('visual.useOperatingSystemAccent')) {
-                app.ame.load.LoadFiles();
-            }
-            // IncognitoMode Changes
-            else if (currentChanges.includes('general.incognitoMode')) {
-                if (app.preferences.value('general.incognitoMode').includes(true)) {
-                    console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
-                }
-            }
-            // The rest ask for a restart
-            else if (!DialogMessage && !currentChanges.includes('general.lastfmAuthKey') && !currentChanges.includes('window.closeButtonMinimize')) {
+            if (!DialogMessage && !currentChanges.includes('tokens.lastfm') && !currentChanges.includes('window.closeButtonMinimize') && !handledConfigs.includes(currentChanges[0])) {
                 DialogMessage = dialog.showMessageBox({
                     title: "Relaunch Required",
                     message: "A relaunch is required in order for the settings you have changed to apply.",
@@ -330,9 +277,63 @@ const handler = {
                     }
                 })
             }
+        })
 
-            cachedPreferences = updatedPreferences
-        });
+        /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        *  Individually Handled Configuration Options
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+        handledConfigs.push('advanced.devToolsOnStartup', 'general.storefront') // Stuff for the restart to just ignore
+
+        // Theme Changes
+        handledConfigs.push('visual.theme');
+        app.cfg.onDidChange('visual.theme', (newValue, _oldValue) => {
+            app.win.webContents.executeJavaScript(`AMStyling.loadTheme("${(newValue === 'default' || !newValue) ? '' : newValue}");`).catch((e) => console.error(e));
+            const updatedVibrancy = app.ame.utils.fetchTransparencyOptions();
+            if (app.transparency && updatedVibrancy && process.platform !== 'darwin') app.win.setVibrancy(updatedVibrancy);
+        })
+
+        // Transparency Changes
+        handledConfigs.push('visual.transparencyEffect', 'visual.transparencyTheme', 'visual.transparencyDisableBlur', 'visual.transparencyMaximumRefreshRate');
+        app.cfg.onDidChange('visual.transparencyEffect' || 'visual.transparencyTheme' || 'visual.transparencyDisableBlur' || 'visual.transparencyMaximumRefreshRate', (_newValue, _oldValue) => {
+            const updatedVibrancy = app.ame.utils.fetchTransparencyOptions()
+            if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
+                app.win.setVibrancy(updatedVibrancy);
+                app.win.webContents.executeJavaScript(`AMStyling.setTransparency(true);`).catch((e) => console.error(e));
+            } else {
+                app.win.setVibrancy();
+                app.win.webContents.executeJavaScript(`AMStyling.setTransparency(false);`).catch((e) => console.error(e));
+            }
+        })
+
+        // Reload scripts
+        handledConfigs.push('visual.removeUpsell', 'visual.removeAppleLogo', 'visual.removeFooter', 'visual.useOperatingSystemAccent');
+        app.cfg.onDidChange('visual.removeUpsell', (newValue, _oldValue) => {
+            app.ame.load.LoadFiles();
+        })
+        app.cfg.onDidChange('visual.removeAppleLogo', (newValue, _oldValue) => {
+            app.ame.load.LoadFiles();
+        })
+        app.cfg.onDidChange('visual.removeFooter', (newValue, _oldValue) => {
+            app.ame.load.LoadFiles();
+        })
+        app.cfg.onDidChange('visual.useOperatingSystemAccent', (newValue, _oldValue) => {
+            app.ame.load.LoadFiles();
+        })
+
+
+        // IncognitoMode Changes
+        handledConfigs.push('general.incognitoMode');
+        app.cfg.onDidChange('general.incognitoMode', (newValue, _oldValue) => {
+            if (newValue) {
+                console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
+            }
+        })
+
+        // Scaling Changes
+        handledConfigs.push('visual.scaling')
+        app.cfg.onDidChange('visual.scaling', (newValue, _oldValue) => {
+            app.win.webContents.setZoomFactor(parseFloat(newValue))
+        })
     },
 
     RendererListenerHandlers: () => {
@@ -350,6 +351,26 @@ const handler = {
         // Acrylic Check
         ipcMain.handle('isAcrylicSupported', (_event) => {
             return app.ame.utils.isAcrylicSupported();
+        })
+
+        // Electron-Store Renderer Handling for Getting Values
+        ipcMain.handle('getStoreValue', (event, key) => {
+            return app.cfg.get(key);
+        });
+
+        // Electron-Store Renderer Handling for Setting Values
+        ipcMain.handle('setStoreValue', (event, key, value) => {
+            app.cfg.set(key, value);
+        })
+
+        // Electron-Store Renderer Handling for Getting Configuration
+        ipcMain.on('getStore', (event) => {
+            event.returnValue = app.cfg.store
+        })
+
+        // Electron-Store Renderer Handling for Setting Configuration
+        ipcMain.on('setStore', (event, store) => {
+            app.cfg.store = store
         })
 
         // Update Themes

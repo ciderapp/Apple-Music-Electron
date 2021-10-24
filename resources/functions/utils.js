@@ -106,11 +106,11 @@ const Utils = {
 
     /* fetchTransparencyOptions - Fetches the transparency options */
     fetchTransparencyOptions: () => {
-        if (process.platform === "darwin" && (!app.preferences.value('visual.transparencyEffect') || !Utils.isVibrancySupported())) {
+        if (process.platform === "darwin" && (!app.cfg.get('visual.transparencyEffect') || !Utils.isVibrancySupported())) {
             app.transparency = true;
             return "fullscreen-ui"
-        } else if (!app.preferences.value('visual.transparencyEffect') || !Utils.isVibrancySupported()) {
-            console.verbose(`[fetchTransparencyOptions] Vibrancy not created. Required options not met. (transparencyEffect: ${app.preferences.value('visual.transparencyEffect')} | isVibrancySupported: ${Utils.isVibrancySupported()})`);
+        } else if (!app.cfg.get('visual.transparencyEffect') || !Utils.isVibrancySupported()) {
+            console.verbose(`[fetchTransparencyOptions] Vibrancy not created. Required options not met. (transparencyEffect: ${app.cfg.get('visual.transparencyEffect')} | isVibrancySupported: ${Utils.isVibrancySupported()})`);
             app.transparency = false;
             return false
         }
@@ -118,38 +118,38 @@ const Utils = {
         console.log('[fetchTransparencyOptions] Fetching Transparency Options')
         let transparencyOptions = {
             theme: null,
-            effect: app.preferences.value('visual.transparencyEffect'),
-            debug: app.preferences.value('advanced.devTools') !== '',
+            effect: app.cfg.get('visual.transparencyEffect'),
+            debug: app.cfg.get('advanced.verboseLogging'),
         }
 
         //------------------------------------------
         //  Disable on blur for acrylic
         //------------------------------------------
-        if (app.preferences.value('visual.transparencyEffect') === 'acrylic') {
-            transparencyOptions.disableOnBlur = (!!app.preferences.value('visual.transparencyDisableBlur').includes(true));
+        if (app.cfg.get('visual.transparencyEffect') === 'acrylic') {
+            transparencyOptions.disableOnBlur = app.cfg.get('visual.transparencyDisableBlur');
         }
 
         //------------------------------------------
         //  Set the transparency theme
         //------------------------------------------
-        if (app.preferences.value('visual.transparencyTheme') === 'appearance-based') {
-            if (app.preferences.value('visual.theme') && app.preferences.value('visual.theme') !== "default") {
-                transparencyOptions.theme = Utils.fetchThemeMeta(app.preferences.value('visual.theme')).transparency; /* Fetch the Transparency from the Themes Folder */
-            } else if ((!app.preferences.value('visual.theme') || app.preferences.value('visual.theme') === "default") && app.preferences.value('visual.transparencyEffect') === 'acrylic') {
+        if (app.cfg.get('visual.transparencyTheme') === 'appearance-based') {
+            if (app.cfg.get('visual.theme') && app.cfg.get('visual.theme') !== "default") {
+                transparencyOptions.theme = Utils.fetchThemeMeta(app.cfg.get('visual.theme')).transparency; /* Fetch the Transparency from the Themes Folder */
+            } else if ((!app.cfg.get('visual.theme') || app.cfg.get('visual.theme') === "default") && app.cfg.get('visual.transparencyEffect') === 'acrylic') {
                 transparencyOptions.theme = (nativeTheme.shouldUseDarkColors ? '#3C3C4307' : '#EBEBF507') /* Default Theme when Using Acrylic */
             } else { // Fallback
                 transparencyOptions.theme = (nativeTheme.shouldUseDarkColors ? 'dark' : 'light')
             }
         } else {
-            transparencyOptions.theme = app.preferences.value('visual.transparencyTheme');
+            transparencyOptions.theme = app.cfg.get('visual.transparencyTheme');
         }
 
         //------------------------------------------
         //  Set the refresh rate
         //------------------------------------------
-        if (app.preferences.value('visual.transparencyMaximumRefreshRate')) {
+        if (app.cfg.get('visual.transparencyMaximumRefreshRate')) {
             transparencyOptions.useCustomWindowRefreshMethod = true
-            transparencyOptions.maximumRefreshRate = app.preferences.value('visual.transparencyMaximumRefreshRate')
+            transparencyOptions.maximumRefreshRate = app.cfg.get('visual.transparencyMaximumRefreshRate')
         }
 
         app.transparency = true
@@ -240,13 +240,13 @@ const Utils = {
 
     /* initAnalytics - Sentry Analytics */
     initAnalytics: () => {
-        if (app.preferences.value('general.analyticsEnabled').includes(true) && app.isPackaged) {
+        if (app.cfg.get('general.analyticsEnabled') && app.isPackaged) {
             ElectronSentry.init({dsn: "https://20e1c34b19d54dfcb8231e3ef7975240@o954055.ingest.sentry.io/5903033"});
         }
     },
 
     /* checkForUpdates - Checks for update using electron-updater (Part of electron-builder) */
-    checkForUpdates: () => {
+    checkForUpdates: (manual) => {
         if (!app.isPackaged || process.env.NODE_ENV !== 'production') return;
 
         autoUpdater.logger = require("electron-log");
@@ -255,7 +255,7 @@ const Utils = {
         }
         autoUpdater.logger.transports.file.level = "info";
 
-        if (app.preferences.value('advanced.autoUpdaterBetaBuilds').includes(true)) {
+        if (app.cfg.get('advanced.autoUpdaterBetaBuilds')) {
             autoUpdater.allowPrerelease = true
             autoUpdater.allowDowngrade = false
         }
@@ -273,11 +273,11 @@ const Utils = {
         })
 
         autoUpdater.on("error", function (error) {
-            console.error(`[checkUpdates] Error ${error}`)
+            console.error(`[checkForUpdates] Error ${error}`)
         });
 
         autoUpdater.on('update-downloaded', (updateInfo) => {
-            console.warn('[checkUpdates] New version downloaded. Starting user prompt.');
+            console.warn('[checkForUpdates] New version downloaded. Starting user prompt.');
 
             dialog.showMessageBox({
                 type: 'info',
@@ -300,7 +300,7 @@ const Utils = {
 
         autoUpdater.checkForUpdates()
             .then(r => {
-                console.verbose(`[checkUpdates] Check for updates completed. Response: ${r}`)
+                console.verbose(`[checkForUpdates] Check for updates completed. Response: ${r}`)
             })
             .catch(err => {
                 console.error(`[checkUpdates] An error occurred while checking for updates: ${err}`)

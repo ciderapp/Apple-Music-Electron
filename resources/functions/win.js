@@ -84,9 +84,9 @@ module.exports = {
                         }
                     },
                     {
-                        label: 'Show Preferences',
+                        label: 'Open Configuration File in Editor',
                         click() {
-                            app.preferences.show()
+                            app.cfg.openInEditor()
                         }
                     }
                 ]
@@ -101,7 +101,7 @@ module.exports = {
                 {
                     label: 'Check for Updates',
                     click: function () {
-                        app.checkUpdates(true)
+                        app.ame.utils.checkForUpdates(true)
                     }
                 },
                 {
@@ -124,7 +124,7 @@ module.exports = {
                 {
                     label: 'Check for Updates',
                     click: function () {
-                        app.checkUpdates(true)
+                        app.ame.utils.checkForUpdates(true)
                     }
                 },
                 {
@@ -252,7 +252,7 @@ module.exports = {
     },
 
     SetTrayTooltip: (attributes) => {
-        if (!app.preferences.value('general.trayTooltipSongName').includes(true)) return;
+        if (!app.cfg.get('general.trayTooltipSongName')) return;
 
         console.verbose(`[UpdateTooltip] Updating Tooltip for ${attributes.name} to ${attributes.status}`)
 
@@ -264,9 +264,9 @@ module.exports = {
     },
 
     CreateNotification: (attributes) => {
-        if (!Notification.isSupported() || !(app.preferences.value('general.playbackNotifications').includes(true) || app.preferences.value('general.playbackNotifications').includes('minimized'))) return;
+        if (!Notification.isSupported() || !(app.cfg.get('general.playbackNotifications') || app.cfg.get('general.playbackNotifications') === 'minimized')) return;
 
-        if (app.preferences.value('general.playbackNotifications').includes("minimized") && !(!app.win.isVisible() || app.win.isMinimized())) {
+        if (app.cfg.get('general.playbackNotifications') === "minimized" && !(!app.win.isVisible() || app.win.isMinimized())) {
             return;
         }
 
@@ -312,9 +312,9 @@ module.exports = {
             height: mainWindowState.height,
             x: mainWindowState.x,
             y: mainWindowState.y,
-            minWidth: (app.preferences.value('visual.streamerMode').includes(true) ? 400 : 300),
-            minHeight: ((app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') ? (app.preferences.value('visual.streamerMode').includes(true) ? 55 : 300) : (app.preferences.value('visual.streamerMode').includes(true) ? 115 : 300)),
-            frame: (process.platform !== 'win32' && !(app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right')),
+            minWidth: (app.cfg.get('visual.streamerMode') ? 400 : 300),
+            minHeight: ((app.cfg.get('visual.frameType') === 'mac' || app.cfg.get('visual.frameType') === 'mac-right') ? (app.cfg.get('visual.streamerMode')? 55 : 300) : (app.cfg.get('visual.streamerMode') ? 115 : 300)),
+            frame: (process.platform !== 'win32' && !(app.cfg.get('visual.frameType') === 'mac' || app.cfg.get('visual.frameType') === 'mac-right')),
             title: app.getName(),
             resizable: true,
             // Enables DRM
@@ -334,7 +334,7 @@ module.exports = {
         // Fetch the transparency options
         const transparencyOptions = app.ame.utils.fetchTransparencyOptions()
 
-        if (process.platform === 'darwin' && !app.preferences.value('visual.frameType')) { // macOS Frame
+        if (process.platform === 'darwin' && !app.cfg.get('visual.frameType')) { // macOS Frame
             options.titleBarStyle = 'hidden'
             options.titleBarOverlay = true
             options.frame = true
@@ -363,15 +363,14 @@ module.exports = {
         }
 
         // alwaysOnTop
-        if (!app.preferences.value('window.alwaysOnTop').includes(true)) {
+        if (!app.cfg.get('window.alwaysOnTop')) {
             win.setAlwaysOnTop(false)
         } else {
             win.setAlwaysOnTop(true)
         }
 
-        if (!app.preferences.value('advanced.menuBarVisible').includes(true)) win.setMenuBarVisibility(false); // Hide that nasty menu bar
-        if (!app.preferences.value('advanced.devTools').includes(true)) win.setMenu(null); // Disables DevTools
-        if (app.preferences.value('advanced.devToolsOpenDetached').includes(true)) win.webContents.openDevTools({mode: 'detach'}); // Enables Detached DevTools
+        win.setMenuBarVisibility(false); // Hide that nasty menu bar
+        if (app.cfg.get('advanced.devToolsOnStartup')) win.webContents.openDevTools({mode: 'detach'}); // Enables Detached DevTools
 
         // Register listeners on Window to track size and position of the Window.
         mainWindowState.manage(win);
@@ -400,7 +399,7 @@ module.exports = {
         }
     },
 
-    InjectCSS: (fileName, filePath = join(__dirname, '../css/'), filePermissionCheck = false, removePreviousInject = true, priority = false) => {
+    insertCSSFile: (fileName, filePath = join(__dirname, '../css/'), filePermissionCheck = false, removePreviousInject = true, priority = false) => {
 
         const path = join(filePath, fileName);
 
@@ -439,5 +438,11 @@ module.exports = {
                 app.injectedCSS[fileName] = key
             });
         });
+    },
+    removeInsertedCSS: (index) => {
+        if (app.injectedCSS[index]) {
+            app.win.webContents.removeInsertedCSS(app.injectedCSS[index]).then(r => { if (r) { console.error(r); }});
+        }
+
     }
 }

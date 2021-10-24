@@ -16,8 +16,8 @@ const lfm = {
     },
 
     authenticate: function () {
-        if (!app.preferences.value('general.lastfmEnabled').includes(true) || app.preferences.value('general.lastfmAuthKey') === 'Put your Auth Key here.' || !app.preferences.value('general.lastfmAuthKey')) {
-            app.preferences.value('general.lastfmEnabled', [])
+        if (!app.cfg.get('general.lastfmEnabled') || !app.cfg.get('tokens.lastfm')) {
+            app.cfg.set('general.lastfmEnabled', false)
             return
         }
 
@@ -32,7 +32,7 @@ const lfm = {
             if (err) {
                 console.error("[LastFM][Session] Session file couldn't be opened or doesn't exist,", err)
                 console.log("[LastFM][Auth] Beginning authentication from configuration")
-                app.lastfm.authenticate(app.preferences.value('general.lastfmAuthKey'), function (err, session) {
+                app.lastfm.authenticate(app.cfg.get('tokens.lastfm'), function (err, session) {
                     if (err) {
                         throw err;
                     }
@@ -59,7 +59,7 @@ const lfm = {
     },
 
     scrobbleSong: function (attributes) {
-        if (!app.lastfm || app.lastfm.cachedAttributes === attributes || app.preferences.value('general.incognitoMode').includes(true)) {
+        if (!app.lastfm || app.lastfm.cachedAttributes === attributes || app.cfg.get('general.incognitoMode')) {
             return
         }
 
@@ -91,7 +91,7 @@ const lfm = {
     },
 
     filterArtistName: function (artist) {
-        if (!app.preferences.value('general.lastfmRemoveFeaturingArtists').includes(true)) return artist;
+        if (!app.cfg.get('general.lastfmRemoveFeaturingArtists')) return artist;
 
         artist = artist.split(' ');
         if (artist.includes('&')) {

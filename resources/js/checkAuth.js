@@ -1,5 +1,5 @@
 try {
-    const preferences = ipcRenderer.sendSync('getPreferences');
+    const preferences = ipcRenderer.sendSync('getStore');
 
     if (MusicKit.getInstance().isAuthorized) {
         let url = window.location.href;
@@ -7,13 +7,12 @@ try {
             if (preferences.general.startupPage.includes('library/')) {
                 url = `${window.location.origin}/${preferences.general.startupPage}`;
             } else {
-                url = `${window.location.origin}/${MusicKit.getInstance().storefrontId}/${preferences.general.startupPage}${preferences.general.language !== "default" ? `?l=${preferences.general.language}` : ''}`;
+                url = `${window.location.origin}/${MusicKit.getInstance().storefrontId}/${preferences.general.startupPage}`;
             }
             window.location.href = url;
-            ipcRenderer.send('userAuthorized', url);
-        } else {
-            ipcRenderer.send('userAuthorized', url);
         }
+
+        ipcRenderer.send('userAuthorized', url);
     }
 } catch (e) {
     console.error("[JS] Error while trying to apply CheckAuth.js", e);

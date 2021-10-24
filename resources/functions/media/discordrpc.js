@@ -6,7 +6,7 @@ initAnalytics();
 module.exports = {
     connect: function (clientId) {
         app.discord = {isConnected: false};
-        if (!app.preferences.value('general.discordRPC')) return;
+        if (!app.cfg.get('general.discordRPC')) return;
 
         DiscordRPC.register(clientId) // Apparently needed for ask to join, join, spectate etc.
         const client = new DiscordRPC.Client({ transport: "ipc" });
@@ -37,7 +37,7 @@ module.exports = {
     },
 
     disconnect: function () {
-        if (!app.preferences.value('general.discordRPC') || !app.discord.isConnected) return;
+        if (!app.cfg.get('general.discordRPC') || !app.discord.isConnected) return;
         console.verbose('[DiscordRPC][disconnect] Disconnecting from discord.')
         try {
             app.discord.destroy().catch((e) => console.error(`[DiscordRPC][disconnect] ${e}`));
@@ -47,7 +47,7 @@ module.exports = {
     },
 
     updateActivity: function (attributes) {
-        if (!app.preferences.value('general.discordRPC') || app.preferences.value('general.incognitoMode').includes(true)) return;
+        if (!app.cfg.get('general.discordRPC') || app.cfg.get('general.incognitoMode')) return;
 
         if (!app.discord.isConnected) {
             this.connect()
@@ -64,7 +64,7 @@ module.exports = {
             state: `by ${attributes.artistName}`,
             startTimestamp: attributes.startTime,
             endTimestamp: attributes.endTime,
-            largeImageKey: ((app.preferences.value('general.discordRPC') === 'am-title') ? 'apple' : 'logo'),
+            largeImageKey: ((app.cfg.get('general.discordRPC') === 'am-title') ? 'apple' : 'logo'),
             largeImageText: attributes.albumName,
             smallImageKey: (attributes.status ? 'play' : 'pause'),
             smallImageText: (attributes.status ? 'Playing': 'Paused'),
@@ -75,7 +75,7 @@ module.exports = {
         };
         console.verbose(`[LinkHandler] Listening URL has been set to: ${listenURL}`);
 
-        if (app.preferences.value('general.discordClearActivityOnPause').includes(true)) {
+        if (app.cfg.get('general.discordClearActivityOnPause')) {
             delete ActivityObject.smallImageKey
             delete ActivityObject.smallImageText
         }
@@ -94,7 +94,7 @@ module.exports = {
 
         // Clear if if needed
         if (!attributes.status) {
-            if (app.preferences.value('general.discordClearActivityOnPause').includes(true)) {
+            if (app.cfg.get('general.discordClearActivityOnPause')) {
                 app.discord.clearActivity().catch((e) => console.error(`[DiscordRPC][clearActivity] ${e}`));
                 ActivityObject = null
             } else {

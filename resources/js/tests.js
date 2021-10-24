@@ -152,5 +152,11 @@ var _tests = {
                 }
             })
         })
+
+        /* Once the user finished all the pages the following can be run:
+        * if (!MusicKit.getInstance().isAuthorized) { MusicKit.getInstance().authorize(); }
+        *
+        * This will ask the user to login to the AM App.
+        *  */
     }
 }
