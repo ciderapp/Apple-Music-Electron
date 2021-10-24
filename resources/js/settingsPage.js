@@ -3,9 +3,6 @@ try {
         var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
         return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
     }
-    if (typeof preferences == "undefined") {
-        var preferences = ipcRenderer.sendSync('getPreferences');
-    }
 
     if (!storedInnerHTML) {
         var storedInnerHTML = document.getElementsByClassName('dt-footer')[0].innerHTML;

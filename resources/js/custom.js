@@ -23,9 +23,7 @@ try {
         var activeEventListeners = {}
     }
 
-    if (typeof preferences == "undefined") {
-        var preferences = ipcRenderer.sendSync('getPreferences');
-    }
+    var preferences = ipcRenderer.sendSync('getStore');
 
     /* Variables that are utilised by the renderer */
     if (typeof AM == "undefined") {
@@ -227,7 +225,7 @@ try {
                 const songID = (MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["_songId"] ?? -1 : -1;
                 if(trackName != '' && !(trackName == "No Title Found" && artistName == '')){
                     /* MusixMatch Lyrics*/
-                    if (!mxmfail && preferences.visual.mxmon.includes(true)) {
+                    if (!mxmfail && preferences.visual.mxmon) {
                         ipcRenderer.send('MXMTranslation', trackName, artistName, preferences.visual.mxmlanguage);
                     }
                     /* Apple Lyrics (from api lyric query) */
@@ -645,7 +643,7 @@ try {
                 return backdrop;
             },
             LoadCustomStartup: async () => {
-                const preferences = ipcRenderer.sendSync('getPreferences');
+                const preferences = ipcRenderer.sendSync('getStore');
 
                 /** Plugins */
                 if (typeof _plugins != "undefined") {
@@ -682,13 +680,13 @@ try {
                 }
 
                 /* Seemless (Apple dont know how to spell) Audio Playback */
-                if (preferences.audio.gaplessEnabled.includes(true)) {
+                if (preferences.audio.seemlessAudioTransitions) {
                     console.warn("[Custom] Seemless Audio Transitions enabled.");
                     MusicKit.getInstance()._bag.features["seemless-audio-transitions"] = true;
                 }
 
                 /* Incognito Mode */
-                if (preferences.general.incognitoMode.includes(true)) {
+                if (preferences.general.incognitoMode) {
                     MusicKit.privateEnabled = true
                 }
 
@@ -744,10 +742,14 @@ try {
                 }
 
                 AM.themesListing = await ipcRenderer.invoke('updateThemesListing');
-                AM.acrylicSupported = await ipcRenderer.invoke('isAcrylicSupported')
+                AM.acrylicSupported = await ipcRenderer.invoke('isAcrylicSupported');
+
+                if (await ipcRenderer.invoke('getStoreValue', 'general.storefront') !== MusicKit.getInstance().storefrontId) {
+                    await ipcRenderer.invoke('setStoreValue', 'general.storefront', MusicKit.getInstance().storefrontId);
+                }
             },
             LoadCustom: () => {
-                const preferences = ipcRenderer.sendSync('getPreferences');
+                const preferences = ipcRenderer.sendSync('getStore');
 
                 /* Execute plugins OnNavigation */
                 if (typeof _plugins != "undefined") {
@@ -764,7 +766,7 @@ try {
                 if (GetXPath(buttonPath)) {
                     GetXPath(buttonPath).addEventListener('click', function () {
                         if (document.querySelector('.context-menu__option--app-settings')) {
-                            if (preferences.advanced.verboseLogging.includes(true)) console.log("[settingsInit] Preventing second button.");
+                            if (preferences.advanced.verboseLogging) console.log("[settingsInit] Preventing second button.");
                             return;
                         }
 
@@ -893,7 +895,7 @@ try {
                 SongContextMenu.createListeners();
 
                 /* Remove Apple Logo */
-                if (preferences['visual']['removeAppleLogo'].includes(true)) {
+                if (preferences['visual']['removeAppleLogo']) {
                     while (document.getElementsByClassName('web-navigation__header web-navigation__header--logo').length > 0) {
                         document.getElementsByClassName('web-navigation__header web-navigation__header--logo')[0].remove();
                     }
@@ -901,21 +903,20 @@ try {
 
                 /* Remove Footer */
                 if (!matchRuleShort(window.location.href, '*settings*') && document.getElementsByClassName('application-preferences').length === 0) {
-                    if (preferences['visual']['removeFooter'].includes(true) && document.querySelector('footer').style.display !== "none") {
+                    if (preferences['visual']['removeFooter'] && document.querySelector('footer').style.display !== "none") {
                         document.querySelector('.dt-footer').style.display = "none";
-                    } else if (!preferences['visual']['removeFooter'].includes(true) && document.querySelector('footer').style.display === "none") {
+                    } else if (!preferences['visual']['removeFooter'] && document.querySelector('footer').style.display === "none") {
                         document.querySelector('.dt-footer').style.display = "block";
                     }
                 }
 
 
                 /* Remove Upsell */
-                if (preferences['visual']['removeUpsell'].includes(true)) {
+                if (preferences['visual']['removeUpsell']) {
                     while (document.getElementsByClassName('web-navigation__native-upsell').length > 0) {
                         document.getElementsByClassName('web-navigation__native-upsell')[0].remove();
                     }
                 }
-
 
                 /* Initialize the miniPlayer */
                 _miniPlayer.init();
@@ -948,8 +949,8 @@ try {
             lastfm: {
                 LastFMDeauthorize: () => {
                     preferences.general.lastfmAuthKey = 'Put your Auth Key here.';
-                    preferences.general.lastfmEnabled = [];
-                    ipcRenderer.sendSync('setPreferences', preferences);
+                    preferences.general.lastfmEnabled = false;
+                    ipcRenderer.sendSync('setStore', preferences);
                     const element = document.getElementById('lfmConnect');
                     element.innerHTML = 'Connect';
                     element.onclick = AMSettings.lastfm.LastFMAuthenticate;
@@ -968,11 +969,11 @@ try {
                     }, 20000);
 
                     ipcRenderer.on('LastfmAuthenticated', function (_event, lfmAuthKey) {
-                        preferences.general.lastfmEnabled = [true];
+                        preferences.general.lastfmEnabled = true;
                         preferences.general.lastfmAuthKey = lfmAuthKey;
                         element.innerHTML = `Disconnect\n<p style="font-size: 8px"><i>(Authed: ${lfmAuthKey})</i></p>`;
                         element.onclick = AMSettings.lastfm.LastFMDeauthorize;
-                        ipcRenderer.sendSync('setPreferences', preferences);
+                        ipcRenderer.sendSync('setStore', preferences);
                     });
                 }
             },
@@ -1006,56 +1007,57 @@ try {
                 }
             },
 
-            HandleField: (element) => {
+            HandleField: async (element) => {
                 const field = document.getElementById(element);
-                if (!field) return 'Element Not Found';
-
-                let fieldCategory, fieldCategoryTitle;
-                if (AMSettings.hasParentClass(field, 'general')) {
-                    fieldCategory = preferences.general;
-                    fieldCategoryTitle = 'general';
-                } else if (AMSettings.hasParentClass(field, 'visual')) {
-                    fieldCategory = preferences.visual;
-                    fieldCategoryTitle = 'visual';
-                } else if (AMSettings.hasParentClass(field, 'audio')) {
-                    fieldCategory = preferences.audio;
-                    fieldCategoryTitle = 'audio';
-                } else if (AMSettings.hasParentClass(field, 'window')) {
-                    fieldCategory = preferences.window;
-                    fieldCategoryTitle = 'window';
-                } else if (AMSettings.hasParentClass(field, 'advanced')) {
-                    fieldCategory = preferences.advanced;
-                    fieldCategoryTitle = 'advanced';
-                } else {
-                    console.error('[HandleField] No Parent Category Found.');
-                    return 'No Parent Category Found';
+                if (!field) {
+                    console.error('[HandleField] Element Not Found');
+                    return;
                 }
 
+                let category;
+                if (AMSettings.hasParentClass(field, 'general')) {
+                    category = 'general';
+                } else if (AMSettings.hasParentClass(field, 'visual')) {
+                    category = 'visual';
+                } else if (AMSettings.hasParentClass(field, 'audio')) {
+                    category = 'audio';
+                } else if (AMSettings.hasParentClass(field, 'window')) {
+                    category = 'window';
+                } else if (AMSettings.hasParentClass(field, 'advanced')) {
+                    category = 'advanced';
+                } else {
+                    console.error('[HandleField] No Parent Category Found.');
+                    return;
+                }
+
+                /* Toggles */
                 if (AMSettings.hasParentClass(field, 'toggle-element')) {
-                    /* Toggles */
-                    field.checked = fieldCategory[element].includes(true);
+                    field.checked = preferences[category][element];
                     field.addEventListener('change', (event) => {
-                        fieldCategory[element] = (event.target.checked ? [true] : []);
-                        ipcRenderer.sendSync('setPreferences', preferences);
+                        ipcRenderer.invoke('setStoreValue', `${category}.${element}`, event.target.checked);
                     });
-                    console.warn(`[HandleField] Event listener created for ${fieldCategoryTitle}.${element}`)
-                } else if (field.classList.contains('form-dropdown-select')) {
-                    /* Dropdowns */
-                    field.value = fieldCategory[element];
+                    console.warn(`[HandleField] Event listener created for ${category}.${element}`)
+                }
+                /* Dropdowns */
+                else if (field.classList.contains('form-dropdown-select')) {
+                    field.value = preferences[category][element];
                     field.addEventListener('change', (event) => {
-                        fieldCategory[element] = event.target.value;
-                        ipcRenderer.sendSync('setPreferences', preferences);
+                        ipcRenderer.invoke('setStoreValue', `${category}.${element}`, event.target.value);
                     });
-                    console.warn(`[HandleField] Event listener created for ${fieldCategoryTitle}.${element}`)
-                } else if (field.id === "lfmConnect") {
-                    if (preferences.general.lastfmAuthKey !== 'Put your Auth Key here.' && preferences.general.lastfmAuthKey) {
-                        field.innerHTML = `Disconnect\n<p style="font-size: 8px"><i>(Authed: ${preferences.general.lastfmAuthKey})</i></p>`;
+                    console.warn(`[HandleField] Event listener created for ${category}.${element}`)
+                }
+                /* LastFM Connect Button */
+                else if (field.id === "lfmConnect") {
+                    if (await ipcRenderer.invoke('getStoreValue', 'tokens.lastfm')) {
+                        field.innerHTML = `Disconnect\n<p style="font-size: 8px"><i>(Authed: ${await ipcRenderer.invoke('getStoreValue', 'tokens.lastfm')})</i></p>`;
                         field.onclick = AMSettings.lastfm.LastFMDeauthorize;
                     }
                 }
             },
 
             CreateMenu: (parent) => {
+                preferences = ipcRenderer.sendSync('getStore');
+
                 AMJavaScript.getRequest("ameres://html/preferences-main.html", (content)=>{
                     document.getElementsByClassName(parent)[0].innerHTML = content;
 
@@ -1076,7 +1078,6 @@ try {
                     }
 
                     /* General Settings */
-                    AMSettings.HandleField('language');
                     AMSettings.HandleField('incognitoMode');
                     AMSettings.HandleField('playbackNotifications');
                     AMSettings.HandleField('trayTooltipSongName');
@@ -1094,35 +1095,32 @@ try {
                     AMSettings.HandleField('transparencyTheme');
                     AMSettings.HandleField('transparencyDisableBlur');
                     AMSettings.HandleField('transparencyMaximumRefreshRate');
+                    AMSettings.HandleField('mxmon');
+                    AMSettings.HandleField('mxmlanguage');
                     AMSettings.HandleField('streamerMode');
                     AMSettings.HandleField('removeUpsell');
                     AMSettings.HandleField('removeAppleLogo');
                     AMSettings.HandleField('removeFooter');
+                    AMSettings.HandleField('removeScrollbars');
                     AMSettings.HandleField('useOperatingSystemAccent');
-                    AMSettings.HandleField('mxmon');
-                    AMSettings.HandleField('mxmlanguage');
+                    AMSettings.HandleField('scaling');
 
                     /* Audio Settings */
                     AMSettings.HandleField('audioQuality');
-                    AMSettings.HandleField('gaplessEnabled');
+                    AMSettings.HandleField('seemlessAudioTransitions');
 
                     /* Window Settings */
                     AMSettings.HandleField('appStartupBehavior');
                     AMSettings.HandleField('closeButtonMinimize');
 
                     /* Advanced Settings */
-                    AMSettings.HandleField('forceApplicationRegion');
                     AMSettings.HandleField('verboseLogging');
                     AMSettings.HandleField('alwaysOnTop');
                     AMSettings.HandleField('autoUpdaterBetaBuilds');
                     AMSettings.HandleField('useBetaSite');
                     AMSettings.HandleField('preventMediaKeyHijacking');
-                    AMSettings.HandleField('menuBarVisible');
-                    AMSettings.HandleField('removeScrollbars');
-                    AMSettings.HandleField('devTools');
-                    AMSettings.HandleField('devToolsOpenDetached');
+                    AMSettings.HandleField('devToolsOnStartup');
                     AMSettings.HandleField('allowMultipleInstances');
-                    AMSettings.HandleField('allowOldMenuAccess');
                 })
             }
         }
