@@ -354,8 +354,8 @@ const handler = {
         })
 
         // Electron-Store Renderer Handling for Getting Values
-        ipcMain.handle('getStoreValue', (event, key) => {
-            return app.cfg.get(key);
+        ipcMain.handle('getStoreValue', (event, key, defaultValue) => {
+            return (defaultValue ? app.cfg.get(key, true) : app.cfg.get(key));
         });
 
         // Electron-Store Renderer Handling for Setting Values
