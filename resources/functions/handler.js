@@ -338,6 +338,11 @@ const handler = {
 
     RendererListenerHandlers: () => {
 
+        // Showing the OOBE on first launch
+        ipcMain.on('showOOBE', (event) => {
+            event.returnValue = app.ame.showOOBE;
+        })
+
         // Themes Listing Update
         ipcMain.handle('updateThemesListing', (_event) => {
             return app.ame.utils.fetchThemesListing();

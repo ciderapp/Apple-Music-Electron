@@ -14,7 +14,38 @@ module.exports = () => {
     // Set the Theme List based on css files in themes directory
     app.userThemesPath = resolve(app.getPath('userData'), 'themes');
     app.userPluginsPath = resolve(app.getPath('userData'), 'plugins');
+    let showIntro = false
 
+    const migrationFunctions = {
+        clearElectronPrefs: () => {
+            if (existsSync(resolve(app.getPath('userData'), 'preferences.json'))) {
+                unlink(resolve(app.getPath('userData'), 'preferences.json'), (err) => {
+                    if (err) console.error(err)
+                })
+            }
+            if (existsSync(resolve(app.getPath('userData'), 'Preferences'))) {
+                unlink(resolve(app.getPath('userData'), 'Preferences'), (err) => {
+                    if (err) console.error(err)
+                })
+            }
+        },
+        clearCache: () => {
+            if (existsSync(resolve(app.getPath('userData'), 'Cache'))) {
+                rimraf(resolve(app.getPath('userData'), 'Cache'), [], () => {
+                    console.log(`[VersionHandler] Outdated / No Version Store Found. Clearing Application Cache. ('${resolve(app.getPath('userData'), 'Cache')}')`)
+                })
+            }
+        },
+        showDevelopmentMessage: () => {
+            app.whenReady().then(() => {
+                dialog.showMessageBox({
+                    title: "Version under Development!",
+                    message: "This version is under development. Expect bugs and issues whilst using the application.",
+                    type: "warning"
+                })
+            })
+        }
+    }
     const storeDefaults = {
         general: {
             storefront: "",
@@ -67,46 +98,15 @@ module.exports = () => {
             lastfm: ""
         }
     }
-
-    const MigrationFunctions = {
-        clearElectronPrefs: () => {
-            if (existsSync(resolve(app.getPath('userData'), 'preferences.json'))) {
-                unlink(resolve(app.getPath('userData'), 'preferences.json'), (err) => {
-                    if (err) console.error(err)
-                })
-            }
-            if (existsSync(resolve(app.getPath('userData'), 'Preferences'))) {
-                unlink(resolve(app.getPath('userData'), 'Preferences'), (err) => {
-                    if (err) console.error(err)
-                })
-            }
-        },
-        clearCache: () => {
-            if (existsSync(resolve(app.getPath('userData'), 'Cache'))) {
-                rimraf(resolve(app.getPath('userData'), 'Cache'), [], () => {
-                    console.log(`[VersionHandler] Outdated / No Version Store Found. Clearing Application Cache. ('${resolve(app.getPath('userData'), 'Cache')}')`)
-                })
-            }
-        },
-        showDevelopmentMessage: () => {
-            app.whenReady().then(() => {
-                dialog.showMessageBox({
-                    title: "Version under Development!",
-                    message: "This version is under development. Expect bugs and issues whilst using the application.",
-                    type: "warning"
-                })
-            })
-
-        }
-    }
-
-    /* Set Migration Variables to be used on older versions */
     const storeMigrations = {
+        '>=3.0.0': store => {
+            showIntro = true
+        },
+
         '3.0.0': store => {
-            MigrationFunctions.showDevelopmentMessage()
-            MigrationFunctions.clearElectronPrefs()
-            MigrationFunctions.clearCache()
-            store.set('advanced.devToolsOnStartup', true);
+            migrationFunctions.clearElectronPrefs()
+            migrationFunctions.clearCache()
+            migrationFunctions.showDevelopmentMessage()
         }
     }
 
@@ -154,5 +154,6 @@ module.exports = () => {
         discord: discordFuncs,
         lastfm: lastfmFuncs,
         mpris: mprisFuncs,
+        showOOBE: showIntro
     };
 }

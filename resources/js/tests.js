@@ -1,3 +1,5 @@
+const shouldOOBEBeShown = ipcRenderer.sendSync('showOOBE');
+
 var _tests = {
     zoo() {
         AMJavaScript.getRequest("ameres://html/zoo.html", (content) => {
@@ -99,8 +101,7 @@ var _tests = {
                 data: {
                     prefs: {
                         audioQuality: "auto",
-                        language: "us",
-                        region: "",
+                        storefront: "us",
                         mxm: false,
                         mxmlanguage: "en",
                         theme: preferences.visual.theme
@@ -148,15 +149,18 @@ var _tests = {
                     }
                 },
                 OnClose() {
-                    _vues.destroy(vm)
+                    _vues.destroy(vm);
+                    if (!MusicKit.getInstance().isAuthorized) {
+                        MusicKit.getInstance().authorize();
+                    }
                 }
             })
         })
-
-        /* Once the user finished all the pages the following can be run:
-        * if (!MusicKit.getInstance().isAuthorized) { MusicKit.getInstance().authorize(); }
-        *
-        * This will ask the user to login to the AM App.
-        *  */
     }
-}
+};
+
+setTimeout(() => {
+    if (shouldOOBEBeShown) {
+        _tests.oobe();
+    }
+}, 200)
