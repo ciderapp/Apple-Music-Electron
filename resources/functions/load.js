@@ -86,17 +86,16 @@ module.exports = {
             `).catch((e) => console.error(e));
         }
 
-        if (app.cfg.get('visual.useOperatingSystemAccent')) {
+        if (app.cfg.get('visual.useOperatingSystemAccent') && (process.platform === "win32" || process.platform === "darwin")) {
             if (systemPreferences.getAccentColor()) {
                 const accent = '#' + systemPreferences.getAccentColor().slice(0, -2)
                 app.win.webContents.insertCSS(`
                 :root {
-                        --keyColor: ${accent} !important;
-                        --systemAccentBG: ${accent} !important;
-                        --keyColor-rgb: ${app.ame.utils.hexToRgb(accent).r} ${app.ame.utils.hexToRgb(accent).g} ${app.ame.utils.hexToRgb(accent).b} !important;
-                    }
-                }
-                `).then((key) => {
+                    --keyColor: ${accent} !important;
+                    --systemAccentBG: ${accent} !important;
+                    --systemAccentBG-pressed: rgba(${app.ame.utils.hexToRgb(accent).r}, ${app.ame.utils.hexToRgb(accent).g}, ${app.ame.utils.hexToRgb(accent).b}, 0.75) !important;
+                    --keyColor-rgb: ${app.ame.utils.hexToRgb(accent).r} ${app.ame.utils.hexToRgb(accent).g} ${app.ame.utils.hexToRgb(accent).b} !important;
+                }`).then((key) => {
                     app.injectedCSS['useOperatingSystemAccent'] = key
                 })
             }

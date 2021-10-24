@@ -231,14 +231,17 @@ const handler = {
             handledConfigs = [];
 
         systemPreferences.on('accent-color-changed', (event, color) => {
-            if (color && app.cfg.get('visual.useOperatingSystemAccent')) {
+            if (color && app.cfg.get('visual.useOperatingSystemAccent') && (process.platform === "win32" || process.platform === "darwin")) {
                 const accent = '#' + color.slice(0, -2)
                 app.win.webContents.insertCSS(`
                 :root {
                     --keyColor: ${accent} !important;
                     --systemAccentBG: ${accent} !important;
+                    --systemAccentBG-pressed: rgba(${app.ame.utils.hexToRgb(accent).r}, ${app.ame.utils.hexToRgb(accent).g}, ${app.ame.utils.hexToRgb(accent).b}, 0.75) !important;
                     --keyColor-rgb: ${app.ame.utils.hexToRgb(accent).r} ${app.ame.utils.hexToRgb(accent).g} ${app.ame.utils.hexToRgb(accent).b} !important;
-                }`).catch((e) => console.error(e));
+                }`).then((key) => {
+                    app.injectedCSS['useOperatingSystemAccent'] = key
+                })
             }
         })
 
@@ -317,7 +320,11 @@ const handler = {
             app.ame.load.LoadFiles();
         })
         app.cfg.onDidChange('visual.useOperatingSystemAccent', (newValue, _oldValue) => {
-            app.ame.load.LoadFiles();
+            if (!newValue) {
+                app.ame.win.removeInsertedCSS('useOperatingSystemAccent')
+            } else {
+                app.ame.load.LoadFiles();
+            }
         })
 
 
