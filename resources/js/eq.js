@@ -1,4 +1,5 @@
 
+
 var override = false;
 var APOverride = false;
 var APstream;
@@ -264,6 +265,24 @@ var _amOT = {
         };
         AMEx.result.source.connect(x);x.connect(AMEx.context.destination);
     },
+    getGCDevices: function(){
+        ipcRenderer.send('getChromeCastDevices','');
+    },
+    playGC : function(ip){
+       /* _amOT.init(); */
+        ipcRenderer.send('performGCCast',ip);
+        var x = AMEx.result.context.createScriptProcessor(16384,2,1);
+
+        x.onaudioprocess = function(e){
+            if (!override){
+            console.log('hmm');
+            var leftpcm = e.inputBuffer.getChannelData(0);
+            var rightpcm = e.inputBuffer.getChannelData(1);
+            ipcRenderer.send('writeWAV',leftpcm,rightpcm);
+        }
+        };
+        AMEx.result.source.connect(x);x.connect(AMEx.context.destination);
+    }
 };
 
 
@@ -281,6 +300,4 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
-
-    
-_amOT.init();
+_amOT.init()

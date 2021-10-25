@@ -6,7 +6,15 @@ const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPre
     {initAnalytics} = require('./utils'),
     { RtAudio, RtAudioFormat, RtAudioApi } = require("audify");
 
-
+    const os =  require('os');
+    const mdns = require('mdns-js');
+    const ssdp = require('node-ssdp-lite');
+    const express = require('express');
+    const audioClient = require('castv2-client').Client;
+    const DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
+    var wavConverter = require('wav-converter');
+    var getPort = require('get-port');
+    const { Stream , Duplex, Readable } = require('stream');
 initAnalytics();
 
 const handler = {
@@ -665,7 +673,6 @@ const handler = {
     AudioHandler: function(){
 
 
-
         let api = RtAudioApi.UNSPECIFIED;
 
 
@@ -718,7 +725,277 @@ const handler = {
             buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm),Float32Array.from(rightpcm)).buffer));
             rtAudio.write(buffer);
         });
+
+       
+
+
+        var devices = [];
+        var GCRunning = false;
+        var GCBuffer ;
+        var expectedConnections = 0;
+        var currentConnections = 0;
+        var activeConnections = [];
+        var requests = [];
+        var GCstream = new Stream.PassThrough();
+        var connectedHosts = {};
+
+
+        var port = false;
+        var server = false;
+        var bufcount = 0;
+        var bufcount2 = 0;
+        var headerSent = false;
+
+        const audioserver = express(); 
+        audioserver.get('/', playData.bind(this));
+
+        function playData(req,res){
+            console.log("Device requested: /");
+            req.connection.setTimeout(Number.MAX_SAFE_INTEGER);
+            requests.push({req: req, res: res});
+            var pos = requests.length-1;
+            req.on("close", () => {
+                console.info("CLOSED", requests.length);
+                requests.splice(pos,1);
+                console.info("CLOSED", requests.length);
+            });
+        
+                
+                GCstream.on('data', (data) => {
+                    try { 
+                        res.write(data);
+                    } catch (ex) {
+                        console.log("Dead", ex);
+                    }
+                })   
+            
+        }
+
+        ipcMain.on('writeWAV' , function (event, leftpcm, rightpcm) { 
+
+            function interleave16(leftChannel, rightChannel){
+                var length = leftChannel.length + rightChannel.length;
+                var result = new Int16Array(length);
     
+                var inputIndex = 0;
+    
+                for (var index = 0; index < length; ){
+                 result[index++] = leftChannel[inputIndex];
+                 result[index++] = rightChannel[inputIndex];
+                 inputIndex++;
+                }
+                return result;
+            }
+            // do anything with stereo pcm here
+            var pcmData = Buffer.from(new Int8Array(interleave16(Int16Array.from(leftpcm, x => x * 32767),Int16Array.from(rightpcm, x => x * 32767)).buffer)); 
+            // GCBuffer = wavConverter.encodeWav(pcmData, {
+            //     numChannels: 2,
+            //     sampleRate: 48000,
+            //     byteRate: 16,
+            // });
+            console.log('oof')
+            if(!headerSent){
+            const header = new Buffer.alloc(44)
+
+            header.write('RIFF', 0)
+            header.writeUInt32LE(999999999, 4)
+            header.write('WAVE', 8)
+            header.write('fmt ', 12)
+            header.writeUInt8(16, 16)
+            header.writeUInt8(1, 20)
+            header.writeUInt8(2, 22)
+            header.writeUInt32LE(48000, 24)
+            header.writeUInt32LE(16, 28)
+            header.writeUInt8(4, 32)
+            header.writeUInt8(16, 34)
+            header.write('data', 36)
+            header.writeUInt32LE(999999999+ 44 - 8, 40)
+            GCstream.write(Buffer.concat([header,pcmData]));
+            headerSent = true;
+        } else {GCstream.write(pcmData);}
+
+            });
+
+    	function parseServiceDescription(body, address) {
+            var parseString = require('xml2js').parseString;
+            parseString(body, (err, result) => {
+                if (!err && result && result.root && result.root.device) {
+                    var device = result.root.device[0];
+                    this.ondeviceup(address, device.friendlyName.toString());
+                }
+            });
+        }
+
+        function getServiceDescription(url, address) {
+            var request = require('request');
+            request.get(url, (error, response, body) => {
+                if (!error && response.statusCode == 200) {
+                    parseServiceDescription(body, address);
+                }
+            });
+        }
+
+        function ondeviceup(host, name) {
+            if (devices.indexOf(host) == -1) {
+                devices.push(host);
+                if (name) {
+                    console.log("deviceFound", host, name);
+                }
+            }
+        }
+
+        function searchForGCDevices() {
+            let browser = mdns.createBrowser(mdns.tcp('googlecast'));
+            browser.on('ready', browser.discover);
+    
+            browser.on('update', (service) => {
+                if (service.addresses && service.fullname) {
+                    ondeviceup(service.addresses[0], service.fullname.substring(0, service.fullname.indexOf("._googlecast")));
+                }
+            });
+            
+            // also do a SSDP/UPnP search
+            let ssdpBrowser = new ssdp();
+            ssdpBrowser.on('response', (msg, rinfo) => {
+                var location = getLocation(msg);
+                if (location != null) {
+                    getServiceDescription(location, rinfo.address);
+                }
+            });
+
+            function getLocation(msg) {
+                msg.replace('\r', '');
+                var headers = msg.split('\n');
+                var location = null;
+                for (var i = 0; i < headers.length; i++) {
+                    if (headers[i].indexOf('LOCATION') == 0)
+                        location = headers[i].replace('LOCATION:', '').trim();
+                }
+                return location;
+            }
+            ssdpBrowser.search('urn:dial-multiscreen-org:device:dial:1');
+        }
+
+        function setupGCServer() {
+            return new Promise((resolve, reject) => {
+                   getPort()
+                    .then(port2 => {
+                        port = port2;
+                        server = audioserver.listen(port, () => {
+                            console.info('Example app listening at http://%s:%s', getIp(), port);
+                        });
+                        GCRunning = true;
+                        resolve()
+                    })
+                    .catch(reject);
+            });
+        }
+
+        function loadMedia(client, cb) {
+            console.log('hws');
+            client.launch(DefaultMediaReceiver, (err, player) => {
+                if (err) {
+                    console.log(err);
+                    return;
+                }    
+                    let media = {
+                        // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
+                        contentId: 'http://' + getIp() + ':' + server.address().port + '/',
+                        contentType: 'audio/vnd.wav',
+                        streamType: 'LIVE', // or LIVE
+    
+                        // Title and cover displayed while buffering
+                        metadata: {
+                            type: 0,
+                            metadataType: 0,
+                            title: "Apple Music Electron",
+                        }
+                    };
+    
+                    player.on('status', status => {
+                        console.log('status broadcast playerState=%s', status);
+                    });
+    
+                    console.log('app "%s" launched, loading media %s ...', player, media);
+    
+                    player.load(media, {
+                        autoplay: true
+                    }, (err, status) => {
+                        console.log('media loaded playerState=%s', status);
+                    });
+    
+                    client.getStatus((x, status) => {
+                        if (status && status.volume)
+                        {
+                            client.volume = status.volume.level;
+                            client.muted = status.volume.muted;
+                            client.stepInterval = status.volume.stepInterval;
+                        }
+                    })
+            });
+        }
+
+
+
+        function getIp() {
+            var ip = false
+            var alias = 0;
+            let ifaces = os.networkInterfaces();
+            for (var dev in ifaces) {
+                ifaces[dev].forEach(details => {
+                    if (details.family === 'IPv4') {
+                        if (!/(loopback|vmware|internal|hamachi|vboxnet|virtualbox)/gi.test(dev + (alias ? ':' + alias : ''))) {
+                            if (details.address.substring(0, 8) === '192.168.' ||
+                                details.address.substring(0, 7) === '172.16.' ||
+                                details.address.substring(0, 3) === '10.'
+                            ) {
+                                ip = details.address;
+                                ++alias;
+                            }
+                        }
+                    }
+                });
+            }
+            return ip;
+        }
+
+        function stream(host){
+            let client = new audioClient();
+            client.volume = 100;
+            client.stepInterval = 0.5;
+            client.muted = false;
+    
+            client.connect(host, () => {
+                console.log('connected, launching app ...', 'http://' + getIp() + ':' + server.address().port + '/');
+                if (!connectedHosts[host]) {
+                    connectedHosts[host] = client;
+                    activeConnections.push(client);
+                }
+                loadMedia(client);
+            });
+            client.on('close', ()  => {
+                console.info("Client Closed");
+                for (var i = activeConnections.length - 1; i >= 0; i--) {
+                    if (activeConnections[i] == client) {
+                        activeConnections.splice(i,1);
+                        return;
+                    }
+                }
+            });
+            client.on('error', err => {
+                console.log('Error: %s', err.message);
+                client.close();
+                delete this.connectedHosts[host];
+            });
+        }
+
+        ipcMain.on('performGCCast',function(event, ip){
+            setupGCServer().then(function(){stream(ip);})
+        });
+
+        ipcMain.on('getChromeCastDevices',function(event, data){
+            searchForGCDevices();
+        });
     }
 }
 

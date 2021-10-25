@@ -325,7 +325,7 @@ module.exports = {
                 nodeIntegration: false,
                 nodeIntegrationInWorker: false,
                 contextIsolation: false,
-                webSecurity: true,
+                webSecurity: false,
                 sandbox: true,
                 nativeWindowOpen: true
             }

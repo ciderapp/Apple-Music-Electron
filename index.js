@@ -23,6 +23,7 @@ function CreateWindow() {
     app.ame.handler.PlaybackStateHandler(); // Playback Change Listener
     app.ame.handler.MediaStateHandler(); // Media Change Listener
     app.ame.handler.LyricsHandler(); // Lyrics Handling
+    app.ame.handler.AudioHandler(); // Audio Stuff
     app.ame.handler.RendererListenerHandlers(); // Renderer Listeners
 
     if (process.platform === 'win32' && app.transparency) { app.win.show() } // Show the window so SetThumbarButtons doesnt break
