@@ -109,8 +109,12 @@ const lfm = {
     },
 
     updateNowPlayingSong: function (attributes) {
-        if (!app.lastfm || app.cfg.get('general.incognitoMode')) {
+        if (!app.lastfm ||app.lastfm.cachedNowPlayingAttributes === attributes || app.cfg.get('general.incognitoMode')) {
             return
+        }
+
+        if (app.lastfm.cachedNowPlayingAttributes) {
+            if (app.lastfm.cachedNowPlayingAttributes.playParams.id === attributes.playParams.id) return;
         }
 
         if (fs.existsSync(sessionPath)) {
@@ -128,7 +132,7 @@ const lfm = {
 
                     console.verbose('[LastFM] Successfully updated nowPlayingSong', nowPlaying);                 
                 });
-                app.lastfm.cachedAttributes = attributes
+                app.lastfm.cachedNowPlayingAttributes = attributes
             }
             
         } else {
