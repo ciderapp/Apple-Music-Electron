@@ -1,6 +1,8 @@
 // preload.js
 const electron = require('electron');
 
+
+
 let cache = {playParams: {id: 0}, status: null, remainingTime: 0},
     playbackCache = {status: null, time: Date.now()};
 
@@ -113,6 +115,5 @@ process.once('loaded', () => {
     global.ipcRenderer = electron.ipcRenderer;
     global.MusicKitInterop = MusicKitInterop;
 });
-
 // MusicKit.getInstance().addEventListener( MusicKit.Events.queueItemsDidChange,logIt );
 // MusicKit.getInstance().addEventListener( MusicKit.Events.queuePositionDidChange, logIt );
