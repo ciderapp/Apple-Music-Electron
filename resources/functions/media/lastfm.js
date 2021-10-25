@@ -16,8 +16,8 @@ const lfm = {
     },
 
     authenticate: function () {
-        if (!app.cfg.get('general.lastfmEnabled') || !app.cfg.get('tokens.lastfm')) {
-            app.cfg.set('general.lastfmEnabled', false)
+        if (!app.cfg.get('general.lastfm') || !app.cfg.get('tokens.lastfm')) {
+            app.cfg.set('general.lastfm', false)
             return
         }
 
@@ -26,7 +26,7 @@ const lfm = {
             'secret': apiCredentials.secret
         });
 
-        app.lastfm = Object.assign(lfmAPI, {cachedAttributes: false})
+        app.lastfm = Object.assign(lfmAPI, {cachedAttributes: false, cachedNowPlayingAttributes: false});
 
         fs.stat(sessionPath, function (err) {
             if (err) {
