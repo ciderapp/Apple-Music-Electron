@@ -56,9 +56,8 @@ module.exports = {
     LoadWebsite: function (win) {
         if (!win) return;
 
-        app.locale = {language: app.preferences.value('general.language'), region: app.preferences.value('advanced.forceApplicationRegion')};
-
-        const urlBase = app.preferences.value('advanced.useBetaSite').includes(true) ? 'https://beta.music.apple.com' : 'https://music.apple.com' + ((app.locale.region !== "default" && app.locale.region) ? `/${app.locale.region}/` : '') + ((app.locale.language !== "default" && app.locale.language) ? `?l=${app.locale.language}` : ''),
+        app.storefront = app.cfg.get('general.storefront');
+        const urlBase = app.cfg.get('advanced.useBetaSite') ? 'https://beta.music.apple.com' : 'https://music.apple.com' + app.cfg.get('general.storefront'),
             urlFallback = `https://music.apple.com/`;
 
         ipcMain.once('userAuthorized', (e, args) => {
@@ -76,7 +75,7 @@ module.exports = {
 
     LoadFiles: function () {
         app.ame.load.LoadJS('settingsPage.js');
-        if (app.preferences.value('visual.removeAppleLogo').includes(true)) {
+        if (app.cfg.get('visual.removeAppleLogo')) {
             app.win.webContents.insertCSS(`
             @media only screen and (max-width: 483px) {
                 .web-navigation__nav-list {
@@ -87,30 +86,31 @@ module.exports = {
             `).catch((e) => console.error(e));
         }
 
-        if (app.preferences.value('visual.useOperatingSystemAccent').includes(true)) {
+        if (app.cfg.get('visual.useOperatingSystemAccent') && (process.platform === "win32" || process.platform === "darwin")) {
             if (systemPreferences.getAccentColor()) {
                 const accent = '#' + systemPreferences.getAccentColor().slice(0, -2)
                 app.win.webContents.insertCSS(`
                 :root {
-                        --keyColor: ${accent} !important;
-                        --systemAccentBG: ${accent} !important;
-                        --keyColor-rgb: ${app.ame.utils.hexToRgb(accent).r} ${app.ame.utils.hexToRgb(accent).g} ${app.ame.utils.hexToRgb(accent).b} !important;
-                    }
-                }
-                `).catch((e) => console.error(e));
+                    --keyColor: ${accent} !important;
+                    --systemAccentBG: ${accent} !important;
+                    --systemAccentBG-pressed: rgba(${app.ame.utils.hexToRgb(accent).r}, ${app.ame.utils.hexToRgb(accent).g}, ${app.ame.utils.hexToRgb(accent).b}, 0.75) !important;
+                    --keyColor-rgb: ${app.ame.utils.hexToRgb(accent).r} ${app.ame.utils.hexToRgb(accent).g} ${app.ame.utils.hexToRgb(accent).b} !important;
+                }`).then((key) => {
+                    app.injectedCSS['useOperatingSystemAccent'] = key
+                })
             }
         } else {
-
+            app.ame.win.removeInsertedCSS('useOperatingSystemAccent')
         }
 
         /* Load Window Frame */
-        if (app.preferences.value('visual.frameType') === 'mac') {
+        if (app.cfg.get('visual.frameType') === 'mac') {
             app.ame.load.LoadJS('frame_macOS.js')
-        } else if ((app.preferences.value('visual.frameType') === 'mac-right')) {
+        } else if ((app.cfg.get('visual.frameType') === 'mac-right')) {
             app.ame.load.LoadJS('frame_Windows.js')
-        } else if (process.platform === 'darwin' && !app.preferences.value('visual.frameType')) {
+        } else if (process.platform === 'darwin' && !app.cfg.get('visual.frameType')) {
             app.ame.load.LoadJS('frame_macOS.js')
-        } else if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
+        } else if (process.platform === 'win32' && !app.cfg.get('visual.frameType')) {
             app.ame.load.LoadJS('frame_Windows.js')
             if (app.win.isMaximized()) {
                 app.win.webContents.executeJavaScript(`if (document.querySelector("#maximize")) { document.querySelector("#maximize").classList.add("maxed"); }`).catch((e) => console.error(e));
@@ -166,28 +166,28 @@ module.exports = {
         app.ame.load.LoadJS('eq.js')
 
         // Window Frames
-        if (app.preferences.value('visual.frameType') === 'mac') {
+        if (app.cfg.get('visual.frameType') === 'mac') {
             app.ame.load.LoadCSS('frame_macOS_emulation.css')
-        } else if (app.preferences.value('visual.frameType') === 'mac-right') {
+        } else if (app.cfg.get('visual.frameType') === 'mac-right') {
             app.ame.load.LoadCSS('frame_macOS_emulation_right.css')
-        } else if (process.platform === 'win32' && !app.preferences.value('visual.frameType')) {
+        } else if (process.platform === 'win32' && !app.cfg.get('visual.frameType')) {
             app.ame.load.LoadCSS('frame_Windows.css')
         }
 
         // Set the settings variables if needed
-        if (app.preferences.value('visual.frameType') === 'mac' || app.preferences.value('visual.frameType') === 'mac-right') {
-            app.preferences.value('visual.removeUpsell', [true]);
-            app.preferences.value('visual.removeAppleLogo', [true]);
+        if (app.cfg.get('visual.frameType') === 'mac' || app.cfg.get('visual.frameType') === 'mac-right') {
+            app.cfg.set('visual.removeUpsell', true);
+            app.cfg.set('visual.removeAppleLogo', true);
         }
 
         // Streamer Mode
-        if (app.preferences.value('visual.streamerMode').includes(true)) {
+        if (app.cfg.get('visual.streamerMode')) {
             app.ame.load.LoadCSS('streamerMode.css')
         }
 
         /* Remove the Scrollbar */
-        if (app.preferences.value('advanced.removeScrollbars').includes(true)) {
-            app.win.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
+        if (app.cfg.get('visual.removeScrollbars')) {
+            app.win.webContents.insertCSS('::-webkit-scrollbar { display: none; }').then()
         } else {
             app.ame.load.LoadCSS('macosScrollbar.css')
         }

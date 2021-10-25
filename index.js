@@ -10,7 +10,6 @@ app.ame.init.LoggingInit();
 app.ame.handler.LaunchHandler();
 app.ame.handler.InstanceHandler();
 app.ame.init.BaseInit();
-app.ame.handler.VersionHandler();
 
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {
@@ -18,13 +17,13 @@ function CreateWindow() {
 
     app.win = app.ame.win.CreateBrowserWindow() // Create the BrowserWindow
 
-    app.ame.handler.SettingsHandler(); // Handles updates to settings
     app.ame.handler.WindowStateHandler(); // Handling the Window
     app.ame.handler.PlaybackStateHandler(); // Playback Change Listener
     app.ame.handler.MediaStateHandler(); // Media Change Listener
     app.ame.handler.LyricsHandler(); // Lyrics Handling
     app.ame.handler.AudioHandler(); // Audio Stuff
     app.ame.handler.RendererListenerHandlers(); // Renderer Listeners
+    app.ame.handler.SettingsHandler(); // Handles updates to settings
 
     if (process.platform === 'win32' && app.transparency) { app.win.show() } // Show the window so SetThumbarButtons doesnt break
     app.ame.win.SetButtons() // Set Inactive Thumbnail Toolbar Icons or TouchBar

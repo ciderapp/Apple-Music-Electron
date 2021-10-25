@@ -1,5 +1,3 @@
-require('git-clone');
-require('rimraf');
 const {app, nativeTheme, nativeImage, Tray} = require("electron"),
     {join, resolve} = require("path"),
     os = require("os"),
@@ -10,19 +8,17 @@ initAnalytics();
 const init = {
 
     BaseInit: function () {
-        init.SettingsInit()
-
-        const censoredConfig = JSON.parse(JSON.stringify(app.preferences._preferences))
-        censoredConfig.general.lastfmAuthKey = '(hidden)'
+        const censoredConfig = app.cfg.store;
+        censoredConfig.tokens = {};
 
         console.log('---------------------------------------------------------------------')
         console.log(`${app.getName()} has started.`);
         console.log(`Version: ${app.getVersion()} | Electron Version: ${process.versions.electron}`)
-        console.log(`Type: ${os.type} | Release: ${os.release()} ${app.ame.utils.fetchOperatingSystem() ? app.ame.utils.fetchOperatingSystem() : ""} | Platform: ${os.platform()}`)
+        console.log(`Type: ${os.type} | Release: ${os.release()} ${app.ame.utils.fetchOperatingSystem() ? `(${app.ame.utils.fetchOperatingSystem()})` : ""} | Platform: ${os.platform()}`)
         console.log(`User Data Path: '${app.getPath('userData')}'`)
         console.log(`Current Configuration: ${JSON.stringify(censoredConfig)}`)
         console.log("---------------------------------------------------------------------")
-        if (app.preferences.value('general.analyticsEnabled').includes(true) && app.isPackaged) console.log('[Sentry] Sentry logging is enabled, any errors you receive will be presented to the development team to fix for the next release.')
+        if (app.cfg.get('general.analyticsEnabled') && app.isPackaged) console.log('[Sentry] Sentry logging is enabled, any errors you receive will be presented to the development team to fix for the next release.')
         console.verbose('[InitializeBase] Started.');
 
         // Disable CORS
@@ -31,7 +27,7 @@ const init = {
         app.commandLine.appendSwitch('force-device-scale-factor', '1')
 
         // Media Key Hijacking
-        if (app.preferences.value('advanced.preventMediaKeyHijacking').includes(true)) {
+        if (app.cfg.get('advanced.preventMediaKeyHijacking')) {
             console.log("[Apple-Music-Electron] Hardware Media Key Handling disabled.")
             app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,MediaSessionService');
         }
@@ -49,7 +45,7 @@ const init = {
             existingNotification: false
         };
 
-        if (app.preferences.value('general.incognitoMode').includes(true)) {
+        if (app.cfg.get('general.incognitoMode')) {
             console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
         }
 
@@ -73,7 +69,7 @@ const init = {
         console.verbose = () => {
         };
 
-        if (app.preferences.value('advanced.verboseLogging').includes(true) || app.verboseLaunched) {
+        if (app.cfg.get('advanced.verboseLogging') || app.verboseLaunched) {
             console.verbose = log.debug
         } else {
             console.verbose = function (_data) {
@@ -97,8 +93,8 @@ const init = {
         }
 
         // Set the default theme
-        if (app.preferences.value('advanced.forceApplicationMode')) {
-            nativeTheme.themeSource = app.preferences.value('advanced.forceApplicationMode')
+        if (app.cfg.get('advanced.forceApplicationMode')) {
+            nativeTheme.themeSource = app.cfg.get('advanced.forceApplicationMode')
         }
     },
 
@@ -134,18 +130,18 @@ const init = {
         app.setAsDefaultProtocolClient('music') // macOS Client
 
         // Running the Application on Login
-        if (app.preferences.value('window.appStartupBehavior')) {
+        if (app.cfg.get('window.appStartupBehavior')) {
             app.setLoginItemSettings({
                 openAtLogin: true,
                 args: [
-                    '--process-start-args', `${app.preferences.value('window.appStartupBehavior').includes('hidden') ? "--hidden" : (app.preferences.value('window.appStartupBehavior').includes('minimized') ? "minimized" : "")}`
+                    '--process-start-args', `${app.cfg.get('window.appStartupBehavior') === 'hidden' ? "--hidden" : (app.cfg.get('window.appStartupBehavior') === 'minimized' ? "--minimized" : "")}`
                 ]
             })
         }
 
         app.ame.mpris.connect(); // M.P.R.I.S
         app.ame.lastfm.authenticate(); // LastFM
-        app.ame.discord.connect(app.preferences.value('general.discordRPC') === 'ame-title' ? '749317071145533440' : '886578863147192350'); // Discord
+        app.ame.discord.connect(app.cfg.get('general.discordRPC') === 'ame-title' ? '749317071145533440' : '886578863147192350'); // Discord
 
         app.isAuthorized = false;
         app.isMiniplayerActive = false;
@@ -190,41 +186,6 @@ const init = {
                 }
             }
         })
-    },
-
-    SettingsInit: function () {
-        // Check the Configuration File
-        const ExistingConfigurationPath = resolve(app.getPath('userData'), 'preferences.json');
-
-        // Update the configuration
-        try {
-            console.verbose(`[OpenMenu][ConfigurationCheck] Checking for existing configuration at '${ExistingConfigurationPath}'`);
-            if (fs.existsSync(ExistingConfigurationPath)) {
-                console.verbose(`[OpenMenu][ConfigurationCheck] '${ExistingConfigurationPath}' exists!`);
-                const data = fs.readFileSync(ExistingConfigurationPath, {
-                    encoding: 'utf8',
-                    flag: 'r'
-                });
-                const userConfiguration = JSON.parse(data.toString())
-                const baseConfiguration = app.preferences.defaults;
-
-                Object.keys(baseConfiguration).forEach(function (parentKey) {
-                    if (parentKey in userConfiguration) {
-                        Object.keys(baseConfiguration[parentKey]).forEach(function (childKey) {
-                            if (!userConfiguration[parentKey].hasOwnProperty(childKey)) {
-                                console.warn(`[OpenMenu][ConfigurationCheck][MissingKey] ${parentKey}.${childKey} - Value found in defaults: ${(baseConfiguration[parentKey][childKey]).toString() ? baseConfiguration[parentKey][childKey].toString() : '[]'}`);
-                                app.preferences.value(`${parentKey}.${childKey}`, baseConfiguration[parentKey][childKey]);
-                            }
-                        })
-                    } else {
-                        console.warn(`[OpenMenu][ConfigurationCheck][MissingKey] ${parentKey} - Value found in defaults: ${(baseConfiguration[parentKey]).toString() ? (baseConfiguration[parentKey]).toString() : '[]'}`);
-                        app.preferences.value(parentKey, baseConfiguration[parentKey]);
-                    }
-                })
-            }
-        } catch (err) {
-            console.error(`[OpenMenu][ConfigurationCheck] ${err}`)
-        }
     }
 }
 

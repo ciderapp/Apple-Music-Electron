@@ -99,8 +99,7 @@ var _tests = {
                 data: {
                     prefs: {
                         audioQuality: "auto",
-                        language: "us",
-                        region: "",
+                        storefront: "us",
                         mxm: false,
                         mxmlanguage: "en",
                         theme: preferences.visual.theme
@@ -148,9 +147,18 @@ var _tests = {
                     }
                 },
                 OnClose() {
-                    _vues.destroy(vm)
+                    _vues.destroy(vm);
+                    if (!MusicKit.getInstance().isAuthorized) {
+                        MusicKit.getInstance().authorize();
+                    }
                 }
             })
         })
     }
+};
+
+if (ipcRenderer.sendSync('showOOBE')) {
+    setTimeout(() => {
+        _tests.oobe();
+    }, 200)
 }
