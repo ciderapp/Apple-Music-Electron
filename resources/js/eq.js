@@ -257,7 +257,6 @@ var _amOT = {
 
         x.onaudioprocess = function(e){
             if (!override){
-            console.log('hmm');
             var leftpcm = e.inputBuffer.getChannelData(0);
             var rightpcm = e.inputBuffer.getChannelData(1);
             ipcRenderer.send('writePCM',leftpcm,rightpcm);
@@ -275,7 +274,6 @@ var _amOT = {
 
         x.onaudioprocess = function(e){
             if (!override){
-            console.log('hmm');
             var leftpcm = e.inputBuffer.getChannelData(0);
             var rightpcm = e.inputBuffer.getChannelData(1);
             ipcRenderer.send('writeWAV',leftpcm,rightpcm);

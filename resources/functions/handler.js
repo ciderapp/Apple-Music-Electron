@@ -1,9 +1,7 @@
 require('rimraf');
 const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences} = require('electron'),
-
-    {LoadOneTimeFiles, LoadFiles} = require('./load'),
     {join} = require('path'),
-    {readFile, readFileSync, existsSync, truncate} = require('fs'),
+    {readFile, readFileSync} = require('fs'),
     rimraf = require('rimraf'),
     {initAnalytics} = require('./utils'),
     { RtAudio, RtAudioFormat, RtAudioApi } = require("audify");
@@ -14,9 +12,8 @@ const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPre
     const express = require('express');
     const audioClient = require('castv2-client').Client;
     const DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
-    var wavConverter = require('wav-converter');
     var getPort = require('get-port');
-    const { Stream , Duplex, Readable } = require('stream');
+    const { Stream } = require('stream');
 
 initAnalytics();
 
@@ -824,8 +821,13 @@ const handler = {
                 }
                 return result;
             }
+
+            function convert(n) {
+                var v = n < 0 ? n * 32768 : n * 32767;       // convert in range [-32768, 32767]
+                return Math.max(-32768, Math.min(32768, v)); // clamp
+            }
             // do anything with stereo pcm here
-            var pcmData = Buffer.from(new Int8Array(interleave16(Int16Array.from(leftpcm, x => x * 32767),Int16Array.from(rightpcm, x => x * 32767)).buffer)); 
+            var pcmData = Buffer.from(new Int8Array(interleave16(Int16Array.from(leftpcm, x => convert(x)),Int16Array.from(rightpcm, x => convert(x))).buffer)); 
             // GCBuffer = wavConverter.encodeWav(pcmData, {
             //     numChannels: 2,
             //     sampleRate: 48000,
@@ -877,12 +879,14 @@ const handler = {
             if (devices.indexOf(host) == -1) {
                 devices.push(host);
                 if (name) {
+                   // app.win.webContents.executeJavaScript(`console.log('deviceFound','ip: ${host} name:${name}')`);
                     console.log("deviceFound", host, name);
                 }
             }
         }
 
         function searchForGCDevices() {
+            try{
             let browser = mdns.createBrowser(mdns.tcp('googlecast'));
             browser.on('ready', browser.discover);
     
@@ -899,6 +903,7 @@ const handler = {
                 if (location != null) {
                     getServiceDescription(location, rinfo.address);
                 }
+                
             });
 
             function getLocation(msg) {
@@ -911,7 +916,9 @@ const handler = {
                 }
                 return location;
             }
-            ssdpBrowser.search('urn:dial-multiscreen-org:device:dial:1');
+            ssdpBrowser.search('urn:dial-multiscreen-org:device:dial:1');} catch(e){
+                console.log('Search GC err');
+            }
         }
 
         function setupGCServer() {

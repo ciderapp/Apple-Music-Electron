@@ -45,7 +45,6 @@
     "rimraf": "^3.0.2",
     "source-map-support": "^0.5.16",
     "v8-compile-cache": "^2.1.1",
-    "wav-converter": "^1.0.0",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
