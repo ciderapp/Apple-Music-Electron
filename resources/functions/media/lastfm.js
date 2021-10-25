@@ -58,7 +58,10 @@ const lfm = {
         })
     },
 
-    scrobbleSong: function (attributes) {
+    scrobbleSong: async function (attributes) {
+        await new Promise(resolve => setTimeout(resolve, app.cfg.get('general.lastfmScrobbleDelay') * 1000));
+        currentAttributes = app.media;
+        
         if (!app.lastfm || app.lastfm.cachedAttributes === attributes || app.cfg.get('general.incognitoMode')) {
             return
         }
@@ -67,26 +70,30 @@ const lfm = {
             if (app.lastfm.cachedAttributes.playParams.id === attributes.playParams.id) return;
         }
 
-        if (fs.existsSync(sessionPath)) {
-            // Scrobble playing song.
-            if (attributes.status === true) {
-                app.lastfm.track.scrobble({
-                    'artist': lfm.filterArtistName(attributes.artistName),
-                    'track': attributes.name,
-                    'album': attributes.albumName,
-                    'albumArtist': this.filterArtistName(attributes.artistName),
-                    'timestamp': new Date().getTime() / 1000
-                }, function (err, scrobbled) {
-                    if (err) {
-                        return console.error('[LastFM] An error occurred while scrobbling', err);
-                    }
+        if (currentAttributes.status && currentAttributes.playParams.catalogId === attributes.playParams.catalogId) {
+            if (fs.existsSync(sessionPath)) {
+                // Scrobble playing song.
+                if (attributes.status === true) {
+                    app.lastfm.track.scrobble({
+                        'artist': lfm.filterArtistName(attributes.artistName),
+                        'track': attributes.name,
+                        'album': attributes.albumName,
+                        'albumArtist': this.filterArtistName(attributes.artistName),
+                        'timestamp': new Date().getTime() / 1000
+                    }, function (err, scrobbled) {
+                        if (err) {
+                            return console.error('[LastFM] An error occurred while scrobbling', err);
+                        }
 
-                    console.verbose('[LastFM] Successfully scrobbled: ', scrobbled);
-                });
-                app.lastfm.cachedAttributes = attributes
+                        console.verbose('[LastFM] Successfully scrobbled: ', scrobbled);
+                    });
+                    app.lastfm.cachedAttributes = attributes
+                }
+            } else {
+                this.authenticate();
             }
         } else {
-            this.authenticate()
+            return console.verbose('[LastFM] Did not add ', attributes.name , '-' , lfm.filterArtistName(attributes.artistName), 'because now playing a other song.');
         }
     },
 
@@ -109,7 +116,7 @@ const lfm = {
     },
 
     updateNowPlayingSong: function (attributes) {
-        if (!app.lastfm ||app.lastfm.cachedNowPlayingAttributes === attributes || app.cfg.get('general.incognitoMode')) {
+        if (!app.lastfm ||app.lastfm.cachedNowPlayingAttributes === attributes || app.cfg.get('general.incognitoMode') || !app.cfg.get('general.lastfmNowPlaying')) {
             return
         }
 

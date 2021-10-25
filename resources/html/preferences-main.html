@@ -108,6 +108,20 @@
                 <span class="app-prefs-help typography-title-3-tall">Enabling this will remove the featuring artists
                     from the scrobbled data, meaning on LastFM only the primary artist will be shown.</span>
             </li>
+            <li class="app-prefs-toggle">
+                <span class="typography-title-3-tall">Enable now playing</span>
+                <label class="toggle-element list-element">
+                    <input checked id="lastfmNowPlaying" type="checkbox">
+                    <span class="slider"></span>
+                </label>
+                <span class="app-prefs-help typography-title-3-tall">Enabling this will display what song you are 
+                    playing on LastFM.</span>
+            </li>
+            <li class="app-prefs-dropdown">
+                <label class="typography-title-3-tall" for="lastfmScrobbleDelay">Scrobble delay</label>
+                <input class="form-dropdown-select list-element" id="lastfmScrobbleDelay" name="lastfmScrobbleDelay" type="number" />
+                <span class="app-prefs-help typography-title-3-tall">Sets the wait time before current song is added to scrobble list.</span>
+            </li>
         </ul>
     </div>
     <div class="app-prefs-section visual">

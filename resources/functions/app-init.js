@@ -57,7 +57,9 @@ module.exports = () => {
             discordClearActivityOnPause: true,
             lastfm: false,
             lastfmRemoveFeaturingArtists: true,
-            analyticsEnabled: true
+            lastfmNowPlaying: true,
+            analyticsEnabled: true,
+            lastfmScrobbleDelay: 30
         },
         visual: {
             theme: "default",
