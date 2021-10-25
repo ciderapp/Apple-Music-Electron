@@ -106,6 +106,38 @@ const lfm = {
             artist = artist[0]
         }
         return artist.charAt(0).toUpperCase() + artist.slice(1);
+    },
+
+    updateNowPlayingSong: function (attributes) {
+        if (!app.lastfm ||app.lastfm.cachedNowPlayingAttributes === attributes || app.cfg.get('general.incognitoMode')) {
+            return
+        }
+
+        if (app.lastfm.cachedNowPlayingAttributes) {
+            if (app.lastfm.cachedNowPlayingAttributes.playParams.id === attributes.playParams.id) return;
+        }
+
+        if (fs.existsSync(sessionPath)) {
+            // update Now Playing
+            if (attributes.status === true) {
+                app.lastfm.track.updateNowPlaying({
+                   'artist': lfm.filterArtistName(attributes.artistName),
+                   'track': attributes.name,
+                   'album': attributes.albumName,
+                   'albumArtist': this.filterArtistName(attributes.artistName)
+                }, function (err, nowPlaying) {
+                    if (err) {
+                        return console.error('[LastFM] An error occurred while updating nowPlayingSong', err);
+                    }
+
+                    console.verbose('[LastFM] Successfully updated nowPlayingSong', nowPlaying);                 
+                });
+                app.lastfm.cachedNowPlayingAttributes = attributes
+            }
+            
+        } else {
+            this.authenticate()
+        }
     }
 }
 

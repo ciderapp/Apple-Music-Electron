@@ -69,6 +69,7 @@ const handler = {
             app.ame.win.SetTrayTooltip(a)
             app.ame.discord.updateActivity(a)
             app.ame.lastfm.scrobbleSong(a)
+            app.ame.lastfm.updateNowPlayingSong(a)
             app.ame.mpris.updateState(a)
         });
     },
@@ -88,6 +89,7 @@ const handler = {
                 app.ame.win.SetTrayTooltip(a)
                 app.ame.discord.updateActivity(a)
                 app.ame.lastfm.scrobbleSong(a)
+                app.ame.lastfm.updateNowPlayingSong(a)
                 app.ame.mpris.updateState(a)
             }
         });
