@@ -1,9 +1,7 @@
 require('rimraf');
 const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences} = require('electron'),
-
-    {LoadOneTimeFiles, LoadFiles} = require('./load'),
     {join} = require('path'),
-    {readFile, readFileSync, existsSync, truncate} = require('fs'),
+    {readFile, readFileSync} = require('fs'),
     rimraf = require('rimraf'),
     {initAnalytics} = require('./utils'),
     { RtAudio, RtAudioFormat, RtAudioApi } = require("audify");
@@ -14,9 +12,8 @@ const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPre
     const express = require('express');
     const audioClient = require('castv2-client').Client;
     const DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
-    var wavConverter = require('wav-converter');
     var getPort = require('get-port');
-    const { Stream , Duplex, Readable } = require('stream');
+    const { Stream } = require('stream');
 
 initAnalytics();
 
