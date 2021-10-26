@@ -1,7 +1,7 @@
 require('rimraf');
 const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences} = require('electron'),
     {join} = require('path'),
-    {readFile, readFileSync} = require('fs'),
+    {readFile, readFileSync ,writeFile} = require('fs'),
     rimraf = require('rimraf'),
     {initAnalytics} = require('./utils'),
     { RtAudio, RtAudioFormat, RtAudioApi } = require("audify");
@@ -806,7 +806,7 @@ const handler = {
             
         }
 
-        ipcMain.on('writeWAV' , function (event, leftpcm, rightpcm) { 
+        ipcMain.on('writeWAV' , function (event, leftpcm, rightpcm, bufferlength) { 
 
             function interleave16(leftChannel, rightChannel){
                 var length = leftChannel.length + rightChannel.length;
@@ -821,24 +821,93 @@ const handler = {
                 }
                 return result;
             }
+            
+             //https://github.com/HSU-ANT/jsdafx
+            function quantization(audiobufferleft, audiobufferright){
+                var h = Float32Array.from([1]);
+                var nsState = new Array(0);
+                var ditherstate = new Float32Array(0);
+                var qt = Math.pow(2, 1-16);
+   
+                //noise shifting order 3
+                h = Float32Array.from([1.623, -0.982, 0.109]);                   
+                for (let i = 0; i < nsState.length; i++) {
+                    nsState[i] = new Float32Array(h.length);
+                }
+
+                function setChannelCount(nc) {
+                    if (ditherstate.length !== nc) {
+                      ditherstate = new Float32Array(nc);
+                    }
+                    if (nsState.length !== nc) {
+                      nsState = new Array(nc);
+                      for (let i = 0; i < nsState.length; i++) {
+                        nsState[i] = new Float32Array(h.length);
+                      }
+                    }
+                }
+   
+                function hpDither(channel) {
+                    const rnd = Math.random() - 0.5;
+                    const d = rnd - ditherstate[channel];
+                    ditherstate[channel] = rnd;
+                    return d;
+                }
+                
+
+                setChannelCount(2);
+                const inputs = [audiobufferleft,audiobufferright];
+                const outputs = [audiobufferleft,audiobufferright];
+                
+                for (let channel = 0; channel < inputs.length; channel++) {
+                    const inputData = inputs[channel];
+                    const outputData = outputs[channel];
+                    for (let sample = 0; sample < bufferlength; sample++) {
+                    let input = inputData[sample];
+
+                        for (let i = 0; i < h.length; i++) {
+                        input -= h[i] * nsState[channel][i];
+                        }
+                    
+                        let d_rand = 0.0;
+                        ditherstate = 0.0;
+                        d_rand = hpDither(channel);
+
+                        const tmpOutput = qt * Math.round(input/qt + d_rand);
+                        for (let i = h.length-1; i >= 0; i--) {
+                            nsState[channel][i] = nsState[channel][i-1];
+                        }
+                        nsState[channel][0] = tmpOutput - input;
+                        outputData[sample] = tmpOutput;
+                    }
+                }  
+                return outputs;
+            }
+
 
             function convert(n) {
                 var v = n < 0 ? n * 32768 : n * 32767;       // convert in range [-32768, 32767]
                 return Math.max(-32768, Math.min(32768, v)); // clamp
             }
-            // do anything with stereo pcm here
-            var pcmData = Buffer.from(new Int8Array(interleave16(Int16Array.from(leftpcm, x => convert(x)),Int16Array.from(rightpcm, x => convert(x))).buffer)); 
-            // GCBuffer = wavConverter.encodeWav(pcmData, {
-            //     numChannels: 2,
-            //     sampleRate: 48000,
-            //     byteRate: 16,
-            // });
+             var newaudio = quantization(leftpcm,rightpcm);
+
+            //  writeFile(join(app.getPath('userData'), 'buffertest.raw'), Buffer.from(new Int8Array(interleave16(Int16Array.from(newaudio[0], x => convert(x)),Int16Array.from(newaudio[1], x => convert(x))).buffer)),{flag: 'a+'}, function (err) {
+            //     if (err) throw err;
+            //      console.log('It\'s saved!');
+            //  });
+            //do anything with stereo pcm here
+            var pcmData = Buffer.from(new Int8Array(interleave16(Int16Array.from(newaudio[0], x => convert(x)),Int16Array.from(newaudio[1], x => convert(x))).buffer)); 
+            GCBuffer = wavConverter.encodeWav(pcmData, {
+                numChannels: 2,
+                sampleRate: 48000,
+                byteRate: 16,
+            });
             console.log('oof')
             if(!headerSent){
             const header = new Buffer.alloc(44)
 
             header.write('RIFF', 0)
-            header.writeUInt32LE(999999999, 4)
+            header.writeUInt32LE(2147483600, 4)
             header.write('WAVE', 8)
             header.write('fmt ', 12)
             header.writeUInt8(16, 16)
@@ -849,7 +918,7 @@ const handler = {
             header.writeUInt8(4, 32)
             header.writeUInt8(16, 34)
             header.write('data', 36)
-            header.writeUInt32LE(999999999+ 44 - 8, 40)
+            header.writeUInt32LE(2147483600+ 44 - 8, 40)
             GCstream.write(Buffer.concat([header,pcmData]));
             headerSent = true;
         } else {GCstream.write(pcmData);}
@@ -936,7 +1005,7 @@ const handler = {
             });
         }
 
-        function loadMedia(client, cb) {
+        function loadMedia(client, song, artist, album, albumart, cb) {
             console.log('hws');
             client.launch(DefaultMediaReceiver, (err, player) => {
                 if (err) {
@@ -947,15 +1016,47 @@ const handler = {
                         // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
                         contentId: 'http://' + getIp() + ':' + server.address().port + '/',
                         contentType: 'audio/vnd.wav',
-                        streamType: 'LIVE', // or LIVE
+                        streamType: 'BUFFERED', // or LIVE
     
                         // Title and cover displayed while buffering
                         metadata: {
                             type: 0,
-                            metadataType: 0,
-                            title: "Apple Music Electron",
+                            metadataType: 3,
+                            title: song ?? "", 
+                            albumName: album ?? "",
+                            artist: artist ?? "",
+                            images: [
+                              { url: albumart ?? "" }]
                         }
                     };
+                    ipcMain.on('setupNewTrack', function(event, song, artist, album, albumart, url) {
+                        try{
+                        let newmedia = {
+                            // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
+                            contentId: (url != '' && url) ? url : 'http://' + getIp() + ':' + server.address().port + '/',
+                            contentType: 'audio/vnd.wav',
+                            streamType: 'BUFFERED', // or LIVE
+        
+                            // Title and cover displayed while buffering
+                            metadata: {
+                                type: 0,
+                                metadataType: 3,
+                                title: song, 
+                                albumName: album,
+                                artist: artist,
+                                images: [
+                                  { url: albumart }]
+                            }
+                        };
+                        player.pause();
+                        headerSent = false;
+                        player.load(newmedia, {
+                            autoplay: true
+                        }, (err, status) => {
+                            console.log('media loaded playerState=%s', status);
+                        }); }catch(e){}   
+                    });
+                    
     
                     player.on('status', status => {
                         console.log('status broadcast playerState=%s', status);
@@ -967,7 +1068,8 @@ const handler = {
                         autoplay: true
                     }, (err, status) => {
                         console.log('media loaded playerState=%s', status);
-                    });
+                    });                   
+
     
                     client.getStatus((x, status) => {
                         if (status && status.volume)
@@ -977,6 +1079,7 @@ const handler = {
                             client.stepInterval = status.volume.stepInterval;
                         }
                     })
+
             });
         }
 
@@ -1004,7 +1107,7 @@ const handler = {
             return ip;
         }
 
-        function stream(host){
+        function stream(host, song, artist, album, albumart){
             let client = new audioClient();
             client.volume = 100;
             client.stepInterval = 0.5;
@@ -1016,7 +1119,7 @@ const handler = {
                     connectedHosts[host] = client;
                     activeConnections.push(client);
                 }
-                loadMedia(client);
+                loadMedia(client, song, artist, album, albumart);
             });
             client.on('close', ()  => {
                 console.info("Client Closed");
@@ -1030,17 +1133,34 @@ const handler = {
             client.on('error', err => {
                 console.log('Error: %s', err.message);
                 client.close();
-                delete this.connectedHosts[host];
+                delete connectedHosts[host];
             });
         }
 
-        ipcMain.on('performGCCast',function(event, ip){
-            setupGCServer().then(function(){stream(ip);})
+        ipcMain.on('performGCCast',function(event, ip, song, artist, album, albumart){
+            setupGCServer().then(function(){stream(ip, song, artist, album, albumart);})
         });
 
         ipcMain.on('getChromeCastDevices',function(event, data){
             searchForGCDevices();
         });
+        
+        ipcMain.on('stopGCast',function(event){
+             GCRunning = false;
+            expectedConnections = 0;
+             currentConnections = 0;
+             activeConnections = [];
+            requests = [];
+            GCstream = new Stream.PassThrough();
+             connectedHosts = {};
+    
+    
+             port = false;
+             server = false;
+             bufcount = 0;
+             bufcount2 = 0;
+             headerSent = false;
+        })
     }
 }
 

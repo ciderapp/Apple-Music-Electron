@@ -1,8 +1,9 @@
 
 
 var override = false;
-var APOverride = false;
-var APstream;
+var GCOverride = false;
+var GCstream;
+var searchInt;
 var AMEx = {
     context: new AudioContext(),
     result: {},
@@ -41,14 +42,17 @@ var AMEx = {
 };
 var bassFilter;
 var trebleFilter;
+
 var _amOT = {
     fInit: false,
     eqReady: false,
     init: function (cb = function () {}) {
         _amOT.fInit = true;
-        var searchInt = setInterval(function () {
+         searchInt = setInterval(function () {
             if (document.getElementById("apple-music-player")) {
                 _amOT.eqReady = true;
+              /*  document.domain = "blobstore.apple.com"; */
+                document.getElementById("apple-music-player").crossOrigin = "anonymous";
                 _amOT.amplifyMedia(document.getElementById("apple-music-player"), 0);
                 var context = AMEx.context;
                 var source = AMEx.result.source;
@@ -72,25 +76,23 @@ var _amOT = {
         }, 1000);
     },
     amplifyMedia: function (mediaElem, multiplier) {
-        var context = new(window.AudioContext || window.webkitAudioContext),
-            result = {
-                context: context,
-                source: context.createMediaElementSource(mediaElem),
-                gain: context.createGain(),
-                media: mediaElem,
-                amplify: function (multiplier) {
-                    result.gain.gain.value = multiplier;
-                },
-                getAmpLevel: function () {
-                    return result.gain.gain.value;
-                }
-            };
-        AMEx.context = context;
-        AMEx.result = result;
-        result.source.connect(result.gain);
-        result.gain.connect(context.destination);
-        result.amplify(multiplier);
-        return result;
+        AMEx.context = new(window.AudioContext || window.webkitAudioContext),
+        AMEx.result = {
+            context: AMEx.context,
+            source: AMEx.context.createMediaElementSource(mediaElem),
+            gain: AMEx.context.createGain(),
+            media: mediaElem,
+            amplify: function (multiplier) {
+                AMEx.result.gain.gain.value = multiplier;
+            },
+            getAmpLevel: function () {
+                return AMEx.result.gain.gain.value;
+            }
+        };
+        AMEx.result.source.connect(AMEx.result.gain);
+        AMEx.result.gain.connect(AMEx.context.destination);
+        AMEx.result.amplify(multiplier);
+        return AMEx.result;
     },
     popup_generic: function ({
         title = "",
@@ -253,13 +255,13 @@ var _amOT = {
         document.body.appendChild(backdrop);
     },
     getRawPCM: function(){
-        var x = AMEx.result.context.createScriptProcessor(16384,2,1);
+        var x = AMEx.context.createScriptProcessor(16384,2,1);
 
         x.onaudioprocess = function(e){
             if (!override){
             var leftpcm = e.inputBuffer.getChannelData(0);
             var rightpcm = e.inputBuffer.getChannelData(1);
-            ipcRenderer.send('writePCM',leftpcm,rightpcm);
+            ipcRenderer.send('writePCM',leftpcm,rightpcm, e.inputBuffer.length);
         }
         };
         AMEx.result.source.connect(x);x.connect(AMEx.context.destination);
@@ -269,18 +271,22 @@ var _amOT = {
     },
     playGC : function(ip){
        /* _amOT.init(); */
-        ipcRenderer.send('performGCCast',ip);
-        var x = AMEx.result.context.createScriptProcessor(16384,2,1);
+        ipcRenderer.send('performGCCast',ip, MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,(MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256));
+        GCstream = AMEx.result.context.createScriptProcessor(16384,2,1);
 
-        x.onaudioprocess = function(e){
-            if (!override){
+        GCstream.onaudioprocess = function(e){
+            if (!GCOverride){
             var leftpcm = e.inputBuffer.getChannelData(0);
             var rightpcm = e.inputBuffer.getChannelData(1);
             ipcRenderer.send('writeWAV',leftpcm,rightpcm);
         }
+        
         };
-        AMEx.result.source.connect(x);x.connect(AMEx.context.destination);
-    }
+        AMEx.result.source.connect(GCstream);GCstream.connect(AMEx.context.destination);
+    },
+    stopGC : function(){
+    
+    } 
 };
 
 
