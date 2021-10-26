@@ -761,9 +761,12 @@ const handler = {
             rtAudio.write(buffer);
         });
 
+
+
+
        
-
-
+    },
+    GoogleCastHandler: function(){
         var devices = [];
         var GCRunning = false;
         var GCBuffer ;
@@ -944,9 +947,12 @@ const handler = {
             if (devices.indexOf(host) == -1) {
                 devices.push(host);
                 if (name) {
-                   // app.win.webContents.executeJavaScript(`console.log('deviceFound','ip: ${host} name:${name}')`);
+                    app.win.webContents.executeJavaScript(`console.log('deviceFound','ip: ${host} name:${name}')`);
                     console.log("deviceFound", host, name);
                 }
+            } else {
+                app.win.webContents.executeJavaScript(`console.log('deviceFound (added)','ip: ${host} name:${name}')`);
+                console.log("deviceFound (added)", host, name);
             }
         }
 
@@ -1002,7 +1008,6 @@ const handler = {
         }
 
         function loadMedia(client, song, artist, album, albumart, cb) {
-            console.log('hws');
             client.launch(DefaultMediaReceiver, (err, player) => {
                 if (err) {
                     console.log(err);
