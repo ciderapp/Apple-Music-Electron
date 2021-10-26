@@ -1,5 +1,5 @@
 require('rimraf');
-const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences} = require('electron'),
+const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences, nativeTheme} = require('electron'),
     {join} = require('path'),
     {readFile, readFileSync} = require('fs'),
     {initAnalytics} = require('./utils');
@@ -339,10 +339,16 @@ const handler = {
         })
 
         // Scaling Changes
-        handledConfigs.push('visual.scaling')
+        handledConfigs.push('visual.scaling');
         app.cfg.onDidChange('visual.scaling', (newValue, _oldValue) => {
             app.win.webContents.setZoomFactor(parseFloat(newValue))
-        })
+        });
+
+        // Mode Changes
+        handledConfigs.push('advanced.forceApplicationMode');
+        app.cfg.onDidChange('advanced.forceApplicationMode', (newValue, oldValue) => {
+            nativeTheme.themeSource = newValue;
+        });
     },
 
     RendererListenerHandlers: () => {

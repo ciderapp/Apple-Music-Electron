@@ -25,6 +25,11 @@ const init = {
         app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
         app.commandLine.appendSwitch('high-dpi-support', 'true')
         app.commandLine.appendSwitch('force-device-scale-factor', '1')
+        if (app.cfg.get('advanced.verboseLogging')) {
+            app.commandLine.appendSwitch('--enable-logging');
+            app.commandLine.appendSwitch('--log-file', join(app.getPath('userData'), 'logs', 'renderer.log'));
+            console.verbose(`[InitializeBase] Renderer logging setup at ${join(app.getPath('userData'), 'logs', 'renderer.log')}`);
+        }
 
         // Media Key Hijacking
         if (app.cfg.get('advanced.preventMediaKeyHijacking')) {
