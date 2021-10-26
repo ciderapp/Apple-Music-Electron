@@ -21,7 +21,8 @@ function CreateWindow() {
     app.ame.handler.PlaybackStateHandler(); // Playback Change Listener
     app.ame.handler.MediaStateHandler(); // Media Change Listener
     app.ame.handler.LyricsHandler(); // Lyrics Handling
-    app.ame.handler.AudioHandler(); // Audio Stuff
+    app.ame.handler.AudioHandler(); // Exclusive Audio Stuff
+    app.ame.handler.GoogleCastHandler(); // Chromecast
     app.ame.handler.RendererListenerHandlers(); // Renderer Listeners
     app.ame.handler.SettingsHandler(); // Handles updates to settings
 
