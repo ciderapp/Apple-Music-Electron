@@ -1083,6 +1083,8 @@ try {
                     AMSettings.HandleField('discordClearActivityOnPause');
                     AMSettings.HandleField('lfmConnect');
                     AMSettings.HandleField('lastfmRemoveFeaturingArtists');
+                    AMSettings.HandleField('lastfmNowPlaying');
+                    AMSettings.HandleField('lastfmScrobbleDelay');
 
                     /* Visual Settings */
                     AMSettings.HandleField('theme');
