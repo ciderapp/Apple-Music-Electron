@@ -49,7 +49,6 @@ var _amOT = {
          searchInt = setInterval(function () {
             if (document.getElementById("apple-music-player")) {
                 _amOT.eqReady = true;
-              /*  document.domain = "blobstore.apple.com"; */
                 document.getElementById("apple-music-player").crossOrigin = "anonymous";
                 _amOT.amplifyMedia(document.getElementById("apple-music-player"), 0);
                 var context = AMEx.context;
