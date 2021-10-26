@@ -44,6 +44,9 @@ app.on('ready', () => {
 
     // Apple Header tomfoolery.
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+        
+        if(details.url.match(/^https:\/\/store-\d{3}\.blobstore\.apple\.com/)){
+        details.responseHeaders['Access-Control-Allow-Origin'] = '*';}
         details.responseHeaders['Content-Security-Policy'] = 'unsafe-inline'
         callback({ responseHeaders: details.responseHeaders })
     })

@@ -1,5 +1,3 @@
-
-
 var override = false;
 var GCOverride = false;
 var GCstream;
@@ -51,7 +49,6 @@ var _amOT = {
          searchInt = setInterval(function () {
             if (document.getElementById("apple-music-player")) {
                 _amOT.eqReady = true;
-              /*  document.domain = "blobstore.apple.com"; */
                 document.getElementById("apple-music-player").crossOrigin = "anonymous";
                 _amOT.amplifyMedia(document.getElementById("apple-music-player"), 0);
                 var context = AMEx.context;
@@ -282,10 +279,13 @@ var _amOT = {
         }
         
         };
+
+
         AMEx.result.source.connect(GCstream);GCstream.connect(AMEx.context.destination);
     },
     stopGC : function(){
-    
+       GCOverride = true;
+       ipcRenderer.send('stopGCast','');
     } 
 };
 

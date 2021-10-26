@@ -1025,11 +1025,11 @@ const handler = {
                               { url: albumart ?? "" }]
                         }
                     };
-                    ipcMain.on('setupNewTrack', function(event, song, artist, album, albumart, url) {
+                    ipcMain.on('setupNewTrack', function(event, song, artist, album, albumart) {
                         try{
                         let newmedia = {
                             // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
-                            contentId: (url != '' && url) ? url : 'http://' + getIp() + ':' + server.address().port + '/',
+                            contentId:  'http://' + getIp() + ':' + server.address().port + '/',
                             contentType: 'audio/vnd.wav',
                             streamType: 'BUFFERED', // or LIVE
         
@@ -1050,7 +1050,10 @@ const handler = {
                             autoplay: true
                         }, (err, status) => {
                             console.log('media loaded playerState=%s', status);
-                        }); }catch(e){}   
+                        }); 
+                    }catch(e){
+                        console.log('GCerror',e)
+                    }   
                     });
                     
     
