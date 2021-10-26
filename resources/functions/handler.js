@@ -765,8 +765,8 @@ const handler = {
             buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm),Float32Array.from(rightpcm)).buffer));
             rtAudio.write(buffer);
         });
-
-
+        ipcMain.on('muteAudio' ,function (event, mute){ 
+        app.win.webContents.setAudioMuted(mute);});
 
 
        
@@ -1147,7 +1147,9 @@ const handler = {
         }
 
         ipcMain.on('performGCCast',function(event, ip, song, artist, album, albumart){
-            setupGCServer().then(function(){stream(ip, song, artist, album, albumart);})
+            setupGCServer().then(function(){
+                app.win.webContents.setAudioMuted(true);
+                stream(ip, song, artist, album, albumart);})
         });
 
         ipcMain.on('getChromeCastDevices',function(event, data){
@@ -1155,20 +1157,19 @@ const handler = {
         });
         
         ipcMain.on('stopGCast',function(event){
-             GCRunning = false;
+            app.win.webContents.setAudioMuted(false);
+            GCRunning = false;
             expectedConnections = 0;
-             currentConnections = 0;
-             activeConnections = [];
+            currentConnections = 0;
+            activeConnections = [];
             requests = [];
             GCstream = new Stream.PassThrough();
-             connectedHosts = {};
-    
-    
-             port = false;
-             server = false;
-             bufcount = 0;
-             bufcount2 = 0;
-             headerSent = false;
+            connectedHosts = {};
+            port = false;
+            server = false;
+            bufcount = 0;
+            bufcount2 = 0;
+            headerSent = false;
         })
     }
 }
