@@ -1,5 +1,3 @@
-
-
 var override = false;
 var GCOverride = false;
 var GCstream;
@@ -282,10 +280,13 @@ var _amOT = {
         }
         
         };
+
+
         AMEx.result.source.connect(GCstream);GCstream.connect(AMEx.context.destination);
     },
     stopGC : function(){
-    
+       GCOverride = true;
+       ipcRenderer.send('stopGCast','');
     } 
 };
 
