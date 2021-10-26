@@ -1114,6 +1114,7 @@ try {
                     AMSettings.HandleField('closeButtonMinimize');
 
                     /* Advanced Settings */
+                    AMSettings.HandleField('forceApplicationMode');
                     AMSettings.HandleField('verboseLogging');
                     AMSettings.HandleField('alwaysOnTop');
                     AMSettings.HandleField('autoUpdaterBetaBuilds');
