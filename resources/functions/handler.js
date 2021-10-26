@@ -897,11 +897,7 @@ const handler = {
             //  });
             //do anything with stereo pcm here
             var pcmData = Buffer.from(new Int8Array(interleave16(Int16Array.from(newaudio[0], x => convert(x)),Int16Array.from(newaudio[1], x => convert(x))).buffer)); 
-            GCBuffer = wavConverter.encodeWav(pcmData, {
-                numChannels: 2,
-                sampleRate: 48000,
-                byteRate: 16,
-            });
+
             console.log('oof')
             if(!headerSent){
             const header = new Buffer.alloc(44)
