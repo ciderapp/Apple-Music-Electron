@@ -1,4 +1,4 @@
-var override = false;
+var EAoverride = false;
 var GCOverride = false;
 var GCstream;
 var searchInt;
@@ -41,16 +41,16 @@ var AMEx = {
 var bassFilter;
 var trebleFilter;
 
-var _amOT = {
+var AudioOutputs = {
     fInit: false,
     eqReady: false,
     init: function (cb = function () {}) {
-        _amOT.fInit = true;
+        AudioOutputs.fInit = true;
          searchInt = setInterval(function () {
             if (document.getElementById("apple-music-player")) {
-                _amOT.eqReady = true;
+                AudioOutputs.eqReady = true;
                 document.getElementById("apple-music-player").crossOrigin = "anonymous";
-                _amOT.amplifyMedia(document.getElementById("apple-music-player"), 0);
+                AudioOutputs.amplifyMedia(document.getElementById("apple-music-player"), 0);
                 var context = AMEx.context;
                 var source = AMEx.result.source;
                 bassFilter = context.createBiquadFilter();
@@ -147,7 +147,7 @@ var _amOT = {
         document.body.appendChild(backdrop);
     },
     ShowEQ: function () {
-        if (!_amOT.eqReady) {
+        if (!AudioOutputs.eqReady) {
             alert("Audio is not ready, Play a song to use this function.");
         };
         let backdrop = document.createElement("div");
@@ -251,11 +251,13 @@ var _amOT = {
         backdrop.appendChild(win);
         document.body.appendChild(backdrop);
     },
-    getRawPCM: function(){
+    startExclusiveAudio: function(){
+        EAoverride = false;
+        ipcRenderer.send('muteAudio',true);
         var x = AMEx.context.createScriptProcessor(16384,2,1);
 
         x.onaudioprocess = function(e){
-            if (!override){
+            if (!EAoverride){
             var leftpcm = e.inputBuffer.getChannelData(0);
             var rightpcm = e.inputBuffer.getChannelData(1);
             ipcRenderer.send('writePCM',leftpcm,rightpcm, e.inputBuffer.length);
@@ -263,11 +265,15 @@ var _amOT = {
         };
         AMEx.result.source.connect(x);x.connect(AMEx.context.destination);
     },
+    stopExclusiveAudio: function(){
+        EAoverride = true;
+        ipcRenderer.send('muteAudio',false);
+    },
     getGCDevices: function(){
         ipcRenderer.send('getChromeCastDevices','');
     },
     playGC : function(ip){
-       /* _amOT.init(); */
+        GCOverride = false;
         ipcRenderer.send('performGCCast',ip, MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,(MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256));
         GCstream = AMEx.result.context.createScriptProcessor(16384,2,1);
 
@@ -295,13 +301,13 @@ document.addEventListener('keydown', function (event) {
     if (event.ctrlKey || event.metaKey) {
         switch (String.fromCharCode(event.which).toLowerCase()) {
             case "2":
-                _amOT.ShowEQ();
+                AudioOutputs.ShowEQ();
                 break;
             case "3":
-                (override) ? (override = false) : (override = true);
+                (EAoverride) ? (EAoverride = false) : (EAoverride = true);
                 break;    
         }
     }
 });
 
-_amOT.init()
+AudioOutputs.init()
