@@ -81,6 +81,7 @@ const handler = {
             app.ame.win.SetTrayTooltip(a)
             app.ame.discord.updateActivity(a)
             app.ame.lastfm.scrobbleSong(a)
+            app.ame.lastfm.updateNowPlayingSong(a)
             app.ame.mpris.updateState(a)
         });
     },
@@ -100,6 +101,7 @@ const handler = {
                 app.ame.win.SetTrayTooltip(a)
                 app.ame.discord.updateActivity(a)
                 app.ame.lastfm.scrobbleSong(a)
+                app.ame.lastfm.updateNowPlayingSong(a)
                 app.ame.mpris.updateState(a)
             }
         });
@@ -297,7 +299,7 @@ const handler = {
         /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         *  Individually Handled Configuration Options
         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-        handledConfigs.push('advanced.devToolsOnStartup', 'general.storefront') // Stuff for the restart to just ignore
+        handledConfigs.push('advanced.devToolsOnStartup', 'general.storefront', 'tokens.lastfm') // Stuff for the restart to just ignore
 
         // Theme Changes
         handledConfigs.push('visual.theme');
@@ -557,7 +559,10 @@ const handler = {
             let authURI = String(startArgs).split('/auth/')[1]
             if (authURI.startsWith('lastfm')) { // If we wanted more auth options
                 const authKey = authURI.split('lastfm?token=')[1];
+                app.cfg.set('general.lastfm', true);
+                app.cfg.set('tokens.lastfm', authKey);
                 app.win.webContents.send('LastfmAuthenticated', authKey);
+                app.ame.lastfm.authenticate()
             }
         } else {
             if (!app.isAuthorized) return

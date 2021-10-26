@@ -55,9 +55,11 @@ module.exports = () => {
             startupPage: "browse",
             discordRPC: "ame-title",
             discordClearActivityOnPause: true,
-            lastfmEnabled: false,
+            lastfm: false,
             lastfmRemoveFeaturingArtists: true,
-            analyticsEnabled: true
+            lastfmNowPlaying: true,
+            analyticsEnabled: true,
+            lastfmScrobbleDelay: 30
         },
         visual: {
             theme: "default",
