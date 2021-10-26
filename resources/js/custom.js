@@ -850,18 +850,18 @@ try {
                     function volumeChange(event) {
                         if (checkScrollDirectionIsUp(event)) {
                             if (MusicKit.getInstance().volume <= 1) {
-                                if ((MusicKit.getInstance().volume + 0.04) > 1) {
+                                if ((MusicKit.getInstance().volume + 0.05) > 1) {
                                     MusicKit.getInstance().volume = 1
                                 } else {
-                                    MusicKit.getInstance().volume = MusicKit.getInstance().volume + 0.04;
+                                    MusicKit.getInstance().volume += 0.05;
                                 }
                             }
                         } else {
                             if (MusicKit.getInstance().volume >= 0) {
-                                if ((MusicKit.getInstance().volume - 0.04) < 0) {
+                                if ((MusicKit.getInstance().volume - 0.05) < 0) {
                                     MusicKit.getInstance().volume = 0;
                                 } else {
-                                    MusicKit.getInstance().volume = MusicKit.getInstance().volume - 0.04;
+                                    MusicKit.getInstance().volume -= 0.05;
                                 }
                             }
                         }
@@ -957,9 +957,8 @@ try {
 
             lastfm: {
                 LastFMDeauthorize: () => {
-                    preferences.general.lastfmAuthKey = 'Put your Auth Key here.';
-                    preferences.general.lastfmEnabled = false;
-                    ipcRenderer.sendSync('setStore', preferences);
+                    ipcRenderer.invoke('setStoreValue', 'general.lastfm', false).catch((e) => console.error(e));
+                    ipcRenderer.invoke('setStoreValue', 'tokens.lastfm', '').catch((e) => console.error(e));
                     const element = document.getElementById('lfmConnect');
                     element.innerHTML = 'Connect';
                     element.onclick = AMSettings.lastfm.LastFMAuthenticate;
@@ -978,11 +977,8 @@ try {
                     }, 20000);
 
                     ipcRenderer.on('LastfmAuthenticated', function (_event, lfmAuthKey) {
-                        preferences.general.lastfmEnabled = true;
-                        preferences.general.lastfmAuthKey = lfmAuthKey;
                         element.innerHTML = `Disconnect\n<p style="font-size: 8px"><i>(Authed: ${lfmAuthKey})</i></p>`;
                         element.onclick = AMSettings.lastfm.LastFMDeauthorize;
-                        ipcRenderer.sendSync('setStore', preferences);
                     });
                 }
             },
@@ -1096,6 +1092,8 @@ try {
                     AMSettings.HandleField('discordClearActivityOnPause');
                     AMSettings.HandleField('lfmConnect');
                     AMSettings.HandleField('lastfmRemoveFeaturingArtists');
+                    AMSettings.HandleField('lastfmNowPlaying');
+                    AMSettings.HandleField('lastfmScrobbleDelay');
 
                     /* Visual Settings */
                     AMSettings.HandleField('theme');
@@ -1117,6 +1115,7 @@ try {
                     /* Audio Settings */
                     AMSettings.HandleField('audioQuality');
                     AMSettings.HandleField('seemlessAudioTransitions');
+                    AMSettings.HandleField('volume');
 
                     /* Window Settings */
                     AMSettings.HandleField('appStartupBehavior');
