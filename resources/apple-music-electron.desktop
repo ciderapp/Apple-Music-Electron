@@ -5,6 +5,6 @@ Name=Apple Music
 Comment=Apple Music Electron
 Exec=apple-music-electron
 Icon=./icons/icon.icns
-MimeType=x-scheme-handler/apple-music-electron;
+MimeType=x-scheme-handler/ame;
 Terminal=False
 Categories=AudioVideo

@@ -41,11 +41,16 @@
   },
   "devDependencies": {
     "electron": "https://github.com/castlabs/electron-releases.git",
-    "electron-builder": "^22.7.0",
+    "electron-builder": "^22.13.1",
     "electron-webpack": "^2.7.4",
     "musickit-typescript": "^1.2.4",
     "webpack": "~5.60.0"
   },
+  "fileAssociations": [{
+    "name": "Apple Music Electron",
+    "description": "Apple Music Electron",
+    "mimeType": "x-scheme-handler/ame"
+  }],
   "build": {
     "electronVersion": "15.3.0",
     "electronDownload": {
@@ -53,6 +58,10 @@
       "mirror": "https://github.com/castlabs/electron-releases/releases/download/v"
     },
     "appId": "apple-music",
+    "protocols": {
+      "name": "Apple Music Electron",
+      "schemes": ["ame", "itms", "itmss", "musics", "music"]
+    },
     "extends": null,
     "files": [
       "**/*",
@@ -97,18 +106,6 @@
       "icon": "./resources/icons/icon.icns",
       "category": "public.app-category.music",
       "darkModeSupport": true
-    },
-    "protocols": [
-      {
-        "name": "Apple Music Electron Opener/Queuer",
-        "schemes": [
-          "ame",
-          "itms",
-          "itmss",
-          "musics",
-          "music"
-        ]
-      }
-    ]
+    }
   }
 }
