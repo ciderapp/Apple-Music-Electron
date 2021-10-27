@@ -16,8 +16,12 @@ const lfm = {
     },
 
     authenticate: function () {
+        if (app.cfg.get('tokens.lastfm')) {
+            app.cfg.set('general.lastfm', true);
+        }
+
         if (!app.cfg.get('general.lastfm') || !app.cfg.get('tokens.lastfm')) {
-            app.cfg.set('general.lastfm', false)
+            app.cfg.set('general.lastfm', false);
             return
         }
 
