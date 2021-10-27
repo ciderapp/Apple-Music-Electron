@@ -47,7 +47,7 @@
                         ">
                         <div style="margin: 12px;">
                             Choose another country or region to see content specific to your location.
-                            <select v-model="prefs.storefront" class="md-select" size="5" style="width:100%;height:100%;">
+                            <select v-model="prefs.general.storefront" class="md-select" size="5" style="width:100%;height:100%;">
                                 <option value=''>Automatic</option>
                                 <option disabled>Africa, Middle East and India</option>
                                 <option value='dz'>Algeria</option>
@@ -254,9 +254,10 @@
                                 Theme
                             </div>
                             <div class="md-option-segment md-option-segment_auto">
-                                <select class="md-select" v-model="prefs.theme"
-                                        @change="AMStyling.loadTheme(prefs.theme)"
+                                <select class="md-select" v-model="prefs.visual.theme"
+                                        @change="AMStyling.loadTheme(prefs.visual.theme)"
                                         style="width:180px;">
+                                    <option value="">Default
                                     <option v-for="(theme, id) in AM.themesListing" :value="id">{{ theme.name }}
                                     </option>
                                 </select>
@@ -267,7 +268,7 @@
                                 Transparency
                             </div>
                             <div class="md-option-segment md-option-segment_auto">
-                                <select class="md-select" style="width:180px;">
+                                <select class="md-select" v-model="prefs.visual.transparencyEffect" style="width:180px;">
                                     <option value=''>Disabled</option>
                                     <option value='blur'>Blur Behind</option>
                                     <option value='acrylic'>Acrylic</option>
@@ -281,7 +282,7 @@
                                 <small>Force the application to use your operating systems' accent.</small>
                             </div>
                             <div class="md-option-segment md-option-segment_auto">
-                                <input type="checkbox" switch/>
+                                <input type="checkbox" v-model="prefs.visual.useOperatingSystemAccent" switch/>
                             </div>
                         </div>
                         <div class="md-option-line">
@@ -289,7 +290,7 @@
                                 Remove Scrollbars
                             </div>
                             <div class="md-option-segment md-option-segment_auto">
-                                <input type="checkbox" switch/>
+                                <input type="checkbox" v-model="prefs.visual.removeScrollbars" switch/>
                             </div>
                         </div>
                     </div>
@@ -314,7 +315,7 @@
                                 Audio Quality
                             </div>
                             <div class="md-option-segment md-option-segment_auto">
-                                <select v-model="prefs.audioQuality" class="md-select" style="width:180px;">
+                                <select v-model="prefs.audio.audioQuality" class="md-select" style="width:180px;">
                                     <option value='auto'>Automatic</option>
                                     <option value='extreme'>Extreme (990kbps)</option>
                                     <option value='high'>High (256kbps)</option>
@@ -324,13 +325,23 @@
                         </div>
                         <div class="md-option-line">
                             <div class="md-option-segment">
+                                Seemless Audio Transitions
+                                <br>
+                                <small>Reduces or completely removes the delay between songs providing a smooth audio experience.</small>
+                            </div>
+                            <div class="md-option-segment md-option-segment_auto">
+                                <input type="checkbox" v-model="prefs.audio.seemlessAudioTransitions" switch/>
+                            </div>
+                        </div>
+                        <div class="md-option-line">
+                            <div class="md-option-segment">
                                 Discord Rich Presence
                             </div>
                             <div class="md-option-segment md-option-segment_auto">
-                                <select class="md-select" style="width:180px;">
-                                    <option>Disabled</option>
-                                    <option>Enabled as "Apple Music"</option>
-                                    <option>Enabled as "Apple Music Electron"</option>
+                                <select class="md-select" v-model="prefs.general.discordRPC" style="width:180px;">
+                                    <option value="">Disabled</option>
+                                    <option value="am-title">Enabled as "Apple Music"</option>
+                                    <option value="ame-title">Enabled as "Apple Music Electron"</option>
                                 </select>
                             </div>
                         </div>
@@ -339,7 +350,7 @@
                                 Close button should minimize Apple Music Electron
                             </div>
                             <div class="md-option-segment md-option-segment_auto">
-                                <input type="checkbox" switch/>
+                                <input type="checkbox" v-model="prefs.window.closeButtonMinimize" switch/>
                             </div>
                         </div>
                         <div class="md-option-line">
@@ -350,15 +361,15 @@
                                     detection.</small>
                             </div>
                             <div class="md-option-segment md-option-segment_auto">
-                                <input type="checkbox" v-model="prefs.mxm" switch/>
+                                <input type="checkbox" v-model="prefs.visual.mxmon" switch/>
                             </div>
                         </div>
-                        <div class="md-option-line" v-if="prefs.mxm">
+                        <div class="md-option-line" v-if="prefs.visual.mxmon">
                             <div class="md-option-segment">
                                 Musixmatch Lyrics Translation Language
                             </div>
                             <div class="md-option-segment md-option-segment_auto">
-                                <select v-model="prefs.mxmlanguage" class="md-select" style="width:180px;">
+                                <select v-model="prefs.visual.mxmlanguage" class="md-select" style="width:180px;">
                                     <option value='disabled'>Disabled</option>
                                     <option value='ab'>Abkhazian</option>
                                     <option value='aa'>Afar</option>
@@ -661,7 +672,7 @@
                                 occur
                             </div>
                             <div class="md-option-segment md-option-segment_auto">
-                                <input type="checkbox" switch/>
+                                <input type="checkbox" v-model="prefs.general.analyticsEnabled" switch/>
                             </div>
                         </div>
                     </div>

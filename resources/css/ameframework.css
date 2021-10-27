@@ -63,7 +63,7 @@
     filter: brightness(75%);
 }
 
-.md-select, .md-select > option {
+.md-select {
     padding: 8px 16px;
     font-size: 1em;
     font-family: inherit;

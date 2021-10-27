@@ -10,6 +10,12 @@
                 <div class="md-option-segment" style="cursor: pointer">
                     {{ device }} Device Name
                 </div>
+                <div class="md-option-segment_auto" style="cursor: pointer" v-if="false">
+                    Connecting...
+                </div>
+                <div class="md-option-segment_auto" style="cursor: pointer;font-weight:bold;">
+                    <button class="md-btn md-block md-btn-primary" style="width: 160px;">Stop Casting</button>
+                </div>
             </div>
         </div>
         <h2 style="opacity:0.5;">AirPlay</h2>
@@ -22,7 +28,7 @@
         </div>
     </div>
     <div class="md-footer">
-
+        <button class="md-btn md-btn-primary">Stop casting to all devices</button>
     </div>
 </div>
 <style>
