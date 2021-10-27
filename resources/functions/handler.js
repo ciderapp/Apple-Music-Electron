@@ -215,15 +215,6 @@ const handler = {
                 app.win.webContents.executeJavaScript(`_plugins.execute('OnHide')`)
             }
         });
-
-        // For macOS Link Handling
-        app.on('open-url', function (event, url) {
-            event.preventDefault()
-            if (url.includes('ame://') || url.includes('itms://') || url.includes('itmss://') || url.includes('musics://') || url.includes('music://')) {
-                handler.LinkHandler(url)
-            }
-        })
-
     },
 
     SettingsHandler: function () {
@@ -346,7 +337,7 @@ const handler = {
 
         // Mode Changes
         handledConfigs.push('advanced.forceApplicationMode');
-        app.cfg.onDidChange('advanced.forceApplicationMode', (newValue, oldValue) => {
+        app.cfg.onDidChange('advanced.forceApplicationMode', (newValue, _oldValue) => {
             nativeTheme.themeSource = newValue;
         });
     },

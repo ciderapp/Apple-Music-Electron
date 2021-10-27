@@ -3,7 +3,7 @@
   "applicationId": "AppleMusicElectron",
   "productName": "Apple Music",
   "version": "3.0.0",
-  "description": "A free, lightweight, open source alternative to iTunes and other Apple Music applications based on Electron 15.0.0",
+  "description": "An open-source, GPU-accelerated Electron application that emulates the Apple Music website in a customizable interface.",
   "license": "MIT",
   "author": "Apple Music Electron Team <cryptofyre@protonmail.com> (https://applemusicelectron.com)",
   "repository": "https://github.com/Apple-Music-Electron/Apple-Music-Electron.git",
@@ -46,11 +46,26 @@
     "musickit-typescript": "^1.2.4",
     "webpack": "~5.60.0"
   },
-  "fileAssociations": [{
-    "name": "Apple Music Electron",
-    "description": "Apple Music Electron",
-    "mimeType": "x-scheme-handler/ame"
-  }],
+  "fileAssociations": [
+    {
+      "name": "Apple Music Electron",
+      "mimeType": "x-scheme-handler/ame;x-scheme-handler/itms;x-scheme-handler/itmss;x-scheme-handler/musics;x-scheme-handler/music;",
+      "schemes": [
+        "ame",
+        "itms",
+        "itmss",
+        "musics",
+        "music"
+      ],
+      "protocols": [
+        "ame",
+        "itms",
+        "itmss",
+        "musics",
+        "music"
+      ]
+    }
+  ],
   "build": {
     "electronVersion": "15.3.0",
     "electronDownload": {
@@ -58,10 +73,18 @@
       "mirror": "https://github.com/castlabs/electron-releases/releases/download/v"
     },
     "appId": "apple-music",
-    "protocols": {
-      "name": "Apple Music Electron",
-      "schemes": ["ame", "itms", "itmss", "musics", "music"]
-    },
+    "protocols": [
+      {
+        "name": "Apple Music Electron",
+        "schemes": [
+          "ame",
+          "itms",
+          "itmss",
+          "musics",
+          "music"
+        ]
+      }
+    ],
     "extends": null,
     "files": [
       "**/*",
@@ -69,24 +92,12 @@
     ],
     "linux": {
       "target": [
-        "AppImage",
-        "deb",
-        "snap",
-        "rpm"
+        "pacman"
       ],
       "synopsis": "Electron wrapper for Apple Music Web App.",
-      "description": "Electron wrapper for the Apple Music Web Application using Electron 15.0.0 and several other modules to expand the usability.",
       "category": "AudioVideo",
-      "icon": "./resources/icons/icon.icns",
-      "executableName": "apple-music-electron",
-      "desktop": {
-        "Type": "Application",
-        "Encoding": "UTF-8",
-        "Name": "Apple Music",
-        "MimeType": "x-scheme-handler/ame;x-scheme-handler/itms;x-scheme-handler/itmss;x-scheme-handler/musics;x-scheme-handler/music;",
-        "Terminal": "False",
-        "Categories": "AudioVideo"
-      }
+      "icon": "apple-music-electron",
+      "executableName": "apple-music-electron"
     },
     "win": {
       "target": [

@@ -75,7 +75,7 @@ app.on('before-quit', () => {
 
 app.on('will-quit', () => { console.verbose('will-quit'); })
 app.on('quit', () => { console.verbose('quit'); })
-app.on("window-all-closed", () => { console.verbose('window-all-closed'); app.quit(); });
+app.on("window-all-closed", () => { console.verbose('window-all-closed'); if (process.platform !== 'darwin') app.quit(); });
 
 // Widevine Stuff
 app.on('widevine-ready', (version, lastVersion) => {

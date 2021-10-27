@@ -54,6 +54,40 @@ const init = {
             console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
         }
 
+        /* Protocols for Link Handling */
+        if (process.defaultApp) {
+            if (process.argv.length >= 2) {
+                app.setAsDefaultProtocolClient('ame', process.execPath, [resolve(process.argv[1])])
+                app.setAsDefaultProtocolClient('itms', process.execPath, [resolve(process.argv[1])])
+                app.setAsDefaultProtocolClient('itmss', process.execPath, [resolve(process.argv[1])])
+                app.setAsDefaultProtocolClient('musics', process.execPath, [resolve(process.argv[1])])
+                app.setAsDefaultProtocolClient('music', process.execPath, [resolve(process.argv[1])])
+            }
+        } else {
+            app.setAsDefaultProtocolClient('ame') // Custom AME Protocol
+            app.setAsDefaultProtocolClient('itms') // iTunes HTTP Protocol
+            app.setAsDefaultProtocolClient('itmss') // iTunes HTTPS Protocol
+            app.setAsDefaultProtocolClient('musics') // macOS Client Protocol
+            app.setAsDefaultProtocolClient('music') // macOS Client Protocol
+        }
+
+        app.on('open-url', (event, url) => {
+            event.preventDefault()
+            if (url.includes('ame://') || url.includes('itms://') || url.includes('itmss://') || url.includes('musics://') || url.includes('music://')) {
+                app.ame.handler.LinkHandler(url)
+            }
+        })
+
+        // Running the Application on Login
+        if (app.cfg.get('window.appStartupBehavior')) {
+            app.setLoginItemSettings({
+                openAtLogin: true,
+                args: [
+                    '--process-start-args', `${app.cfg.get('window.appStartupBehavior') === 'hidden' ? "--hidden" : (app.cfg.get('window.appStartupBehavior') === 'minimized' ? "--minimized" : "")}`
+                ]
+            })
+        }
+
         // Set Max Listener
         require('events').EventEmitter.defaultMaxListeners = Infinity;
     },
@@ -126,23 +160,6 @@ const init = {
         init.ThemeInstallation()
         init.PluginInstallation()
         init.TrayInit()
-
-        // Set the Protocols - Doesnt work on linux :(
-        app.setAsDefaultProtocolClient('ame') // Custom AME Protocol
-        app.setAsDefaultProtocolClient('itms') // iTunes HTTP
-        app.setAsDefaultProtocolClient('itmss') // iTunes HTTPS
-        app.setAsDefaultProtocolClient('musics') // macOS Client
-        app.setAsDefaultProtocolClient('music') // macOS Client
-
-        // Running the Application on Login
-        if (app.cfg.get('window.appStartupBehavior')) {
-            app.setLoginItemSettings({
-                openAtLogin: true,
-                args: [
-                    '--process-start-args', `${app.cfg.get('window.appStartupBehavior') === 'hidden' ? "--hidden" : (app.cfg.get('window.appStartupBehavior') === 'minimized' ? "--minimized" : "")}`
-                ]
-            })
-        }
 
         app.ame.mpris.connect(); // M.P.R.I.S
         app.ame.lastfm.authenticate(); // LastFM
