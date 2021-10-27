@@ -18,19 +18,24 @@ const MusicKitInterop = {
                 if (typeof nowPlayingItem != "undefined") {
                     if (nowPlayingItem["type"] === "musicVideo") {
                         document.querySelector(`.web-chrome`).setAttribute('style', 'height: 20px !important');
+                        document.querySelector(`#MVLyricsBox`).style.display = 'block';
                     } else {
                         document.querySelector(`.web-chrome`).setAttribute('style', 'height: 55px !important');
+                        document.querySelector(`#MVLyricsBox`).style.display = 'none';
                     }
                 }
             } else {
                 document.querySelector(`.web-chrome`).setAttribute('style', 'height: 55px !important');
+                document.querySelector(`#MVLyricsBox`).style.display = 'none';
                 try {
                     const nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
                     if (typeof nowPlayingItem != "undefined") {
                         if (nowPlayingItem["type"] === "musicVideo") {
                             document.querySelector(`.web-chrome`).setAttribute('style', 'height: 20px !important');
+                            document.querySelector(`#MVLyricsBox`).style.display = 'block';
                         } else {
                             document.querySelector(`.web-chrome`).setAttribute('style', 'height: 55px !important');
+                            document.querySelector(`#MVLyricsBox`).style.display = 'none';
                         }
                     }
                 } catch (e) {
