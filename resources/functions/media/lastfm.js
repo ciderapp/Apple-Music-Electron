@@ -70,7 +70,10 @@ const lfm = {
             if (app.lastfm.cachedAttributes.playParams.id === attributes.playParams.id) return;
         }
 
-        if (currentAttributes.status && currentAttributes.playParams.catalogId === attributes.playParams.catalogId) {
+        currentSong = currentAttributes.name + ' - ' + lfm.filterArtistName(currentAttributes.artistName)
+        receivedSong = attributes.name + ' - ' + lfm.filterArtistName(attributes.artistName)
+
+        if (currentAttributes.status && currentSong === receivedSong) {
             if (fs.existsSync(sessionPath)) {
                 // Scrobble playing song.
                 if (attributes.status === true) {
