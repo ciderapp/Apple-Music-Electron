@@ -93,23 +93,23 @@ const init = {
     },
 
     LoggingInit: function () {
-        const log = require("electron-log");
+        app.log = require("electron-log");
 
         if (app.commandLine.hasSwitch('verbose')) {
             app.verboseLaunched = true
         }
 
-        log.transports.file.resolvePath = (vars) => {
+        app.log.transports.file.resolvePath = (vars) => {
             return join(app.getPath('userData'), 'logs', vars.fileName);
         }
 
-        Object.assign(console, log.functions);
+        Object.assign(console, app.log.functions);
 
         console.verbose = () => {
         };
 
         if (app.cfg.get('advanced.verboseLogging') || app.verboseLaunched) {
-            console.verbose = log.debug
+            console.verbose = app.log.debug
         } else {
             console.verbose = function (_data) {
                 return false

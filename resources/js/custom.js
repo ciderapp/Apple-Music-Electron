@@ -995,6 +995,20 @@ try {
                 }
             },
 
+            copyLogFile: () => {
+                const returnValue = ipcRenderer.sendSync('copyLogFile');
+                document.querySelector('#copyLogFile').innerHTML = 'Copying...';
+                if (returnValue) {
+                    document.querySelector('#copyLogFile').innerHTML = 'Copied to Clipboard';
+                    document.querySelector('#copyLogFile').style.backgroundColor = '#57F287';
+                    document.querySelector('#copyLogFile').style.color = '#ffffff';
+                } else {
+                    document.querySelector('#copyLogFile').innerHTML = 'Copy Failed';
+                    document.querySelector('#copyLogFile').style.backgroundColor = '#ED4245';
+                    document.querySelector('#copyLogFile').style.color = '#ffffff';
+                }
+            },
+
             hasParentClass: (child, classname) => {
                 if (child.className.split(' ').indexOf(classname) >= 0) return true;
                 try {
