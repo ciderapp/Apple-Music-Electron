@@ -1,0 +1,38 @@
+<div class="md-container" id="castdevices-vue">
+    <div class="md-header">
+        <div class="cast_logo"></div>
+        <h1 class="md-h1">Cast To Device</h1>
+    </div>
+    <div class="md-body" style="overflow-y: overlay">
+        <h2>Chromecast / Miracast</h2>
+        <div class="md-option-container" style="margin-top: 12px;margin-bottom: 12px;">
+            <div class="md-option-line" v-for="(device) in 5" @click="setCast(device)">
+                <div class="md-option-segment" style="cursor: pointer">
+                    {{ device }} Device Name
+                </div>
+            </div>
+        </div>
+        <h2 style="opacity:0.5;">AirPlay</h2>
+        <div class="md-option-container" style="margin-top: 12px;margin-bottom: 12px;">
+            <div class="md-option-line">
+                <div class="md-option-segment" style="cursor: pointer">
+                    AirPlay is still under development
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="md-footer">
+
+    </div>
+</div>
+<style>
+    .cast_logo {
+        background: url("ameres://icons/webui/cast.svg");
+        width:64px;
+        height: 64px;
+        color:white;
+        background-size: cover;
+        filter:invert(1);
+        margin: 0 auto;
+    }
+</style>

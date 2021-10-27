@@ -6,6 +6,31 @@ var _tests = {
             })
         })
     },
+    castUI() {
+        AMJavaScript.getRequest("ameres://html/cast_device.html", (content) => {
+            var vm = new Vue({
+                data: {
+                },
+                methods: {
+                    setCast(device) {
+
+                    }
+                }
+            })
+            var modal = new AMEModal({
+                content: content,
+                Style: {
+                    maxWidth: "600px"
+                },
+                OnCreate() {
+                    vm.$mount("#castdevices-vue")
+                },
+                OnClose() {
+                    _vues.destroy(vm)
+                }
+            })
+        })
+    },
     outputDevice() {
         AMJavaScript.getRequest("ameres://html/outputdevice.html", (content) => {
             var vm = new Vue({
