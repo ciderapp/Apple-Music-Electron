@@ -809,7 +809,7 @@ const handler = {
                 api = RtAudioApi.WINDOWS_WASAPI;
                 break;    
             case "linux":
-                api = RtAudioApi.LINUX_ALSA;
+                api = RtAudioApi.UNIX_JACK;
                 break; 
             case "darwin":
                 api = RtAudioApi.MACOSX_CORE;
