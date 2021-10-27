@@ -204,10 +204,23 @@ span.app-prefs-title {
     transition: 0.7s;
 }
 
+.success {
+    background-color: #57F287 !important;
+    color: #ffffff !important;
+    border-color: #57F287 !important;
+}
+
+.failure {
+    background-color: #ED4245 !important;
+    color: #ffffff !important;
+    border-color: #ED4245 !important;
+}
+
 /*LastFM Connect Button*/
 .settings-list li #lfmConnect {
     background-color: #E4141E !important;
     color: #ffffff !important;
+    border-color: #E4141E !important;
 }
 
 /* Toggle Slider */

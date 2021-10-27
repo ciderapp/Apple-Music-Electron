@@ -990,23 +990,16 @@ try {
                     setTimeout(async () => {
                         AM.themesListing = await ipcRenderer.invoke('updateThemesListing');
                         AMSettings.themes.updateThemesListing(AM.themesListing);
-                        document.getElementById('updateThemes').innerText = (AM.themesListing ? 'Themes Updated' : 'Error');
+                        document.querySelector('#updateThemes').innerHTML = (AM.themesListing ? 'Themes Updated' : 'Error');
+                        document.querySelector('#updateThemes').classList.add(AM.themesListing ? 'success' : 'failure');
                     }, 2000)
                 }
             },
 
             copyLogFile: () => {
                 const returnValue = ipcRenderer.sendSync('copyLogFile');
-                document.querySelector('#copyLogFile').innerHTML = 'Copying...';
-                if (returnValue) {
-                    document.querySelector('#copyLogFile').innerHTML = 'Copied to Clipboard';
-                    document.querySelector('#copyLogFile').style.backgroundColor = '#57F287';
-                    document.querySelector('#copyLogFile').style.color = '#ffffff';
-                } else {
-                    document.querySelector('#copyLogFile').innerHTML = 'Copy Failed';
-                    document.querySelector('#copyLogFile').style.backgroundColor = '#ED4245';
-                    document.querySelector('#copyLogFile').style.color = '#ffffff';
-                }
+                document.querySelector('#copyLogFile').innerHTML = (returnValue ? 'Copied to Clipboard' : 'Copy Failed');
+                document.querySelector('#copyLogFile').classList.add(returnValue ? 'success' : 'failure');
             },
 
             hasParentClass: (child, classname) => {
