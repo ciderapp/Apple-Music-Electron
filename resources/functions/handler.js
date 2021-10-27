@@ -1,5 +1,4 @@
-require('rimraf');
-const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences, nativeTheme} = require('electron'),
+const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences, nativeTheme, clipboard} = require('electron'),
     {join} = require('path'),
     {readFile, readFileSync} = require('fs'),
     {initAnalytics} = require('./utils');
@@ -373,7 +372,14 @@ const handler = {
         // Electron-Store Renderer Handling for Setting Values
         ipcMain.handle('setStoreValue', (event, key, value) => {
             app.cfg.set(key, value);
-        })
+        });
+
+        // Copy Log File
+        ipcMain.on('copyLogFile', (event) => {
+            const data = readFileSync(app.log.transports.file.getFile().path, {encoding:'utf8', flag:'r'});
+            clipboard.writeText(data)
+            event.returnValue = true
+        });
 
         // Electron-Store Renderer Handling for Getting Configuration
         ipcMain.on('getStore', (event) => {
