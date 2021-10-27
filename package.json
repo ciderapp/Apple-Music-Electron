@@ -92,7 +92,10 @@
     ],
     "linux": {
       "target": [
-        "pacman"
+        "AppImage",
+        "deb",
+        "snap",
+        "rpm"
       ],
       "synopsis": "Electron wrapper for Apple Music Web App.",
       "category": "AudioVideo",
