@@ -60,7 +60,7 @@ const lfm = {
 
     scrobbleSong: async function (attributes) {
         await new Promise(resolve => setTimeout(resolve, app.cfg.get('general.lastfmScrobbleDelay') * 1000));
-        currentAttributes = app.media;
+        const currentAttributes = app.media;
         
         if (!app.lastfm || app.lastfm.cachedAttributes === attributes || app.cfg.get('general.incognitoMode')) {
             return
@@ -70,10 +70,7 @@ const lfm = {
             if (app.lastfm.cachedAttributes.playParams.id === attributes.playParams.id) return;
         }
 
-        currentSong = currentAttributes.name + ' - ' + lfm.filterArtistName(currentAttributes.artistName)
-        receivedSong = attributes.name + ' - ' + lfm.filterArtistName(attributes.artistName)
-
-        if (currentAttributes.status && currentSong === receivedSong) {
+        if (currentAttributes.status && currentAttributes === attributes) {
             if (fs.existsSync(sessionPath)) {
                 // Scrobble playing song.
                 if (attributes.status === true) {
