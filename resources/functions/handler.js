@@ -1,6 +1,7 @@
 const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences, nativeTheme, clipboard} = require('electron'),
     {join, resolve} = require('path'),
-    {readFile, readFileSync, writeFile, existsSync} = require('fs'),
+
+    {readFile, readFileSync, writeFile, existsSync, watch} = require('fs'),
     {initAnalytics} = require('./utils'),
     {RtAudio, RtAudioFormat, RtAudioApi} = require("audify");
 
@@ -13,12 +14,11 @@ const DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
 var getPort = require('get-port');
 const {Stream} = require('stream');
 
-
 initAnalytics();
 
 const handler = {
 
-    LaunchHandler: function () {
+    LaunchHandler: () => {
         // Version Fetch
         if (app.commandLine.hasSwitch('version') || app.commandLine.hasSwitch('v')) {
             console.log(app.getVersion())
@@ -37,7 +37,7 @@ const handler = {
         }
     },
 
-    InstanceHandler: function () {
+    InstanceHandler: () => {
         console.verbose('[InstanceHandler] Started.')
 
         app.on('second-instance', (_e, argv) => {
@@ -69,7 +69,7 @@ const handler = {
         }
     },
 
-    PlaybackStateHandler: function () {
+    PlaybackStateHandler: () => {
         console.verbose('[playbackStateDidChange] Started.');
 
         ipcMain.on('playbackStateDidChange', (_event, a) => {
@@ -85,7 +85,7 @@ const handler = {
         });
     },
 
-    MediaStateHandler: function () {
+    MediaStateHandler: () => {
         console.verbose('[MediaStateHandler] Started.');
 
         ipcMain.on('nowPlayingItemDidChange', (_event, a) => {
@@ -106,7 +106,7 @@ const handler = {
         });
     },
 
-    WindowStateHandler: function () {
+    WindowStateHandler: () => {
         console.verbose('[WindowStateHandler] Started.');
 
         app.win.webContents.setWindowOpenHandler(({url}) => {
@@ -235,7 +235,7 @@ const handler = {
         });
     },
 
-    SettingsHandler: function () {
+    SettingsHandler: () => {
         console.verbose('[SettingsHandler] Started.');
         let DialogMessage = false,
             storedChanges = [],
@@ -302,6 +302,20 @@ const handler = {
         handledConfigs.push('visual.theme');
         app.cfg.onDidChange('visual.theme', (newValue, _oldValue) => {
             app.win.webContents.executeJavaScript(`AMStyling.loadTheme("${(newValue === 'default' || !newValue) ? '' : newValue}");`).catch((e) => console.error(e));
+            if (app.watcher) {
+                app.watcher.close();
+                console.verbose('[Watcher] Removed old watcher.')
+            }
+
+            if (existsSync(resolve(app.getPath('userData'), 'themes', `${newValue}.css`)) && newValue !== "default" && newValue) {
+                app.watcher = watch(resolve(app.getPath('userData'), 'themes', `${newValue}.css`), (event, fileName) => {
+                    if (event === "change" && fileName === `${newValue}.css`) {
+                        app.win.webContents.executeJavaScript(`AMStyling.loadTheme("${newValue}", true);`).catch((err) => console.error(err));
+                    }
+                });
+                console.verbose(`[Watcher] Watching for changes: 'themes/${newValue}}.css'`)
+            }
+
             const updatedVibrancy = app.ame.utils.fetchTransparencyOptions();
             if (app.transparency && updatedVibrancy && process.platform !== 'darwin') app.win.setVibrancy(updatedVibrancy);
         })
@@ -574,7 +588,7 @@ const handler = {
 
     },
 
-    LinkHandler: function (startArgs) {
+    LinkHandler: (startArgs) => {
         if (!startArgs || !app.win || !app.isAuthorized) return;
 
 
@@ -602,7 +616,8 @@ const handler = {
 
     },
 
-    LyricsHandler: function () {
+
+    LyricsHandler: () => {
         app.lyrics = {
             neteaseWin: null,
             mxmWin: null,

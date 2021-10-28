@@ -1,6 +1,6 @@
-const {join} = require("path"),
+const {join, resolve} = require("path"),
     {app, ipcMain, systemPreferences} = require("electron"),
-    {readFile, constants, chmodSync, existsSync} = require("fs"),
+    {readFile, constants, chmodSync, existsSync, watch} = require("fs"),
     {initAnalytics} = require('./utils');
 initAnalytics();
 
@@ -208,5 +208,20 @@ module.exports = {
 
         /* Inject the MusicKitInterop file */
         app.win.webContents.executeJavaScript('MusicKitInterop.init()').catch((e) => console.error(e));
+
+        /* Watches for changes to a theme */
+        if (app.watcher) {
+            app.watcher.close();
+            console.verbose('[Watcher] Removed old watcher.')
+        }
+
+        if (existsSync(resolve(app.getPath('userData'), 'themes', `${app.cfg.get('visual.theme')}.css`)) && app.cfg.get('visual.theme') !== "default" && app.cfg.get('visual.theme')) {
+            app.watcher = watch(resolve(app.getPath('userData'), 'themes', `${app.cfg.get('visual.theme')}.css`), (event, fileName) => {
+                if (event === "change" && fileName === `${app.cfg.get('visual.theme')}.css`) {
+                    app.win.webContents.executeJavaScript(`AMStyling.loadTheme("${app.cfg.get('visual.theme')}", true);`).catch((err) => console.error(err));
+                }
+            });
+            console.verbose(`[Watcher] Watching for changes: 'themes/${app.cfg.get('visual.theme')}}.css'`)
+        }
     }
 }
