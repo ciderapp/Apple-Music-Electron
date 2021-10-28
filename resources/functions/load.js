@@ -1,18 +1,31 @@
 const {join} = require("path"),
     {app, ipcMain, systemPreferences} = require("electron"),
-    {readFile, constants, chmodSync} = require("fs"),
+    {readFile, constants, chmodSync, existsSync} = require("fs"),
     {initAnalytics} = require('./utils');
 initAnalytics();
 
 module.exports = {
 
-    LoadCSS: function (path, theme) {
+    LoadCSS: function (path, theme, important) {
+        const fileName = path
         if (theme) {
             path = join(app.userThemesPath, path.toLowerCase());
         } else {
             path = join(join(__dirname, '../css/'), path)
         }
 
+        // Check that the file exists
+        if (!existsSync(path)) {
+            console.warn(`[LoadCSS] ${path} not found.`)
+            return
+        }
+
+        // Remove previous inject (If there is one)
+        if (app.injectedCSS[path]) {
+            app.win.webContents.removeInsertedCSS(app.injectedCSS[fileName]).then(r => { if (r) console.error(r); });
+        }
+
+        // Get the CSS to inject
         readFile(path, "utf-8", function (error, data) {
             if (error) {
                 console.error(`[LoadCSS] Error while injecting: '${path}' - ${error}`)
@@ -21,17 +34,18 @@ module.exports = {
                 } catch (err) {
                     console.error(`[LoadCSS] ${err}`)
                 }
-
             } else {
                 let formattedData = data.replace(/\s{2,10}/g, ' ').trim();
-                app.win.webContents.insertCSS(formattedData).then(() => {
-                    console.verbose(`[${theme ? 'LoadTheme' : 'LoadCSS'}] '${path}' successfully injected.`)
+                app.win.webContents.insertCSS(formattedData, {cssOrigin: (important ? 'user' : 'author')}).then((key) => {
+                    console.verbose(`[${theme ? 'LoadTheme' : 'LoadCSS'}] '${fileName}' successfully injected.`)
+                    app.injectedCSS[fileName] = key
                 });
             }
         });
     },
 
     LoadJS: function (path, formatting = true) {
+        const fileName = path;
         path = join(join(__dirname, '../js/'), path)
 
         readFile(path, "utf-8", function (error, data) {
@@ -42,13 +56,13 @@ module.exports = {
                         formattedData = data.replace(/\s{2,10}/g, ' ').trim();
                     }
                     app.win.webContents.executeJavaScript(formattedData).then(() => {
-                        console.verbose(`[LoadJSFile] '${path}' successfully injected.`)
+                        console.verbose(`[LoadJSFile] '${fileName}' successfully injected.`)
                     });
                 } catch (err) {
-                    console.error(`[LoadJSFile] Error while injecting: ${path} - Error: ${err}`)
+                    console.error(`[LoadJSFile] Error while injecting: '${fileName}' - Error: ${err}`)
                 }
             } else {
-                console.error(`[LoadJSFile] Error while reading: '${path}' - Error: ${error}`)
+                console.error(`[LoadJSFile] Error while reading: '${fileName}' - Error: ${error}`)
             }
         });
     },

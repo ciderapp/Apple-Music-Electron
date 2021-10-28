@@ -1,6 +1,6 @@
 const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences, nativeTheme, clipboard} = require('electron'),
-    {join} = require('path'),
-    {readFile, readFileSync} = require('fs'),
+    {join, resolve} = require('path'),
+    {readFile, readFileSync, existsSync} = require('fs'),
     {initAnalytics} = require('./utils');
 initAnalytics();
 
@@ -372,6 +372,10 @@ const handler = {
         // Electron-Store Renderer Handling for Setting Values
         ipcMain.handle('setStoreValue', (event, key, value) => {
             app.cfg.set(key, value);
+        });
+
+        ipcMain.handle('themeFileExists', (event, fileName) => {
+            return existsSync(resolve(app.getPath('userData'), 'themes', `${fileName}.css`))
         });
 
         // Copy Log File
