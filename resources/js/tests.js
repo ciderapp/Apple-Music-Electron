@@ -9,10 +9,22 @@ var _tests = {
     castUI() {
         AMJavaScript.getRequest("ameres://html/cast_device.html", (content) => {
             var vm = new Vue({
-                data: {},
+                data: {
+                    devices: {
+                        cast: [],
+                        airplay: []
+                    }
+                },
                 methods: {
+                    scan() {
+                        let self = this
+                        AudioOutputs.getGCDevices()
+                        ipcRenderer.invoke("getKnownCastDevices", (devices)=>{
+                            self.devices.cast = devices
+                        })
+                    },
                     setCast(device) {
-
+                        AudioOutputs.playGC(device)
                     }
                 }
             })
@@ -23,11 +35,16 @@ var _tests = {
                 },
                 OnCreate() {
                     vm.$mount("#castdevices-vue")
+                    vm.scan()
                 },
                 OnClose() {
                     _vues.destroy(vm)
                 }
             })
+            return {
+                vue: vm,
+                modal: modal
+            }
         })
     },
     outputDevice() {
@@ -133,6 +150,7 @@ var _tests = {
                             useOperatingSystemAccent: false,
                             scaling: 1,
                             mxmon: false,
+                            yton: false,
                             mxmlanguage: "en",
                             removeScrollbars: true
                         },
@@ -192,6 +210,10 @@ var _tests = {
                             self.prefs.visual.mxmon = result
                         })
 
+                        ipcRenderer.invoke("getStoreValue", "visual.yton").then((result) => {
+                            self.prefs.visual.yton = result
+                        })
+
                         ipcRenderer.invoke("getStoreValue", "visual.mxmlanguage").then((result) => {
                             self.prefs.visual.mxmlanguage = result
                         })
@@ -212,6 +234,7 @@ var _tests = {
                         ipcRenderer.invoke("setStoreValue", "visual.transparencyEffect", self.prefs.visual.transparencyEffect)
                         ipcRenderer.invoke("setStoreValue", "visual.useOperatingSystemAccent", self.prefs.visual.useOperatingSystemAccent)
                         ipcRenderer.invoke("setStoreValue", "visual.mxmon", self.prefs.visual.mxmon)
+                        ipcRenderer.invoke("setStoreValue", "visual.yton", self.prefs.visual.yton)
                         ipcRenderer.invoke("setStoreValue", "visual.mxmlanguage", self.prefs.visual.mxmlanguage)
                         ipcRenderer.invoke("setStoreValue", "visual.removeScrollbars", self.prefs.visual.removeScrollbars)
                     },

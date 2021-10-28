@@ -403,7 +403,7 @@ body {
 #lyricer {
     width: 90%;
     font-weight: 700;
-    font-family: "SF Pro", "M PLUS 1p", "Hiragino Sans GB W6", Tahoma, Arial, sans-serif;
+    font-family: SF Pro JP,SF Pro KR,SF Pro, "M PLUS 1p", "Hiragino Sans GB W6", Tahoma, Arial, sans-serif;
     text-shadow: rgb(238, 238, 238) 0 0 1px;
     color: rgb(102, 102, 102);
     overflow: hidden scroll;
@@ -506,6 +506,15 @@ body {
         opacity: 0;
         transform: scale(0.85);
     }
+}
+
+#MVLyricsBox {
+    display: none;
+    font-size: 1rem;
+    position: absolute;
+    top: 80%;
+    width: 100%;
+    text-align: center;
 }
 
 .ameModal-Backdrop {

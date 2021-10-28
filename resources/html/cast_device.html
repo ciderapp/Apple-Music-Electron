@@ -6,9 +6,11 @@
     <div class="md-body" style="overflow-y: overlay">
         <h2>Chromecast / Miracast</h2>
         <div class="md-option-container" style="margin-top: 12px;margin-bottom: 12px;">
-            <div class="md-option-line" v-for="(device) in 5" @click="setCast(device)">
+            <div class="md-option-line" v-for="(device) in devices.cast" @click="setCast(device.host)">
                 <div class="md-option-segment" style="cursor: pointer">
-                    {{ device }} Device Name
+                    {{ device.name }}
+                    <br>
+                    <small>{{ device.host }}</small>
                 </div>
                 <div class="md-option-segment_auto" style="cursor: pointer" v-if="false">
                     Connecting...
@@ -28,7 +30,14 @@
         </div>
     </div>
     <div class="md-footer">
-        <button class="md-btn md-btn-primary">Stop casting to all devices</button>
+        <div class="row">
+            <div class="col-auto">
+                <button class="md-btn md-btn-block md-btn-primary">Stop casting to all devices</button>
+            </div>
+            <div class="col-auto">
+                <button class="md-btn md-btn-block">Scan</button>
+            </div>
+        </div>
     </div>
 </div>
 <style>

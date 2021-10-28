@@ -75,6 +75,7 @@ module.exports = () => {
             removeScrollbars: true,
             useOperatingSystemAccent: false,
             scaling: 1,
+            yton: false,
             mxmon: false,
             mxmlanguage: "en"
         },
