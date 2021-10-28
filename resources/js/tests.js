@@ -9,10 +9,22 @@ var _tests = {
     castUI() {
         AMJavaScript.getRequest("ameres://html/cast_device.html", (content) => {
             var vm = new Vue({
-                data: {},
+                data: {
+                    devices: {
+                        cast: [],
+                        airplay: []
+                    }
+                },
                 methods: {
+                    scan() {
+                        let self = this
+                        AudioOutputs.getGCDevices()
+                        ipcRenderer.invoke("getKnownCastDevices", (devices)=>{
+                            self.devices.cast = devices
+                        })
+                    },
                     setCast(device) {
-
+                        AudioOutputs.playGC(device)
                     }
                 }
             })
@@ -23,11 +35,16 @@ var _tests = {
                 },
                 OnCreate() {
                     vm.$mount("#castdevices-vue")
+                    vm.scan()
                 },
                 OnClose() {
                     _vues.destroy(vm)
                 }
             })
+            return {
+                vue: vm,
+                modal: modal
+            }
         })
     },
     outputDevice() {
