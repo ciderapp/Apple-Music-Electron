@@ -1110,16 +1110,6 @@ const handler = {
 
         });
 
-        function parseServiceDescription(body, address) {
-            var parseString = require('xml2js').parseString;
-            parseString(body, (err, result) => {
-                if (!err && result && result.root && result.root.device) {
-                    var device = result.root.device[0];
-                    this.ondeviceup(address, device.friendlyName.toString());
-                }
-            });
-        }
-
         function getServiceDescription(url, address) {
             var request = require('request');
             request.get(url, (error, response, body) => {
@@ -1197,6 +1187,16 @@ const handler = {
                         resolve()
                     })
                     .catch(reject);
+            });
+        }
+
+        function parseServiceDescription(body, address) {
+            var parseString = require('xml2js').parseString;
+            parseString(body, (err, result) => {
+                if (!err && result && result.root && result.root.device) {
+                    var device = result.root.device[0];
+                    ondeviceup(address, device.friendlyName.toString());
+                }
             });
         }
 
