@@ -584,20 +584,29 @@ try {
                     return;
                 }
                 this.lastTheme = path;
-                console.warn("[Custom] Applied Theme");
                 let self = this;
-                if (path === "" || path === " ") {
+                if (path === "" || path === " " || path === "default") {
                     self._styleSheets.Theme.replaceSync("");
                     self.refresh();
                     return;
                 }
-                const xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    self._styleSheets.Theme.replaceSync(this.responseText);
-                    self.refresh();
-                };
-                xhttp.open("GET", `themes://${path}.css`, true);
-                xhttp.send();
+
+                ipcRenderer.invoke('themeFileExists', path).then((r) => {
+                    if (r) {
+                        const xhttp = new XMLHttpRequest();
+                        xhttp.onload = function () {
+                            self._styleSheets.Theme.replaceSync(this.responseText);
+                            self.refresh();
+                        };
+                        xhttp.open("GET", `themes://${path}.css`, true);
+                        xhttp.send();
+                        console.warn("[Custom] Applied Theme");
+                    } else {
+                        console.error(`[Custom] ${path} does not exist.`)
+                    }
+                })
+
+
             },
             updateMeta() {
 
