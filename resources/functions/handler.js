@@ -204,6 +204,7 @@ const handler = {
                 app.win.destroy()
                 if (app.lyrics.mxmWin) { app.lyrics.mxmWin.destroy(); }
                 if (app.lyrics.neteaseWin) { app.lyrics.neteaseWin.destroy(); }
+                if (app.lyrics.ytWin) { app.lyrics.ytWin.destroy(); }
             }
         })
 
@@ -587,7 +588,7 @@ const handler = {
     },
 
     LyricsHandler: function () {
-        app.lyrics = {neteaseWin: null, mxmWin: null, miniPlayerLarge: null, artworkURL: '', savedLyric: '' }
+        app.lyrics = {neteaseWin: null, mxmWin: null, ytWin: null, miniPlayerLarge: null, artworkURL: '', savedLyric: '' }
 
         app.lyrics.neteaseWin = new BrowserWindow({
             width: 1,
@@ -600,6 +601,18 @@ const handler = {
             }
         });
         app.lyrics.mxmWin = new BrowserWindow({
+            width: 1,
+            height: 1,
+            show: false,
+            autoHideMenuBar: true,
+            webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false,
+
+            },
+        });
+
+        app.lyrics.ytWin = new BrowserWindow({
             width: 1,
             height: 1,
             show: false,
@@ -660,6 +673,40 @@ const handler = {
         //         app.win.webContents.executeJavaScript(`_lyrics.GetLyrics(1,false)`);
         //         app.lyrics.miniPlayerLarge.webContents.send('updateMiniPlayerMetaData',track, artist, album)};
         // })
+        ipcMain.on('YTTranslation', function (event, track, artist, lang) {
+            try {
+                if (app.lyrics.ytWin == null) {
+                    app.lyrics.ytWin = new BrowserWindow({
+                        width: 1,
+                        height: 1,
+                        show: false,
+                        autoHideMenuBar: true,
+                        webPreferences: {
+                            nodeIntegration: true,
+                            contextIsolation: false,
+                        }
+                    });
+
+
+                } else {
+                    app.lyrics.ytWin.webContents.send('ytcors', track, artist, lang);
+                }
+                if (!app.lyrics.ytWin.webContents.getURL().includes('youtube.html')) {
+                    app.lyrics.ytWin.loadFile(join(__dirname, '../lyrics/youtube.html'));
+                    app.lyrics.ytWin.webContents.on('did-finish-load', () => {
+                        app.lyrics.ytWin.webContents.send('ytcors', track, artist, lang);
+                    });
+                }
+
+                app.lyrics.ytWin.on('closed', () => {
+                    app.lyrics.ytWin = null
+                });
+
+            } catch (e) {
+                console.error(e)
+            }
+        });
+
         ipcMain.on('MXMTranslation', function (event, track, artist, lang, time) {
             try {
                 if (app.lyrics.mxmWin == null) {
@@ -699,7 +746,6 @@ const handler = {
                 console.error(e)
             }
         });
-
         ipcMain.on('NetEaseLyricsHandler', function (event, data) {
             try {
                 if (app.lyrics.neteaseWin == null) {
@@ -789,6 +835,10 @@ const handler = {
 
         ipcMain.on('LyricsMXMFailed', function (_event, _data) {
             app.win.send('backuplyrics', '');
+        });
+
+        ipcMain.on('LyricsYTFailed', function (_event, _data) {
+            app.win.send('backuplyricsMV', '');
         });
 
         ipcMain.on('ProgressTimeUpdateFromLyrics', function (event, data) {

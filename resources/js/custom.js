@@ -257,6 +257,10 @@ try {
                             ipcRenderer.on('backuplyrics', function (_event, _data) {
                                 _lyrics.GetLyrics(1, true);
                             });
+
+                            ipcRenderer.on('backuplyricsMV', function (_event, _data) {
+                                _lyrics.GetLyrics(1, false);
+                            });
         
                             ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
                                 if (data < 0) {
@@ -288,13 +292,17 @@ try {
             },
 
             GetLyrics: (mode, mxmfail) => {
+                const musicType = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["type"] ?? '' : '');
                 const trackName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.title ?? '' : '');
                 const artistName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
                 const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
                 const songID = (MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["_songId"] ?? -1 : -1;
                 if(trackName != '' && !(trackName == "No Title Found" && artistName == '')){
                     /* MusixMatch Lyrics*/
-                    if (!mxmfail && preferences.visual.mxmon) {
+                    if(musicType === "musicVideo" && preferences.visual.yton){
+                        ipcRenderer.send('YTTranslation', trackName, artistName, preferences.visual.mxmlanguage);
+                    } else if (!mxmfail && preferences.visual.mxmon) {
+                        console.log('duh!');
                         var time = duration;
                         ipcRenderer.send('MXMTranslation', trackName, artistName, preferences.visual.mxmlanguage, time);
                     }
@@ -1185,6 +1193,7 @@ try {
                     AMSettings.HandleField('transparencyTheme');
                     AMSettings.HandleField('transparencyDisableBlur');
                     AMSettings.HandleField('transparencyMaximumRefreshRate');
+                    AMSettings.HandleField('yton');
                     AMSettings.HandleField('mxmon');
                     AMSettings.HandleField('mxmlanguage');
                     AMSettings.HandleField('streamerMode');
