@@ -1,18 +1,6 @@
-const {
-        app,
-        Menu,
-        ipcMain,
-        shell,
-        dialog,
-        Notification,
-        BrowserWindow,
-        systemPreferences,
-        nativeTheme,
-        clipboard
-    } = require('electron'),
-    {join} = require('path'),
-    {readFile, readFileSync, writeFile} = require('fs'),
-    rimraf = require('rimraf'),
+const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences, nativeTheme, clipboard} = require('electron'),
+    {join, resolve} = require('path'),
+    {readFile, readFileSync, writeFile, existsSync} = require('fs'),
     {initAnalytics} = require('./utils'),
     {RtAudio, RtAudioFormat, RtAudioApi} = require("audify");
 
@@ -24,6 +12,7 @@ const audioClient = require('castv2-client').Client;
 const DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
 var getPort = require('get-port');
 const {Stream} = require('stream');
+
 
 initAnalytics();
 
@@ -402,6 +391,10 @@ const handler = {
         // Electron-Store Renderer Handling for Setting Values
         ipcMain.handle('setStoreValue', (event, key, value) => {
             app.cfg.set(key, value);
+        });
+
+        ipcMain.handle('themeFileExists', (event, fileName) => {
+            return existsSync(resolve(app.getPath('userData'), 'themes', `${fileName}.css`))
         });
 
         // Copy Log File

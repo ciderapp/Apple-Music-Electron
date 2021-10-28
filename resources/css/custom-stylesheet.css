@@ -513,8 +513,11 @@ body {
     font-size: 1rem;
     position: absolute;
     top: 80%;
-    width: 100%;
     text-align: center;
+    width: auto;
+    align-self: center;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .ameModal-Backdrop {
