@@ -502,8 +502,8 @@ try {
                     micaDOM.style.backgroundSize = `${screen.width}px ${screen.height}px`;
                 });
             },
-            loadTheme(path = "") {
-                if (path === this.lastTheme) {
+            loadTheme(path = "", reload = false) {
+                if (path === this.lastTheme && !reload) {
                     return;
                 }
                 this.lastTheme = path;
