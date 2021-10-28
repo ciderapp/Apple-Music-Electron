@@ -364,9 +364,19 @@
                                 <input type="checkbox" v-model="prefs.visual.mxmon" switch/>
                             </div>
                         </div>
-                        <div class="md-option-line" v-if="prefs.visual.mxmon">
+                        <div class="md-option-line">
                             <div class="md-option-segment">
-                                Musixmatch Lyrics Translation Language
+                                Enable Youtube Lyrics (for MV)
+                                <br>
+                                <small>(NOT RECOMMENDED!) Better timings and lyrics availability on some Music Videos, however can be inconsistent.</small>
+                            </div>
+                            <div class="md-option-segment md-option-segment_auto">
+                                <input type="checkbox" v-model="prefs.visual.yton" switch/>
+                            </div>
+                        </div>
+                        <div class="md-option-line" v-if="prefs.visual.mxmlanguage">
+                            <div class="md-option-segment">
+                                Musixmatch Lyrics / Youtube Lyrics Translation Language
                             </div>
                             <div class="md-option-segment md-option-segment_auto">
                                 <select v-model="prefs.visual.mxmlanguage" class="md-select" style="width:180px;">
