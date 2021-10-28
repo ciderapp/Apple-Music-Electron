@@ -1,5 +1,4 @@
-require('rimraf');
-const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences} = require('electron'),
+const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences, nativeTheme, clipboard} = require('electron'),
     {join} = require('path'),
     {readFile, readFileSync ,writeFile} = require('fs'),
     rimraf = require('rimraf'),
@@ -228,15 +227,6 @@ const handler = {
                 app.win.webContents.executeJavaScript(`_plugins.execute('OnHide')`)
             }
         });
-
-        // For macOS Link Handling
-        app.on('open-url', function (event, url) {
-            event.preventDefault()
-            if (url.includes('ame://') || url.includes('itms://') || url.includes('itmss://') || url.includes('musics://') || url.includes('music://')) {
-                handler.LinkHandler(url)
-            }
-        })
-
     },
 
     SettingsHandler: function () {
@@ -352,10 +342,16 @@ const handler = {
         })
 
         // Scaling Changes
-        handledConfigs.push('visual.scaling')
+        handledConfigs.push('visual.scaling');
         app.cfg.onDidChange('visual.scaling', (newValue, _oldValue) => {
             app.win.webContents.setZoomFactor(parseFloat(newValue))
-        })
+        });
+
+        // Mode Changes
+        handledConfigs.push('advanced.forceApplicationMode');
+        app.cfg.onDidChange('advanced.forceApplicationMode', (newValue, _oldValue) => {
+            nativeTheme.themeSource = newValue;
+        });
     },
 
     RendererListenerHandlers: () => {
@@ -389,7 +385,14 @@ const handler = {
         // Electron-Store Renderer Handling for Setting Values
         ipcMain.handle('setStoreValue', (event, key, value) => {
             app.cfg.set(key, value);
-        })
+        });
+
+        // Copy Log File
+        ipcMain.on('copyLogFile', (event) => {
+            const data = readFileSync(app.log.transports.file.getFile().path, {encoding:'utf8', flag:'r'});
+            clipboard.writeText(data)
+            event.returnValue = true
+        });
 
         // Electron-Store Renderer Handling for Getting Configuration
         ipcMain.on('getStore', (event) => {

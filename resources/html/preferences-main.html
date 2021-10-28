@@ -655,6 +655,17 @@
             <img alt="Open Category" class="header-nav-image" src="ameres://icons/webui/down.svg">
         </div>
         <ul class="settings-list advanced" id="advanced">
+            <li class="app-prefs-dropdown">
+                <label class="typography-title-3-tall" for="forceApplicationMode">Force Application Mode</label>
+                <select class="form-dropdown-select list-element" id="forceApplicationMode" name="forceApplicationMode">
+                    <option disabled>Select one</option>
+                    <option value='system'>System Mode</option>
+                    <option value='dark'>Dark Mode</option>
+                    <option value='light'>Light Mode</option>
+                </select>
+                <span class="app-prefs-help typography-title-3-tall">Use This to set the application mode (Light/Dark).
+                    System will set it to your current system theme.</span>
+            </li>
             <li class="app-prefs-toggle">
                 <span class="typography-title-3-tall">Verbose Logging</span>
                 <label class="toggle-element list-element">
@@ -664,6 +675,14 @@
                 <span class="app-prefs-help typography-title-3-tall">When enabled more logs will be posted, used for
                     debugging.</span>
             </li>
+
+            <li class="app-prefs-button">
+                <span class="typography-title-3-tall">Copy Log File to Clipboard</span>
+                <label class="list-button list-element" id="copyLogFile"
+                       onclick="AMSettings.copyLogFile()">Copy File</label>
+                <span class="app-prefs-help typography-title-3-tall">Copy your log file to your clipboard, so you can easily paste it into the Discord server or GitHub.</span>
+            </li>
+
             <li class="app-prefs-toggle">
                 <span class="typography-title-3-tall">Auto Update Beta Builds</span>
                 <label class="toggle-element list-element">

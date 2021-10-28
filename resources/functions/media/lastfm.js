@@ -16,8 +16,12 @@ const lfm = {
     },
 
     authenticate: function () {
+        if (app.cfg.get('tokens.lastfm')) {
+            app.cfg.set('general.lastfm', true);
+        }
+
         if (!app.cfg.get('general.lastfm') || !app.cfg.get('tokens.lastfm')) {
-            app.cfg.set('general.lastfm', false)
+            app.cfg.set('general.lastfm', false);
             return
         }
 
@@ -60,7 +64,7 @@ const lfm = {
 
     scrobbleSong: async function (attributes) {
         await new Promise(resolve => setTimeout(resolve, app.cfg.get('general.lastfmScrobbleDelay') * 1000));
-        currentAttributes = app.media;
+        const currentAttributes = app.media;
         
         if (!app.lastfm || app.lastfm.cachedAttributes === attributes || app.cfg.get('general.incognitoMode')) {
             return
@@ -70,7 +74,7 @@ const lfm = {
             if (app.lastfm.cachedAttributes.playParams.id === attributes.playParams.id) return;
         }
 
-        if (currentAttributes.status && currentAttributes.playParams.catalogId === attributes.playParams.catalogId) {
+        if (currentAttributes.status && currentAttributes === attributes) {
             if (fs.existsSync(sessionPath)) {
                 // Scrobble playing song.
                 if (attributes.status === true) {

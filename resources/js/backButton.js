@@ -2,15 +2,13 @@ try {
     if (MusicKit.getInstance().isAuthorized) {
 
         if (!document.querySelector('#backButtonBar')) {
-            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.getElementById('web-main').insertAdjacentHTML("afterbegin", `
-            <div id="backButtonBar">
-                <div class="button-area" onclick="ipcRenderer.send('back');">
-                    <img src="https://developer.apple.com/design/human-interface-guidelines/macos/images/icons/system-images/control/chevron-backward.png" alt="Back Button">
+            document.getElementById('web-main').insertAdjacentHTML("afterbegin", `
+                <div id="backButtonBar">
+                    <div class="button-area" onclick="ipcRenderer.send('back');">
+                        <img src="https://developer.apple.com/design/human-interface-guidelines/macos/images/icons/system-images/control/chevron-backward.png" alt="Back Button">
+                    </div>
                 </div>
-            </div>
-        `);
-            }
+            `);
         }
 
         if (document.getElementsByClassName('dragDiv right-aligned').length > 0) {

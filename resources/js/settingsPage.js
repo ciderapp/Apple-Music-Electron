@@ -4,14 +4,14 @@ try {
         return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
     }
 
-    if (!storedInnerHTML) {
-        var storedInnerHTML = document.getElementsByClassName('dt-footer')[0].innerHTML;
+    if (!storedInnerHTML && document.getElementsByTagName('footer').length !== 0) {
+        var storedInnerHTML = document.getElementsByTagName('footer')[0].innerHTML;
     }
 
     if (matchRuleShort(window.location.href, '*settings*') && document.getElementsByClassName('application-preferences').length === 0) {
         AMSettings.CreateMenu('commerce-full-content');
-    } else {
-        document.getElementsByClassName('dt-footer')[0].innerHTML = storedInnerHTML; /* Revert the footer */
+    } else if (document.getElementsByTagName('footer').length === 1) {
+        document.getElementsByTagName('footer')[0].innerHTML = storedInnerHTML; /* Revert the footer */
     }
 
 } catch (e) {

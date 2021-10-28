@@ -190,36 +190,37 @@ span.app-prefs-title {
 
 /* Buttons */
 .settings-list li .list-button {
-    color: white;
+    color: var(--systemPrimary);
     padding: 5px 10px;
     margin-left: 20px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 15px;
     font-family: SF Pro Text, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif;
+    border-color: #424245;
+    background-color: hsla(0, 0%, 100%, .04);
+    border-style: solid;
+    border-width: 1px;
+    transition: 0.7s;
+}
+
+.success {
+    background-color: #57F287 !important;
+    color: #ffffff !important;
+    border-color: #57F287 !important;
+}
+
+.failure {
+    background-color: #ED4245 !important;
+    color: #ffffff !important;
+    border-color: #ED4245 !important;
 }
 
 /*LastFM Connect Button*/
 .settings-list li #lfmConnect {
-    background-color: #E4141E;
-}
-
-/*Update Themes*/
-.settings-list li #updateThemes {
-    color: var(--systemPrimary);
-    border-color: #424245;
-    background-color: hsla(0, 0%, 100%, .04);
-    border-style: solid;
-    border-width: 1px;
-}
-
-/*Theme Options*/
-.settings-list li #themeOptions {
-    color: var(--systemPrimary);
-    border-color: #424245;
-    background-color: hsla(0, 0%, 100%, .04);
-    border-style: solid;
-    border-width: 1px;
+    background-color: #E4141E !important;
+    color: #ffffff !important;
+    border-color: #E4141E !important;
 }
 
 /* Toggle Slider */
@@ -451,7 +452,7 @@ body {
     top:0;
     left:0;
     transform: scale(1.06);
-    background: rgb(200 200 200 / 10%);
+    background: rgba(200, 200, 200, 0.1);
     pointer-events: none;
     border-radius: 10px;
     -webkit-backface-visibility: hidden;
@@ -523,7 +524,7 @@ body {
     top: 0;
     left: 0;
     z-index: 9999;
-    background: rgb(0 0 0 / 45%);
+    background: rgba(0, 0, 0, 0.45);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -538,7 +539,7 @@ body {
     background: var(--modalBGColor);
     overflow: overlay;
     position: relative;
-    box-shadow: 0 2px 20px rgb(0 0 0 / 24%);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.24);
     animation: ameModalIn 0.10s var(--appleEase);
     will-change: opacity, transform;
 }
@@ -612,7 +613,7 @@ body {
 
 #lyrics_none.lyrics_none_hidden {
     display: none;
-    height: 0%;
+    height: 0;
 }
 
 /* Switch Checkbox */
@@ -622,15 +623,15 @@ input[type=checkbox][switch] {
     border-radius: 32px;
     height: 24px;
     zoom: 1;
-    top: 0px;
+    top: 0;
     cursor: pointer;
-    left: 0px;
+    left: 0;
     position: relative;
     transform: scale(1);
     background: var(--systemGray);
     mix-blend-mode: screen;
-    padding:0px;
-    margin:0px;
+    padding:0;
+    margin:0;
 }
 
 input[type=checkbox][switch]:focus,
@@ -640,7 +641,7 @@ input[type=checkbox][switch]:active {
 
 input[type=checkbox][switch]:checked {
     background: var(--keyColor);
-    border: 0px solid var(--keyColor);
+    border: 0 solid var(--keyColor);
     mix-blend-mode: unset;
 }
 

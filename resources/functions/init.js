@@ -25,6 +25,11 @@ const init = {
         app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
         app.commandLine.appendSwitch('high-dpi-support', 'true')
         app.commandLine.appendSwitch('force-device-scale-factor', '1')
+        if (app.cfg.get('advanced.verboseLogging')) {
+            app.commandLine.appendSwitch('--enable-logging');
+            app.commandLine.appendSwitch('--log-file', join(app.getPath('userData'), 'logs', 'renderer.log'));
+            console.verbose(`[InitializeBase] Renderer logging setup at ${join(app.getPath('userData'), 'logs', 'renderer.log')}`);
+        }
 
         // Media Key Hijacking
         if (app.cfg.get('advanced.preventMediaKeyHijacking')) {
@@ -49,28 +54,62 @@ const init = {
             console.log("[Incognito] Incognito Mode enabled. DiscordRPC and LastFM updates are ignored.")
         }
 
+        /* Protocols for Link Handling */
+        if (process.defaultApp) {
+            if (process.argv.length >= 2) {
+                app.setAsDefaultProtocolClient('ame', process.execPath, [resolve(process.argv[1])])
+                app.setAsDefaultProtocolClient('itms', process.execPath, [resolve(process.argv[1])])
+                app.setAsDefaultProtocolClient('itmss', process.execPath, [resolve(process.argv[1])])
+                app.setAsDefaultProtocolClient('musics', process.execPath, [resolve(process.argv[1])])
+                app.setAsDefaultProtocolClient('music', process.execPath, [resolve(process.argv[1])])
+            }
+        } else {
+            app.setAsDefaultProtocolClient('ame') // Custom AME Protocol
+            app.setAsDefaultProtocolClient('itms') // iTunes HTTP Protocol
+            app.setAsDefaultProtocolClient('itmss') // iTunes HTTPS Protocol
+            app.setAsDefaultProtocolClient('musics') // macOS Client Protocol
+            app.setAsDefaultProtocolClient('music') // macOS Client Protocol
+        }
+
+        app.on('open-url', (event, url) => {
+            event.preventDefault()
+            if (url.includes('ame://') || url.includes('itms://') || url.includes('itmss://') || url.includes('musics://') || url.includes('music://')) {
+                app.ame.handler.LinkHandler(url)
+            }
+        })
+
+        // Running the Application on Login
+        if (app.cfg.get('window.appStartupBehavior')) {
+            app.setLoginItemSettings({
+                openAtLogin: true,
+                args: [
+                    '--process-start-args', `${app.cfg.get('window.appStartupBehavior') === 'hidden' ? "--hidden" : (app.cfg.get('window.appStartupBehavior') === 'minimized' ? "--minimized" : "")}`
+                ]
+            })
+        }
+
         // Set Max Listener
         require('events').EventEmitter.defaultMaxListeners = Infinity;
     },
 
     LoggingInit: function () {
-        const log = require("electron-log");
+        app.log = require("electron-log");
 
         if (app.commandLine.hasSwitch('verbose')) {
             app.verboseLaunched = true
         }
 
-        log.transports.file.resolvePath = (vars) => {
+        app.log.transports.file.resolvePath = (vars) => {
             return join(app.getPath('userData'), 'logs', vars.fileName);
         }
 
-        Object.assign(console, log.functions);
+        Object.assign(console, app.log.functions);
 
         console.verbose = () => {
         };
 
         if (app.cfg.get('advanced.verboseLogging') || app.verboseLaunched) {
-            console.verbose = log.debug
+            console.verbose = app.log.debug
         } else {
             console.verbose = function (_data) {
                 return false
@@ -121,23 +160,6 @@ const init = {
         init.ThemeInstallation()
         init.PluginInstallation()
         init.TrayInit()
-
-        // Set the Protocols - Doesnt work on linux :(
-        app.setAsDefaultProtocolClient('ame') // Custom AME Protocol
-        app.setAsDefaultProtocolClient('itms') // iTunes HTTP
-        app.setAsDefaultProtocolClient('itmss') // iTunes HTTPS
-        app.setAsDefaultProtocolClient('musics') // macOS Client
-        app.setAsDefaultProtocolClient('music') // macOS Client
-
-        // Running the Application on Login
-        if (app.cfg.get('window.appStartupBehavior')) {
-            app.setLoginItemSettings({
-                openAtLogin: true,
-                args: [
-                    '--process-start-args', `${app.cfg.get('window.appStartupBehavior') === 'hidden' ? "--hidden" : (app.cfg.get('window.appStartupBehavior') === 'minimized' ? "--minimized" : "")}`
-                ]
-            })
-        }
 
         app.ame.mpris.connect(); // M.P.R.I.S
         app.ame.lastfm.authenticate(); // LastFM
