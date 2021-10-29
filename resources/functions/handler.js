@@ -1138,7 +1138,6 @@ const handler = {
 
         function searchForGCDevices() {
             try {
-                castDevices = []
                 let browser = mdns.createBrowser(mdns.tcp('googlecast'));
                 browser.on('ready', browser.discover);
 
@@ -1332,8 +1331,8 @@ const handler = {
             });
         }
 
-        ipcMain.handle('getKnownCastDevices', function (event, data) {
-            return castDevices
+        ipcMain.on('getKnownCastDevices', function (event) {
+            event.returnValue = castDevices
         });
 
         ipcMain.on('performGCCast', function (event, ip, song, artist, album, albumart) {

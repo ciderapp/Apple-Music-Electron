@@ -1,0 +1,29 @@
+<div id="usermenu-vue">
+    <template v-for="menuitem in menuitems">
+        <button class="um-option" @click="menuitem.onclick();close()">
+            <div class="row">
+                <div class="col">
+                    {{ menuitem.label }}
+                </div>
+                <div class="col-auto">
+
+                </div>
+            </div>
+        </button>
+    </template>
+</div>
+
+<style>
+    .um-option {
+        width: 100%;
+        display: block;
+        text-align: left;
+        padding: 10px;
+        border-radius: 4px;
+    }
+
+    .um-option:hover {
+        background:var(--keyColor);
+        color: white!important;
+    }
+</style>

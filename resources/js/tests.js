@@ -1,4 +1,80 @@
 var _tests = {
+    usermenuinit() {
+        // MOVE ME ONCE IMPLEMENTED!
+
+        // Clone the user menu
+        var umClone = document.querySelector(".web-chrome-controls-container>.web-navigation__auth").cloneNode(true)
+        // Hide the existing menu
+        document.querySelector(".web-chrome-controls-container>.web-navigation__auth").style.display = "none"
+        // Append cloned menu
+        document.querySelector(".web-chrome-controls-container").append(umClone)
+        // Set cloned menu events
+        umClone.addEventListener("click", ()=>{
+            _tests.usermenu()
+        })
+    },
+    usermenu() {
+        // MOVE ME ONCE IMPLEMENTED!
+        AMJavaScript.getRequest("ameres://html/usermenu.html", (content) => {
+            var vm = new Vue({
+                data: {
+                    menuitems: [
+                        {
+                            label: "Help",
+                            icon: "",
+                            onclick: ()=>{ window.open(`https://support.apple.com/guide/music-web`) }
+                        },
+                        {
+                            label: "Discord",
+                            icon: "",
+                            onclick: ()=>{ window.open(`https://discord.gg/CezHYdXHEM`) }
+                        },
+                        {
+                            label: "Account Settings",
+                            icon: "",
+                            onclick:()=>{ window.open(`https://music.apple.com/account/settings`) }
+                        },
+                        {
+                            label: "Preferences",
+                            icon: "",
+                            onclick: ()=>{ window.location.href = "/account/settings/" }
+                        },
+                        {
+                            label: "Sign Out",
+                            icon: "",
+                            onclick: ()=>{ MusicKit.getInstance().unauthorize() }
+                        }
+                    ]
+                },
+                methods: {
+                    close() {
+                        modal.close()
+                    }
+                }
+            })
+            var modal = new AMEModal({
+                content: content,
+                CloseButton: false,
+                ModalClasses: ["ameUserMenu"],
+                BackdropStyle: {
+                    background: "transparent"
+                },
+                Style: {
+                    height: "auto",
+                    width: "200px",
+                    position: "absolute",
+                    top: "55px",
+                    right: "142px"
+                },
+                OnCreate() {
+                    vm.$mount("#usermenu-vue")
+                },
+                OnClose() {
+                    _vues.destroy(vm)
+                }
+            })
+        })
+    },
     zoo() {
         AMJavaScript.getRequest("ameres://html/zoo.html", (content) => {
             var modal = new AMEModal({
@@ -7,6 +83,8 @@ var _tests = {
         })
     },
     castUI() {
+        // MOVE ME ONCE IMPLEMENTED!
+
         AMJavaScript.getRequest("ameres://html/cast_device.html", (content) => {
             var vm = new Vue({
                 data: {
@@ -17,11 +95,12 @@ var _tests = {
                 },
                 methods: {
                     scan() {
+                        console.log("SCANNING")
                         let self = this
                         AudioOutputs.getGCDevices()
-                        ipcRenderer.invoke("getKnownCastDevices", (devices)=>{
-                            self.devices.cast = devices
-                        })
+                        this.devices.cast = ipcRenderer.sendSync("getKnownCastDevices")
+                        console.log(this.devices)
+                        vm.$forceUpdate()
                     },
                     setCast(device) {
                         AudioOutputs.playGC(device)
@@ -35,16 +114,11 @@ var _tests = {
                 },
                 OnCreate() {
                     vm.$mount("#castdevices-vue")
-                    vm.scan()
                 },
                 OnClose() {
                     _vues.destroy(vm)
                 }
             })
-            return {
-                vue: vm,
-                modal: modal
-            }
         })
     },
     outputDevice() {
@@ -135,6 +209,8 @@ var _tests = {
         refreshLoop();
     },
     oobe(skipIntro = false, closeBtn = false) {
+        // MOVE ME ONCE IMPLEMENTED!
+
         AMJavaScript.getRequest("ameres://html/oobe.html", (content) => {
             var vm = new Vue({
                 data: {

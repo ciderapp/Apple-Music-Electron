@@ -551,6 +551,18 @@ body {
     animation: ameModalOut 0.10s var(--appleEase) forwards;
 }
 
+.ameUserMenu {
+    border-radius: 6px;
+    border: .5px solid rgba(0,0,0,.2);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.2),0 8px 40px var(--dialogShadowColor);
+    animation: unset;
+    background-color: var(--systemStandardThickMaterialSover);
+    -webkit-backdrop-filter: blur(60px) saturate(210%);
+    backdrop-filter: blur(60px) saturate(210%);
+    font-size: 1.0em;
+    padding: 14px;
+}
+
 @keyframes ameModalIn {
     0% {
         transform: scale(0.85);
