@@ -1,11 +1,14 @@
 <div id="usermenu-vue">
     <template v-for="menuitem in menuitems">
-        <button class="um-option" @click="menuitem.onclick();close()">
+        <button class="um-option" :style="menuitem.style" @click="menuitem.onclick();close()">
             <div class="row">
                 <div class="col">
                     {{ menuitem.label }}
                 </div>
-                <div class="col-auto">
+                <div class="col-auto" v-if="menuitem['svg']" v-html="menuitem.svg">
+
+                </div>
+                <div class="col-auto" v-else>
 
                 </div>
             </div>
@@ -19,11 +22,16 @@
         display: block;
         text-align: left;
         padding: 10px;
-        border-radius: 4px;
+        border-radius: 0px;
+    }
+
+    .um-option:not(:last-child) {
+        border-bottom-style: solid;
+        border-bottom-width: .5px;
+        border-bottom-color: var(--contextMenuBorderColor);
     }
 
     .um-option:hover {
-        background:var(--keyColor);
-        color: white!important;
+        background:var(--systemQuinary);
     }
 </style>
