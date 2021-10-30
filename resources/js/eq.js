@@ -251,12 +251,16 @@ var AudioOutputs = {
         backdrop.appendChild(win);
         document.body.appendChild(backdrop);
     },
-    startExclusiveAudio: function(){
+    getAudioDevices: function(){
+        ipcRenderer.send('getAudioDevices','');
+    },
+    startExclusiveAudio: function(id){
         EAoverride = false;
         ipcRenderer.send('muteAudio',true);
-        var x = AMEx.context.createScriptProcessor(16384,2,1);
-
-        x.onaudioprocess = function(e){
+        ipcRenderer.send('enableExclusiveAudio',id);
+        setTimeout(function() {
+            var x = AMEx.context.createScriptProcessor(16384,2,1);
+            x.onaudioprocess = function(e){
             if (!EAoverride){
             var leftpcm = e.inputBuffer.getChannelData(0);
             var rightpcm = e.inputBuffer.getChannelData(1);
@@ -264,9 +268,11 @@ var AudioOutputs = {
         }
         };
         AMEx.result.source.connect(x);x.connect(AMEx.context.destination);
+        }, 5000);
     },
     stopExclusiveAudio: function(){
         EAoverride = true;
+        ipcRenderer.send('disableExclusiveAudio','');
         ipcRenderer.send('muteAudio',false);
     },
     getGCDevices: function(){

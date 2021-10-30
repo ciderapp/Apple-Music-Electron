@@ -3,7 +3,7 @@ const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPre
 
     {readFile, readFileSync, writeFile, existsSync, watch} = require('fs'),
     {initAnalytics} = require('./utils'),
-    {RtAudio, RtAudioFormat, RtAudioApi} = require("audify");
+    {RtAudio, RtAudioFormat, RtAudioApi, RtAudioStreamFlags} = require("audify");
 
 const os = require('os');
 const mdns = require('mdns-js');
@@ -905,18 +905,29 @@ const handler = {
         }
         const rtAudio = new RtAudio(api);
         console.log(rtAudio.getDevices());
+        ipcMain.on('getAudioDevices',function(event){
+            for (let id = 0; id < rtAudio.getDevices().length; id++ ){
+            app.win.webContents.executeJavaScript(`console.log('id:','${id}','${rtAudio.getDevices()[id].name}','outputChannels:','${rtAudio.getDevices()[id].outputChannels}','preferedSampleRate','${rtAudio.getDevices()[id].preferredSampleRate}','nativeFormats','${rtAudio.getDevices()[id].nativeFormats}')`);
+        }
+        })
+        ipcMain.on('enableExclusiveAudio',function(event,id){
         rtAudio.openStream(
             {
-                deviceId: 0, // Need to change to get wrote
+                deviceId: id ?? rtAudio.getDefaultOutputDevice(), // Need to change to get wrote
                 nChannels: 2, // Number of channels
                 firstChannel: 0 // First channel index on device (default = 0).
             }, null,
             RtAudioFormat.RTAUDIO_FLOAT32,
             48000,
-            16384, "Apple Music Electron",
+            16384, "Apple Music Electron",null,null,RtAudioStreamFlags.RTAUDIO_MINIMIZE_LATENCY | RtAudioStreamFlags.RTAUDIO_SCHEDULE_REALTIME | RtAudioStreamFlags.RTAUDIO_HOG_DEVICE
         );
-
         rtAudio.start();
+        })
+        ipcMain.on('disableExclusiveAudio',function(event,data){
+            if(rtAudio.isStreamOpen){
+              rtAudio.closeStream();  
+            }
+        })
 
         // mix the channels
         function interleave(leftChannel, rightChannel) {
