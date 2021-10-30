@@ -5,7 +5,10 @@
                 <div class="col">
                     {{ menuitem.label }}
                 </div>
-                <div class="col-auto">
+                <div class="col-auto" v-if="menuitem['svg']" v-html="menuitem.svg">
+
+                </div>
+                <div class="col-auto" v-else>
 
                 </div>
             </div>
@@ -29,7 +32,6 @@
     }
 
     .um-option:hover {
-        background:var(--keyColor);
-        color: white!important;
+        background:var(--systemQuinary);
     }
 </style>
