@@ -37,11 +37,17 @@ var _tests = {
                         {
                             label: "Preferences",
                             icon: "",
-                            onclick: ()=>{ window.location.href = "/account/settings/" }
+                            onclick: ()=>{
+                                history.pushState("settings", "Settings", "/account/settings/")
+                                window.location.href = "#"
+                            }
                         },
                         {
                             label: "Sign Out",
                             icon: "",
+                            style: {
+                                color: "var(--systemRed)"
+                            },
                             onclick: ()=>{ MusicKit.getInstance().unauthorize() }
                         }
                     ]
