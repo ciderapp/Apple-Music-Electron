@@ -258,7 +258,7 @@ var AudioOutputs = {
         EAoverride = false;
         ipcRenderer.send('muteAudio',true);
         ipcRenderer.send('enableExclusiveAudio',id);
-        setTimeout(function() {
+
             var x = AMEx.context.createScriptProcessor(16384,2,1);
             x.onaudioprocess = function(e){
             if (!EAoverride){
@@ -268,7 +268,7 @@ var AudioOutputs = {
         }
         };
         AMEx.result.source.connect(x);x.connect(AMEx.context.destination);
-        }, 5000);
+      
     },
     stopExclusiveAudio: function(){
         EAoverride = true;

@@ -36,6 +36,7 @@
     "lastfmapi": "^0.1.1",
     "mdns-js": "^1.0.3",
     "mpris-service": "^2.1.2",
+    "naudiodon": "github:vapormusic/naudiodon",
     "node-fetch": "^3.0.0",
     "node-ssdp-lite": "^0.2.0",
     "react": "^17.0.2",
@@ -46,7 +47,7 @@
     "source-map-support": "^0.5.16",
     "v8-compile-cache": "^2.1.1",
     "xml2js": "^0.4.23",
-    "youtube-search-without-api-key" : "github:vapormusic/youtube-search"
+    "youtube-search-without-api-key": "github:vapormusic/youtube-search"
   },
   "devDependencies": {
     "electron": "https://github.com/castlabs/electron-releases.git",
