@@ -1,7 +1,7 @@
 const {app, nativeTheme, nativeImage, Tray} = require("electron"),
     {join, resolve} = require("path"),
     os = require("os"),
-    fs = require("fs"),
+    {existsSync, readdirSync} = require("fs"),
     {initAnalytics} = require('./utils');
 initAnalytics();
 
@@ -118,17 +118,20 @@ const init = {
     },
 
     ThemeInstallation: function () {
+        const themesPath = join(app.getPath('userData'), "themes");
 
         // Check if the themes folder exists and check permissions
-        if (fs.existsSync(resolve(app.getPath("userData"), "themes"))) {
-            app.ame.utils.permissionsCheck(resolve(app.getPath("userData"), "themes"), 'README.md')
+        if (existsSync(themesPath)) {
+            console.verbose('[ThemeInstallation] Themes Directory Exists. Running Permission Check.')
+            app.ame.utils.permissionsCheck(themesPath, 'README.md')
         } else {
+            console.verbose('[ThemeInstallation] Themes folder not found. Cloning repo.')
             app.ame.utils.updateThemes().catch((e) => console.error(e));
         }
 
         // Save all the file names to array and log it
-        if (fs.existsSync(app.userThemesPath)) {
-            console.log(`[InitializeTheme] Files found in Themes Directory: [${fs.readdirSync(resolve(app.getPath("userData"), "themes")).join(', ')}]`)
+        if (existsSync(themesPath)) {
+            console.log(`[InitializeTheme] Files found in Themes Directory: [${readdirSync(themesPath).join(', ')}]`)
         }
 
         // Set the default theme
@@ -138,7 +141,7 @@ const init = {
     },
 
     PluginInstallation: function () {
-        if (!fs.existsSync(resolve(app.getPath("userData"), "plugins"))) {
+        if (!existsSync(resolve(app.getPath("userData"), "plugins"))) {
             return;
         }
 
@@ -149,7 +152,7 @@ const init = {
         app.ame.utils.fetchPluginsListing();
 
         // Save all the file names to array and log it
-        console.log(`[PluginInstallation] Files found in Plugins Directory: [${fs.readdirSync(resolve(app.getPath("userData"), "plugins")).join(', ')}]`);
+        console.log(`[PluginInstallation] Files found in Plugins Directory: [${readdirSync(resolve(app.getPath("userData"), "plugins")).join(', ')}]`);
     },
 
     AppReady: function () {
