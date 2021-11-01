@@ -373,6 +373,11 @@ span.app-prefs-title {
 
 body {
     background: black;
+    transition: background var(--appleEase) .10s;
+}
+
+body.no-acrylic {
+    background: var(--pageBG)!important;
 }
 
 .appleSidebar {
@@ -545,10 +550,25 @@ body {
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.24);
     animation: ameModalIn 0.10s var(--appleEase);
     will-change: opacity, transform;
+    -webkit-backdrop-filter: blur(60px) saturate(210%);
+    backdrop-filter: blur(60px) saturate(210%);
 }
 
 .ameModal-closing {
     animation: ameModalOut 0.10s var(--appleEase) forwards;
+}
+
+
+@media (prefers-color-scheme: light) {
+    .ameModal {
+        background: rgb(255 255 255 / 92%);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .ameModal {
+        background: rgb(31 31 31 / 95%);
+    }
 }
 
 .ameUserMenu {
@@ -563,6 +583,7 @@ body {
     padding: 0px;
     overflow: hidden;
 }
+
 
 @keyframes ameModalIn {
     0% {

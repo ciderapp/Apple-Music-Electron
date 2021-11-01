@@ -102,6 +102,9 @@ class AMEModal {
         this.ModalClasses.forEach((cssClass)=>{
             modalWin.classList.add(cssClass)
         })
+        if(document.querySelectorAll(".ameModal").length == 0) {
+            document.body.classList.add("no-acrylic")
+        }
         Object.assign(modalWin.style, this.Style)
         backdrop.appendChild(modalWin)
         document.body.appendChild(backdrop)
@@ -115,6 +118,9 @@ class AMEModal {
     }
 
     close() {
+        if(document.querySelectorAll(".ameModal").length == 1) {
+            document.body.classList.remove("no-acrylic")
+        }
         this.OnClose()
         this.modal.backdrop.style.background = "transparent"
         this.modal.window.classList.add("ameModal-closing")
