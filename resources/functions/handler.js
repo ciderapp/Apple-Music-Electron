@@ -314,7 +314,7 @@ const handler = {
                         app.win.webContents.executeJavaScript(`AMStyling.loadTheme("${newValue}", true);`).catch((err) => console.error(err));
                     }
                 });
-                console.verbose(`[Watcher] Watching for changes: 'themes/${newValue}}.css'`)
+                console.verbose(`[Watcher] Watching for changes: 'themes/${newValue}.css'`)
             }
 
             const updatedVibrancy = app.ame.utils.fetchTransparencyOptions();

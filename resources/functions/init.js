@@ -1,7 +1,7 @@
 const {app, nativeTheme, nativeImage, Tray} = require("electron"),
     {join, resolve} = require("path"),
     os = require("os"),
-    fs = require("fs"),
+    {existsSync, readdirSync, mkdir} = require("fs"),
     {initAnalytics} = require('./utils');
 initAnalytics();
 
@@ -24,7 +24,10 @@ const init = {
         // Disable CORS
         app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
         app.commandLine.appendSwitch('high-dpi-support', 'true')
-        app.commandLine.appendSwitch('force-device-scale-factor', '1')
+        if (process.platform === "win32") {
+            app.commandLine.appendSwitch('force-device-scale-factor', '1')
+        }
+
         if (app.cfg.get('advanced.verboseLogging')) {
             app.commandLine.appendSwitch('--enable-logging');
             app.commandLine.appendSwitch('--log-file', join(app.getPath('userData'), 'logs', 'renderer.log'));
@@ -118,17 +121,27 @@ const init = {
     },
 
     ThemeInstallation: function () {
+        const themesPath = join(app.getPath('userData'), "themes");
 
         // Check if the themes folder exists and check permissions
-        if (fs.existsSync(resolve(app.getPath("userData"), "themes"))) {
-            app.ame.utils.permissionsCheck(resolve(app.getPath("userData"), "themes"), 'README.md')
+        if (existsSync(join(themesPath, 'README.md'))) {
+            console.verbose('[ThemeInstallation] Themes Directory Exists. Running Permission Check.')
+            app.ame.utils.permissionsCheck(themesPath, 'README.md')
         } else {
-            app.ame.utils.updateThemes().catch((e) => console.error(e));
+            console.verbose('[ThemeInstallation] Themes folder not found. Cloning repo.')
+            mkdir(themesPath, (err) => {                
+                if (!err) {
+                    console.warn('[ThemeInstallation] Themes Directory Created.')
+                    app.ame.utils.updateThemes().catch((e) => console.error(e));
+                } else {
+                    console.error(`[ThemeInstallation] ${err}`)
+                }
+            })
         }
 
         // Save all the file names to array and log it
-        if (fs.existsSync(app.userThemesPath)) {
-            console.log(`[InitializeTheme] Files found in Themes Directory: [${fs.readdirSync(resolve(app.getPath("userData"), "themes")).join(', ')}]`)
+        if (existsSync(themesPath)) {
+            console.log(`[InitializeTheme] Files found in Themes Directory: [${readdirSync(themesPath).join(', ')}]`)
         }
 
         // Set the default theme
@@ -138,7 +151,7 @@ const init = {
     },
 
     PluginInstallation: function () {
-        if (!fs.existsSync(resolve(app.getPath("userData"), "plugins"))) {
+        if (!existsSync(resolve(app.getPath("userData"), "plugins"))) {
             return;
         }
 
@@ -149,7 +162,7 @@ const init = {
         app.ame.utils.fetchPluginsListing();
 
         // Save all the file names to array and log it
-        console.log(`[PluginInstallation] Files found in Plugins Directory: [${fs.readdirSync(resolve(app.getPath("userData"), "plugins")).join(', ')}]`);
+        console.log(`[PluginInstallation] Files found in Plugins Directory: [${readdirSync(resolve(app.getPath("userData"), "plugins")).join(', ')}]`);
     },
 
     AppReady: function () {

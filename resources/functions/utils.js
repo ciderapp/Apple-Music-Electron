@@ -213,16 +213,16 @@ const Utils = {
 
     /* updateThemes - Purges the themes directory and clones a fresh copy of the themes */
     updateThemes: async () => {
-        if (existsSync((resolve(app.getPath("userData"), "themes")))) {
-            rimraf(resolve(app.getPath("userData"), "themes"), [], () => {
+        if (existsSync((join(app.getPath("userData"), "themes", "README.md")))) {
+            rimraf(join(app.getPath("userData"), "themes"), [], () => {
                 console.warn(`[updateThemes] Themes directory cleared for fresh clone.`)
-                clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', resolve(app.getPath("userData"), "themes"), [], (err) => {
+                clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', join(app.getPath("userData"), "themes"), [], (err) => {
                     console.verbose(`[updateThemes][clone] ${err ? err : `Re-cloned Themes.`}`)
                     return Promise.resolve(err)
                 })
             })
         } else {
-            clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', resolve(app.getPath("userData"), "themes"), [], (err) => {
+            clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', join(app.getPath("userData"), "themes"), [], (err) => {
                 console.verbose(`[updateThemes][clone] ${err ? err : `Re-cloned Themes.`}`)
                 return Promise.resolve(err)
             })
