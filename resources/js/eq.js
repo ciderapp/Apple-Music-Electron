@@ -16,7 +16,7 @@ var audioWorklet =  `class RecorderWorkletProcessor extends AudioWorkletProcesso
   
     constructor() {
       super();
-      this._bufferSize = 16384;
+      this._bufferSize = 32768;
       this._buffers = null;
       this._initBuffer();
     }
@@ -235,6 +235,7 @@ var AudioOutputs = {
         closeBtn.style.fontWeight = "bold";
         closeBtn.style.margin = "12px 0px 0px 0px";
         closeBtn.innerHTML = "Close";
+        closeBtn.id = "eq-close";
         closeBtn.addEventListener("click", function () {
             backdrop.remove();
             closefn();
@@ -293,6 +294,7 @@ var AudioOutputs = {
         let bassText = document.createElement("div");
         let trebleText = document.createElement("div");
         let gainText = document.createElement("div");
+        titleText.id = 'eq-menu';
         titleText.innerHTML = (`Equalizer`);
         titleText.style.fontWeight = "bold";
         bassText.innerHTML = (`Bass (${bassFilter.gain.value})`);
@@ -443,7 +445,10 @@ document.addEventListener('keydown', function (event) {
     if (event.ctrlKey || event.metaKey) {
         switch (String.fromCharCode(event.which).toLowerCase()) {
             case "2":
-                AudioOutputs.ShowEQ();
+                if (document.getElementById('eq-menu')){
+                    document.getElementById('eq-menu').parentNode.getElementsByTagName('button')[0].click();  
+                }
+                else{AudioOutputs.ShowEQ();}
                 break;
             case "3":
                 (EAoverride) ? (EAoverride = false) : (EAoverride = true);

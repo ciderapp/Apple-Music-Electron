@@ -890,8 +890,8 @@ const handler = {
     AudioHandler: function () {
 
         var EAstream = new Stream.PassThrough();
+        var ao;
 
-;
         console.log(portAudio.getDevices());
         ipcMain.on('getAudioDevices',function(event){
             for (let id = 0; id < portAudio.getDevices().length; id++ ){
@@ -908,7 +908,7 @@ const handler = {
                   sampleRate: 48000,
                   maxQueue: 100,
                   deviceId: id,
-                  highwaterMark : 256, // Use -1 or omit the deviceId to select the default device
+                  highwaterMark : 16384, // Use -1 or omit the deviceId to select the default device
                   closeOnError: false // Close the stream if an audio error is detected, if set false then just log the error
                 }
               });              
@@ -926,6 +926,13 @@ const handler = {
             if(ao){
               ao.quit();  
               ao = null; 
+            }
+        })
+
+        app.win.on('quit', ()=>{
+            if(ao){
+                ao.quit();  
+                ao = null; 
             }
         })
 
