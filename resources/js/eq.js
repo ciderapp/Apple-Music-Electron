@@ -105,7 +105,7 @@ var audioWorklet =  `class RecorderWorkletProcessor extends AudioWorkletProcesso
   }
   
   registerProcessor('recorder-worklet', RecorderWorkletProcessor);`;
-var GCrecorderNode;
+var GCstream;
 var searchInt;
 var AMEx = {
     context: new AudioContext(),
@@ -369,72 +369,61 @@ var AudioOutputs = {
 
           await AMEx.context.audioWorklet.addModule(URL.createObjectURL(blob))
           .then(() => {
-            const channels = 2;
-            AErecorderNode = new window.AudioWorkletNode(AMEx.context, 
-                                                             'recorder-worklet', 
-                                                             {parameterData: {numberOfChannels: channels}});
-       
-            AMEx.result.source.connect(AErecorderNode);
-            AErecorderNode.connect(AMEx.context.destination);
-            AErecorderNode.parameters.get('isRecording').setValueAtTime(1, AMEx.context.currentTime);
-            AErecorderNode.port.onmessage = (e) => {
+            if (!AErecorderNode){
+              const channels = 2;
+              AErecorderNode = new window.AudioWorkletNode(AMEx.context, 
+                                                              'recorder-worklet', 
+                                                              {parameterData: {numberOfChannels: channels}});
+        
+              AMEx.result.source.connect(AErecorderNode);
+              AErecorderNode.port.onmessage = (e) => {
                 const data = e.data;
                 switch(data.eventType) {
                   case "data":
-            
+                    if(!EAoverride){
                     const audioData = data.audioBuffer;
                     const bufferSize = data.bufferSize;
-                    ipcRenderer.send('writePCM',audioData[0],audioData[1], bufferSize);
+                    ipcRenderer.send('writePCM',audioData[0],audioData[1], bufferSize);}
                     break;
                   case "stop":            
                     break;
                 }
+              }
             }
+            AErecorderNode.parameters.get('isRecording').setValueAtTime(1, AMEx.context.currentTime);
+
           });              
     },
     stopExclusiveAudio: function(){
-        AErecorderNode.parameters.get('isRecording').setValueAtTime(0, AMEx.context.currentTime);
-        AErecorderNode = null;
-        ipcRenderer.send('disableExclusiveAudio','');
+        EAoverride = true;
+        
         ipcRenderer.send('muteAudio',false);
+        ipcRenderer.send('disableExclusiveAudio','');
+        
     },
     getGCDevices: function(){
         ipcRenderer.send('getChromeCastDevices','');
     },
-    playGC : async function(ip){
-        GCOverride = false;
-        ipcRenderer.send('performGCCast',ip, MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,(MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256));
-        let blob = new Blob([audioWorklet], {type: 'application/javascript'});
+    playGC : function(ip){
+      GCOverride = false;
+      ipcRenderer.send('performGCCast',ip, MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,(MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256));
+      GCstream = AMEx.result.context.createScriptProcessor(16384,2,1);
 
-        await AMEx.context.audioWorklet.addModule(URL.createObjectURL(blob))
-        .then(() => {
-          const channels = 2;
-          GCrecorderNode = new window.AudioWorkletNode(AMEx.context, 
-                                                           'recorder-worklet', 
-                                                           {parameterData: {numberOfChannels: channels}});
-     
-          AMEx.result.source.connect(GCrecorderNode);
-          GCrecorderNode.connect(AMEx.context.destination);
-          GCrecorderNode.parameters.get('isRecording').setValueAtTime(1, AMEx.context.currentTime);
-          GCrecorderNode.port.onmessage = (e) => {
-              const data = e.data;
-              switch(data.eventType) {
-                case "data":
-          
-                  const audioData = data.audioBuffer;
-                  const bufferSize = data.bufferSize;
-                  ipcRenderer.send('writeWAV',audioData[0],audioData[1], bufferSize);
-                  break;
-                case "stop":            
-                  break;
-              }
-          }
-        });      
+      GCstream.onaudioprocess = function(e){
+          if (!GCOverride){
+          var leftpcm = e.inputBuffer.getChannelData(0);
+          var rightpcm = e.inputBuffer.getChannelData(1);
+          ipcRenderer.send('writeWAV',leftpcm,rightpcm);
+      }
+
+      };
+
+      AMEx.result.source.connect(GCstream);GCstream.connect(AMEx.context.destination);
+             
      
     },
     stopGC : function(){
-       GCrecorderNode.parameters.get('isRecording').setValueAtTime(0, AMEx.context.currentTime);
-       GCrecorderNode = null;
+       GCOverride = true;
        ipcRenderer.send('stopGCast','');
     } 
 };
