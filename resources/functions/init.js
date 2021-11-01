@@ -1,7 +1,7 @@
 const {app, nativeTheme, nativeImage, Tray} = require("electron"),
     {join, resolve} = require("path"),
     os = require("os"),
-    {existsSync, readdirSync} = require("fs"),
+    {existsSync, readdirSync, mkdir} = require("fs"),
     {initAnalytics} = require('./utils');
 initAnalytics();
 
@@ -121,12 +121,19 @@ const init = {
         const themesPath = join(app.getPath('userData'), "themes");
 
         // Check if the themes folder exists and check permissions
-        if (existsSync(themesPath)) {
+        if (existsSync(join(themesPath, 'README.md'))) {
             console.verbose('[ThemeInstallation] Themes Directory Exists. Running Permission Check.')
             app.ame.utils.permissionsCheck(themesPath, 'README.md')
         } else {
             console.verbose('[ThemeInstallation] Themes folder not found. Cloning repo.')
-            app.ame.utils.updateThemes().catch((e) => console.error(e));
+            mkdir(themesPath, (err) => {                
+                if (!err) {
+                    console.warn('[ThemeInstallation] Themes Directory Created.')
+                    app.ame.utils.updateThemes().catch((e) => console.error(e));
+                } else {
+                    console.error(`[ThemeInstallation] ${err}`)
+                }
+            })
         }
 
         // Save all the file names to array and log it

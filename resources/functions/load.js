@@ -218,7 +218,7 @@ module.exports = {
                     app.win.webContents.executeJavaScript(`AMStyling.loadTheme("${app.cfg.get('visual.theme')}", true);`).catch((err) => console.error(err));
                 }
             });
-            console.verbose(`[Watcher] Watching for changes: 'themes/${app.cfg.get('visual.theme')}}.css'`)
+            console.verbose(`[Watcher] Watching for changes: 'themes/${app.cfg.get('visual.theme')}.css'`)
         }
     }
 }
