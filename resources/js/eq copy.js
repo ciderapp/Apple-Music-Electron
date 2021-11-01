@@ -1,111 +1,7 @@
 var EAoverride = false;
-var AErecorderNode;
+var EAstream;
 var GCOverride = false;
-var audioWorklet =  `class RecorderWorkletProcessor extends AudioWorkletProcessor {
-    static get parameterDescriptors() {
-      return [{
-        name: 'isRecording',
-        defaultValue: 0
-      },
-      {
-        name: 'numberOfChannels',
-        defaultValue: 2
-      }
-    ];
-    }
-  
-    constructor() {
-      super();
-      this._bufferSize = 16384;
-      this._buffers = null;
-      this._initBuffer();
-    }
-
-    _initBuffers(numberOfChannels) {
-      this._buffers = [];
-      for (let channel=0; channel < numberOfChannels; channel++) {
-        this._buffers.push(new Float32Array(this._bufferSize));
-      }
-    }
-  
-    _initBuffer() {
-      this._bytesWritten = 0;
-    }
-  
-    _isBufferEmpty() {
-      return this._bytesWritten === 0;
-    }
-  
-    _isBufferFull() {
-      return this._bytesWritten === this._bufferSize;
-    }
-
-
-    _pushToBuffers(audioRawData, numberOfChannels) {
-      if (this._isBufferFull()) {
-          this._flush();
-      }
-
-      let dataLength = audioRawData[0].length;
-
-      for (let idx=0; idx<dataLength; idx++) {
-        for (let channel=0; channel < numberOfChannels; channel++) {
-          let value = audioRawData[channel][idx];
-          this._buffers[channel][this._bytesWritten] = value;
-        }
-        this._bytesWritten += 1;
-      }
-    }
-  
-    _flush() {
-      let buffers = [];
-      this._buffers.forEach((buffer, channel) => {
-        if (this._bytesWritten < this._bufferSize) {
-          buffer = buffer.slice(0, this._bytesWritten);
-        }
-        buffers[channel] = buffer;
-      });
-      this.port.postMessage({
-        eventType: 'data',
-        audioBuffer: buffers,
-        bufferSize: this._bufferSize
-      });
-      this._initBuffer();
-    }
-  
-    _recordingStopped() {
-      this.port.postMessage({
-        eventType: 'stop'
-      });
-    }
-  
-    process(inputs, outputs, parameters) {
-      const isRecordingValues = parameters.isRecording;
-      const numberOfChannels = parameters.numberOfChannels[0];   
-      if (this._buffers === null) {
-        this._initBuffers(numberOfChannels);
-      }
-      
-      for (let dataIndex = 0; dataIndex < isRecordingValues.length; dataIndex++) 
-      {
-        const shouldRecord = isRecordingValues[dataIndex] === 1;
-        if (!shouldRecord && !this._isBufferEmpty()) {
-          this._flush();
-          this._recordingStopped();
-        }
-  
-        if (shouldRecord) {
-          let audioRawData = inputs[0];
-          this._pushToBuffers(audioRawData, numberOfChannels);
-        }
-      }
-      return true;
-    }
-  
-  }
-  
-  registerProcessor('recorder-worklet', RecorderWorkletProcessor);`;
-var GCrecorderNode;
+var GCstream;
 var searchInt;
 var AMEx = {
     context: new AudioContext(),
@@ -359,80 +255,50 @@ var AudioOutputs = {
     getAudioDevices: function(){
         ipcRenderer.send('getAudioDevices','');
     },
-    startExclusiveAudio: async function(id){
+    startExclusiveAudio: function(id){
         EAoverride = false;
         ipcRenderer.send('muteAudio',true);
         ipcRenderer.send('enableExclusiveAudio',id);
-          let blob = new Blob([audioWorklet], {type: 'application/javascript'});
 
-          await AMEx.context.audioWorklet.addModule(URL.createObjectURL(blob))
-          .then(() => {
-            const channels = 2;
-            AErecorderNode = new window.AudioWorkletNode(AMEx.context, 
-                                                             'recorder-worklet', 
-                                                             {parameterData: {numberOfChannels: channels}});
-       
-            AMEx.result.source.connect(AErecorderNode);
-            AErecorderNode.connect(AMEx.context.destination);
-            AErecorderNode.parameters.get('isRecording').setValueAtTime(1, AMEx.context.currentTime);
-            AErecorderNode.port.onmessage = (e) => {
-                const data = e.data;
-                switch(data.eventType) {
-                  case "data":
-            
-                    const audioData = data.audioBuffer;
-                    const bufferSize = data.bufferSize;
-                    ipcRenderer.send('writePCM',audioData[0],audioData[1], bufferSize);
-                    break;
-                  case "stop":            
-                    break;
-                }
-            }
-          });              
+            EAstream = AMEx.context.createScriptProcessor(16384,2,1);
+            EAstream.onaudioprocess = function(e){
+            if (!EAoverride){
+            var leftpcm = e.inputBuffer.getChannelData(0);
+            var rightpcm = e.inputBuffer.getChannelData(1);
+            ipcRenderer.send('writePCM',leftpcm,rightpcm, e.inputBuffer.length);
+            e.outputbuffer = null;
+        }
+        };
+        AMEx.result.source.connect(EAstream);EAstream.connect(AMEx.context.destination);
+      
     },
     stopExclusiveAudio: function(){
-        AErecorderNode.parameters.get('isRecording').setValueAtTime(0, AMEx.context.currentTime);
-        AErecorderNode = null;
+        EAoverride = true;
         ipcRenderer.send('disableExclusiveAudio','');
         ipcRenderer.send('muteAudio',false);
     },
     getGCDevices: function(){
         ipcRenderer.send('getChromeCastDevices','');
     },
-    playGC : async function(ip){
+    playGC : function(ip){
         GCOverride = false;
         ipcRenderer.send('performGCCast',ip, MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,(MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256));
-        let blob = new Blob([audioWorklet], {type: 'application/javascript'});
+        GCstream = AMEx.result.context.createScriptProcessor(16384,2,1);
 
-        await AMEx.context.audioWorklet.addModule(URL.createObjectURL(blob))
-        .then(() => {
-          const channels = 2;
-          GCrecorderNode = new window.AudioWorkletNode(AMEx.context, 
-                                                           'recorder-worklet', 
-                                                           {parameterData: {numberOfChannels: channels}});
-     
-          AMEx.result.source.connect(GCrecorderNode);
-          GCrecorderNode.connect(AMEx.context.destination);
-          GCrecorderNode.parameters.get('isRecording').setValueAtTime(1, AMEx.context.currentTime);
-          GCrecorderNode.port.onmessage = (e) => {
-              const data = e.data;
-              switch(data.eventType) {
-                case "data":
-          
-                  const audioData = data.audioBuffer;
-                  const bufferSize = data.bufferSize;
-                  ipcRenderer.send('writeWAV',audioData[0],audioData[1], bufferSize);
-                  break;
-                case "stop":            
-                  break;
-              }
-          }
-        });      
-     
+        GCstream.onaudioprocess = function(e){
+            if (!GCOverride){
+            var leftpcm = e.inputBuffer.getChannelData(0);
+            var rightpcm = e.inputBuffer.getChannelData(1);
+            ipcRenderer.send('writeWAV',leftpcm,rightpcm);
+        }
+        
+        };
+
+
+        AMEx.result.source.connect(GCstream);GCstream.connect(AMEx.context.destination);
     },
     stopGC : function(){
-       GCrecorderNode.parameters.get('isRecording').setValueAtTime(0, AMEx.context.currentTime);
-       GCrecorderNode = null;
+       GCOverride = true;
        ipcRenderer.send('stopGCast','');
     } 
 };

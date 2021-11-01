@@ -906,8 +906,9 @@ const handler = {
                   channelCount: 2,
                   sampleFormat: portAudio.SampleFormatFloat32,
                   sampleRate: 48000,
-                  maxQueue: 10,
-                  deviceId: id, // Use -1 or omit the deviceId to select the default device
+                  maxQueue: 100,
+                  deviceId: id,
+                  highwaterMark : 256, // Use -1 or omit the deviceId to select the default device
                   closeOnError: false // Close the stream if an audio error is detected, if set false then just log the error
                 }
               });              
@@ -923,6 +924,7 @@ const handler = {
         })
         ipcMain.on('disableExclusiveAudio',function(event,data){
             if(ao){
+              ao.quit();  
               ao = null; 
             }
         })
