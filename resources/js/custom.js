@@ -707,6 +707,9 @@ try {
     /* Bulk AME JavaScript Functions */
     if (typeof AMJavaScript == "undefined") {
         var AMJavaScript = {
+            getQuery(q) {
+                return (window.location.search.match(new RegExp('[?&]' + q + '=([^&]+)')) || [, null])[1];
+            },
             getRequest: (url, callback = () => {
             }) => {
                 const xhttp = new XMLHttpRequest();
