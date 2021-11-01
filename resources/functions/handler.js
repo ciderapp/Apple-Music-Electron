@@ -3,7 +3,8 @@ const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPre
 
     {readFile, readFileSync, writeFile, existsSync, watch} = require('fs'),
     {initAnalytics} = require('./utils'),
-    {RtAudio, RtAudioFormat, RtAudioApi} = require("audify");
+    portAudio = require('naudiodon');
+
 
 const os = require('os');
 const mdns = require('mdns-js');
@@ -888,35 +889,52 @@ const handler = {
 
     AudioHandler: function () {
 
+        var EAstream = new Stream.PassThrough();
+        var ao;
 
-        let api = RtAudioApi.UNSPECIFIED;
-
-
-        switch (process.platform) {
-            case "win32":
-                api = RtAudioApi.WINDOWS_WASAPI;
-                break;
-            case "linux":
-                api = RtAudioApi.LINUX_ALSA;
-                break;
-            case "darwin":
-                api = RtAudioApi.MACOSX_CORE;
-                break;
+        console.log(portAudio.getDevices());
+        ipcMain.on('getAudioDevices',function(event){
+            for (let id = 0; id < portAudio.getDevices().length; id++ ){
+            if (portAudio.getDevices()[id].maxOutputChannels > 0)    
+            app.win.webContents.executeJavaScript(`console.log('id:','${id}','${portAudio.getDevices()[id].name}','outputChannels:','${portAudio.getDevices()[id].maxOutputChannels}','preferedSampleRate','${portAudio.getDevices()[id].defaultSampleRate}','nativeFormats','${portAudio.getDevices()[id].hostAPIName}')`);
         }
-        const rtAudio = new RtAudio(api);
-        console.log(rtAudio.getDevices());
-        rtAudio.openStream(
-            {
-                deviceId: 0, // Need to change to get wrote
-                nChannels: 2, // Number of channels
-                firstChannel: 0 // First channel index on device (default = 0).
-            }, null,
-            RtAudioFormat.RTAUDIO_FLOAT32,
-            48000,
-            16384, "Apple Music Electron",
-        );
+        })
+        ipcMain.on('enableExclusiveAudio',function(event,id){
+           ao = new portAudio.AudioIO({
+                outOptions: {
 
-        rtAudio.start();
+                  channelCount: 2,
+                  sampleFormat: portAudio.SampleFormatFloat32,
+                  sampleRate: 48000,
+                  maxQueue: 100,
+                  deviceId: id,
+                  highwaterMark : 16384, // Use -1 or omit the deviceId to select the default device
+                  closeOnError: false // Close the stream if an audio error is detected, if set false then just log the error
+                }
+              });              
+              // Create a stream to pipe into the AudioOutput
+              // Note that this does not strip the WAV header so a click will be heard at the beginning
+              EAstream.pipe(ao);
+              EAstream.once('data', (data)=>{
+                ao.start();
+              })
+            
+              // Start piping data and start streaming
+              
+        })
+        ipcMain.on('disableExclusiveAudio',function(event,data){
+            if(ao){
+              ao.quit();  
+              ao = null; 
+            }
+        })
+
+        app.win.on('quit', ()=>{
+            if(ao){
+                ao.quit();  
+                ao = null; 
+            }
+        })
 
         // mix the channels
         function interleave(leftChannel, rightChannel) {
@@ -934,13 +952,15 @@ const handler = {
         }
 
         ipcMain.on('changeAudioMode', function (event, mode) {
-            console.log(rtAudio.getApi());
+            console.log(portAudio.getHostAPIs());
         });
-        console.log(rtAudio.getApi());
+        console.log(portAudio.getHostAPIs());
         ipcMain.on('writePCM', function (event, leftpcm, rightpcm) {
+            
             // do anything with stereo pcm here
             buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm), Float32Array.from(rightpcm)).buffer));
-            rtAudio.write(buffer);
+            EAstream.write(buffer);
+                
         });
         ipcMain.on('muteAudio', function (event, mute) {
             app.win.webContents.setAudioMuted(mute);
