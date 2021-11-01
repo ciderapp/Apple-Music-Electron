@@ -4,6 +4,8 @@ var GCOverride = true;
 var outputID = -1;
 var EAoutputID = -1;
 var queueExclusive = false;
+var queueChromecast = false;
+var selectedGC = '';
 var audioWorklet =  `class RecorderWorkletProcessor extends AudioWorkletProcessor {
     static get parameterDescriptors() {
       return [{
@@ -175,9 +177,15 @@ var AudioOutputs = {
                 bassFilter.connect(trebleFilter);
                 trebleFilter.connect(context.destination);
                 console.log("Attached EQ");
+                if (queueChromecast){
+                  setTimeout(()=>{  
+                  AudioOutputs.playGC(selectedGC);
+                }, 3000);
+                }
                 if (queueExclusive){
                   console.log('we good');
-                  AudioOutputs.startExclusiveAudio(outputID); }               
+                  AudioOutputs.startExclusiveAudio(outputID); }  
+          
                 cb();
                 clearInterval(searchInt);
             }
@@ -424,7 +432,9 @@ var AudioOutputs = {
     getGCDevices: function(){
         ipcRenderer.send('getChromeCastDevices','');
     },
-    playGC : function(ip){
+    playGC : function(ip){      
+      if(AMEx.result.source != null && selectedGC != ''){
+      queueChromecast = false; 
       GCOverride = false;
       ipcRenderer.send('performGCCast',ip, MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,(MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256));
       GCstream = AMEx.result.context.createScriptProcessor(16384,2,1);
@@ -437,12 +447,14 @@ var AudioOutputs = {
       }
 
       };
-
+      
       AMEx.result.source.connect(GCstream);GCstream.connect(AMEx.context.destination);
+      } else {queueChromecast = true; selectedGC = ip;}
              
      
     },
     stopGC : function(){
+       queueChromecast = false;
        GCOverride = true;
        ipcRenderer.send('stopGCast','');
     } 

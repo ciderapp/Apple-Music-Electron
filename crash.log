@@ -412,3 +412,26 @@ e:\apple-music-electron\node_modules\segfault-handler\src\segfault-handler.cpp (
 00007FF79A5311A2 (electron): (filename not available): Cr_z_adler32
 00007FF8AAFC7034 (KERNEL32): (filename not available): BaseThreadInitThunk
 00007FF8ACEA2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 16184 received SIGSEGV for address: 0xaa764f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+e:\apple-music-electron\node_modules\segfault-handler\src\stackwalker.cpp (924): StackWalker::ShowCallstack
+e:\apple-music-electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FF8ACEC8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FF8ACEA1276 (ntdll): (filename not available): RtlRaiseException
+00007FF8ACEA11A5 (ntdll): (filename not available): RtlRaiseException
+00007FF8AA764F99 (KERNELBASE): (filename not available): RaiseException
+00007FF8ACB57740 (RPCRT4): (filename not available): RpcRaiseException
+00007FF8ACB57704 (RPCRT4): (filename not available): RpcRaiseException
+00007FF8ACB576E4 (RPCRT4): (filename not available): NdrGetUserMarshalInfo
+00007FF8ACB576C0 (RPCRT4): (filename not available): NdrGetUserMarshalInfo
+00007FF8ACB024BB (RPCRT4): (filename not available): RpcAsyncCompleteCall
+00007FF8ACBE4F79 (RPCRT4): (filename not available): Ndr64AsyncClientCall
+00007FF8ACB02290 (RPCRT4): (filename not available): RpcAsyncCompleteCall
+00007FF8ACB021A8 (RPCRT4): (filename not available): RpcAsyncCompleteCall
+00007FF8A5DB47B1 (NLAapi): (filename not available): NlaQueryNetSignatures
+00007FF8ACEC857B (ntdll): (filename not available): RtlGetOwnerSecurityDescriptor
+00007FF8ACE60EBC (ntdll): (filename not available): TpSimpleTryPost
+00007FF8ACEA2F26 (ntdll): (filename not available): TpReleaseCleanupGroupMembers
+00007FF8AAFC7034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FF8ACEA2651 (ntdll): (filename not available): RtlUserThreadStart
