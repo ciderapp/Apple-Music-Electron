@@ -202,9 +202,10 @@ const Utils = {
     /* fetchOperatingSystem - Fetches the operating system name */
     fetchOperatingSystem: () => {
         if (process.platform === "win32") {
-            if (parseFloat(os.release()) >= parseFloat('10.0.22000')) {
+            const release = parseInt(os.release().replaceAll('.', ''))
+            if (release >= 10022000) {
                 return 'Windows 11'
-            } else if (parseFloat(os.release()) < parseFloat('10.0.22000') && parseFloat(os.release()) >= parseFloat('10.0.10240')) {
+            } else if (release < 10022000 && release >= 10010240) {
                 return 'Windows 10'
             }
         }
