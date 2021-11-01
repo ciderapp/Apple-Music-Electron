@@ -1,4 +1,4 @@
-var EAoverride = false;
+var EAOverride = false;
 var EAstream;
 var GCOverride = false;
 var GCstream;
@@ -256,13 +256,13 @@ var AudioOutputs = {
         ipcRenderer.send('getAudioDevices','');
     },
     startExclusiveAudio: function(id){
-        EAoverride = false;
+        EAOverride = false;
         ipcRenderer.send('muteAudio',true);
         ipcRenderer.send('enableExclusiveAudio',id);
 
             EAstream = AMEx.context.createScriptProcessor(16384,2,1);
             EAstream.onaudioprocess = function(e){
-            if (!EAoverride){
+            if (!EAOverride){
             var leftpcm = e.inputBuffer.getChannelData(0);
             var rightpcm = e.inputBuffer.getChannelData(1);
             ipcRenderer.send('writePCM',leftpcm,rightpcm, e.inputBuffer.length);
@@ -273,7 +273,7 @@ var AudioOutputs = {
       
     },
     stopExclusiveAudio: function(){
-        EAoverride = true;
+        EAOverride = true;
         ipcRenderer.send('disableExclusiveAudio','');
         ipcRenderer.send('muteAudio',false);
     },
@@ -312,7 +312,7 @@ document.addEventListener('keydown', function (event) {
                 AudioOutputs.ShowEQ();
                 break;
             case "3":
-                (EAoverride) ? (EAoverride = false) : (EAoverride = true);
+                (EAOverride) ? (EAOverride = false) : (EAOverride = true);
                 break;    
         }
     }

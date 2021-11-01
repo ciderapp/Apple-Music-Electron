@@ -769,6 +769,32 @@ try {
                     ipcRenderer.send('LyricsTimeUpdate', MusicKit.getInstance().currentPlaybackTime + 0.250);
                 });
                 MusicKit.getInstance().addEventListener(MusicKit.Events.nowPlayingItemDidChange, function () {
+                    var EAtmpdisable = false;
+                    var tempOutputID = -1;
+                    try{
+                        if (MusicKit.getInstance().nowPlayingItem["type"] === "musicVideo") {
+                            ipcRenderer.send('muteAudio', false);
+                            try{
+                            /* if (!EAOverride){ 
+                             tempOutputID = outputID;
+                             EAoutputID = -1;
+                             outputID = -1;    
+                             ipcRenderer.send('muteAudio',false);
+                             ipcRenderer.send('disableExclusiveAudio','');
+                             EAtmpdisable = true;} */
+                        } catch(e){console.log(e);}
+                        } else{
+                            if (!GCOverride) {ipcRenderer.send('muteAudio', true);}
+                           /* try{
+                                if (EAtmpdisable & !EAOverride){
+                                AudioOutputs.startExclusiveAudio(tempOutputID);
+                                EAtmpdisable = false;
+                                }
+                            } catch(e){
+                                console.log(e);
+                            } */
+                        }
+                    }catch(e){}
                     try{
                         if (MusicKit.getInstance().nowPlayingItem["type"] === "musicVideo") {
                             document.querySelector(`#MVLyricsBox`).style.display = 'block';

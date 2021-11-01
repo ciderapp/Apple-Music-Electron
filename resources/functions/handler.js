@@ -925,14 +925,12 @@ const handler = {
         ipcMain.on('disableExclusiveAudio',function(event,data){
             if(ao){
               ao.quit();  
-              ao = null; 
             }
         })
 
         app.win.on('quit', ()=>{
             if(ao){
-                ao.quit();  
-                ao = null; 
+                ao.quit();   
             }
         })
 
