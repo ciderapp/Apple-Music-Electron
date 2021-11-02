@@ -163,18 +163,29 @@ var AudioOutputs = {
                         cast: [],
                         airplay: []
                     },
+                    scanning: false,
                     activeCasts: AudioOutputs.activeCasts
                 },
                 methods: {
                     scan() {
                         let self = this;
+                        this.scanning = true;
                         AudioOutputs.getGCDevices();
-                        this.devices.cast = ipcRenderer.sendSync("getKnownCastDevices");
+                        setTimeout(()=>{
+                            self.devices.cast = ipcRenderer.sendSync("getKnownCastDevices");
+                            self.scanning = false;
+                        }, 1000);
                         console.log(this.devices);
                         vm.$forceUpdate();
                     },
                     setCast(device) {
+                        console.log(`requesting: ${device}`);
                         AudioOutputs.playGC(device);
+                    },
+                    stopCasting() {
+                        AudioOutputs.stopGC();
+                        this.activeCasts = AudioOutputs.activeCasts;
+                        vm.$forceUpdate();
                     },
                     close() {
                         modal.close();
@@ -189,6 +200,7 @@ var AudioOutputs = {
                 },
                 OnCreate() {
                     vm.$mount("#castdevices-vue");
+                    vm.scan();
                 },
                 OnClose() {
                     _vues.destroy(vm);
@@ -474,13 +486,14 @@ var AudioOutputs = {
     getGCDevices: function(){
         ipcRenderer.send('getChromeCastDevices','');
     },
-    playGC : function(ip){      
-      if(AMEx.result.source != null && selectedGC != ''){
+    playGC : function(ip){
+    AudioOutputs.activeCasts.push(ip);
+
+    if(AMEx.result.source != null && selectedGC != ''){
       queueChromecast = false; 
       GCOverride = false;
       ipcRenderer.send('performGCCast',ip, MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,(MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256));
       GCstream = AMEx.result.context.createScriptProcessor(16384,2,1);
-
       GCstream.onaudioprocess = function(e){
           if (!GCOverride){
           var leftpcm = e.inputBuffer.getChannelData(0);
@@ -498,6 +511,7 @@ var AudioOutputs = {
     stopGC : function(){
        queueChromecast = false;
        GCOverride = true;
+       this.activeCasts = [];
        ipcRenderer.send('stopGCast','');
     } 
 };
