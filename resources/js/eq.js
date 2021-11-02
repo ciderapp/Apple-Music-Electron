@@ -154,6 +154,46 @@ var trebleFilter;
 var AudioOutputs = {
     fInit: false,
     eqReady: false,
+    castUI() {
+        AMJavaScript.getRequest("ameres://html/cast_device.html", (content) => {
+            var vm = new Vue({
+                data: {
+                    devices: {
+                        cast: [],
+                        airplay: []
+                    }
+                },
+                methods: {
+                    scan() {
+                        let self = this;
+                        AudioOutputs.getGCDevices();
+                        this.devices.cast = ipcRenderer.sendSync("getKnownCastDevices");
+                        console.log(this.devices);
+                        vm.$forceUpdate();
+                    },
+                    setCast(device) {
+                        AudioOutputs.playGC(device);
+                    },
+                    close() {
+                        modal.close();
+                    }
+                }
+            });
+            var modal = new AMEModal({
+                content: content,
+                CloseButton: false,
+                Style: {
+                    maxWidth: "600px"
+                },
+                OnCreate() {
+                    vm.$mount("#castdevices-vue");
+                },
+                OnClose() {
+                    _vues.destroy(vm);
+                }
+            });
+        })
+    },
     init: function (cb = function () {}) {
         AudioOutputs.fInit = true;
          searchInt = setInterval(function () {

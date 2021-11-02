@@ -468,11 +468,15 @@ try {
                         methods: {
                             saveOptions() {
                                 AMStyling.setThemeOptions(AMStyling.lastTheme, this.userOptions);
+                            },
+                            close() {
+                                modal.close();
                             }
                         }
                     });
                     var modal = new AMEModal({
                         content: content,
+                        CloseButton: false,
                         OnCreate() {
                             vm.$mount("#themeOptions-vue")
                         },

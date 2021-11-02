@@ -1,5 +1,12 @@
 /* Simple CSS framework for Apple Music Electron */
 
+.md-labeltext {
+    font-size: 14px;
+    text-transform: uppercase;
+    opacity: 0.75;
+    font-weight: 500;
+}
+
 .md-option-container {
     border-radius: 10px;
     overflow: hidden;
@@ -9,7 +16,6 @@
     width:100%;
     padding: 14px;
     background: var(--opaquePageBGColor);
-    border-bottom: 1px solid rgb(0 0 0 / 35%);
     font-size: 0.85em;
 }
 
@@ -86,6 +92,10 @@
     border-radius: 4px;
     border: 1px solid rgb(100 100 100 / 35%);
     box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.3), 0px 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+.md-select:focus {
+    outline: none;
 }
 
 .md-select > option {

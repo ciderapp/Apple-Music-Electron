@@ -100,49 +100,6 @@ var _tests = {
             })
         })
     },
-    castUI() {
-        // MOVE ME ONCE IMPLEMENTED!
-
-        AMJavaScript.getRequest("ameres://html/cast_device.html", (content) => {
-            var vm = new Vue({
-                data: {
-                    devices: {
-                        cast: [],
-                        airplay: []
-                    }
-                },
-                methods: {
-                    scan() {
-                        console.log("SCANNING")
-                        let self = this
-                        AudioOutputs.getGCDevices()
-                        this.devices.cast = ipcRenderer.sendSync("getKnownCastDevices")
-                        console.log(this.devices)
-                        vm.$forceUpdate()
-                    },
-                    setCast(device) {
-                        AudioOutputs.playGC(device)
-                    },
-                    close() {
-                        modal.close()
-                    }
-                }
-            })
-            var modal = new AMEModal({
-                content: content,
-                CloseButton: false,
-                Style: {
-                    maxWidth: "600px"
-                },
-                OnCreate() {
-                    vm.$mount("#castdevices-vue")
-                },
-                OnClose() {
-                    _vues.destroy(vm)
-                }
-            })
-        })
-    },
     outputDevice() {
         AMJavaScript.getRequest("ameres://html/outputdevice.html", (content) => {
             var vm = new Vue({
