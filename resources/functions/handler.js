@@ -11,6 +11,7 @@ const mdns = require('mdns-js');
 const ssdp = require('node-ssdp-lite');
 const express = require('express');
 const audioClient = require('castv2-client').Client;
+var MediaRendererClient = require('upnp-mediarenderer-client');
 const DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
 var getPort = require('get-port');
 const {Stream} = require('stream');
@@ -1130,16 +1131,18 @@ const handler = {
             var request = require('request');
             request.get(url, (error, response, body) => {
                 if (!error && response.statusCode == 200) {
-                    parseServiceDescription(body, address);
+                    parseServiceDescription(body, address, url);
                 }
             });
         }
 
-        function ondeviceup(host, name) {
+        function ondeviceup(host, name, location, type) {
             if (devices.indexOf(host) == -1) {
                 castDevices.push({
                     name: name,
-                    host: host
+                    host: host,
+                    location : location,
+                    type: type
                 });
                 devices.push(host);
                 if (name) {
@@ -1159,7 +1162,7 @@ const handler = {
 
                 browser.on('update', (service) => {
                     if (service.addresses && service.fullname) {
-                        ondeviceup(service.addresses[0], service.fullname.substring(0, service.fullname.indexOf("._googlecast")));
+                        ondeviceup(service.addresses[0], service.fullname.substring(0, service.fullname.indexOf("._googlecast")),'','googlecast');
                     }
                 });
 
@@ -1179,12 +1182,27 @@ const handler = {
                     var location = null;
                     for (var i = 0; i < headers.length; i++) {
                         if (headers[i].indexOf('LOCATION') == 0)
-                            location = headers[i].replace('LOCATION:', '').trim();
+                            {location = headers[i].replace('LOCATION:', '').trim();}
+                        else if (headers[i].indexOf('Location') == 0) 
+                            {location = headers[i].replace('Location:', '').trim();}  
                     }
                     return location;
                 }
 
                 ssdpBrowser.search('urn:dial-multiscreen-org:device:dial:1');
+
+                // actual upnp devices  
+                let ssdpBrowser2 = new ssdp();
+                ssdpBrowser2.on('response', (msg, rinfo) => {
+                    console.log(msg);
+                    var location = getLocation(msg);
+                    if (location != null) {
+                        getServiceDescription(location, rinfo.address);
+                    }
+
+                });
+                ssdpBrowser2.search('urn:schemas-upnp-org:device:MediaRenderer:1');
+
             } catch (e) {
                 console.log('Search GC err');
             }
@@ -1205,12 +1223,17 @@ const handler = {
             });
         }
 
-        function parseServiceDescription(body, address) {
+        function parseServiceDescription(body, address, url) {
             var parseString = require('xml2js').parseString;
             parseString(body, (err, result) => {
                 if (!err && result && result.root && result.root.device) {
                     var device = result.root.device[0];
-                    ondeviceup(address, device.friendlyName.toString());
+                    console.log('device', device);
+                    var devicetype = 'googlecast';
+                    console.log()
+                    if(device.deviceType && device.deviceType.toString() == 'urn:schemas-upnp-org:device:MediaRenderer:1')
+                    {devicetype = 'upnp';}
+                    ondeviceup(address, device.friendlyName.toString(), url, devicetype);
                 }
             });
         }
@@ -1238,36 +1261,36 @@ const handler = {
                             {url: albumart ?? ""}]
                     }
                 };
-                ipcMain.on('setupNewTrack', function (event, song, artist, album, albumart) {
-                    try {
-                        let newmedia = {
-                            // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
-                            contentId: 'http://' + getIp() + ':' + server.address().port + '/',
-                            contentType: 'audio/vnd.wav',
-                            streamType: 'BUFFERED', // or LIVE
+                // ipcMain.on('setupNewTrack', function (event, song, artist, album, albumart) {
+                //     try {
+                //         let newmedia = {
+                //             // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
+                //             contentId: 'http://' + getIp() + ':' + server.address().port + '/',
+                //             contentType: 'audio/vnd.wav',
+                //             streamType: 'BUFFERED', // or LIVE
 
-                            // Title and cover displayed while buffering
-                            metadata: {
-                                type: 0,
-                                metadataType: 3,
-                                title: song,
-                                albumName: album,
-                                artist: artist,
-                                images: [
-                                    {url: albumart}]
-                            }
-                        };
-                        player.pause();
-                        headerSent = false;
-                        player.load(newmedia, {
-                            autoplay: true
-                        }, (err, status) => {
-                            console.log('media loaded playerState=%s', status);
-                        });
-                    } catch (e) {
-                        console.log('GCerror', e)
-                    }
-                });
+                //             // Title and cover displayed while buffering
+                //             metadata: {
+                //                 type: 0,
+                //                 metadataType: 3,
+                //                 title: song,
+                //                 albumName: album,
+                //                 artist: artist,
+                //                 images: [
+                //                     {url: albumart}]
+                //             }
+                //         };
+                //         player.pause();
+                //         headerSent = false;
+                //         player.load(newmedia, {
+                //             autoplay: true
+                //         }, (err, status) => {
+                //             console.log('media loaded playerState=%s', status);
+                //         });
+                //     } catch (e) {
+                //         console.log('GCerror', e)
+                //     }
+                //});
 
 
                 player.on('status', status => {
@@ -1318,6 +1341,18 @@ const handler = {
         }
 
         function stream(host, song, artist, album, albumart) {
+            var castMode = 'googlecast'; 
+            var UPNPDesc = '';
+            console.log(castDevices);
+            for(var device of castDevices){
+                if (device.type == 'upnp' && host == device.host ){
+                    console.log(device);
+                    castMode = 'upnp';
+                    UPNPDesc = device.location;
+                    break;
+                } 
+            }
+            if (castMode == 'googlecast'){                
             let client = new audioClient();
             client.volume = 100;
             client.stepInterval = 0.5;
@@ -1345,7 +1380,28 @@ const handler = {
                 client.close();
                 delete connectedHosts[host];
             });
-        }
+           } else {
+               // upnp devices
+            try{
+            client = new MediaRendererClient(UPNPDesc);
+            var options = { 
+                autoplay: true,
+                contentType: 'audio/wav',
+                dlnaFeatures: 'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000',
+                metadata: {
+                  type: 'audio', // can be 'video', 'audio' or 'image'
+                //  url: 'http://' + getIp() + ':' + server.address().port + '/',
+                //  protocolInfo: 'DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000;
+                }
+              };
+              
+             client.load('http://' + getIp() + ':' + server.address().port + '/', options, function(err, result) {
+                if(err) throw err;
+                console.log('playing ...');
+              });
+              
+           } catch(e){}
+        }}
 
         ipcMain.on('getKnownCastDevices', function (event) {
             event.returnValue = castDevices
