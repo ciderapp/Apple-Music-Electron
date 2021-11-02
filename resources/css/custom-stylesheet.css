@@ -2,7 +2,7 @@
 
 #backButtonBar {
     position: absolute;
-    width: 100%;
+    width: calc(100vw - var(--web-navigation-width));
     top: 0;
     height: 40px;
     transition: 0.2s;
@@ -10,11 +10,11 @@
     padding: 5px 10px;
     z-index: 9902;
     opacity: 0.95;
-    margin-top: 55px;
+    top: 55px;
 }
 
 #backButtonBar .button-area {
-    position: inherit;
+    position: relative;
     width: 50px;
     height: 30px;
     max-height: 30px;
@@ -49,6 +49,13 @@
 
 #backButtonBar .button-area img:hover {
     opacity: 1;
+}
+
+@media only screen and (max-width: 483px) {
+    #backButtonBar {
+        width: 100%;
+        top: 44px;
+    }
 }
 
 @media (prefers-color-scheme: dark) {

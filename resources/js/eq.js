@@ -1,6 +1,11 @@
-var EAoverride = false;
+var EAOverride = true;
 var AErecorderNode;
-var GCOverride = false;
+var GCOverride = true;
+var outputID = -1;
+var EAoutputID = -1;
+var queueExclusive = false;
+var queueChromecast = false;
+var selectedGC = '';
 var audioWorklet =  `class RecorderWorkletProcessor extends AudioWorkletProcessor {
     static get parameterDescriptors() {
       return [{
@@ -214,6 +219,15 @@ var AudioOutputs = {
                 bassFilter.connect(trebleFilter);
                 trebleFilter.connect(context.destination);
                 console.log("Attached EQ");
+                if (queueChromecast){
+                  setTimeout(()=>{  
+                  AudioOutputs.playGC(selectedGC);
+                }, 3000);
+                }
+                if (queueExclusive){
+                  console.log('we good');
+                  AudioOutputs.startExclusiveAudio(outputID); }  
+          
                 cb();
                 clearInterval(searchInt);
             }
@@ -404,7 +418,11 @@ var AudioOutputs = {
         ipcRenderer.send('getAudioDevices','');
     },
     startExclusiveAudio: async function(id){
-        EAoverride = false;
+    
+        if(AMEx.result.source != null){
+        if(EAoutputID!= id){  
+        EAoutputID = id;
+        EAOverride = false;
         ipcRenderer.send('muteAudio',true);
         ipcRenderer.send('enableExclusiveAudio',id);
           let blob = new Blob([audioWorklet], {type: 'application/javascript'});
@@ -422,7 +440,7 @@ var AudioOutputs = {
                 const data = e.data;
                 switch(data.eventType) {
                   case "data":
-                    if(!EAoverride){
+                    if(!EAOverride){
                     const audioData = data.audioBuffer;
                     const bufferSize = data.bufferSize;
                     ipcRenderer.send('writePCM',audioData[0],audioData[1], bufferSize);}
@@ -435,10 +453,20 @@ var AudioOutputs = {
             AErecorderNode.parameters.get('isRecording').setValueAtTime(1, AMEx.context.currentTime);
 
           });              
+      } else {console.log('device already in exclusive mode');}
+    } else {
+         outputID = id;
+         queueExclusive = true;
+      }
     },
-    stopExclusiveAudio: function(){
-        EAoverride = true;
-        
+     stopExclusiveAudio: function(){
+        try{
+          AErecorderNode.parameters.get('isRecording').setValueAtTime(0, AMEx.context.currentTime);
+        } catch(e){}
+        EAOverride = true;
+        EAoutputID = -1;
+        outputID = -1;
+        queueExclusive = false;
         ipcRenderer.send('muteAudio',false);
         ipcRenderer.send('disableExclusiveAudio','');
         
@@ -446,7 +474,9 @@ var AudioOutputs = {
     getGCDevices: function(){
         ipcRenderer.send('getChromeCastDevices','');
     },
-    playGC : function(ip){
+    playGC : function(ip){      
+      if(AMEx.result.source != null && selectedGC != ''){
+      queueChromecast = false; 
       GCOverride = false;
       ipcRenderer.send('performGCCast',ip, MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,(MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256));
       GCstream = AMEx.result.context.createScriptProcessor(16384,2,1);
@@ -459,12 +489,14 @@ var AudioOutputs = {
       }
 
       };
-
+      
       AMEx.result.source.connect(GCstream);GCstream.connect(AMEx.context.destination);
+      } else {queueChromecast = true; selectedGC = ip;}
              
      
     },
     stopGC : function(){
+       queueChromecast = false;
        GCOverride = true;
        ipcRenderer.send('stopGCast','');
     } 
@@ -482,7 +514,7 @@ document.addEventListener('keydown', function (event) {
                 else{AudioOutputs.ShowEQ();}
                 break;
             case "3":
-                (EAoverride) ? (EAoverride = false) : (EAoverride = true);
+                (EAOverride) ? (EAOverride = false) : (EAOverride = true);
                 break;    
         }
     }
