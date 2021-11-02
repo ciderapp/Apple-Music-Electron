@@ -391,11 +391,15 @@ try {
                         methods: {
                             saveOptions() {
                                 AMStyling.setThemeOptions(AMStyling.lastTheme, this.userOptions);
+                            },
+                            close() {
+                                modal.close();
                             }
                         }
                     });
                     var modal = new AMEModal({
                         content: content,
+                        CloseButton: false,
                         OnCreate() {
                             vm.$mount("#themeOptions-vue")
                         },
@@ -618,6 +622,9 @@ try {
     /* Bulk AME JavaScript Functions */
     if (typeof AMJavaScript == "undefined") {
         var AMJavaScript = {
+            getQuery(q) {
+                return (window.location.search.match(new RegExp('[?&]' + q + '=([^&]+)')) || [, null])[1];
+            },
             getRequest: (url, callback = () => {
             }) => {
                 const xhttp = new XMLHttpRequest();
@@ -626,31 +633,6 @@ try {
                 };
                 xhttp.open("GET", url, true);
                 xhttp.send();
-            },
-            makeModal: ({
-                            content = "", onClose = () => {
-                }, onCreate = () => {
-                }
-                        }) => {
-                var backdrop = document.createElement("div");
-                var modalWin = document.createElement("div");
-                var modalCloseBtn = document.createElement("button");
-                var modalContent = document.createElement("div");
-                backdrop.classList.add("ameModal-Backdrop");
-                modalWin.classList.add("ameModal");
-                modalCloseBtn.classList.add("ameModal-Close");
-                modalCloseBtn.innerHTML = ("Close");
-                modalCloseBtn.addEventListener("click", () => {
-                    onClose();
-                    backdrop.remove();
-                });
-                setInnerHTML(modalContent, content);
-                onCreate();
-                modalWin.appendChild(modalCloseBtn);
-                modalWin.appendChild(modalContent);
-                backdrop.appendChild(modalWin);
-                document.body.appendChild(backdrop);
-                return backdrop;
             },
             LoadCustomStartup: async () => {
                 const preferences = ipcRenderer.sendSync('getStore');
@@ -757,6 +739,15 @@ try {
                 if (await ipcRenderer.invoke('getStoreValue', 'general.storefront') !== MusicKit.getInstance().storefrontId) {
                     await ipcRenderer.invoke('setStoreValue', 'general.storefront', MusicKit.getInstance().storefrontId);
                 }
+
+                /** Need a better way to find the user menu asap, this is embarrassing **/
+                var checkForUserMenu = setInterval(function() {
+                    if (document.querySelectorAll(".web-chrome-controls-container>.web-navigation__auth").length) {
+                        _tests.usermenuinit();
+                        clearInterval(checkForUserMenu);
+                    }
+                }, 100);
+
             },
             LoadCustom: () => {
                 const preferences = ipcRenderer.sendSync('getStore');

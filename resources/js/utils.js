@@ -43,9 +43,13 @@ class AMEModal {
                     },
                     CloseButton = true,
                     Style = {},
+                    ModalClasses = [],
+                    BackdropStyle = {},
                     Dismissible = true
                 }) {
         this.Style = Style
+        this.BackdropStyle = BackdropStyle
+        this.ModalClasses = ModalClasses
         this.closeButton = CloseButton
         this.content = content
         this.OnClose = OnClose
@@ -94,6 +98,13 @@ class AMEModal {
             backdrop.appendChild(dismissArea)
         }
         modalWin.appendChild(modalContent)
+        Object.assign(backdrop.style, this.BackdropStyle)
+        this.ModalClasses.forEach((cssClass)=>{
+            modalWin.classList.add(cssClass)
+        })
+        if(document.querySelectorAll(".ameModal").length == 0) {
+            document.body.classList.add("no-acrylic")
+        }
         Object.assign(modalWin.style, this.Style)
         backdrop.appendChild(modalWin)
         document.body.appendChild(backdrop)
@@ -112,6 +123,9 @@ class AMEModal {
         this.modal.window.classList.add("ameModal-closing")
         setTimeout(()=>{
             this.modal.backdrop.remove()
+            if(document.querySelectorAll(".ameModal").length == 0) {
+                document.body.classList.remove("no-acrylic")
+            }
         }, 100)
     }
 

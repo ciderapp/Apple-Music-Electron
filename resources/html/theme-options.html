@@ -1,6 +1,16 @@
-<div class="md-container" id="themeOptions-vue">
-    <div class="md-header">
-        <h1 class="md-h1">{{ theme }}<br><small>Theme Options</small></h1>
+<div class="md-container md-container_panel" id="themeOptions-vue">
+    <div class="md-header-title">
+        <div class="row">
+            <div class="col">
+                <button @click="close()" class="md-close-btn"></button>
+            </div>
+            <div class="col-auto">
+                {{ theme }}
+            </div>
+            <div class="col">
+
+            </div>
+        </div>
     </div>
     <div class="md-body" style="overflow-y: overlay">
         <div class="md-option-container">

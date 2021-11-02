@@ -1,27 +1,61 @@
 /* Simple CSS framework for Apple Music Electron */
 
+.md-labeltext {
+    font-size: 14px;
+    text-transform: uppercase;
+    opacity: 0.75;
+    font-weight: 500;
+}
+
 .md-option-container {
     border-radius: 10px;
     overflow: hidden;
 }
+
 .md-option-line {
     display: flex;
-    width:100%;
+    width: 100%;
     padding: 14px;
     background: var(--opaquePageBGColor);
-    border-bottom: 1px solid rgb(0 0 0 / 35%);
     font-size: 0.85em;
 }
 
 .md-option-segment.md-option-segment_auto {
     width: auto;
 }
+
 .md-option-container .md-option-line:not(:last-child) {
-    border-bottom: 1px solid rgb(0 0 0 / 35%);
+    border-bottom: 1px solid rgb(0 0 0 / 15%);
+}
+
+input[type="range"].md-slider {
+    -webkit-appearance: none;
+    height: 7px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 5px;
+    background-size: 70% 100%;
+    background-repeat: no-repeat;
+}
+
+input[type="range"].md-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: rgb(255 255 255);
+    cursor: ew-resize;
+    box-shadow: 0 0 2px 0 #555;
+}
+
+input[type=range].md-slider::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+    box-shadow: none;
+    border: none;
+    background: transparent;
 }
 
 .md-option-segment {
-    width:100%;
+    width: 100%;
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -36,21 +70,37 @@
     padding: 16px;
 }
 
+.md-header-title {
+    padding: 18px;
+    font-weight: 600;
+    font-size: 16px;
+    height: 55px;
+    background: var(--opaquePageBGColor);
+    border-bottom: 1px solid rgb(0 0 0 / 15%);
+}
+
 .md-footer {
     padding: 16px;
     text-align: center;
 }
 
 
-.md-btn {
-
+.md-close-btn {
+    -webkit-mask-image: url("ameres://icons/webui/close.svg");
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    background-color: white;
+    opacity: 0.75;
+    -webkit-mask-size: contain;
+    height: 18px;
+    width: 18px;
 }
 
 .md-btn {
     background: rgba(100, 100, 100, 0.5);
     padding: 8px 16px;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 15px;
     border: 1px solid rgb(100 100 100 / 35%);
     box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.3), 0px 1px 1px rgba(0, 0, 0, 0.4);
 }
@@ -64,12 +114,16 @@
 }
 
 .md-select {
-    padding: 8px 16px;
+    padding: 5px 10px;
     font-size: 1em;
     font-family: inherit;
     border-radius: 4px;
     border: 1px solid rgb(100 100 100 / 35%);
     box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.3), 0px 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+.md-select:focus {
+    outline: none;
 }
 
 .md-select > option {
@@ -83,6 +137,10 @@
     color: white;
 }
 
+.md-transparent {
+    background: transparent;
+}
+
 .md-container {
     display: flex;
     flex-direction: column;
@@ -94,10 +152,26 @@
     padding: 32px;
 }
 
+.md-container_panel {
+    padding: 0px;
+}
+
 .md-body {
     height: 100%;
     padding: 16px;
     font-size: 1.25em;
+}
+
+@media (prefers-color-scheme: light) {
+    .md-btn {
+        background: rgb(255 255 255);
+        box-shadow: rgb(0 0 0 / 10%) 0px 0px 1px, rgb(0 0 0 / 20%) 0px 1px 1px;
+        border: 1px solid rgb(0 0 0 / 15%);
+    }
+
+    .md-close-btn {
+        background-color: #000;
+    }
 }
 
 /* Vue transitions */
@@ -105,8 +179,7 @@
     transition: all .5s;
 }
 
-.fade_simple-enter, .fade_simple-leave-to
-{
+.fade_simple-enter, .fade_simple-leave-to {
     opacity: 0;
 }
 
@@ -114,8 +187,7 @@
     transition: all .5s;
 }
 
-.fade-enter, .fade-leave-to
-{
+.fade-enter, .fade-leave-to {
     opacity: 0;
     transform: scale(0.95);
 }
@@ -145,6 +217,7 @@
     margin-right: calc(-0.5 * var(--bs-gutter-x));
     margin-left: calc(-0.5 * var(--bs-gutter-x));
 }
+
 .row > * {
     box-sizing: border-box;
     flex-shrink: 0;
