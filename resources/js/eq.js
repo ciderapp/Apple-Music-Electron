@@ -149,6 +149,7 @@ var trebleFilter;
 var AudioOutputs = {
     fInit: false,
     eqReady: false,
+    activeCasts: [],
     castUI() {
         AMJavaScript.getRequest("ameres://html/cast_device.html", (content) => {
             var vm = new Vue({
@@ -156,7 +157,8 @@ var AudioOutputs = {
                     devices: {
                         cast: [],
                         airplay: []
-                    }
+                    },
+                    activeCasts: AudioOutputs.activeCasts
                 },
                 methods: {
                     scan() {

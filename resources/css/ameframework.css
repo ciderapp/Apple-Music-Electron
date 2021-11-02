@@ -120,6 +120,10 @@
     padding: 32px;
 }
 
+.md-container_panel {
+    padding:0px;
+}
+
 .md-body {
     height: 100%;
     padding: 16px;

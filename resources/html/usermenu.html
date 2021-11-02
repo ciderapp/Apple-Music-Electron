@@ -1,5 +1,5 @@
 <div id="usermenu-vue">
-    <template v-for="menuitem in menuitems">
+    <template v-for="menuitem in menuitems" v-if="menuitem.visible">
         <button class="um-option" :style="menuitem.style" @click="menuitem.onclick();close()">
             <div class="row">
                 <div class="col">
@@ -8,8 +8,8 @@
                 <div class="col-auto" v-if="menuitem['svg']" v-html="menuitem.svg">
 
                 </div>
-                <div class="col-auto" v-else>
-
+                <div class="col-auto" v-else-if="menuitem['icon']">
+                    <div class="context-menu__option-icon" ></div>
                 </div>
             </div>
         </button>

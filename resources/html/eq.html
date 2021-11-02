@@ -1,0 +1,45 @@
+<div id="eq-vm">
+    <div class="md-container md-container_panel">
+        <div class="md-header-title">
+            <div class="row">
+                <div class="col">
+                    <button @click="close()" class="md-close-btn"></button>
+                </div>
+                <div class="col-auto">
+                    Equalizer
+                </div>
+                <div class="col">
+
+                </div>
+            </div>
+        </div>
+        <div class="md-body" style="padding:0px;">
+            <div class="md-option-container" style="border-radius: 0px;">
+                <div class="md-option-line">
+                    <div class="md-option-segment">Bass ({{ bass.toFixed(2) }})</div>
+                    <div class="md-option-segment_auto">
+                        <input type="range" min="-10" step="0.01" max="6" v-model="bass"
+                               @input="bassFilter.gain.value = bass"/>
+                    </div>
+                </div>
+                <div class="md-option-line">
+                    <div class="md-option-segment">Treble ({{ treble.toFixed(2) }})</div>
+                    <div class="md-option-segment_auto">
+                        <input type="range" min="-10" step="0.01" max="6" v-model="treble"
+                               @input="trebleFilter.gain.value = treble"/>
+                    </div>
+                </div>
+                <div class="md-option-line">
+                    <div class="md-option-segment">Gain ({{ gain.toFixed(2) }})</div>
+                    <div class="md-option-segment_auto">
+                        <input type="range" min="-1" step="0.01" max="1" v-model="gain"
+                               @input="AMEx.result.gain.gain.value = gain"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="md-footer">
+            <button class="md-btn" style="width:100%;" @click="reset()">Reset</button>
+        </div>
+    </div>
+</div>
