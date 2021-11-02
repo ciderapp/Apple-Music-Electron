@@ -20,11 +20,11 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "@sentry/electron": "^2.5.1",
+    "@sentry/electron": "^2.5.4",
     "chmodr": "^1.2.0",
     "discord-rpc": "^4.0.1",
     "electron-acrylic-window": "^0.5.9",
-    "electron-log": "^4.3.5",
+    "electron-log": "^4.4.1",
     "electron-store": "^8.0.1",
     "electron-updater": "^4.3.9",
     "electron-window-state": "^5.0.3",
@@ -36,13 +36,13 @@
     "react-dom": "^17.0.2",
     "register-scheme": "github:devsnek/node-register-scheme",
     "rimraf": "^3.0.2",
-    "source-map-support": "^0.5.16",
-    "v8-compile-cache": "^2.1.1"
+    "source-map-support": "^0.5.20",
+    "v8-compile-cache": "^2.3.0"
   },
   "devDependencies": {
     "electron": "https://github.com/castlabs/electron-releases.git",
     "electron-builder": "^22.13.1",
-    "electron-webpack": "^2.7.4",
+    "electron-webpack": "^2.8.2",
     "musickit-typescript": "^1.2.4",
     "webpack": "~5.61.0"
   },
