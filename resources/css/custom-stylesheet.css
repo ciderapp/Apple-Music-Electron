@@ -591,6 +591,18 @@ body.no-acrylic {
     overflow: hidden;
 }
 
+@keyframes ameEQIn {
+    0% {
+        top:46px;
+        right:142px;
+        width: 178px;
+    }
+    100% {
+        top:46px;
+        right:42px;
+        width: 306px;
+    }
+}
 
 @keyframes ameModalIn {
     0% {

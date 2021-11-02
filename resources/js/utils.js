@@ -118,14 +118,14 @@ class AMEModal {
     }
 
     close() {
-        if(document.querySelectorAll(".ameModal").length == 1) {
-            document.body.classList.remove("no-acrylic")
-        }
         this.OnClose()
         this.modal.backdrop.style.background = "transparent"
         this.modal.window.classList.add("ameModal-closing")
         setTimeout(()=>{
             this.modal.backdrop.remove()
+            if(document.querySelectorAll(".ameModal").length == 0) {
+                document.body.classList.remove("no-acrylic")
+            }
         }, 100)
     }
 

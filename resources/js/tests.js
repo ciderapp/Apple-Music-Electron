@@ -144,14 +144,16 @@ var _tests = {
             var modal = new AMEModal({
                 content: content,
                 CloseButton: false,
+                ModalClasses: ["ameUserMenu"],
                 BackdropStyle: {
                     background: "transparent"
                 },
                 Style:{
+                    animation: "ameEQIn .10s var(--appleEase)",
                     width: "306px",
                     height: "268px",
                     position: "absolute",
-                    top: "55px",
+                    top: "46px",
                     right: "42px"
                 },
                 OnCreate() {

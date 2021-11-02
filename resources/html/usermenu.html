@@ -1,6 +1,6 @@
 <div id="usermenu-vue">
     <template v-for="menuitem in menuitems" v-if="menuitem.visible">
-        <button class="um-option" :style="menuitem.style" @click="menuitem.onclick();close()">
+        <button class="um-option" :style="menuitem.style" @click="close();menuitem.onclick();">
             <div class="row">
                 <div class="col">
                     {{ menuitem.label }}
