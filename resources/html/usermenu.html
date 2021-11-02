@@ -9,7 +9,7 @@
 
                 </div>
                 <div class="col-auto" v-else-if="menuitem['icon']">
-                    <div class="context-menu__option-icon" ></div>
+                    <div class="context-menu__option-icon"></div>
                 </div>
             </div>
         </button>
@@ -32,6 +32,23 @@
     }
 
     .um-option:hover {
-        background:var(--systemQuinary);
+        background: var(--systemQuinary);
     }
+
+    .um-option:active {
+        animation: um-blink .1s var(--appleEase)
+    }
+
+    @keyframes um-blink {
+        0% {
+            background: var(--systemQuinary);
+        }
+        50% {
+            background: transparent;
+        }
+        100% {
+            background: var(--systemQuinary);
+        }
+    }
+
 </style>

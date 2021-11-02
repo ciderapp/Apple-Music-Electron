@@ -151,7 +151,7 @@ var _tests = {
                 Style:{
                     animation: "ameEQIn .10s var(--appleEase)",
                     width: "306px",
-                    height: "268px",
+                    height: "254px",
                     position: "absolute",
                     top: "46px",
                     right: "42px"
