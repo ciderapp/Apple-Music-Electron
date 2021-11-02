@@ -489,7 +489,7 @@ var AudioOutputs = {
     playGC : function(ip){
     AudioOutputs.activeCasts.push(ip);
 
-    if(AMEx.result.source != null && selectedGC != ''){
+    if(AMEx.result.source != null){
       queueChromecast = false; 
       GCOverride = false;
       ipcRenderer.send('performGCCast',ip, MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,(MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256));
