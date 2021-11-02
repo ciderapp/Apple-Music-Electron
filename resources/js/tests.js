@@ -123,9 +123,9 @@ var _tests = {
             var vm = new Vue({
                 data: {
                     manualEntry: false,
-                    bass: bassFilter.gain.value,
-                    treble: trebleFilter.gain.value,
-                    gain: AMEx.result.gain.gain.value
+                    bass: bassFilter.gain.value.toFixed(2),
+                    treble: trebleFilter.gain.value.toFixed(2),
+                    gain: AMEx.result.gain.gain.value.toFixed(2)
                 },
                 methods: {
                     reset() {
