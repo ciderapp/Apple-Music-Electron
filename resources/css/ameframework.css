@@ -11,9 +11,10 @@
     border-radius: 10px;
     overflow: hidden;
 }
+
 .md-option-line {
     display: flex;
-    width:100%;
+    width: 100%;
     padding: 14px;
     background: var(--opaquePageBGColor);
     font-size: 0.85em;
@@ -22,12 +23,39 @@
 .md-option-segment.md-option-segment_auto {
     width: auto;
 }
+
 .md-option-container .md-option-line:not(:last-child) {
     border-bottom: 1px solid rgb(0 0 0 / 15%);
 }
 
+input[type="range"].md-slider {
+    -webkit-appearance: none;
+    height: 7px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 5px;
+    background-size: 70% 100%;
+    background-repeat: no-repeat;
+}
+
+input[type="range"].md-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: rgb(255 255 255);
+    cursor: ew-resize;
+    box-shadow: 0 0 2px 0 #555;
+}
+
+input[type=range].md-slider::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+}
+
 .md-option-segment {
-    width:100%;
+    width: 100%;
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -43,12 +71,12 @@
 }
 
 .md-header-title {
-    border-bottom: 1px solid rgb(0 0 0 / 15%);
     padding: 18px;
-    background: var(--opaquePageBGColor);
     font-weight: 600;
     font-size: 16px;
     height: 55px;
+    background: var(--opaquePageBGColor);
+    border-bottom: 1px solid rgb(0 0 0 / 15%);
 }
 
 .md-footer {
@@ -125,7 +153,7 @@
 }
 
 .md-container_panel {
-    padding:0px;
+    padding: 0px;
 }
 
 .md-body {
@@ -134,13 +162,24 @@
     font-size: 1.25em;
 }
 
+@media (prefers-color-scheme: light) {
+    .md-btn {
+        background: rgb(255 255 255);
+        box-shadow: rgb(0 0 0 / 10%) 0px 0px 1px, rgb(0 0 0 / 20%) 0px 1px 1px;
+        border: 1px solid rgb(0 0 0 / 15%);
+    }
+    
+    .md-close-btn {
+        background-color: #000;
+    }
+}
+
 /* Vue transitions */
 .fade_simple-enter-active, .fade_simple-leave-active {
     transition: all .5s;
 }
 
-.fade_simple-enter, .fade_simple-leave-to
-{
+.fade_simple-enter, .fade_simple-leave-to {
     opacity: 0;
 }
 
@@ -148,8 +187,7 @@
     transition: all .5s;
 }
 
-.fade-enter, .fade-leave-to
-{
+.fade-enter, .fade-leave-to {
     opacity: 0;
     transform: scale(0.95);
 }
@@ -179,6 +217,7 @@
     margin-right: calc(-0.5 * var(--bs-gutter-x));
     margin-left: calc(-0.5 * var(--bs-gutter-x));
 }
+
 .row > * {
     box-sizing: border-box;
     flex-shrink: 0;
