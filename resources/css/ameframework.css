@@ -36,21 +36,37 @@
     padding: 16px;
 }
 
+.md-header-title {
+    border-bottom: 1px solid rgb(0 0 0 / 15%);
+    padding: 18px;
+    background: var(--opaquePageBGColor);
+    font-weight: 600;
+    font-size: 16px;
+    height: 55px;
+}
+
 .md-footer {
     padding: 16px;
     text-align: center;
 }
 
 
-.md-btn {
-
+.md-close-btn {
+    -webkit-mask-image: url("ameres://icons/webui/close.svg");
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    background-color: white;
+    opacity: 0.75;
+    -webkit-mask-size: contain;
+    height: 18px;
+    width: 18px;
 }
 
 .md-btn {
     background: rgba(100, 100, 100, 0.5);
     padding: 8px 16px;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 15px;
     border: 1px solid rgb(100 100 100 / 35%);
     box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.3), 0px 1px 1px rgba(0, 0, 0, 0.4);
 }
@@ -64,7 +80,7 @@
 }
 
 .md-select {
-    padding: 8px 16px;
+    padding: 5px 10px;
     font-size: 1em;
     font-family: inherit;
     border-radius: 4px;
