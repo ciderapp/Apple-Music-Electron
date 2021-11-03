@@ -499,6 +499,21 @@ try {
                 }
                 ;
             },
+            setMica(val = false) {
+                if(val) {
+                    this.enableMica();
+                }else{
+                    this.disableMica();
+                }
+            },
+            disableMica() {
+                if(!this.micaActive) {
+                    return;
+                }
+                let self = this;
+                this.micaActive = false;
+                document.querySelector(".micaBackground").remove();
+            },
             enableMica() {
                 let self = this;
                 if (this.micaActive) {
@@ -508,10 +523,9 @@ try {
                 if (this.lastTheme !== "winui") {
                     if (confirm("This feature currently requires the Eleven theme, enable now?")) {
                         this.loadTheme("winui");
-                    } else {
-                        return;
                     }
                 }
+                this.micaActive = true;
                 var micaDOM = document.createElement("div");
                 micaDOM.classList.add("micaBackground");
                 document.body.appendChild(micaDOM);
@@ -529,10 +543,13 @@ try {
                             lastScreenX = window.screenX;
                             cb();
                         }
+                        if(self.micaActive) {
+                            requestAnimationFrame(detectScreenMove);
+                        }
+                    }
+                    if(self.micaActive) {
                         requestAnimationFrame(detectScreenMove);
                     }
-
-                    requestAnimationFrame(detectScreenMove);
                 }
 
                 onScreenMove(function () {
@@ -761,10 +778,16 @@ try {
 
                 /* Load Themes and Transparency */
                 AMStyling.loadTheme(preferences["visual"]["theme"]);
-                if (preferences["visual"]["transparencyEffect"] !== "") {
+                if (preferences["visual"]["transparencyEffect"] !== "" && preferences["visual"]["transparencyEffect"] !== "mica") {
                     AMStyling.setTransparency(true);
                 } else {
                     AMStyling.setTransparency(false);
+                }
+
+                if(preferences["visual"]["transparencyEffect"] == "mica") {
+                    AMStyling.setMica(true);
+                }else{
+                    AMStyling.setMica(false);
                 }
 
                 AM.themesListing = await ipcRenderer.invoke('updateThemesListing');
@@ -1112,6 +1135,7 @@ try {
                     /* Adjust Preferences Menu if Acrylic is not Supported */
                     if (AM.acrylicSupported) {
                         document.getElementById('transparencyEffect').innerHTML = document.getElementById('transparencyEffect').innerHTML + "\n<option value='acrylic'>Acrylic (W10 1809+)</option>";
+                        document.getElementById('transparencyEffect').innerHTML = document.getElementById('transparencyEffect').innerHTML + "\n<option value='mica'>Mica (Experimental)</option>";
                     } else {
                         document.getElementById('transparencyDisableBlurToggleLI').remove();
                     }
