@@ -76,8 +76,7 @@ module.exports = () => {
             useOperatingSystemAccent: false,
             scaling: 1,
             mxmon: false,
-            mxmlanguage: "en",
-            disableGPUHardwareAcceleration: false
+            mxmlanguage: "en"
         },
         audio: {
             audioQuality: "auto",
@@ -90,6 +89,7 @@ module.exports = () => {
         },
         advanced: {
             forceApplicationMode: "system",
+            hardwareAcceleration: true,
             verboseLogging: false,
             autoUpdaterBetaBuilds: false,
             useBetaSite: true,

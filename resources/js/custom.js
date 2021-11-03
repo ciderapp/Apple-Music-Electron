@@ -224,7 +224,7 @@ try {
                 const artistName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
                 const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
                 const songID = (MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["_songId"] ?? -1 : -1;
-                if(trackName != '' && !(trackName == "No Title Found" && artistName == '')){
+                if (trackName != '' && !(trackName == "No Title Found" && artistName == '')) {
                     /* MusixMatch Lyrics*/
                     if (!mxmfail && preferences.visual.mxmon) {
                         ipcRenderer.send('MXMTranslation', trackName, artistName, preferences.visual.mxmlanguage);
@@ -340,7 +340,7 @@ try {
                                 ipcRenderer.send('LyricsHandler', "netease=" + trackName + " " + artistName, '');
                             }
                         }
-                    }    
+                    }
                 }
             }
         }
@@ -364,8 +364,8 @@ try {
                 lastScreenX: 0,
                 lastScreenY: 0
             },
-            showThemeOptions () {
-                function throwNoTheme () {
+            showThemeOptions() {
+                function throwNoTheme() {
                     new AMEModal({
                         content: `<div style="text-align:center;display:flex;justify-content: center;align-items: center;height:100%;">This theme has no available options.</div>`,
                         Style: {
@@ -374,15 +374,16 @@ try {
                         }
                     });
                 }
-                if(this.lastTheme == "default" || this.lastTheme == "") {
+
+                if (this.lastTheme == "default" || this.lastTheme == "") {
                     throwNoTheme();
                     return;
                 }
-                if(AM.themesListing[AMStyling.lastTheme]["options"].length == 0) {
+                if (AM.themesListing[AMStyling.lastTheme]["options"].length == 0) {
                     throwNoTheme();
                     return;
                 }
-                AMJavaScript.getRequest("ameres://html/theme-options.html", (content)=>{
+                AMJavaScript.getRequest("ameres://html/theme-options.html", (content) => {
                     var vm = new Vue({
                         data: {
                             options: AM.themesListing[AMStyling.lastTheme]["options"],
@@ -415,24 +416,24 @@ try {
                 });
             },
             getThemeOptions(theme) {
-                if(!localStorage.getItem("ThemeOptions")) {
+                if (!localStorage.getItem("ThemeOptions")) {
                     localStorage.setItem("ThemeOptions", "{}");
                 }
                 var userOptions = JSON.parse(localStorage.getItem("ThemeOptions"));
-                if(!userOptions[theme]) {
+                if (!userOptions[theme]) {
                     userOptions[theme] = {};
                 }
 
-                function parseBool (val) {
-                    if(val == 0 || val == "false" || val == false) {
+                function parseBool(val) {
+                    if (val == 0 || val == "false" || val == false) {
                         return false;
-                    }else{
+                    } else {
                         return true;
                     }
                 }
 
-                AM.themesListing[theme]["options"].forEach((option)=>{
-                    if(typeof userOptions[theme][option.key] == "undefined" || typeof userOptions[theme][option.key] == "null") {
+                AM.themesListing[theme]["options"].forEach((option) => {
+                    if (typeof userOptions[theme][option.key] == "undefined" || typeof userOptions[theme][option.key] == "null") {
                         userOptions[theme][option.key] = parseBool(option.defaultValue);
                     }
                 });
@@ -440,11 +441,11 @@ try {
                 return userOptions[theme];
             },
             setThemeOptions(theme, options = {}) {
-                if(!localStorage.getItem("ThemeOptions")) {
+                if (!localStorage.getItem("ThemeOptions")) {
                     localStorage.setItem("ThemeOptions", "{}");
                 }
                 var userOptions = JSON.parse(localStorage.getItem("ThemeOptions"));
-                if(!userOptions[theme]) {
+                if (!userOptions[theme]) {
                     userOptions[theme] = {};
                 }
                 userOptions[theme] = options;
@@ -479,12 +480,12 @@ try {
                 span: 22
             },
             updateMica() {
-                if(!this.micaActive) {
+                if (!this.micaActive) {
                     return;
                 }
                 var micaElement = document.querySelector(".micaBackground");
                 var style = ipcRenderer.sendSync("get-wallpaper-style");
-                switch(style) {
+                switch (style) {
                     default:
                     case 0:
                     case 2:
@@ -495,11 +496,12 @@ try {
                     case 22:
                         micaElement.style.backgroundSize = "cover";
                         break;
-                };
+                }
+                ;
             },
             enableMica() {
                 let self = this;
-                if(this.micaActive) {
+                if (this.micaActive) {
                     console.log("Mica is already active");
                     return;
                 }
@@ -515,6 +517,7 @@ try {
                 document.body.appendChild(micaDOM);
                 this.getWallpaper();
                 this.setTransparency(false);
+
                 function onScreenMove(cb) {
                     var lastScreenX;
                     var lastScreenY;
@@ -633,12 +636,12 @@ try {
             refresh() {
                 document.adoptedStyleSheets = Object.values(this._styleSheets);
                 /** Theme Options **/
-                if(AM.themesListing[this.lastTheme]) {
+                if (AM.themesListing[this.lastTheme]) {
                     var themeOptions = (this.getThemeOptions(this.lastTheme));
-                    Object.keys(themeOptions).forEach((option)=>{
-                        if(themeOptions[option]) {
+                    Object.keys(themeOptions).forEach((option) => {
+                        if (themeOptions[option]) {
                             document.body.setAttribute(`theme-${option}`, 1);
-                        }else{
+                        } else {
                             document.body.removeAttribute(`theme-${option}`);
                         }
                     })
@@ -670,7 +673,7 @@ try {
 
                 /** Plugins */
                 if (typeof _plugins != "undefined") {
-                    await ipcRenderer.invoke("fetchPluginsListing").then((plugins)=>{
+                    await ipcRenderer.invoke("fetchPluginsListing").then((plugins) => {
                         console.log(plugins);
                         plugins.forEach((plugin) => {
                             _plugins.loadPlugin(plugin);
@@ -772,7 +775,7 @@ try {
                 }
 
                 /** Need a better way to find the user menu asap, this is embarrassing **/
-                var checkForUserMenu = setInterval(function() {
+                var checkForUserMenu = setInterval(function () {
                     if (document.querySelectorAll(".web-chrome-controls-container>.web-navigation__auth").length) {
                         _tests.usermenuinit();
                         clearInterval(checkForUserMenu);
@@ -1093,24 +1096,32 @@ try {
             CreateMenu: (parent) => {
                 preferences = ipcRenderer.sendSync('getStore');
 
-                AMJavaScript.getRequest("ameres://html/preferences-main.html", (content)=>{
+                AMJavaScript.getRequest("ameres://html/preferences-main.html", (content) => {
                     document.getElementsByClassName(parent)[0].innerHTML = content;
 
                     if (document.querySelector('footer')) {
                         document.querySelector('.dt-footer').style.display = "block";
                         document.querySelector('.dt-footer').classList.add('app-prefs-credits');
-                        AMJavaScript.getRequest("ameres://html/preferences-footer.html", (content)=>{
+                        AMJavaScript.getRequest("ameres://html/preferences-footer.html", (content) => {
                             document.querySelector('.dt-footer').innerHTML = content;
                         })
                     }
 
                     AMSettings.themes.updateThemesListing(AM.themesListing);
 
+                    /* Adjust Preferences Menu if Acrylic is not Supported */
                     if (AM.acrylicSupported) {
                         document.getElementById('transparencyEffect').innerHTML = document.getElementById('transparencyEffect').innerHTML + "\n<option value='acrylic'>Acrylic (W10 1809+)</option>";
                     } else {
                         document.getElementById('transparencyDisableBlurToggleLI').remove();
                     }
+
+                    /* Remove System Accent Toggle if its not win32/darwin */
+                    ipcRenderer.invoke('fetchOperatingSystem').then((platform) => {
+                        if (platform !== "win32" && platform !== "darwin") {
+                            document.getElementById('useOperatingSystemAccentToggleLI').remove();
+                        }
+                    });
 
                     /* General Settings */
                     AMSettings.HandleField('incognitoMode');
@@ -1141,7 +1152,6 @@ try {
                     AMSettings.HandleField('removeScrollbars');
                     AMSettings.HandleField('useOperatingSystemAccent');
                     AMSettings.HandleField('scaling');
-                    AMSettings.HandleField('disableGPUHardwareAcceleration');
 
                     /* Audio Settings */
                     AMSettings.HandleField('audioQuality');
@@ -1154,6 +1164,7 @@ try {
 
                     /* Advanced Settings */
                     AMSettings.HandleField('forceApplicationMode');
+                    AMSettings.HandleField('hardwareAcceleration');
                     AMSettings.HandleField('verboseLogging');
                     AMSettings.HandleField('alwaysOnTop');
                     AMSettings.HandleField('autoUpdaterBetaBuilds');

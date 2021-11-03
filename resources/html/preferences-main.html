@@ -119,7 +119,8 @@
             </li>
             <li class="app-prefs-dropdown">
                 <label class="typography-title-3-tall" for="lastfmScrobbleDelay">Scrobble delay</label>
-                <input class="form-dropdown-select list-element" id="lastfmScrobbleDelay" name="lastfmScrobbleDelay" type="number" />
+                <input class="form-dropdown-select list-element" id="lastfmScrobbleDelay" name="lastfmScrobbleDelay"
+                       type="number"/>
                 <span class="app-prefs-help typography-title-3-tall">Sets the wait time before current song is added to scrobble list.</span>
             </li>
         </ul>
@@ -127,7 +128,7 @@
     <div class="app-prefs-section visual">
         <div class="app-prefs-title header-nav" style="height: 10px;">
             <div class="header-nav-content">
-                <h1 class="typography-header-emphasized">Visual Settings</h1>
+                <h1 class="typography-header-emphasized">Appearance</h1>
             </div>
         </div>
         <ul class="settings-list visual">
@@ -554,27 +555,20 @@
                 <span class="app-prefs-help typography-title-3-tall">Currently, the scrollbar is experimental and
                     incomplete. It is recommended to leave this on.</span>
             </li>
-            <li class="app-prefs-toggle">
+            <li class="app-prefs-toggle" id="useOperatingSystemAccentToggleLI">
                 <span class="typography-title-3-tall">Use OS Accent as Application Accent</span>
                 <label class="toggle-element list-element">
                     <input checked id="useOperatingSystemAccent" type="checkbox">
                     <span class="slider"></span>
                 </label>
                 <span class="app-prefs-help typography-title-3-tall">Force the application to use your operating
-                    systems' accent. (Windows/macOS)</span>
+                    systems' accent.</span>
             </li>
             <li class="app-prefs-dropdown">
                 <label class="typography-title-3-tall" for="scaling">Interface Scaling Multiplier</label>
-                <input class="form-dropdown-select list-element" type="number" id="scaling" name="scaling" min="0.1" max="4"/>
+                <input class="form-dropdown-select list-element" type="number" id="scaling" name="scaling" min="0.1"
+                       max="4"/>
                 <span class="app-prefs-help typography-title-3-tall">Set the scale that you would like the interface sized at.</span>
-            </li>
-            <li class="app-prefs-toggle">
-                <span class="typography-title-3-tall">Disable Hardware Acceleration</span>
-                <label class="toggle-element list-element">
-                    <input id="disableGPUHardwareAcceleration" type="checkbox">
-                    <span class="slider"></span>
-                </label>
-                <span class="app-prefs-help typography-title-3-tall">Reduces the overall resource consumption of the application, at the cost of some rendering not being as smooth.</span>
             </li>
         </ul>
     </div>
@@ -649,22 +643,26 @@
         <div class="app-prefs-title header-nav" onclick="AMSettings.revealCollapse()" style="height: 10px;">
             <div class="header-nav-content">
                 <h1 class="typography-header-emphasized">Advanced Settings</h1>
-                <span class="app-prefs-help typography-title-3-tall">Only changes these settings if you know what you
-                    are doing.</span>
             </div>
             <img alt="Open Category" class="header-nav-image" src="ameres://icons/webui/down.svg">
         </div>
         <ul class="settings-list advanced" id="advanced">
             <li class="app-prefs-dropdown">
-                <label class="typography-title-3-tall" for="forceApplicationMode">Force Application Mode</label>
+                <label class="typography-title-3-tall" for="forceApplicationMode">Application Mode</label>
                 <select class="form-dropdown-select list-element" id="forceApplicationMode" name="forceApplicationMode">
                     <option disabled>Select one</option>
-                    <option value='system'>System Mode</option>
-                    <option value='dark'>Dark Mode</option>
-                    <option value='light'>Light Mode</option>
+                    <option value='dark'>Dark</option>
+                    <option value='light'>Light</option>
+                    <option value='system'>Sync with computer</option>
                 </select>
-                <span class="app-prefs-help typography-title-3-tall">Use This to set the application mode (Light/Dark).
-                    System will set it to your current system theme.</span>
+            </li>
+            <li class="app-prefs-toggle">
+                <span class="typography-title-3-tall">Hardware Acceleration</span>
+                <label class="toggle-element list-element">
+                    <input id="hardwareAcceleration" type="checkbox">
+                    <span class="slider"></span>
+                </label>
+                <span class="app-prefs-help typography-title-3-tall">Turn on Hardware Acceleration, which uses your GPU to make the application smoother. Turn it off to reduce the overall resource consumption of the application, at the cost of some rendering not being as smooth.</span>
             </li>
             <li class="app-prefs-toggle">
                 <span class="typography-title-3-tall">Verbose Logging</span>

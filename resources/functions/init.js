@@ -41,8 +41,8 @@ const init = {
             app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,MediaSessionService');
         }
 
-        // GPU Hardware Acceleartion
-        if(app.cfg.get('visual.disableGPUHardwareAcceleration')) {
+        // GPU Hardware Acceleration
+        if (!app.cfg.get('advanced.hardwareAcceleration')) {
             app.commandLine.appendSwitch('disable-gpu')
         }
 
@@ -140,7 +140,7 @@ const init = {
             app.ame.utils.permissionsCheck(themesPath, 'README.md')
         } else {
             console.verbose('[ThemeInstallation] Themes folder not found. Cloning repo.')
-            mkdir(themesPath, (err) => {                
+            mkdir(themesPath, (err) => {
                 if (!err) {
                     console.warn('[ThemeInstallation] Themes Directory Created.')
                     app.ame.utils.updateThemes().catch((e) => console.error(e));

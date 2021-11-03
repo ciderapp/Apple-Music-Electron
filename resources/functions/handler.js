@@ -389,6 +389,11 @@ const handler = {
             return app.ame.utils.fetchPluginsListing();
         })
 
+        // Get OS
+        ipcMain.handle('fetchOperatingSystem', () => {
+            return process.platform
+        })
+
         // Acrylic Check
         ipcMain.handle('isAcrylicSupported', (_event) => {
             return app.ame.utils.isAcrylicSupported();
