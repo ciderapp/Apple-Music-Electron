@@ -656,7 +656,8 @@ body.no-acrylic {
     pointer-events: none;
     z-index: -1;
     background: var(--user-wallpaper);
-    background-repeat: repeat;
+    background-repeat: cover;
+    /*background-repeat: repeat;*/
     filter: blur(180px) saturate(180%) brightness(0.25);
 }
 

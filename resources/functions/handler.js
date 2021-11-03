@@ -555,9 +555,15 @@ const handler = {
                 return `data:image/png;base64,${new Buffer(bitmap).toString('base64')}`
             }
             regedit.list(`HKCU\\Control Panel\\Desktop\\`, (err, result)=>{
-                console.log(result)
                 var path = (result['HKCU\\Control Panel\\Desktop\\\\']['values']['WallPaper']['value'])
                 event.returnValue = base64_encode(path)
+            })
+        })
+
+        ipcMain.on("get-wallpaper-style", (event)=>{
+            regedit.list(`HKCU\\Control Panel\\Desktop\\`, (err, result)=>{
+                var value = (result['HKCU\\Control Panel\\Desktop\\\\']['values']['WallpaperStyle']['value'])
+                event.returnValue = parseInt(value)
             })
         })
 

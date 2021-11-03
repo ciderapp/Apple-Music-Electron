@@ -359,6 +359,7 @@ try {
             },
             wallpaper: "",
             lastTheme: "",
+            micaActive: false,
             metrics: {
                 lastScreenX: 0,
                 lastScreenY: 0
@@ -470,8 +471,38 @@ try {
                 `);
                 this.refresh();
             },
+            windowsWallpaperStyles: {
+                fill: 10,
+                fit: 6,
+                stretch: 2,
+                tile: 0,
+                span: 22
+            },
+            updateMica() {
+                if(!this.micaActive) {
+                    return;
+                }
+                var micaElement = document.querySelector(".micaBackground");
+                var style = ipcRenderer.sendSync("get-wallpaper-style");
+                switch(style) {
+                    default:
+                    case 0:
+                    case 2:
+                    case 6:
+                    case 10:
+                        micaElement.style.backgroundSize = "repeat";
+                        break;
+                    case 22:
+                        micaElement.style.backgroundSize = "cover";
+                        break;
+                };
+            },
             enableMica() {
                 let self = this;
+                if(this.micaActive) {
+                    console.log("Mica is already active");
+                    return;
+                }
                 if (this.lastTheme !== "winui") {
                     if (confirm("This feature currently requires the Eleven theme, enable now?")) {
                         this.loadTheme("winui");
