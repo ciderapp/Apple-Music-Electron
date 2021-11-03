@@ -34,6 +34,7 @@
     "node-fetch": "^3.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "regedit": "^5.0.0",
     "register-scheme": "github:devsnek/node-register-scheme",
     "rimraf": "^3.0.2",
     "source-map-support": "^0.5.20",

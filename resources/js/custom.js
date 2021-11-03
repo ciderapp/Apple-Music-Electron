@@ -483,7 +483,7 @@ try {
                 micaDOM.classList.add("micaBackground");
                 document.body.appendChild(micaDOM);
                 this.getWallpaper();
-
+                this.setTransparency(false);
                 function onScreenMove(cb) {
                     var lastScreenX;
                     var lastScreenY;

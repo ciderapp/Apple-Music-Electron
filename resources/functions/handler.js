@@ -1,8 +1,20 @@
-const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences, nativeTheme, clipboard} = require('electron'),
+const {
+        app,
+        Menu,
+        ipcMain,
+        shell,
+        dialog,
+        Notification,
+        BrowserWindow,
+        systemPreferences,
+        nativeTheme,
+        clipboard
+    } = require('electron'),
     {join, resolve} = require('path'),
     {readFile, readFileSync, existsSync, watch} = require('fs'),
     {initAnalytics} = require('./utils');
 initAnalytics();
+const regedit = require('regedit');
 
 const handler = {
 
@@ -189,8 +201,12 @@ const handler = {
                 }
             } else {
                 app.win.destroy()
-                if (app.lyrics.mxmWin) { app.lyrics.mxmWin.destroy(); }
-                if (app.lyrics.neteaseWin) { app.lyrics.neteaseWin.destroy(); }
+                if (app.lyrics.mxmWin) {
+                    app.lyrics.mxmWin.destroy();
+                }
+                if (app.lyrics.neteaseWin) {
+                    app.lyrics.neteaseWin.destroy();
+                }
             }
         })
 
@@ -394,7 +410,7 @@ const handler = {
 
         // Copy Log File
         ipcMain.on('copyLogFile', (event) => {
-            const data = readFileSync(app.log.transports.file.getFile().path, {encoding:'utf8', flag:'r'});
+            const data = readFileSync(app.log.transports.file.getFile().path, {encoding: 'utf8', flag: 'r'});
             clipboard.writeText(data)
             event.returnValue = true
         });
@@ -472,7 +488,9 @@ const handler = {
                 app.win.setMaximumSize(300, 300);
                 app.win.maximizable = false;
                 app.win.webContents.executeJavaScript("_miniPlayer.setMiniPlayer(true)").catch((e) => console.error(e));
-                if (app.win.isMaximized) { app.win.unmaximize(); }
+                if (app.win.isMaximized) {
+                    app.win.unmaximize();
+                }
             } else {
                 app.isMiniplayerActive = false;
                 app.win.setMaximumSize(9999, 9999);
@@ -536,25 +554,14 @@ const handler = {
                 var bitmap = readFileSync(file)
                 return `data:image/png;base64,${new Buffer(bitmap).toString('base64')}`
             }
-
-            let spawn = require("child_process").spawn, child;
-            child = spawn("powershell.exe", [`Get-ItemProperty -Path Registry::"HKCU\\Control Panel\\Desktop\\" -Name "Wallpaper" | ConvertTo-JSON`])
-            child.stdout.on("data", function (data) {
-                console.log("Powershell Data: " + data)
-                const parsed = JSON.parse(data);
-                event.returnValue = base64_encode(parsed["WallPaper"])
+            regedit.list(`HKCU\\Control Panel\\Desktop\\`, (err, result)=>{
+                var path = (result['HKCU\\Control Panel\\Desktop\\\\']['values']['WallPaper']['value'])
+                event.returnValue = base64_encode(path)
             })
-            child.stderr.on("data", function (data) {
-                console.log("Powershell Errors: " + data)
-            })
-            child.on("exit", function () {
-                console.log("Powershell Script finished")
-            })
-            child.stdin.end()
         })
 
         // Set BrowserWindow zoom factor
-        ipcMain.on("set-zoom-factor", (event, factor)=>{
+        ipcMain.on("set-zoom-factor", (event, factor) => {
             app.win.webContents.setZoomFactor(factor)
         })
 
