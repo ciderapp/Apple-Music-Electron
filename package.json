@@ -121,6 +121,15 @@
       "icon": "./resources/icons/icon.icns",
       "category": "public.app-category.music",
       "darkModeSupport": true
-    }
+    },
+    "extraResources": [
+      {
+        "from": "node_modules/regedit/vbs",
+        "to": "regedit/vbs",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
   }
 }

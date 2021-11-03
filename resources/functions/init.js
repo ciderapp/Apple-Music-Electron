@@ -2,6 +2,7 @@ const {app, nativeTheme, nativeImage, Tray} = require("electron"),
     {join, resolve} = require("path"),
     os = require("os"),
     {existsSync, readdirSync, mkdir} = require("fs"),
+    regedit = require("regedit"),
     {initAnalytics} = require('./utils');
 initAnalytics();
 
@@ -39,6 +40,9 @@ const init = {
             console.log("[Apple-Music-Electron] Hardware Media Key Handling disabled.")
             app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,MediaSessionService');
         }
+
+        // Registry
+        regedit.setExternalVBSLocation("resources/regedit/vbs")
 
         // Sets the ModelId (For windows notifications)
         if (process.platform === "win32") app.setAppUserModelId(app.getName());

@@ -555,6 +555,7 @@ const handler = {
                 return `data:image/png;base64,${new Buffer(bitmap).toString('base64')}`
             }
             regedit.list(`HKCU\\Control Panel\\Desktop\\`, (err, result)=>{
+                console.log(result)
                 var path = (result['HKCU\\Control Panel\\Desktop\\\\']['values']['WallPaper']['value'])
                 event.returnValue = base64_encode(path)
             })
