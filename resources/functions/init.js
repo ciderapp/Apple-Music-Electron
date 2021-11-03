@@ -47,7 +47,9 @@ const init = {
         }
 
         // Registry
-        regedit.setExternalVBSLocation("resources/regedit/vbs")
+        if (process.platform === "win32") {
+            regedit.setExternalVBSLocation("resources/regedit/vbs")
+        }
 
         // Sets the ModelId (For windows notifications)
         if (process.platform === "win32") app.setAppUserModelId(app.getName());
