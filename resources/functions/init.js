@@ -41,6 +41,11 @@ const init = {
             app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,MediaSessionService');
         }
 
+        // GPU Hardware Acceleartion
+        if(app.cfg.get('visual.disableGPUHardwareAcceleration')) {
+            app.commandLine.appendSwitch('disable-gpu')
+        }
+
         // Registry
         regedit.setExternalVBSLocation("resources/regedit/vbs")
 

@@ -76,7 +76,8 @@ module.exports = () => {
             useOperatingSystemAccent: false,
             scaling: 1,
             mxmon: false,
-            mxmlanguage: "en"
+            mxmlanguage: "en",
+            disableGPUHardwareAcceleration: false
         },
         audio: {
             audioQuality: "auto",

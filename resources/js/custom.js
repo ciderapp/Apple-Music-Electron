@@ -1141,6 +1141,7 @@ try {
                     AMSettings.HandleField('removeScrollbars');
                     AMSettings.HandleField('useOperatingSystemAccent');
                     AMSettings.HandleField('scaling');
+                    AMSettings.HandleField('disableGPUHardwareAcceleration');
 
                     /* Audio Settings */
                     AMSettings.HandleField('audioQuality');
