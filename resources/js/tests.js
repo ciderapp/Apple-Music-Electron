@@ -111,6 +111,16 @@ var _tests = {
                 },
                 OnCreate() {
                     vm.$mount("#usermenu-vue")
+                    if(typeof _plugins != "undefined") {
+                        _plugins.menuitems.forEach((menuitem)=>{
+                            vm.menuitems.unshift({
+                                label: menuitem["Text"],
+                                onclick: menuitem["OnClick"],
+                                icon: "",
+                                visible: true
+                            })
+                        })
+                    }
                 },
                 OnClose() {
                     _vues.destroy(vm)
