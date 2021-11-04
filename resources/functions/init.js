@@ -2,6 +2,7 @@ const {app, nativeTheme, nativeImage, Tray} = require("electron"),
     {join, resolve} = require("path"),
     os = require("os"),
     {existsSync, readdirSync, mkdir} = require("fs"),
+    regedit = require("regedit"),
     {initAnalytics} = require('./utils');
 initAnalytics();
 
@@ -38,6 +39,16 @@ const init = {
         if (app.cfg.get('advanced.preventMediaKeyHijacking')) {
             console.log("[Apple-Music-Electron] Hardware Media Key Handling disabled.")
             app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,MediaSessionService');
+        }
+
+        // GPU Hardware Acceleration
+        if (!app.cfg.get('advanced.hardwareAcceleration')) {
+            app.commandLine.appendSwitch('disable-gpu')
+        }
+
+        // Registry
+        if (process.platform === "win32") {
+            regedit.setExternalVBSLocation("resources/regedit/vbs")
         }
 
         // Sets the ModelId (For windows notifications)
@@ -129,7 +140,7 @@ const init = {
             app.ame.utils.permissionsCheck(themesPath, 'README.md')
         } else {
             console.verbose('[ThemeInstallation] Themes folder not found. Cloning repo.')
-            mkdir(themesPath, (err) => {                
+            mkdir(themesPath, (err) => {
                 if (!err) {
                     console.warn('[ThemeInstallation] Themes Directory Created.')
                     app.ame.utils.updateThemes().catch((e) => console.error(e));

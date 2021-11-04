@@ -1,4 +1,15 @@
-const {app, Menu, ipcMain, shell, dialog, Notification, BrowserWindow, systemPreferences, nativeTheme, clipboard} = require('electron'),
+const {
+        app,
+        Menu,
+        ipcMain,
+        shell,
+        dialog,
+        Notification,
+        BrowserWindow,
+        systemPreferences,
+        nativeTheme,
+        clipboard
+    } = require('electron'),
     {join, resolve} = require('path'),
 
     {readFile, readFileSync, writeFile, existsSync, watch} = require('fs'),
@@ -17,6 +28,7 @@ var getPort = require('get-port');
 const {Stream} = require('stream');
 
 initAnalytics();
+const regedit = require('regedit');
 
 const handler = {
 
@@ -212,6 +224,7 @@ const handler = {
                 if (app.lyrics.ytWin) {
                     app.lyrics.ytWin.destroy();
                 }
+
             }
         })
 
@@ -326,6 +339,13 @@ const handler = {
         handledConfigs.push('visual.transparencyEffect', 'visual.transparencyTheme', 'visual.transparencyDisableBlur', 'visual.transparencyMaximumRefreshRate');
         app.cfg.onDidChange('visual.transparencyEffect' || 'visual.transparencyTheme' || 'visual.transparencyDisableBlur' || 'visual.transparencyMaximumRefreshRate', (_newValue, _oldValue) => {
             const updatedVibrancy = app.ame.utils.fetchTransparencyOptions()
+            if (app.cfg.get("visual.transparencyEffect") === "mica" && process.platform !== 'darwin') {
+                app.win.webContents.executeJavaScript(`AMStyling.setMica(true);`).catch((e) => console.error(e));
+                app.transparency = false;
+                app.win.setVibrancy();
+            }else{
+                app.win.webContents.executeJavaScript(`AMStyling.setMica(false);`).catch((e) => console.error(e));
+            }
             if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
                 app.win.setVibrancy(updatedVibrancy);
                 app.win.webContents.executeJavaScript(`AMStyling.setTransparency(true);`).catch((e) => console.error(e));
@@ -394,6 +414,11 @@ const handler = {
             return app.ame.utils.fetchPluginsListing();
         })
 
+        // Get OS
+        ipcMain.handle('fetchOperatingSystem', () => {
+            return process.platform
+        })
+
         // Acrylic Check
         ipcMain.handle('isAcrylicSupported', (_event) => {
             return app.ame.utils.isAcrylicSupported();
@@ -431,8 +456,10 @@ const handler = {
         })
 
         // Update Themes
-        ipcMain.on('updateThemes', (_event) => {
-            app.ame.utils.updateThemes().catch((e) => console.error(e))
+        ipcMain.on('updateThemes', (event) => {
+            app.ame.utils.updateThemes().then((r) => {
+                event.returnValue = r
+            })
         });
 
         // Authorization (This needs to be cleaned up a bit, an alternative to reload() would be good )
@@ -563,24 +590,21 @@ const handler = {
         // Get Wallpaper
         ipcMain.on("get-wallpaper", (event) => {
             function base64_encode(file) {
-                var bitmap = readFileSync(file)
-                return `data:image/png;base64,${new Buffer(bitmap).toString('base64')}`
+                const bitmap = readFileSync(file)
+                return `data:image/png;base64,${Buffer.from(bitmap).toString('base64')}`
             }
 
-            let spawn = require("child_process").spawn, child;
-            child = spawn("powershell.exe", [`Get-ItemProperty -Path Registry::"HKCU\\Control Panel\\Desktop\\" -Name "Wallpaper" | ConvertTo-JSON`])
-            child.stdout.on("data", function (data) {
-                console.log("Powershell Data: " + data)
-                const parsed = JSON.parse(data);
-                event.returnValue = base64_encode(parsed["WallPaper"])
+            regedit.list(`HKCU\\Control Panel\\Desktop\\`, (err, result) => {
+                var path = (result['HKCU\\Control Panel\\Desktop\\\\']['values']['WallPaper']['value'])
+                event.returnValue = base64_encode(path)
             })
-            child.stderr.on("data", function (data) {
-                console.log("Powershell Errors: " + data)
+        })
+
+        ipcMain.on("get-wallpaper-style", (event) => {
+            regedit.list(`HKCU\\Control Panel\\Desktop\\`, (err, result) => {
+                var value = (result['HKCU\\Control Panel\\Desktop\\\\']['values']['WallpaperStyle']['value'])
+                event.returnValue = parseInt(value)
             })
-            child.on("exit", function () {
-                console.log("Powershell Script finished")
-            })
-            child.stdin.end()
         })
 
         // Set BrowserWindow zoom factor
