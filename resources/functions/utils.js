@@ -233,6 +233,7 @@ const Utils = {
                 if (err) {
                     return Promise.resolve(err)
                 } else {
+                    let updatedThemes = []
                     // Compare the themes
                     readdirSync(join(os.tmpdir(), "ame-themes")).forEach((value) => {
                         console.verbose(`[updateThemes] Running comparison for ${value}`)
@@ -244,6 +245,7 @@ const Utils = {
                                     console.verbose(`[updateThemes] ${value} is the same, skipping...`)
                                 } else {
                                     console.verbose(`[updateThemes] ${value} is different, writing new version...`)
+                                    updatedThemes.push(value)
                                     writeFileSync(join(app.getPath('userData'), "themes", value), readFileSync(join(os.tmpdir(), "ame-themes", value)))
                                 }
                             }
@@ -256,7 +258,7 @@ const Utils = {
 
                     // Remove the tmp themes directory
                     rmSync(join(os.tmpdir(), "ame-themes"), { recursive: true })
-                    return Promise.resolve()
+                    return Promise.resolve(updatedThemes)
                 }
             })
         }

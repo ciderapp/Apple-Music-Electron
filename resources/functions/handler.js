@@ -438,8 +438,10 @@ const handler = {
         })
 
         // Update Themes
-        ipcMain.on('updateThemes', (_event) => {
-            app.ame.utils.updateThemes().catch((e) => console.error(e))
+        ipcMain.on('updateThemes', (event) => {
+            app.ame.utils.updateThemes().then((r) => {
+                event.returnValue = r
+            })
         });
 
         // Authorization (This needs to be cleaned up a bit, an alternative to reload() would be good )
