@@ -508,7 +508,7 @@ var AudioOutputs = {
       const trackName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.title ?? '' : '');
       const artistName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
       const albumName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.albumName ?? '' : '');
-      ipcRenderer.send('performGCCast',device, trackName,artistName,albumName,(MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256));
+      ipcRenderer.send('performGCCast',device, "Apple Music Electron",'Playing ...','','');
       if(!GCstream){
       GCstream = AMEx.context.createScriptProcessor(16384,2,1);
       GCstream.onaudioprocess = function(e){
