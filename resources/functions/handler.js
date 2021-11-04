@@ -15,6 +15,8 @@ var MediaRendererClient = require('upnp-mediarenderer-client');
 const DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
 var getPort = require('get-port');
 const {Stream} = require('stream');
+var Scanner = require('castv2-player').Scanner();
+var ScannerPromise = require('castv2-player').ScannerPromise();
 
 initAnalytics();
 
@@ -1156,12 +1158,14 @@ const handler = {
         }
 
         function searchForGCDevices() {
-            try {
+            try {                            
+                  
                 let browser = mdns.createBrowser(mdns.tcp('googlecast'));
                 browser.on('ready', browser.discover);
 
                 browser.on('update', (service) => {
                     if (service.addresses && service.fullname) {
+                        console.log(service);
                         ondeviceup(service.addresses[0], service.fullname.substring(0, service.fullname.indexOf("._googlecast")),'','googlecast');
                     }
                 });
@@ -1261,36 +1265,36 @@ const handler = {
                             {url: albumart ?? ""}]
                     }
                 };
-                // ipcMain.on('setupNewTrack', function (event, song, artist, album, albumart) {
-                //     try {
-                //         let newmedia = {
-                //             // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
-                //             contentId: 'http://' + getIp() + ':' + server.address().port + '/',
-                //             contentType: 'audio/vnd.wav',
-                //             streamType: 'BUFFERED', // or LIVE
+                ipcMain.on('setupNewTrack', function (event, song, artist, album, albumart) {
+                    try {
+                        let newmedia = {
+                            // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
+                            contentId: 'http://' + getIp() + ':' + server.address().port + '/',
+                            contentType: 'audio/vnd.wav',
+                            streamType: 'BUFFERED', // or LIVE
 
-                //             // Title and cover displayed while buffering
-                //             metadata: {
-                //                 type: 0,
-                //                 metadataType: 3,
-                //                 title: song,
-                //                 albumName: album,
-                //                 artist: artist,
-                //                 images: [
-                //                     {url: albumart}]
-                //             }
-                //         };
-                //         player.pause();
-                //         headerSent = false;
-                //         player.load(newmedia, {
-                //             autoplay: true
-                //         }, (err, status) => {
-                //             console.log('media loaded playerState=%s', status);
-                //         });
-                //     } catch (e) {
-                //         console.log('GCerror', e)
-                //     }
-                //});
+                            // Title and cover displayed while buffering
+                            metadata: {
+                                type: 0,
+                                metadataType: 3,
+                                title: song,
+                                albumName: album,
+                                artist: artist,
+                                images: [
+                                    {url: albumart}]
+                            }
+                        };
+                        player.pause();
+                        headerSent = false;
+                        player.load(newmedia, {
+                            autoplay: true
+                        }, (err, status) => {
+                            console.log('media loaded playerState=%s', status);
+                        });
+                    } catch (e) {
+                        console.log('GCerror', e)
+                    }
+                });
 
 
                 player.on('status', status => {
@@ -1352,6 +1356,7 @@ const handler = {
                     break;
                 } 
             }
+
             if (castMode == 'googlecast'){                
             let client = new audioClient();
             client.volume = 100;
