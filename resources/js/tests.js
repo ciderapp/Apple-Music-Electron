@@ -104,7 +104,7 @@ var _tests = {
                 },
                 Style: {
                     height: "auto",
-                    width: "178px",
+                    width: "185px",
                     position: "absolute",
                     top: "46px",
                     right: "142px"
