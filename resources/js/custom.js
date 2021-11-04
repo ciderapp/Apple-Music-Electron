@@ -696,6 +696,12 @@ try {
                 }
                 /** End Plugins */
 
+                if(preferences.visual.frameType == "") {
+                    document.body.setAttribute("frame-type", "disabled");
+                }else{
+                    document.body.setAttribute("frame-type", preferences.visual.frameType);
+                }
+
                 /* MiniPlayer Event Listener */
                 MusicKit.getInstance().addEventListener(MusicKit.Events.mediaElementCreated, () => {
                     if (!document.querySelector('.media-artwork-v2__image').classList.contains('media-artwork-v2__image--fallback')) {
