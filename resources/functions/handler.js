@@ -321,6 +321,13 @@ const handler = {
         handledConfigs.push('visual.transparencyEffect', 'visual.transparencyTheme', 'visual.transparencyDisableBlur', 'visual.transparencyMaximumRefreshRate');
         app.cfg.onDidChange('visual.transparencyEffect' || 'visual.transparencyTheme' || 'visual.transparencyDisableBlur' || 'visual.transparencyMaximumRefreshRate', (_newValue, _oldValue) => {
             const updatedVibrancy = app.ame.utils.fetchTransparencyOptions()
+            if (app.cfg.get("visual.transparencyEffect") === "mica" && process.platform !== 'darwin') {
+                app.win.webContents.executeJavaScript(`AMStyling.setMica(true);`).catch((e) => console.error(e));
+                app.transparency = false;
+                app.win.setVibrancy();
+            }else{
+                app.win.webContents.executeJavaScript(`AMStyling.setMica(false);`).catch((e) => console.error(e));
+            }
             if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
                 app.win.setVibrancy(updatedVibrancy);
                 app.win.webContents.executeJavaScript(`AMStyling.setTransparency(true);`).catch((e) => console.error(e));
@@ -559,14 +566,15 @@ const handler = {
                 var bitmap = readFileSync(file)
                 return `data:image/png;base64,${new Buffer(bitmap).toString('base64')}`
             }
-            regedit.list(`HKCU\\Control Panel\\Desktop\\`, (err, result)=>{
+
+            regedit.list(`HKCU\\Control Panel\\Desktop\\`, (err, result) => {
                 var path = (result['HKCU\\Control Panel\\Desktop\\\\']['values']['WallPaper']['value'])
                 event.returnValue = base64_encode(path)
             })
         })
 
-        ipcMain.on("get-wallpaper-style", (event)=>{
-            regedit.list(`HKCU\\Control Panel\\Desktop\\`, (err, result)=>{
+        ipcMain.on("get-wallpaper-style", (event) => {
+            regedit.list(`HKCU\\Control Panel\\Desktop\\`, (err, result) => {
                 var value = (result['HKCU\\Control Panel\\Desktop\\\\']['values']['WallpaperStyle']['value'])
                 event.returnValue = parseInt(value)
             })
