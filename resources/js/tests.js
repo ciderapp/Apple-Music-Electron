@@ -9,11 +9,11 @@ var _tests = {
         // Append cloned menu
         document.querySelector(".web-chrome-controls-container").append(umClone)
         // Set cloned menu events
-        umClone.addEventListener("click", ()=>{
-            _tests.usermenu()
+        umClone.addEventListener("click", (e)=>{
+            _tests.usermenu(e)
         })
     },
-    usermenu() {
+    usermenu(e) {
         // MOVE ME ONCE IMPLEMENTED!
         AMJavaScript.getRequest("ameres://html/usermenu.html", (content) => {
             var vm = new Vue({
@@ -106,8 +106,10 @@ var _tests = {
                     height: "auto",
                     width: "185px",
                     position: "absolute",
-                    top: "46px",
-                    right: "142px"
+                    // top: "46px",
+                    // right: "142px"
+                    top: `46px`,
+                    left: `${e.clientX - (185 / 2)}px`
                 },
                 OnCreate() {
                     vm.$mount("#usermenu-vue")
