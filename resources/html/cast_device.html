@@ -17,13 +17,13 @@
         <div class="md-option-container" style="margin-top: 12px;margin-bottom: 12px;">
             <template v-if="!scanning">
                 <template v-for="(device) in devices.cast">
-                    <div class="md-option-line" style="cursor: pointer" @click="setCast(device.host)">
+                    <div class="md-option-line" style="cursor: pointer" @click="setCast(device)">
                         <div class="md-option-segment">
                             {{ device.name }}
                             <br>
                             <small>{{ device.host }}</small>
                         </div>
-                        <div class="md-option-segment_auto" style="display: flex;justify-content: center;align-items: center" v-if="activeCasts.includes(device.host)">
+                        <div class="md-option-segment_auto" style="display: flex;justify-content: center;align-items: center" v-if="activeCasts.includes(device)">
                             Connected
                         </div>
                         <div class="md-option-segment_auto" v-else style="display: flex;justify-content: center;align-items: center">

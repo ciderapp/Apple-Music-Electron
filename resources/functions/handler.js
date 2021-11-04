@@ -1137,14 +1137,15 @@ const handler = {
         }
 
         function ondeviceup(host, name, location, type) {
-            if (devices.indexOf(host) == -1) {
+            if (castDevices.findIndex((item) => item.host == host && item.name == name && item.location == location && item.type == type) == -1) {
                 castDevices.push({
                     name: name,
                     host: host,
                     location : location,
                     type: type
                 });
-                devices.push(host);
+                if (devices.indexOf(host) == -1){
+                devices.push(host);}
                 if (name) {
                     app.win.webContents.executeJavaScript(`console.log('deviceFound','ip: ${host} name:${name}')`);
                     console.log("deviceFound", host, name);
@@ -1156,13 +1157,14 @@ const handler = {
         }
 
         function searchForGCDevices() {
-            try {
+            try {                            
+                  
                 let browser = mdns.createBrowser(mdns.tcp('googlecast'));
                 browser.on('ready', browser.discover);
 
                 browser.on('update', (service) => {
                     if (service.addresses && service.fullname) {
-                        ondeviceup(service.addresses[0], service.fullname.substring(0, service.fullname.indexOf("._googlecast")),'','googlecast');
+                        ondeviceup(service.addresses[0], service.fullname.substring(0, service.fullname.indexOf("._googlecast")) +" "+ (service.type[0].description ?? ""),'','googlecast');
                     }
                 });
 
@@ -1261,36 +1263,36 @@ const handler = {
                             {url: albumart ?? ""}]
                     }
                 };
-                // ipcMain.on('setupNewTrack', function (event, song, artist, album, albumart) {
-                //     try {
-                //         let newmedia = {
-                //             // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
-                //             contentId: 'http://' + getIp() + ':' + server.address().port + '/',
-                //             contentType: 'audio/vnd.wav',
-                //             streamType: 'BUFFERED', // or LIVE
+                ipcMain.on('setupNewTrack', function (event, song, artist, album, albumart) {
+                    try {
+                        let newmedia = {
+                            // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
+                            contentId: 'http://' + getIp() + ':' + server.address().port + '/',
+                            contentType: 'audio/vnd.wav',
+                            streamType: 'BUFFERED', // or LIVE
 
-                //             // Title and cover displayed while buffering
-                //             metadata: {
-                //                 type: 0,
-                //                 metadataType: 3,
-                //                 title: song,
-                //                 albumName: album,
-                //                 artist: artist,
-                //                 images: [
-                //                     {url: albumart}]
-                //             }
-                //         };
-                //         player.pause();
-                //         headerSent = false;
-                //         player.load(newmedia, {
-                //             autoplay: true
-                //         }, (err, status) => {
-                //             console.log('media loaded playerState=%s', status);
-                //         });
-                //     } catch (e) {
-                //         console.log('GCerror', e)
-                //     }
-                //});
+                            // Title and cover displayed while buffering
+                            metadata: {
+                                type: 0,
+                                metadataType: 3,
+                                title: song,
+                                albumName: album,
+                                artist: artist,
+                                images: [
+                                    {url: albumart}]
+                            }
+                        };
+                        player.pause();
+                        headerSent = false;
+                        player.load(newmedia, {
+                            autoplay: true
+                        }, (err, status) => {
+                            console.log('media loaded playerState=%s', status);
+                        });
+                    } catch (e) {
+                        console.log('GCerror', e)
+                    }
+                });
 
 
                 player.on('status', status => {
@@ -1340,28 +1342,22 @@ const handler = {
             return ip;
         }
 
-        function stream(host, song, artist, album, albumart) {
+        function stream(device, song, artist, album, albumart) {
             var castMode = 'googlecast'; 
             var UPNPDesc = '';
-            console.log(castDevices);
-            for(var device of castDevices){
-                if (device.type == 'upnp' && host == device.host ){
-                    console.log(device);
-                    castMode = 'upnp';
-                    UPNPDesc = device.location;
-                    break;
-                } 
-            }
+            castMode = device.type;
+            UPNPDesc = device.location;
+
             if (castMode == 'googlecast'){                
             let client = new audioClient();
             client.volume = 100;
             client.stepInterval = 0.5;
             client.muted = false;
 
-            client.connect(host, () => {
+            client.connect(device.host, () => {
                 console.log('connected, launching app ...', 'http://' + getIp() + ':' + server.address().port + '/');
-                if (!connectedHosts[host]) {
-                    connectedHosts[host] = client;
+                if (!connectedHosts[device.host]) {
+                    connectedHosts[device.host] = client;
                     activeConnections.push(client);
                 }
                 loadMedia(client, song, artist, album, albumart);
@@ -1378,7 +1374,7 @@ const handler = {
             client.on('error', err => {
                 console.log('Error: %s', err.message);
                 client.close();
-                delete connectedHosts[host];
+                delete connectedHosts[device.host];
             });
            } else {
                // upnp devices
@@ -1407,10 +1403,11 @@ const handler = {
             event.returnValue = castDevices
         });
 
-        ipcMain.on('performGCCast', function (event, ip, song, artist, album, albumart) {
+        ipcMain.on('performGCCast', function (event, device, song, artist, album, albumart) {
             setupGCServer().then(function () {
                 app.win.webContents.setAudioMuted(true);
-                stream(ip, song, artist, album, albumart);
+                console.log(device);
+                stream(device, song, artist, album, albumart);
             })
         });
 
