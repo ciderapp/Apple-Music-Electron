@@ -364,12 +364,9 @@ span.app-prefs-title {
     }
 }
 
-/* Lyrics Button */
-#lyricsButton {
-    height: 22px;
-    width: 22px;
-    background-color: transparent;
-    cursor: pointer;
+/* Buttons */
+button[aria-label="My Account"], button[aria-label="Up next"], button[aria-label="Lyrics"] {
+    cursor: pointer !important;
 }
 
 /* Lyrics CSS */
