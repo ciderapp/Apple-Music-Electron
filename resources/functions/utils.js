@@ -213,6 +213,9 @@ const Utils = {
 
     /* updateThemes - Purges the themes directory and clones a fresh copy of the themes */
     updateThemes: async () => {
+        if (app.watcher) {
+            app.watcher.close()
+        }
         if (existsSync((join(app.getPath("userData"), "themes", "README.md")))) {
             rimraf(join(app.getPath("userData"), "themes"), [], () => {
                 console.warn(`[updateThemes] Themes directory cleared for fresh clone.`)
