@@ -563,8 +563,8 @@ const handler = {
         // Get Wallpaper
         ipcMain.on("get-wallpaper", (event) => {
             function base64_encode(file) {
-                var bitmap = readFileSync(file)
-                return `data:image/png;base64,${new Buffer(bitmap).toString('base64')}`
+                const bitmap = readFileSync(file)
+                return `data:image/png;base64,${Buffer.from(bitmap).toString('base64')}`
             }
 
             regedit.list(`HKCU\\Control Panel\\Desktop\\`, (err, result) => {

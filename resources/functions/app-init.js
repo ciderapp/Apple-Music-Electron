@@ -1,7 +1,6 @@
 const {app, protocol, dialog} = require("electron"),
     {join, resolve} = require("path"),
-    {existsSync, createReadStream, unlink} = require("fs"),
-    rimraf = require("rimraf"),
+    {existsSync, createReadStream, unlink, rmSync} = require("fs"),
     Store = require('electron-store');
 
 module.exports = () => {
@@ -31,9 +30,7 @@ module.exports = () => {
         },
         clearCache: () => {
             if (existsSync(resolve(app.getPath('userData'), 'Cache'))) {
-                rimraf(resolve(app.getPath('userData'), 'Cache'), [], () => {
-                    console.log(`[VersionHandler] Outdated / No Version Store Found. Clearing Application Cache. ('${resolve(app.getPath('userData'), 'Cache')}')`)
-                })
+                rmSync(resolve(app.getPath('userData'), 'Cache'), {recursive: true, force: true})
             }
         },
         showDevelopmentMessage: () => {

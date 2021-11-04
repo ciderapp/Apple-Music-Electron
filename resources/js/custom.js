@@ -1106,7 +1106,7 @@ try {
                 else if (field.classList.contains('form-dropdown-select')) {
                     field.value = preferences[category][element];
                     field.addEventListener('change', (event) => {
-                        ipcRenderer.invoke('setStoreValue', `${category}.${element}`, event.target.value);
+                        ipcRenderer.invoke('setStoreValue', `${category}.${element}`, event.target.value).catch((err) => console.error(err));
                     });
                     console.warn(`[HandleField] Event listener created for ${category}.${element}`)
                 }
