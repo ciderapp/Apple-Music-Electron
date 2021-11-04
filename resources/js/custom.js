@@ -618,7 +618,8 @@ try {
 
                 onScreenMove(function () {
                     micaDOM.style.backgroundPosition = `${window.screenX * -1}px ${window.screenY * -1}px`;
-                    micaDOM.style.backgroundSize = `${screen.width}px ${screen.height}px`;
+                    /**micaDOM.style.backgroundSize = `${screen.width}px ${screen.height}px`;**/
+                    micaDOM.style.backgroundSize = `cover`;
                 });
             },
             loadTheme(path = "", reload = false) {
