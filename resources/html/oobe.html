@@ -14,7 +14,8 @@
                     <h1 class="md-h1">Welcome to Apple Music Electron</h1>
                 </div>
                 <div class="md-body">
-                    <div style="text-align: center">A free and <a href="#" onclick="window.open('https://github.com/Apple-Music-Electron')">open
+                    <div style="text-align: center">A free and <a href="#"
+                                                                  onclick="window.open('https://github.com/Apple-Music-Electron')">open
                         source</a> Apple Music streaming player based on Electron 15
                     </div>
                 </div>
@@ -47,7 +48,8 @@
                         ">
                         <div style="margin: 12px;">
                             Choose another country or region to see content specific to your location.
-                            <select v-model="prefs.general.storefront" class="md-select" size="5" style="width:100%;height:100%;">
+                            <select v-model="prefs.general.storefront" class="md-select" size="5"
+                                    style="width:100%;height:100%;">
                                 <option value=''>Automatic</option>
                                 <option disabled>Africa, Middle East and India</option>
                                 <option value='dz'>Algeria</option>
@@ -268,7 +270,8 @@
                                 Transparency
                             </div>
                             <div class="md-option-segment md-option-segment_auto">
-                                <select class="md-select" v-model="prefs.visual.transparencyEffect" style="width:180px;">
+                                <select class="md-select" v-model="prefs.visual.transparencyEffect"
+                                        style="width:180px;">
                                     <option value=''>Disabled</option>
                                     <option value='blur'>Blur Behind</option>
                                     <option value='acrylic'>Acrylic</option>
@@ -327,7 +330,8 @@
                             <div class="md-option-segment">
                                 Seemless Audio Transitions
                                 <br>
-                                <small>Reduces or completely removes the delay between songs providing a smooth audio experience.</small>
+                                <small>Reduces or completely removes the delay between songs providing a smooth audio
+                                    experience.</small>
                             </div>
                             <div class="md-option-segment md-option-segment_auto">
                                 <input type="checkbox" v-model="prefs.audio.seemlessAudioTransitions" switch/>
@@ -369,6 +373,7 @@
                                 Enable YouTube Lyrics (for Music Videos)
                                 <br>
                                 <small>(Not Recommended) Better timings and lyrics availability on some Music Videos, however can be inconsistent.</small>
+
                             </div>
                             <div class="md-option-segment md-option-segment_auto">
                                 <input type="checkbox" v-model="prefs.visual.yton" switch/>
