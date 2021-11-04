@@ -868,13 +868,14 @@ try {
                 }
 
                 /** Need a better way to find the user menu asap, this is embarrassing **/
-                var checkForUserMenu = setInterval(function () {
-                    if (document.querySelectorAll(".web-chrome-controls-container>.web-navigation__auth").length) {
-                        _tests.usermenuinit();
-                        clearInterval(checkForUserMenu);
-                    }
-                }, 100);
-
+                if(MusicKit.getInstance().authorizationStatus !== 0) {
+                    var checkForUserMenu = setInterval(function () {
+                        if (document.querySelectorAll(".web-chrome-controls-container>.web-navigation__auth").length) {
+                            _tests.usermenuinit();
+                            clearInterval(checkForUserMenu);
+                        }
+                    }, 100);
+                }
             },
             LoadCustom: () => {
                 const preferences = ipcRenderer.sendSync('getStore');
