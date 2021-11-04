@@ -93,6 +93,19 @@ try {
         var _lyrics = {
             CreateButton: () => {
                 const mediaControlsElement = document.getElementsByClassName('web-chrome-controls-container')[0];
+
+                /* Chromecast / Airplay Button */
+                    if (!document.querySelector('#airplayButton') && mediaControlsElement) {
+                        const lyricsButton = document.createElement("div");
+                        lyricsButton.style.height = "22px";
+                        lyricsButton.style.width = "22px";
+                        lyricsButton.style.marginInlineEnd = "22px";
+                        lyricsButton.style.zIndex = "9999";
+                        lyricsButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width: "100%" height: "100%" viewBox: "0 0 30 22" version="1.1" style: "fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421"><path d="M16.811,12.75c0.245,-0.355 0.389,-0.786 0.389,-1.25c0,-1.215 -0.985,-2.2 -2.2,-2.2c-1.215,0 -2.2,0.985 -2.2,2.2c0,0.466 0.145,0.898 0.392,1.254l-0.83,1.047c-0.537,-0.616 -0.862,-1.42 -0.862,-2.301c0,-1.933 1.567,-3.5 3.5,-3.5c1.933,0 3.5,1.567 3.5,3.5c0,0.879 -0.324,1.683 -0.859,2.297l-0.83,-1.047Zm1.271,1.604c0.694,-0.749 1.118,-1.752 1.118,-2.854c0,-2.32 -1.88,-4.2 -4.2,-4.2c-2.32,0 -4.2,1.88 -4.2,4.2c0,1.103 0.425,2.107 1.121,2.857l-0.814,1.028c-0.993,-0.995 -1.607,-2.368 -1.607,-3.885c0,-3.038 2.462,-5.5 5.5,-5.5c3.038,0 5.5,2.462 5.5,5.5c0,1.515 -0.613,2.887 -1.604,3.882l-0.814,-1.028Zm1.252,1.58c1.151,-1.126 1.866,-2.697 1.866,-4.434c0,-3.424 -2.776,-6.2 -6.2,-6.2c-3.424,0 -6.2,2.776 -6.2,6.2c0,1.739 0.716,3.311 1.869,4.437l-0.811,1.023c-1.452,-1.368 -2.358,-3.308 -2.358,-5.46c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5c0,2.15 -0.905,4.089 -2.355,5.457l-0.811,-1.023Zm-0.227,2.066l-8.219,0c-0.355,0 -0.515,-0.434 -0.27,-0.717l4.058,-5.12c0.178,-0.217 0.474,-0.217 0.652,0l4.058,5.12c0.237,0.283 0.085,0.717 -0.279,0.717Z" style="fill-rule:nonzero"/></svg>`;
+                        lyricsButton.id = "airplayButton";
+                        lyricsButton.className = "web-chrome-playback-controls__platter-toggle-buttons web-chrome-playback-controls__meta-btn";
+                        mediaControlsElement.insertBefore(lyricsButton, mediaControlsElement.childNodes[4]);
+                }
                 /* Lyrics Button */
                 if (!document.querySelector('#lyricsButton') && mediaControlsElement) {
                     const lyricsButton = document.createElement("div");
@@ -103,9 +116,19 @@ try {
                     lyricsButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 0 28 28" id="vector"><path id="path" d="M 14.4 12.2 C 14.4 11.1 15.2 10.3 16.4 10.3 C 17.7 10.3 18.5 11.3 18.5 12.7 C 18.5 14.7 16.8 15.9 15.8 15.9 C 15.5 15.9 15.3 15.7 15.3 15.5 C 15.3 15.3 15.4 15.1 15.7 15.1 C 16.5 14.9 17.1 14.4 17.4 13.7 L 17.2 13.7 C 17 14 16.6 14.1 16.1 14.1 C 15.1 14 14.4 13.2 14.4 12.2 Z M 9.5 12.2 C 9.5 11.1 10.3 10.3 11.5 10.3 C 12.8 10.3 13.6 11.3 13.6 12.7 C 13.6 14.7 11.9 15.9 10.9 15.9 C 10.6 15.9 10.4 15.7 10.4 15.5 C 10.4 15.3 10.5 15.1 10.8 15.1 C 11.6 14.9 12.3 14.4 12.5 13.7 L 12.3 13.7 C 12.1 14 11.7 14.1 11.2 14.1 C 10.2 14 9.5 13.2 9.5 12.2 Z M 10.4 21.4 L 13.2 18.7 C 13.8 18.1 14.1 18 14.8 18 L 19.4 18 C 20.7 18 21.5 17.2 21.5 15.9 L 21.5 9.4 C 21.5 8 20.7 7.3 19.4 7.3 L 8.5 7.3 C 7.2 7.3 6.4 8 6.4 9.4 L 6.4 15.9 C 6.4 17.2 7.2 18 8.5 18 L 9.5 18 C 10.1 18 10.4 18.3 10.4 18.9 L 10.4 21.4 Z M 9.9 24 C 9 24 8.4 23.4 8.4 22.4 L 8.4 20.4 L 7.9 20.4 C 5.4 20.3 4 19 4 16.5 L 4 9 C 4 6.5 5.5 5 8.1 5 L 19.9 5 C 22.5 5 24 6.4 24 9 L 24 16.6 C 24 19.1 22.5 20.4 19.9 20.4 L 14.8 20.4 L 11.7 23.1 C 11 23.7 10.5 24 9.9 24 Z" /></svg>`;
                     lyricsButton.id = "lyricsButton";
                     lyricsButton.className = "web-chrome-playback-controls__platter-toggle-buttons web-chrome-playback-controls__meta-btn";
-                    mediaControlsElement.insertBefore(lyricsButton, mediaControlsElement.childNodes[4]);
+                    mediaControlsElement.insertBefore(lyricsButton, mediaControlsElement.childNodes[5]);
                 }
+                let clonedElement2;
 
+                clonedElement2 = document.querySelector('#airplayButton').cloneNode(true);
+                document.querySelector('#airplayButton').replaceWith(clonedElement2);
+
+                document.getElementById("airplayButton").addEventListener('click', function () {
+                    try{AudioOutputs.castUI();
+                    }catch(e){}
+                });
+            
+                
                 /* Lyric View for MV */
                 if (!document.querySelector('#MVLyricsBox')){
                 const lyricsMV = document.createElement("div");
@@ -122,7 +145,7 @@ try {
 
                 /* Lyrics Button Click Event Handling */
                 const upNextSideBarTogglePath = (preferences.visual.frameType === 'mac' ? '/html/body/div[4]/div/div[3]/div/div[3]/div[3]/button' : '/html/body/div[4]/div[3]/div[3]/div/div[3]/div[3]/button');
-                const upNextSideBarToggle = mediaControlsElement.childNodes[5].getElementsByTagName('button')[0];
+                const upNextSideBarToggle = mediaControlsElement.childNodes[6].getElementsByTagName('button')[0];
                 let clonedElement;
                 if (document.querySelector("#lyricsButton") && upNextSideBarToggle) {
 
@@ -148,7 +171,6 @@ try {
                             _lyrics.GetLyrics(1, false);
                         }
                     }
-
                     function closeLyrics() {
                         document.body.classList.remove("web-chrome-drawer-open");
                         document.body.classList.remove("web-chrome-drawer-closing");
