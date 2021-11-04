@@ -233,9 +233,7 @@ var AudioOutputs = {
                 bassFilter.connect(trebleFilter);
                 trebleFilter.connect(context.destination);
                 console.log("Attached EQ");
-                if (queueChromecast){
-                  waitFor(()=>{return document.getElementById("apple-music-player").readyState == 4;},() => AudioOutputs.playGC(selectedGC))
-                }
+             
                 if (queueExclusive){
                   console.log('we good');
                   AudioOutputs.startExclusiveAudio(outputID); }  
@@ -244,6 +242,18 @@ var AudioOutputs = {
                 clearInterval(searchInt);
             }
         }, 1000);
+        waitFor(()=>{return queueChromecast && 
+          (document.getElementById("apple-music-player") != null&& 
+           document.getElementById("apple-music-player").readyState == 4) || (
+           document.querySelector('apple-music-video-player') &&
+           document.querySelector('apple-music-video-player').shadowRoot  && 
+           document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal') &&
+           document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot && 
+           document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player') &&
+           document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot && 
+           document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player') && 
+           document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player').readyState == 4)  ;},() => AudioOutputs.playGC(selectedGC))
+        
     },
     amplifyMedia: function (mediaElem, multiplier) {
         AMEx.context = new(window.AudioContext || window.webkitAudioContext),
@@ -491,13 +501,16 @@ var AudioOutputs = {
     },
     playGC : function(device){
     AudioOutputs.activeCasts.push(device);
-
-    if(AMEx.result.source != null  ){
-      queueChromecast = false; 
       GCOverride = false;
-      ipcRenderer.send('performGCCast',device, MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,(MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256));
+    if(AMEx.result.source != null || MVsource != null ){
+      queueChromecast = false; 
+      const musicType = (MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["type"] ?? '' : '';
+      const trackName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.title ?? '' : '');
+      const artistName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
+      const albumName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.albumName ?? '' : '');
+      ipcRenderer.send('performGCCast',device, trackName,artistName,albumName,(MusicKitInterop.getAttributes()["artwork"]["url"]).replace("{w}", 256).replace("{h}", 256));
       if(!GCstream){
-      GCstream = AMEx.result.context.createScriptProcessor(16384,2,1);
+      GCstream = AMEx.context.createScriptProcessor(16384,2,1);
       GCstream.onaudioprocess = function(e){
           if (!GCOverride){ 
           var leftpcm = e.inputBuffer.getChannelData(0);
@@ -507,7 +520,11 @@ var AudioOutputs = {
 
       }};
       windowAudioNode = AMEx.context.createGain();
-      AMEx.result.source.connect(windowAudioNode);windowAudioNode.connect(GCstream);GCstream.connect(AMEx.context.destination);
+      try{
+      AMEx.result.source.connect(windowAudioNode);}
+      catch(e){}
+      windowAudioNode.connect(GCstream);
+      GCstream.connect(AMEx.context.destination);
       } else {queueChromecast = true; selectedGC = device}
              
      
@@ -539,8 +556,9 @@ document.addEventListener('keydown', function (event) {
 });
 
 function waitFor(condition, callback) {
-  if(!condition()) {
-      window.setTimeout(waitFor.bind(null, condition, callback), 100); 
+  if(condition() == null || !condition() ) {
+      console.log('yah');
+      window.setTimeout(waitFor.bind(null, condition, callback), 1000); 
   } else {
       callback();
   }
