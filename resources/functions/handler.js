@@ -15,8 +15,6 @@ var MediaRendererClient = require('upnp-mediarenderer-client');
 const DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
 var getPort = require('get-port');
 const {Stream} = require('stream');
-var Scanner = require('castv2-player').Scanner();
-var ScannerPromise = require('castv2-player').ScannerPromise();
 
 initAnalytics();
 
@@ -1139,14 +1137,15 @@ const handler = {
         }
 
         function ondeviceup(host, name, location, type) {
-            if (devices.indexOf(host) == -1) {
+            if (castDevices.findIndex((item) => item.host == host && item.name == name && item.location == location && item.type == type) == -1) {
                 castDevices.push({
                     name: name,
                     host: host,
                     location : location,
                     type: type
                 });
-                devices.push(host);
+                if (devices.indexOf(host) == -1){
+                devices.push(host);}
                 if (name) {
                     app.win.webContents.executeJavaScript(`console.log('deviceFound','ip: ${host} name:${name}')`);
                     console.log("deviceFound", host, name);
@@ -1165,8 +1164,7 @@ const handler = {
 
                 browser.on('update', (service) => {
                     if (service.addresses && service.fullname) {
-                        console.log(service);
-                        ondeviceup(service.addresses[0], service.fullname.substring(0, service.fullname.indexOf("._googlecast")),'','googlecast');
+                        ondeviceup(service.addresses[0], service.fullname.substring(0, service.fullname.indexOf("._googlecast")) +" "+ (service.type[0].description ?? ""),'','googlecast');
                     }
                 });
 
@@ -1344,18 +1342,11 @@ const handler = {
             return ip;
         }
 
-        function stream(host, song, artist, album, albumart) {
+        function stream(device, song, artist, album, albumart) {
             var castMode = 'googlecast'; 
             var UPNPDesc = '';
-            console.log(castDevices);
-            for(var device of castDevices){
-                if (device.type == 'upnp' && host == device.host ){
-                    console.log(device);
-                    castMode = 'upnp';
-                    UPNPDesc = device.location;
-                    break;
-                } 
-            }
+            castMode = device.type;
+            UPNPDesc = device.location;
 
             if (castMode == 'googlecast'){                
             let client = new audioClient();
@@ -1363,10 +1354,10 @@ const handler = {
             client.stepInterval = 0.5;
             client.muted = false;
 
-            client.connect(host, () => {
+            client.connect(device.host, () => {
                 console.log('connected, launching app ...', 'http://' + getIp() + ':' + server.address().port + '/');
-                if (!connectedHosts[host]) {
-                    connectedHosts[host] = client;
+                if (!connectedHosts[device.host]) {
+                    connectedHosts[device.host] = client;
                     activeConnections.push(client);
                 }
                 loadMedia(client, song, artist, album, albumart);
@@ -1383,7 +1374,7 @@ const handler = {
             client.on('error', err => {
                 console.log('Error: %s', err.message);
                 client.close();
-                delete connectedHosts[host];
+                delete connectedHosts[device.host];
             });
            } else {
                // upnp devices
@@ -1412,10 +1403,11 @@ const handler = {
             event.returnValue = castDevices
         });
 
-        ipcMain.on('performGCCast', function (event, ip, song, artist, album, albumart) {
+        ipcMain.on('performGCCast', function (event, device, song, artist, album, albumart) {
             setupGCServer().then(function () {
                 app.win.webContents.setAudioMuted(true);
-                stream(ip, song, artist, album, albumart);
+                console.log(device);
+                stream(device, song, artist, album, albumart);
             })
         });
 

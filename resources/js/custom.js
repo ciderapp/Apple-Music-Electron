@@ -1,5 +1,4 @@
 
-
 try {
     /* Add AM Lyrics Font JP, JR */
     var headID = document.getElementsByTagName('head')[0];
@@ -782,6 +781,10 @@ try {
                         if (MusicKit.getInstance().nowPlayingItem["type"] === "musicVideo") {
                             ipcRenderer.send('muteAudio', false);
                             try{
+
+                            if(!GCOverride){
+                            MVsource = AMEx.context.createMediaElementSource(document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player'));  
+                            MVsource.connect(windowAudioNode);}
                             /* if (!EAOverride){ 
                              tempOutputID = outputID;
                              EAoutputID = -1;
