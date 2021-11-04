@@ -17,7 +17,11 @@ try {
         }
 
         if (document.getElementById('web-navigation-container')) {
-            document.getElementById('web-navigation-container').style.gridTemplateRows = '55px auto 1fr auto !important'
+            document.getElementById('web-navigation-container').style.gridTemplateRows = '55px auto 1fr auto !important';
+        }
+
+        if (document.querySelector('.web-chrome')) {
+            document.querySelector('.web-chrome').style.width = "calc(100vw - var(--web-navigation-width))";
         }
 
     }
