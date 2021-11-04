@@ -95,6 +95,19 @@ var _tests = {
                     }
                 }
             })
+            var calc = {
+                width: 185,
+                left: e.clientX - (185 / 2)
+            }
+
+            // calculate the position of the menu based on the mouse position and the width of the menu itself
+            if (calc.left + calc.width > window.innerWidth) {
+                calc.left = (window.innerWidth - calc.width)
+            }
+            if (calc.left < 0) {
+                calc.left = 0
+            }
+
             var modal = new AMEModal({
                 content: content,
                 CloseButton: false,
@@ -104,12 +117,12 @@ var _tests = {
                 },
                 Style: {
                     height: "auto",
-                    width: "185px",
+                    width: `${calc["width"]}px`,
                     position: "absolute",
                     // top: "46px",
                     // right: "142px"
                     top: `46px`,
-                    left: `${e.clientX - (185 / 2)}px`
+                    left: `${calc.left}px`
                 },
                 OnCreate() {
                     vm.$mount("#usermenu-vue")
