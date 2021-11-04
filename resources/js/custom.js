@@ -794,7 +794,10 @@ try {
                              EAtmpdisable = true;} */
                         } catch(e){console.log(e);}
                         } else{
-                            if (!GCOverride) {ipcRenderer.send('muteAudio', true);}
+                            if (!GCOverride) {ipcRenderer.send('muteAudio', true);      
+                            try{
+                                AMEx.result.source.connect(windowAudioNode);}
+                                catch(e){}}
                            /* try{
                                 if (EAtmpdisable & !EAOverride){
                                 AudioOutputs.startExclusiveAudio(tempOutputID);
