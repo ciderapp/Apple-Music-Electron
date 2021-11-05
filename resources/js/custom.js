@@ -852,10 +852,10 @@ try {
                     MusicKit.getInstance().bitrate = 64;
                 }
 
-                /* Seemless (Apple dont know how to spell) Audio Playback */
-                if (preferences.audio.seemlessAudioTransitions) {
-                    console.warn("[Custom] Seemless Audio Transitions enabled.");
-                    MusicKit.getInstance()._bag.features["seemless-audio-transitions"] = true;
+                /* Seamlesss (Apple dont know how to spell) Audio Playback */
+                if (preferences.audio.seamlesssAudioTransitions) {
+                    console.warn("[Custom] Seamlesss Audio Transitions enabled.");
+                    MusicKit.getInstance()._bag.features["seamlesss-audio-transitions"] = true;
                 }
 
                 /* Incognito Mode */
@@ -1358,7 +1358,7 @@ try {
 
                     /* Audio Settings */
                     AMSettings.HandleField('audioQuality');
-                    AMSettings.HandleField('seemlessAudioTransitions');
+                    AMSettings.HandleField('seamlesssAudioTransitions');
                     AMSettings.HandleField('volume');
 
                     /* Window Settings */

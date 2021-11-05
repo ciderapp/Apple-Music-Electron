@@ -78,7 +78,7 @@ module.exports = () => {
         },
         audio: {
             audioQuality: "auto",
-            seemlessAudioTransitions: false
+            seamlesssAudioTransitions: false
         },
         window: {
             appStartupBehavior: "",
