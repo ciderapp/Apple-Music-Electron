@@ -109,7 +109,7 @@ const handler = {
             app.ame.win.CreateNotification(a);
             app.ame.mpris.updateActivity(a);
 
-            if (app.cfg.get('audio.seamlesssAudioTransitions')) {
+            if (app.cfg.get('audio.seamlessAudioTransitions')) {
                 app.ame.win.SetButtons()
                 app.ame.win.SetTrayTooltip(a)
                 app.ame.discord.updateActivity(a)
