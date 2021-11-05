@@ -305,7 +305,7 @@ var _tests = {
                         },
                         audio: {
                             audioQuality: "auto",
-                            seemlessAudioTransitions: true
+                            seamlessAudioTransitions: true
                         },
                         window: {
                             closeButtonMinimize: true
@@ -323,8 +323,8 @@ var _tests = {
                             self.prefs.audio.audioQuality = result
                         })
 
-                        ipcRenderer.invoke("getStoreValue", "audio.seemlessAudioTransitions").then((result) => {
-                            self.prefs.audio.seemlessAudioTransitions = result
+                        ipcRenderer.invoke("getStoreValue", "audio.seamlessAudioTransitions").then((result) => {
+                            self.prefs.audio.seamlessAudioTransitions = result
                         })
 
                         ipcRenderer.invoke("getStoreValue", "general.storefront").then((result) => {
@@ -375,7 +375,7 @@ var _tests = {
                     setPrefs() {
                         let self = this
                         ipcRenderer.invoke("setStoreValue", "audio.audioQuality", self.prefs.audio.audioQuality)
-                        ipcRenderer.invoke("setStoreValue", "audio.seemlessAudioTransitions", self.prefs.audio.seemlessAudioTransitions)
+                        ipcRenderer.invoke("setStoreValue", "audio.seamlessAudioTransitions", self.prefs.audio.seamlessAudioTransitions)
                         ipcRenderer.invoke("setStoreValue", "general.storefront", self.prefs.general.storefront)
                         ipcRenderer.invoke("setStoreValue", "general.discordRPC", self.prefs.general.discordRPC)
                         ipcRenderer.invoke("setStoreValue", "general.analyticsEnabled", self.prefs.general.analyticsEnabled)
