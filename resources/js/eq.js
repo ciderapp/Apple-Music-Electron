@@ -460,10 +460,15 @@ var AudioOutputs = {
                 const data = e.data;
                 switch(data.eventType) {
                   case "data":
-                    if(!EAOverride){
+                    if(!EAOverride || !GCOverride){
                     const audioData = data.audioBuffer;
                     const bufferSize = data.bufferSize;
+                    if(!EAOverride){
                     ipcRenderer.send('writePCM',audioData[0],audioData[1], bufferSize);}
+                    if(!GCOverride){
+                    ipcRenderer.send('writeWAV',audioData[0],audioData[1]);  
+                    }
+                  }
                     break;
                   case "stop":            
                     break;
@@ -499,7 +504,7 @@ var AudioOutputs = {
     getGCDevices: function(){
         ipcRenderer.send('getChromeCastDevices','');
     },
-    playGC : function(device){
+    playGC : async function(device){
     AudioOutputs.activeCasts.push(device);
       GCOverride = false;
     if(AMEx.result.source != null || MVsource != null ){
@@ -509,22 +514,44 @@ var AudioOutputs = {
       const artistName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
       const albumName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.albumName ?? '' : '');
       ipcRenderer.send('performGCCast',device, "Apple Music Electron",'Playing ...','','');
-      if(!GCstream){
-      GCstream = AMEx.context.createScriptProcessor(16384,2,1);
-      GCstream.onaudioprocess = function(e){
-          if (!GCOverride){ 
-          var leftpcm = e.inputBuffer.getChannelData(0);
-          var rightpcm = e.inputBuffer.getChannelData(1);
-          ipcRenderer.send('writeWAV',leftpcm,rightpcm);
-      }
-
-      }};
+      let blob = new Blob([audioWorklet], {type: 'application/javascript'});
+      if (!AErecorderNode){
+      await AMEx.context.audioWorklet.addModule(URL.createObjectURL(blob))
+      .then(() => {
+        
+          const channels = 2;
+          AErecorderNode = new window.AudioWorkletNode(AMEx.context, 
+                                                          'recorder-worklet', 
+                                                          {parameterData: {numberOfChannels: channels}});
+          AErecorderNode.port.onmessage = (e) => {
+            const data = e.data;
+            switch(data.eventType) {
+              case "data":
+                if(!EAOverride || !GCOverride){
+                const audioData = data.audioBuffer;
+                const bufferSize = data.bufferSize;
+                if(!EAOverride){
+                ipcRenderer.send('writePCM',audioData[0],audioData[1], bufferSize);}
+                if(!GCOverride){
+                ipcRenderer.send('writeWAV',audioData[0],audioData[1]);  
+                }
+              }
+                break;
+              case "stop":            
+                break;
+            }
+          }
+        
+        
+        
+      });}
+      AErecorderNode.parameters.get('isRecording').setValueAtTime(1, AMEx.context.currentTime);
       windowAudioNode = AMEx.context.createGain();
       try{
-      AMEx.result.source.connect(windowAudioNode);}
+        AMEx.result.source.connect(windowAudioNode);}
       catch(e){}
-      windowAudioNode.connect(GCstream);
-      GCstream.connect(AMEx.context.destination);
+      windowAudioNode.connect(AErecorderNode);  
+      windowAudioNode.connect(AMEx.context.destination); 
       } else {queueChromecast = true; selectedGC = device}
              
      

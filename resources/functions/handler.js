@@ -1034,6 +1034,39 @@ const handler = {
             })
 
         }
+        audioserver.get('/a.wav', playData2.bind(this));
+
+        function playData2(req, res) {
+            console.log("Device requested: /");
+            req.connection.setTimeout(Number.MAX_SAFE_INTEGER);
+            res.setHeader('Accept-Ranges', 'bytes')
+            res.setHeader('Content-Type', 'audio/wav')
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.statusCode = 200;
+            res.setHeader('transferMode.dlna.org', 'Streaming');
+            res.setHeader(
+              'contentFeatures.dlna.org',
+              'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000'
+            );
+            res.setHeader('Content-Length',99999999999);
+            requests.push({req: req, res: res});
+            var pos = requests.length - 1;
+            req.on("close", () => {
+                console.info("CLOSED", requests.length);
+                requests.splice(pos, 1);
+                console.info("CLOSED", requests.length);
+            });
+
+
+            GCstream.on('data', (data) => {
+                try {
+                    res.write(data);
+                } catch (ex) {
+                    console.log("Dead", ex);
+                }
+            })
+
+        }
 
         ipcMain.on('writeWAV', function (event, leftpcm, rightpcm, bufferlength) {
 
@@ -1406,16 +1439,18 @@ const handler = {
             client = new MediaRendererClient(UPNPDesc);
             var options = { 
                 autoplay: true,
-                contentType: 'audio/wav',
-                dlnaFeatures: 'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000',
+                contentType: 'audio/x-wav',
+                dlnaFeatures: 'DLNA.ORG_PN=-;DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000',
                 metadata: {
+                  title: 'Apple Music Electron',
+                  creator: 'Streaming ...',
                   type: 'audio', // can be 'video', 'audio' or 'image'
                 //  url: 'http://' + getIp() + ':' + server.address().port + '/',
                 //  protocolInfo: 'DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000;
                 }
               };
               
-             client.load('http://' + getIp() + ':' + server.address().port + '/', options, function(err, result) {
+             client.load('http://' + getIp() + ':' + server.address().port + '/a.wav', options, function(err, result) {
                 if(err) throw err;
                 console.log('playing ...');
               });

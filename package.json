@@ -50,7 +50,7 @@
     "rimraf": "^3.0.2",
     "source-map-support": "^0.5.20",
     "v8-compile-cache": "^2.3.0",
-    "upnp-mediarenderer-client": "^1.4.0",
+    "upnp-mediarenderer-client": "github:vapormusic/node-upnp-mediarenderer-client",
     "xml2js": "^0.4.23",
     "youtube-search-without-api-key": "github:vapormusic/youtube-search"
 
