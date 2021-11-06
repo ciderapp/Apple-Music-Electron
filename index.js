@@ -45,9 +45,12 @@ app.on('ready', () => {
 
     // Apple Header tomfoolery.
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-        
         if(details.url.match(/^https:\/\/store-\d{3}\.blobstore\.apple\.com/) || details.url.startsWith("https://store-037.blobstore.apple.com")){
         details.responseHeaders['Access-Control-Allow-Origin'] = '*';}
+        // if(details.url.startsWith('ameres')){
+        //     console.log('lol');
+        //     details.responseHeaders['Content-Security-Policy-Report-Only'] = `default-src 'none'; form-action 'none'; frame-ancestors 'none'; style-src 'self'; script-src 'self'; img-src 'self'`;
+        // }
         details.responseHeaders['Content-Security-Policy'] = 'unsafe-inline'
         callback({ responseHeaders: details.responseHeaders })
     })

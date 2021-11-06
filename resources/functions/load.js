@@ -71,7 +71,7 @@ module.exports = {
         if (!win) return;
 
         app.storefront = app.cfg.get('general.storefront');
-        const urlBase = app.cfg.get('advanced.useBetaSite') ? 'https://beta.music.apple.com' : 'https://music.apple.com' + app.cfg.get('general.storefront'),
+        const urlBase = app.cfg.get('advanced.useBetaSite') ? 'https://beta.music.apple.com' : 'https://music.apple.com/' + app.cfg.get('general.storefront'),
             urlFallback = `https://music.apple.com/`;
 
         ipcMain.once('userAuthorized', (e, args) => {
@@ -177,7 +177,10 @@ module.exports = {
         app.ame.load.LoadJS('custom.js')
 
         // Audio Manuipulation Stuff
+        app.ame.load.LoadJS('OpusMediaRecorder.umd.js')
+        app.ame.load.LoadJS('encoderWorker.umd.js')
         app.ame.load.LoadJS('eq.js')
+
 
         // Window Frames
         if (app.cfg.get('visual.frameType') === 'mac') {

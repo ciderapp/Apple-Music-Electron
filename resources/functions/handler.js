@@ -989,6 +989,14 @@ const handler = {
             app.win.webContents.setAudioMuted(mute);
         });
 
+        ipcMain.on('writeChunks', function(event, blob){
+
+            writeFile(join(app.getPath('userData'), 'buffertest.raw'), Buffer.from(blob,'binary'),{flag: 'a+'}, function (err) {
+                 if (err) throw err;
+                  console.log('It\'s saved!');
+            });   
+        })
+
 
     },
     GoogleCastHandler: function () {
@@ -1037,10 +1045,10 @@ const handler = {
         audioserver.get('/a.wav', playData2.bind(this));
 
         function playData2(req, res) {
-            console.log("Device requested: /");
+            console.log("Device requested: /a.wav");
             req.connection.setTimeout(Number.MAX_SAFE_INTEGER);
             res.setHeader('Accept-Ranges', 'bytes')
-            res.setHeader('Content-Type', 'audio/wav')
+            res.setHeader('Content-Type', 'audio/l16')
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.statusCode = 200;
             res.setHeader('transferMode.dlna.org', 'Streaming');
@@ -1068,6 +1076,13 @@ const handler = {
 
         }
 
+        ipcMain.on('writeOPUS', function(event,buffer){
+
+            
+                GCstream.write(Buffer.from(buffer));
+            
+
+        })
         ipcMain.on('writeWAV', function (event, leftpcm, rightpcm, bufferlength) {
 
             function interleave16(leftChannel, rightChannel) {
@@ -1298,6 +1313,7 @@ const handler = {
         }
 
         function loadMedia(client, song, artist, album, albumart, cb) {
+            var u =  'http://' + getIp() + ':' + server.address().port + '/';
             client.launch(DefaultMediaReceiver, (err, player) => {
                 if (err) {
                     console.log(err);
@@ -1305,8 +1321,8 @@ const handler = {
                 }
                 let media = {
                     // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
-                    contentId: 'http://' + getIp() + ':' + server.address().port + '/',
-                    contentType: 'audio/vnd.wav',
+                    contentId: u,
+                    contentType: 'audio/ogg',
                     streamType: 'BUFFERED', // or LIVE
 
                     // Title and cover displayed while buffering
@@ -1322,30 +1338,32 @@ const handler = {
                 };
                 ipcMain.on('setupNewTrack', function (event, song, artist, album, albumart) {
                     try {
+                        
                         let newmedia = {
                             // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
-                            contentId: 'http://' + getIp() + ':' + server.address().port + '/',
-                            contentType: 'audio/vnd.wav',
+                            contentId: u,
+                            contentType: 'audio/ogg',
                             streamType: 'BUFFERED', // or LIVE
 
                             // Title and cover displayed while buffering
                             metadata: {
                                 type: 0,
                                 metadataType: 3,
-                                title: song,
-                                albumName: album,
-                                artist: artist,
+                                title: song ?? "",
+                                albumName: album ?? '',
+                                artist: artist ?? '',
                                 images: [
-                                    {url: albumart}]
+                                    {url: albumart ?? ''}]
                             }
                         };
-                        player.pause();
                         headerSent = false;
-                        player.load(newmedia, {
+
+                        player.queueUpdate(newmedia, {
                             autoplay: true
                         }, (err, status) => {
                             console.log('media loaded playerState=%s', status);
                         });
+                        
                     } catch (e) {
                         console.log('GCerror', e)
                     }
