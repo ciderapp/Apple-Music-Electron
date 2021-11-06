@@ -26,7 +26,6 @@ var MediaRendererClient = require('upnp-mediarenderer-client');
 const DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
 var getPort = require('get-port');
 const {Stream} = require('stream');
-const { OpusEncoder } = require('@discordjs/opus');
 
 initAnalytics();
 const regedit = require('regedit');

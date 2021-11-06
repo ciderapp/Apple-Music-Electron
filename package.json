@@ -20,7 +20,6 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "@discordjs/opus": "^0.6.0",
     "@sentry/electron": "^2.5.4",
     "audify": "^1.6.3",
     "castv2-client": "^1.2.0",

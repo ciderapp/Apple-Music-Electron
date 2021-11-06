@@ -525,7 +525,7 @@ var AudioOutputs = {
       var destnode = AMEx.context.createMediaStreamDestination();
       windowAudioNode.connect(destnode);
       mediaRecorder = new MediaRecorder(destnode.stream,options); 
-      mediaRecorder.start(20);
+      mediaRecorder.start(1);
       mediaRecorder.ondataavailable = function(e) {
         e.data.arrayBuffer().then(buffer =>         
             ipcRenderer.send('writeOPUS',buffer)
