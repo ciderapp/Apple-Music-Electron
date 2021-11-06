@@ -482,7 +482,7 @@ var AudioOutputs = {
           windowAudioNode = AMEx.context.createDynamicsCompressor();
           AMEx.result.source.connect(windowAudioNode);
           windowAudioNode.connect(AErecorderNode);  
-          windowAudioNode.connect(AMEx.context.destination);            
+          
       } else {console.log('device already in exclusive mode');}
     } else {
          outputID = id;
@@ -551,7 +551,7 @@ var AudioOutputs = {
         AMEx.result.source.connect(windowAudioNode);}
       catch(e){}
       windowAudioNode.connect(AErecorderNode);  
-      windowAudioNode.connect(AMEx.context.destination); 
+
       } else {queueChromecast = true; selectedGC = device}
              
      
