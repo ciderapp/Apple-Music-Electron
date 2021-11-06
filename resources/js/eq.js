@@ -520,7 +520,7 @@ var AudioOutputs = {
       const trackName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.title ?? '' : '');
       const artistName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
       const albumName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.albumName ?? '' : '');
-      ipcRenderer.send('performGCCast',device, trackName,artistName,albumName,'');
+      ipcRenderer.send('performGCCast',device, "Apple Music Electron","Playing ...","3.0.0 beta",'');
       windowAudioNode = AMEx.context.createGain();
       try{
         AMEx.result.source.connect(windowAudioNode);}
