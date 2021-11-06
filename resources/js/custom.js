@@ -38,7 +38,6 @@ try {
         var _miniPlayer = {
             active: false,
             init() {
-                let self = this;
                 const webChrome = document.querySelector(".web-chrome");
                 const elements = {
                     artwork: document.createElement("div"),
@@ -80,42 +79,30 @@ try {
         };
     }
 
-
     /* Lyrics Functions */
     if (typeof _lyrics == "undefined") {
         var _lyrics = {
             CreateButton: () => {
-                const mediaControlsElement = document.getElementsByClassName('web-chrome-controls-container')[0];
-                /* Lyrics Button */
-                if (!document.querySelector('#lyricsButton') && mediaControlsElement) {
+                const mediaControlsElement = document.querySelector('.web-chrome-controls-container');
+
+                /* Create the Button */
+                if (!document.querySelector('[aria-label="Lyrics"]') && mediaControlsElement) {
                     const lyricsButton = document.createElement("div");
-                    lyricsButton.style.height = "22px";
-                    lyricsButton.style.width = "22px";
-                    lyricsButton.style.marginInlineEnd = "0px";
-                    lyricsButton.style.zIndex = "9999";
-                    lyricsButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 0 28 28" id="vector"><path id="path" d="M 14.4 12.2 C 14.4 11.1 15.2 10.3 16.4 10.3 C 17.7 10.3 18.5 11.3 18.5 12.7 C 18.5 14.7 16.8 15.9 15.8 15.9 C 15.5 15.9 15.3 15.7 15.3 15.5 C 15.3 15.3 15.4 15.1 15.7 15.1 C 16.5 14.9 17.1 14.4 17.4 13.7 L 17.2 13.7 C 17 14 16.6 14.1 16.1 14.1 C 15.1 14 14.4 13.2 14.4 12.2 Z M 9.5 12.2 C 9.5 11.1 10.3 10.3 11.5 10.3 C 12.8 10.3 13.6 11.3 13.6 12.7 C 13.6 14.7 11.9 15.9 10.9 15.9 C 10.6 15.9 10.4 15.7 10.4 15.5 C 10.4 15.3 10.5 15.1 10.8 15.1 C 11.6 14.9 12.3 14.4 12.5 13.7 L 12.3 13.7 C 12.1 14 11.7 14.1 11.2 14.1 C 10.2 14 9.5 13.2 9.5 12.2 Z M 10.4 21.4 L 13.2 18.7 C 13.8 18.1 14.1 18 14.8 18 L 19.4 18 C 20.7 18 21.5 17.2 21.5 15.9 L 21.5 9.4 C 21.5 8 20.7 7.3 19.4 7.3 L 8.5 7.3 C 7.2 7.3 6.4 8 6.4 9.4 L 6.4 15.9 C 6.4 17.2 7.2 18 8.5 18 L 9.5 18 C 10.1 18 10.4 18.3 10.4 18.9 L 10.4 21.4 Z M 9.9 24 C 9 24 8.4 23.4 8.4 22.4 L 8.4 20.4 L 7.9 20.4 C 5.4 20.3 4 19 4 16.5 L 4 9 C 4 6.5 5.5 5 8.1 5 L 19.9 5 C 22.5 5 24 6.4 24 9 L 24 16.6 C 24 19.1 22.5 20.4 19.9 20.4 L 14.8 20.4 L 11.7 23.1 C 11 23.7 10.5 24 9.9 24 Z" /></svg>`;
-                    lyricsButton.id = "lyricsButton";
-                    lyricsButton.className = "web-chrome-playback-controls__platter-toggle-buttons web-chrome-playback-controls__meta-btn";
+                    lyricsButton.classList.add('web-chrome-playback-controls__platter-toggle-buttons', 'web-chrome-playback-control__lyrics-button');
+                    lyricsButton.style.marginInlineEnd = "0";
+                    lyricsButton.style.width = "auto";
+                    lyricsButton.innerHTML = `
+                        <button id="lyricsButton" aria-haspopup="list" aria-expanded="false" class="button-reset web-chrome-playback-controls__meta-btn web-chrome-playback-controls__up-next-btn" aria-label="Lyrics" data-drop-area="" style="padding: 0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 28 28">
+                                <path id="path" d="M 14.4 12.2 C 14.4 11.1 15.2 10.3 16.4 10.3 C 17.7 10.3 18.5 11.3 18.5 12.7 C 18.5 14.7 16.8 15.9 15.8 15.9 C 15.5 15.9 15.3 15.7 15.3 15.5 C 15.3 15.3 15.4 15.1 15.7 15.1 C 16.5 14.9 17.1 14.4 17.4 13.7 L 17.2 13.7 C 17 14 16.6 14.1 16.1 14.1 C 15.1 14 14.4 13.2 14.4 12.2 Z M 9.5 12.2 C 9.5 11.1 10.3 10.3 11.5 10.3 C 12.8 10.3 13.6 11.3 13.6 12.7 C 13.6 14.7 11.9 15.9 10.9 15.9 C 10.6 15.9 10.4 15.7 10.4 15.5 C 10.4 15.3 10.5 15.1 10.8 15.1 C 11.6 14.9 12.3 14.4 12.5 13.7 L 12.3 13.7 C 12.1 14 11.7 14.1 11.2 14.1 C 10.2 14 9.5 13.2 9.5 12.2 Z M 10.4 21.4 L 13.2 18.7 C 13.8 18.1 14.1 18 14.8 18 L 19.4 18 C 20.7 18 21.5 17.2 21.5 15.9 L 21.5 9.4 C 21.5 8 20.7 7.3 19.4 7.3 L 8.5 7.3 C 7.2 7.3 6.4 8 6.4 9.4 L 6.4 15.9 C 6.4 17.2 7.2 18 8.5 18 L 9.5 18 C 10.1 18 10.4 18.3 10.4 18.9 L 10.4 21.4 Z M 9.9 24 C 9 24 8.4 23.4 8.4 22.4 L 8.4 20.4 L 7.9 20.4 C 5.4 20.3 4 19 4 16.5 L 4 9 C 4 6.5 5.5 5 8.1 5 L 19.9 5 C 22.5 5 24 6.4 24 9 L 24 16.6 C 24 19.1 22.5 20.4 19.9 20.4 L 14.8 20.4 L 11.7 23.1 C 11 23.7 10.5 24 9.9 24 Z" /></path>
+                            </svg>
+                        </button>
+                    `;
                     mediaControlsElement.insertBefore(lyricsButton, mediaControlsElement.childNodes[4]);
                 }
 
-                /* Lyric View for MV */
-                if (!document.querySelector('#MVLyricsBox')){
-                    const lyricsMV = document.createElement("div");
-                    lyricsMV.id = "MVLyricsBox";
-                    lyricsMV.style.zIndex = 9999999;
-                    lyricsMV.style.backgroundColor= "rgba(0,0,0,0.7)";
-                    lyricsMV.style.display = "none";
-                    lyricsMV.style.color = "yellow";
-                    try{
-                        document.body.appendChild(lyricsMV);}
-                    catch(e){}
-                    lyricsMV.innerHTML = `<div id="mvlyrics"></div><div id="mvlyricstrans"></div>`;
-                }
-
                 /* Lyrics Button Click Event Handling */
-                const upNextSideBarTogglePath = (preferences.visual.frameType === 'mac' ? '/html/body/div[4]/div/div[3]/div/div[3]/div[3]/button' : '/html/body/div[4]/div[3]/div[3]/div/div[3]/div[3]/button');
-                const upNextSideBarToggle = mediaControlsElement.childNodes[5].getElementsByTagName('button')[0];
+                const upNextSideBarToggle = document.querySelector('[aria-label="Up next"]');
                 let clonedElement;
                 if (document.querySelector("#lyricsButton") && upNextSideBarToggle) {
 
@@ -154,49 +141,6 @@ try {
                     clonedElement = document.querySelector('#lyricsButton').cloneNode(true);
                     document.querySelector('#lyricsButton').replaceWith(clonedElement);
 
-                    if (!document.getElementById("lyricer")) {
-
-                        const sidebar = document.querySelector('.web-chrome-drawer');
-                        if (sidebar) {
-                            sidebar.innerHTML = `<div id="lyrics_none">Play a song to see the lyrics here.</div><div id="lyricer"></div>`;
-                        }
-
-                        let text = "";
-                        let lrc = new Lyricer();
-                        ipcRenderer.on('truelyrics', function (event, lrcfile) {
-                            if (lrcfile.startsWith("netease=")) {
-                                ipcRenderer.send('NetEaseLyricsHandler', lrcfile);
-                            } else {
-                                if (lrcfile!= null && lrcfile.length > 0)
-                                    lrc.setLrc(lrcfile);
-
-                            }
-                        });
-
-                        ipcRenderer.on('lyricstranslation', function (event, data) {
-                            lrc.setMXMTranslation(data);
-                        });
-
-                        ipcRenderer.on('backuplyrics', function (_event, _data) {
-                            _lyrics.GetLyrics(1, true);
-                        });
-
-                        ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
-                            if (data < 0) {
-                                data = 0
-                            }
-                            lrc.move(data);
-                        });
-
-
-                        lrc.setLrc(text);
-                        document.addEventListener("lyricerclick", function (e) {
-                            ipcRenderer.send('ProgressTimeUpdateFromLyrics', e.detail.time);
-                            document.body.setAttribute("background-color", `var(--systemToolbarTitlebarMaterialSover-inactive)`);
-                        });
-
-                        _lyrics.GetLyrics(2, false);
-                    }
                     document.getElementById("lyricsButton").addEventListener('click', function () {
                         if (document.querySelector('.web-chrome-drawer').querySelector('.web-navigation__up-next.web-chrome-up-next.up-next') == null) {
 
@@ -236,9 +180,7 @@ try {
                                 if (lrcfile.startsWith("netease=")) {
                                     ipcRenderer.send('NetEaseLyricsHandler', lrcfile);
                                 } else {
-                                    if (lrcfile!= null && lrcfile.length > 0)
-                                        lrc.setLrc(lrcfile);
-
+                                    lrc.setLrc(lrcfile);
                                 }
                             });
 
@@ -248,10 +190,6 @@ try {
 
                             ipcRenderer.on('backuplyrics', function (_event, _data) {
                                 _lyrics.GetLyrics(1, true);
-                            });
-
-                            ipcRenderer.on('backuplyricsMV', function (_event, _data) {
-                                _lyrics.GetLyrics(1, false);
                             });
 
                             ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
@@ -284,19 +222,13 @@ try {
             },
 
             GetLyrics: (mode, mxmfail) => {
-                const musicType = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["type"] ?? '' : '');
                 const trackName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.title ?? '' : '');
                 const artistName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
-                const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
                 const songID = (MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["_songId"] ?? -1 : -1;
-                if(trackName != '' && !(trackName == "No Title Found" && artistName == '')){
+                if (trackName !== '' && !(trackName === "No Title Found" && artistName === '')) {
                     /* MusixMatch Lyrics*/
-                    if(musicType === "musicVideo" && preferences.visual.yton){
-                        ipcRenderer.send('YTTranslation', trackName, artistName, preferences.visual.mxmlanguage);
-                    } else if (!mxmfail && preferences.visual.mxmon) {
-                        console.log('duh!');
-                        var time = duration;
-                        ipcRenderer.send('MXMTranslation', trackName, artistName, preferences.visual.mxmlanguage, time);
+                    if (!mxmfail && preferences.visual.mxmon) {
+                        ipcRenderer.send('MXMTranslation', trackName, artistName, preferences.visual.mxmlanguage);
                     }
                     /* Apple Lyrics (from api lyric query) */
                     else if (songID !== -1) {
@@ -498,7 +430,7 @@ try {
                 }
 
                 AM.themesListing[theme]["options"].forEach((option) => {
-                    if (typeof userOptions[theme][option.key] == "undefined" || typeof userOptions[theme][option.key] == "null") {
+                    if (typeof userOptions[theme][option.key] == "undefined" || userOptions[theme][option.key] == null) {
                         userOptions[theme][option.key] = parseBool(option.defaultValue);
                     }
                 });
@@ -518,7 +450,6 @@ try {
                 this.refresh();
             },
             getWallpaper() {
-                let self = this;
                 this.wallpaper = ipcRenderer.sendSync("get-wallpaper");
                 this.updateMetrics()
             },
@@ -562,20 +493,19 @@ try {
                         micaElement.style.backgroundSize = "cover";
                         break;
                 }
-                ;
+
             },
             setMica(val = false) {
-                if(val) {
+                if (val) {
                     this.enableMica();
-                }else{
+                } else {
                     this.disableMica();
                 }
             },
             disableMica() {
-                if(!this.micaActive) {
+                if (!this.micaActive) {
                     return;
                 }
-                let self = this;
                 this.micaActive = false;
                 document.querySelector(".micaBackground").remove();
             },
@@ -607,19 +537,19 @@ try {
                             lastScreenX = window.screenX;
                             cb();
                         }
-                        if(self.micaActive) {
+                        if (self.micaActive) {
                             requestAnimationFrame(detectScreenMove);
                         }
                     }
-                    if(self.micaActive) {
+
+                    if (self.micaActive) {
                         requestAnimationFrame(detectScreenMove);
                     }
                 }
 
                 onScreenMove(function () {
                     micaDOM.style.backgroundPosition = `${window.screenX * -1}px ${window.screenY * -1}px`;
-                    /**micaDOM.style.backgroundSize = `${screen.width}px ${screen.height}px`;**/
-                    micaDOM.style.backgroundSize = `cover`;
+                    micaDOM.style.backgroundSize = `${screen.width}px ${screen.height}px`;
                 });
             },
             loadTheme(path = "", reload = false) {
@@ -739,7 +669,7 @@ try {
     if (typeof AMJavaScript == "undefined") {
         var AMJavaScript = {
             getQuery(q) {
-                return (window.location.search.match(new RegExp('[?&]' + q + '=([^&]+)')) || [, null])[1];
+                return (window.location.search.match(new RegExp('[?&]' + q + '=([^&]+)')) || [undefined, null])[1];
             },
             getRequest: (url, callback = () => {
             }) => {
@@ -764,9 +694,9 @@ try {
                 }
                 /** End Plugins */
 
-                if(preferences.visual.frameType == "") {
+                if (preferences.visual.frameType === "") {
                     document.body.setAttribute("frame-type", "disabled");
-                }else{
+                } else {
                     document.body.setAttribute("frame-type", preferences.visual.frameType);
                 }
 
@@ -793,6 +723,7 @@ try {
                     MusicKit.getInstance().bitrate = 64;
                 }
 
+                /* Seamless (Apple dont know how to spell) Audio Playback */
                 if (preferences.audio.seamlessAudioTransitions) {
                     console.warn("[Custom] Seamless Audio Transitions enabled.");
                     MusicKit.getInstance()._bag.features["seamless-audio-transitions"] = true;
@@ -854,9 +785,9 @@ try {
                     AMStyling.setTransparency(false);
                 }
 
-                if(preferences["visual"]["transparencyEffect"] == "mica") {
+                if (preferences["visual"]["transparencyEffect"] === "mica") {
                     AMStyling.setMica(true);
-                }else{
+                } else {
                     AMStyling.setMica(false);
                 }
 
@@ -868,14 +799,13 @@ try {
                 }
 
                 /** Need a better way to find the user menu asap, this is embarrassing **/
-                if(MusicKit.getInstance().authorizationStatus !== 0) {
-                    var checkForUserMenu = setInterval(function () {
-                        if (document.querySelectorAll(".web-chrome-controls-container>.web-navigation__auth").length) {
-                            _tests.usermenuinit();
-                            clearInterval(checkForUserMenu);
-                        }
-                    }, 100);
-                }
+                var checkForUserMenu = setInterval(function () {
+                    if (document.querySelectorAll(".web-chrome-controls-container>.web-navigation__auth").length) {
+                        _tests.usermenuinit();
+                        clearInterval(checkForUserMenu);
+                    }
+                }, 100);
+
             },
             LoadCustom: () => {
                 const preferences = ipcRenderer.sendSync('getStore');
@@ -1103,6 +1033,63 @@ try {
                 }
             },
 
+            createNotification: (changed) => {
+                if (typeof changed !== 'object') {
+                    return;
+                }
+
+                let changedHTML = ``,
+                    changedFull = ``,
+                    addedHTML = ``,
+                    addedFull = ``;
+
+                for (let [key, value] of Object.entries(changed)) {
+                    key = key.split('.')[0];
+                    key = key.charAt(0).toUpperCase() + key.slice(1);
+
+                    if (value === 'updated') {
+                        changedHTML += `<li style="color: var(--systemYellow);">${key}</li>`;
+                    } else if (value === 'added') {
+                        addedHTML += `<li style="color: var(--systemGreen);">${key}</li>`;
+                    }
+                }
+
+                if (changedHTML !== '') {
+                    changedFull = `
+                        <h2 style="text-align: center; border-bottom: .5px solid var(--labelDivider); padding: 5px; margin-bottom: 12px;">The following themes have been updated:</h2>
+                        <ul style="margin-bottom: 32px">
+                            ${changedHTML}
+                        </ul>
+                    `
+                }
+
+                if (addedHTML !== '') {
+                    addedFull = `
+                        <h2 style="text-align: center; border-bottom: .5px solid var(--labelDivider); padding: 5px; margin-bottom: 12px;">The following themes have been added:</h2>
+                        <ul style="margin-bottom: 32px">
+                            ${addedHTML}
+                        </ul>
+                    `
+                }
+
+                new AMEModal({
+                    content: `
+                        <div style="height: 100%;">
+                        ${changedFull}
+                        ${addedFull}
+                        </div>`,
+                    Style: {
+                        width: "auto",
+                        minWidth: "386px",
+                        maxWidth: "100%",
+                        minHeight: "300px",
+                        maxHeight: "100%",
+                        height: "auto",
+                        padding: "46px",
+                    }
+                });
+            },
+
             themes: {
                 updateThemesListing: (listing) => {
                     let themesListingHTML = `<option disabled>Select one</option>\n<option value='default'>Default</option>`;
@@ -1114,13 +1101,15 @@ try {
                 },
                 updateThemes: () => {
                     document.getElementById('updateThemes').innerText = 'Updating...';
-                    ipcRenderer.send('updateThemes');
-                    setTimeout(async () => {
-                        AM.themesListing = await ipcRenderer.invoke('updateThemesListing');
-                        AMSettings.themes.updateThemesListing(AM.themesListing);
-                        document.querySelector('#updateThemes').innerHTML = (AM.themesListing ? 'Themes Updated' : 'Error');
-                        document.querySelector('#updateThemes').classList.add(AM.themesListing ? 'success' : 'failure');
-                    }, 2000)
+                    ipcRenderer.invoke('updateThemes').then(listing => {
+                        setTimeout(async () => {
+                            AM.themesListing = await ipcRenderer.invoke('updateThemesListing');
+                            AMSettings.themes.updateThemesListing(AM.themesListing);
+                            document.querySelector('#updateThemes').innerHTML = (AM.themesListing ? 'Themes Updated' : 'Error');
+                            document.querySelector('#updateThemes').classList.add(AM.themesListing ? 'success' : 'failure');
+                            AMSettings.createNotification(listing);
+                        }, 2000)
+                    })
                 }
             },
 
@@ -1160,6 +1149,11 @@ try {
                 } else {
                     console.error('[HandleField] No Parent Category Found.');
                     return;
+                }
+
+                if (!preferences[category][element]) {
+                    console.error('[HandleField] No Configuration Found.');
+                    return
                 }
 
                 /* Toggles */
@@ -1253,7 +1247,6 @@ try {
                     /* Audio Settings */
                     AMSettings.HandleField('audioQuality');
                     AMSettings.HandleField('seamlessAudioTransitions');
-                    AMSettings.HandleField('volume');
 
                     /* Window Settings */
                     AMSettings.HandleField('appStartupBehavior');
