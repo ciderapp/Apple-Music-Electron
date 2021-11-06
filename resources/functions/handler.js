@@ -438,7 +438,7 @@ const handler = {
         })
 
         // Update Themes
-        ipcMain.handle('updateThemes', async () => {
+        ipcMain.handle('updateThemes',  () => {
             return app.ame.utils.updateThemes()
         });
 

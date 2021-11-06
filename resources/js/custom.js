@@ -38,7 +38,6 @@ try {
         var _miniPlayer = {
             active: false,
             init() {
-                let self = this;
                 const webChrome = document.querySelector(".web-chrome");
                 const elements = {
                     artwork: document.createElement("div"),
@@ -431,7 +430,7 @@ try {
                 }
 
                 AM.themesListing[theme]["options"].forEach((option) => {
-                    if (typeof userOptions[theme][option.key] == "undefined" || typeof userOptions[theme][option.key] == "null") {
+                    if (typeof userOptions[theme][option.key] == "undefined" || userOptions[theme][option.key] == null) {
                         userOptions[theme][option.key] = parseBool(option.defaultValue);
                     }
                 });
@@ -451,7 +450,6 @@ try {
                 this.refresh();
             },
             getWallpaper() {
-                let self = this;
                 this.wallpaper = ipcRenderer.sendSync("get-wallpaper");
                 this.updateMetrics()
             },
@@ -495,20 +493,19 @@ try {
                         micaElement.style.backgroundSize = "cover";
                         break;
                 }
-                ;
+
             },
             setMica(val = false) {
-                if(val) {
+                if (val) {
                     this.enableMica();
-                }else{
+                } else {
                     this.disableMica();
                 }
             },
             disableMica() {
-                if(!this.micaActive) {
+                if (!this.micaActive) {
                     return;
                 }
-                let self = this;
                 this.micaActive = false;
                 document.querySelector(".micaBackground").remove();
             },
@@ -540,11 +537,12 @@ try {
                             lastScreenX = window.screenX;
                             cb();
                         }
-                        if(self.micaActive) {
+                        if (self.micaActive) {
                             requestAnimationFrame(detectScreenMove);
                         }
                     }
-                    if(self.micaActive) {
+
+                    if (self.micaActive) {
                         requestAnimationFrame(detectScreenMove);
                     }
                 }
@@ -671,7 +669,7 @@ try {
     if (typeof AMJavaScript == "undefined") {
         var AMJavaScript = {
             getQuery(q) {
-                return (window.location.search.match(new RegExp('[?&]' + q + '=([^&]+)')) || [, null])[1];
+                return (window.location.search.match(new RegExp('[?&]' + q + '=([^&]+)')) || [undefined, null])[1];
             },
             getRequest: (url, callback = () => {
             }) => {
@@ -696,9 +694,9 @@ try {
                 }
                 /** End Plugins */
 
-                if(preferences.visual.frameType == "") {
+                if (preferences.visual.frameType === "") {
                     document.body.setAttribute("frame-type", "disabled");
-                }else{
+                } else {
                     document.body.setAttribute("frame-type", preferences.visual.frameType);
                 }
 
@@ -787,9 +785,9 @@ try {
                     AMStyling.setTransparency(false);
                 }
 
-                if(preferences["visual"]["transparencyEffect"] == "mica") {
+                if (preferences["visual"]["transparencyEffect"] === "mica") {
                     AMStyling.setMica(true);
-                }else{
+                } else {
                     AMStyling.setMica(false);
                 }
 
@@ -1040,24 +1038,45 @@ try {
                     return;
                 }
 
-                let changedHtml = ``;
-                for (const [key, value] of Object.entries(changed)) {
+                let changedHTML = ``,
+                    changedFull = ``,
+                    addedHTML = ``,
+                    addedFull = ``;
+
+                for (let [key, value] of Object.entries(changed)) {
+                    key = key.split('.')[0];
+                    key = key.charAt(0).toUpperCase() + key.slice(1);
+
                     if (value === 'updated') {
-                        changedHtml += `<li>${key} : Updated</li>`;
-                    } else if (value === 'new') {
-                        changedHtml += `<li style="color: var(--systemGreen)">${key} : Added</li>`;
-                    } else if (value === 'removed') {
-                        changedHtml += `<li style="color: var(--systemRed)">${key} : Removed</li>`;
+                        changedHTML += `<li style="color: var(--systemYellow);">${key}</li>`;
+                    } else if (value === 'added') {
+                        addedHTML += `<li style="color: var(--systemGreen);">${key}</li>`;
                     }
+                }
+
+                if (changedHTML !== '') {
+                    changedFull = `
+                        <h2 style="text-align: center; border-bottom: .5px solid var(--labelDivider); padding: 5px; margin-bottom: 12px;">The following themes have been updated:</h2>
+                        <ul style="margin-bottom: 32px">
+                            ${changedHTML}
+                        </ul>
+                    `
+                }
+
+                if (addedHTML !== '') {
+                    addedFull = `
+                        <h2 style="text-align: center; border-bottom: .5px solid var(--labelDivider); padding: 5px; margin-bottom: 12px;">The following themes have been added:</h2>
+                        <ul style="margin-bottom: 32px">
+                            ${addedHTML}
+                        </ul>
+                    `
                 }
 
                 new AMEModal({
                     content: `
-                        <div style="height:100%;">
-                        <h2 style="text-align:center;border-bottom: .5px solid var(--labelDivider);padding:32px;margin-bottom: 12px;">The following themes have been updated</h2>
-                        <ul>
-                            ${changedHtml}
-                        </ul>
+                        <div style="height: 100%;">
+                        ${changedFull}
+                        ${addedFull}
                         </div>`,
                     Style: {
                         width: "auto",
@@ -1130,6 +1149,11 @@ try {
                 } else {
                     console.error('[HandleField] No Parent Category Found.');
                     return;
+                }
+
+                if (!preferences[category][element]) {
+                    console.error('[HandleField] No Configuration Found.');
+                    return
                 }
 
                 /* Toggles */

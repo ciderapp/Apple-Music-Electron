@@ -1,8 +1,10 @@
 const {app, nativeImage, nativeTheme, Notification, dialog} = require("electron"),
-    {existsSync, readFileSync, readdirSync, constants, access, copyFileSync, writeFileSync, rm, mkdirSync, readdir} = require("fs"),
+    {existsSync, readFileSync, readdirSync, constants, access, writeFileSync, copyFileSync} = require("fs"),
+    {readdir, mkdir} = require("fs/promises"),
     {join, resolve} = require("path"),
     {autoUpdater} = require("electron-updater"),
     os = require("os"),
+    rimraf = require("rimraf"),
     chmod = require("chmodr"),
     clone = require("git-clone/promise"),
     trayIconDir = (nativeTheme.shouldUseDarkColors ? join(__dirname, `../icons/media/light/`) : join(__dirname, `../icons/media/dark/`)),
@@ -211,83 +213,58 @@ const Utils = {
     },
 
     /* updateThemes - Purges the themes directory and clones a fresh copy of the themes */
-    updateThemes: () => {
+    updateThemes: async () => {
         if (app.watcher) {
             app.watcher.close()
         }
 
-        // Existing themes found
-        if (existsSync((join(app.getPath("userData"), "themes", "README.md")))) {
-            return new Promise(async (resolve, reject) => {
-                const tmpDir = join(os.tmpdir(), "ame-themes")
+        const tmpDir = join(os.tmpdir(), "ame-themes")
+        const themesDir = join(app.getPath("userData"), "themes")
 
-                const clearDir = () => {
-                    return new Promise((resolve, reject) => {
-                        // Purge the tmp themes directory
-                        if (existsSync(tmpDir)) {
-                            rm(tmpDir, (err) => {
-                                if (err) {
-                                    console.log(err)
-                                    reject(err)
-                                } else {
-                                    mkdirSync(tmpDir, {recursive: true})
-                                }
-                            })
-                            resolve()
-                        } else {
-                            mkdirSync(tmpDir, {recursive: true})
-                            resolve()
-                        }
-                    })
-                }
+        if (existsSync(themesDir)) {
+            console.log('Themes Dir Exists')
 
-                clearDir().then(_r => {
-                    clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', tmpDir, [], (err) => {
-                        console.verbose(`[updateThemes][clone] ${err ? err : `Themes cloned into tmp.`}`)
-                        if (err) {
-                            console.error(err);
-                            reject(err);
-                        }
-                    })
-                }).then(r => {
-                    readdir(tmpDir, null, (err, files) => {
-                        const changes = {}
-                        files.forEach((value) => {
-                            console.verbose(`[updateThemes] Running comparison for ${value}`)
-                            if (value.split('.').pop() === 'css') {
-                                // Its not a new theme (Update existing)
-                                if (existsSync(join(app.getPath("userData"), "themes", value))) {
-                                    // If they match, do nothing
-                                    if (readFileSync(join(tmpDir, value)).toString() === readFileSync(join(app.getPath("userData"), "themes", value)).toString()) {
-                                        console.verbose(`[updateThemes] ${value} is the same, skipping...`)
-                                    } else {
-                                        console.verbose(`[updateThemes] ${value} is different, writing new version...`)
-                                        changes[value] = 'updated'
-                                        writeFileSync(join(app.getPath("userData"), "themes", value), readFileSync(join(tmpDir, value)))
-                                    }
-                                }
-                                // Its a new theme (Add new)
-                                else {
-                                    changes[value] = 'new'
-                                    copyFileSync(join(tmpDir, value), join(app.getPath("userData"), "themes", value))
-                                }
-                            } else {
-                                resolve(changes)
-                            }
-                        })
-                    })
+            if (existsSync(tmpDir)) {
+                rimraf(tmpDir, [], async (err) => {
+                    if (err) return err
+                    await clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', tmpDir, [], (err) => console.log(err))
                 })
+            } else {
+                await mkdir(tmpDir, {recursive: true})
+                await clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', tmpDir, [], (err) => console.log(err))
+            }
+
+            // Base Line Directory Comparison
+            const updateList = await readdir(tmpDir);
+            const foundChanges = {};
+
+            for (const file of updateList) {
+                if (file.split('.').pop() === 'css' && file !== "Template.css") { // Reduces listing compare down to css files
+                    console.log(`[compareDirectories] Comparing ${file}`)
+
+                    if (!existsSync(join(themesDir, file))) {
+                        copyFileSync(join(tmpDir, file), join(themesDir, file))
+                        foundChanges[file] = 'added'
+                    } else {
+                        const updateFile = readFileSync(join(tmpDir, file));
+                        const origFile = readFileSync(join(themesDir, file));
+
+                        if (origFile.toString() !== updateFile.toString()) {
+                            writeFileSync(join(themesDir, file), updateFile)
+                            foundChanges[file] = 'updated'
+                        }
+                    }
+                }
+            }
+
+            return foundChanges
+        } else {
+            console.log('Themes Dir doesnt exist')
+            await clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', themesDir, [], (err) => console.log(err))
+            return {'initial': true}
+        }
 
 
-            })
-        }
-        // No themes found
-        else {
-            return clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', join(app.getPath("userData"), "themes"), [], (err) => {
-                console.verbose(`[updateThemes][clone] ${err ? err : `Re-cloned Themes.`}`)
-                return Promise.resolve(err)
-            })
-        }
     },
 
     /* permissionsCheck - Checks of the file can be read and written to, if it cannot be chmod -r is run on the directory */
