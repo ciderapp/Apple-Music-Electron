@@ -877,7 +877,28 @@ try {
 
                             if(!GCOverride){
                             MVsource = AMEx.context.createMediaElementSource(document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player'));  
-                            MVsource.connect(windowAudioNode);}
+                            MVsource.connect(windowAudioNode); 
+                            /* waitFor(()=>{ return (
+                                document.querySelector('apple-music-video-player') &&
+                                document.querySelector('apple-music-video-player').shadowRoot  && 
+                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal') &&
+                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot && 
+                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player') &&
+                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot && 
+                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player') && 
+                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player').readyState == 4)}, () =>{
+                            var options = {
+                                        mimeType : 'video/webm'
+                            };        
+                            var mediaRecorder2 = new MediaRecorder(document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player').captureStream(),options); 
+                            mediaRecorder2.start(20);
+                            mediaRecorder2.ondataavailable = function(e) {
+                              print('dhs');  
+                              e.data.arrayBuffer().then(buffer =>         
+                                  ipcRenderer.send('writeChunks',buffer)
+                            );                   
+                            }}); */
+                        }
                             /* if (!EAOverride){ 
                              tempOutputID = outputID;
                              EAoutputID = -1;
