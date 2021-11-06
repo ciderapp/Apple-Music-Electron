@@ -8,6 +8,13 @@ var queueChromecast = false;
 var selectedGC ;
 var MVsource;
 var windowAudioNode;
+const workerOptions = {
+  OggOpusEncoderWasmPath: 'https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/OggOpusEncoder.wasm',
+  WebMOpusEncoderWasmPath: 'https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/WebMOpusEncoder.wasm'
+};
+
+window.MediaRecorder = OpusMediaRecorder;
+
 var audioWorklet =  `class RecorderWorkletProcessor extends AudioWorkletProcessor {
     static get parameterDescriptors() {
       return [{
@@ -513,20 +520,22 @@ var AudioOutputs = {
       const trackName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.title ?? '' : '');
       const artistName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
       const albumName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.albumName ?? '' : '');
-      ipcRenderer.send('performGCCast',device, "Apple Music Electron",'Playing ...','','');
+      ipcRenderer.send('performGCCast',device, trackName,artistName,albumName,'');
       windowAudioNode = AMEx.context.createGain();
       try{
         AMEx.result.source.connect(windowAudioNode);}
       catch(e){}
   
       var options = {
-        mimeType : 'video/webm'
+        mimeType : 'audio/ogg'
       };
       var destnode = AMEx.context.createMediaStreamDestination();
       windowAudioNode.connect(destnode);
-      mediaRecorder = new MediaRecorder(destnode.stream,options); 
-      mediaRecorder.start(1);
-      mediaRecorder.ondataavailable = function(e) {
+
+      let recorder = new MediaRecorder(destnode.stream,options,workerOptions); 
+      recorder.start(1);
+      recorder.ondataavailable = function(e) {
+        console.log('wad');
         e.data.arrayBuffer().then(buffer =>         
             ipcRenderer.send('writeOPUS',buffer)
       );                   
@@ -564,7 +573,6 @@ document.addEventListener('keydown', function (event) {
 
 function waitFor(condition, callback) {
   if(condition() == null || !condition() ) {
-      console.log('yah');
       window.setTimeout(waitFor.bind(null, condition, callback), 1000); 
   } else {
       callback();

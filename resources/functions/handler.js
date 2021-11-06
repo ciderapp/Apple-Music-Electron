@@ -1078,7 +1078,9 @@ const handler = {
 
         ipcMain.on('writeOPUS', function(event,buffer){
 
-            GCstream.write(Buffer.from(buffer));
+            
+                GCstream.write(Buffer.from(buffer));
+            
 
         })
         ipcMain.on('writeWAV', function (event, leftpcm, rightpcm, bufferlength) {
@@ -1311,6 +1313,7 @@ const handler = {
         }
 
         function loadMedia(client, song, artist, album, albumart, cb) {
+            var u =  'http://' + getIp() + ':' + server.address().port + '/';
             client.launch(DefaultMediaReceiver, (err, player) => {
                 if (err) {
                     console.log(err);
@@ -1318,9 +1321,9 @@ const handler = {
                 }
                 let media = {
                     // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
-                    contentId: 'http://' + getIp() + ':' + server.address().port + '/',
-                    contentType: 'video/webm',
-                    streamType: 'LIVE', // or LIVE
+                    contentId: u,
+                    contentType: 'audio/ogg',
+                    streamType: 'BUFFERED', // or LIVE
 
                     // Title and cover displayed while buffering
                     metadata: {
@@ -1333,36 +1336,38 @@ const handler = {
                             {url: albumart ?? ""}]
                     }
                 };
-                // ipcMain.on('setupNewTrack', function (event, song, artist, album, albumart) {
-                //     try {
-                //         let newmedia = {
-                //             // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
-                //             contentId: 'http://' + getIp() + ':' + server.address().port + '/',
-                //             contentType: 'audio/webm',
-                //             streamType: 'BUFFERED', // or LIVE
+                ipcMain.on('setupNewTrack', function (event, song, artist, album, albumart) {
+                    try {
+                        
+                        let newmedia = {
+                            // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
+                            contentId: u,
+                            contentType: 'audio/ogg',
+                            streamType: 'BUFFERED', // or LIVE
 
-                //             // Title and cover displayed while buffering
-                //             metadata: {
-                //                 type: 0,
-                //                 metadataType: 3,
-                //                 title: song,
-                //                 albumName: album,
-                //                 artist: artist,
-                //                 images: [
-                //                     {url: albumart}]
-                //             }
-                //         };
-                //         player.pause();
-                //         headerSent = false;
-                //         player.load(newmedia, {
-                //             autoplay: true
-                //         }, (err, status) => {
-                //             console.log('media loaded playerState=%s', status);
-                //         });
-                //     } catch (e) {
-                //         console.log('GCerror', e)
-                //     }
-                // });
+                            // Title and cover displayed while buffering
+                            metadata: {
+                                type: 0,
+                                metadataType: 3,
+                                title: song ?? "",
+                                albumName: album ?? '',
+                                artist: artist ?? '',
+                                images: [
+                                    {url: albumart ?? ''}]
+                            }
+                        };
+                        headerSent = false;
+
+                        player.queueUpdate(newmedia, {
+                            autoplay: true
+                        }, (err, status) => {
+                            console.log('media loaded playerState=%s', status);
+                        });
+                        
+                    } catch (e) {
+                        console.log('GCerror', e)
+                    }
+                });
 
 
                 player.on('status', status => {

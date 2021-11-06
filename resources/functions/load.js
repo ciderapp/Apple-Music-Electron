@@ -177,7 +177,10 @@ module.exports = {
         app.ame.load.LoadJS('custom.js')
 
         // Audio Manuipulation Stuff
+        app.ame.load.LoadJS('OpusMediaRecorder.umd.js')
+        app.ame.load.LoadJS('encoderWorker.umd.js')
         app.ame.load.LoadJS('eq.js')
+
 
         // Window Frames
         if (app.cfg.get('visual.frameType') === 'mac') {
