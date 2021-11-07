@@ -112,6 +112,7 @@ try {
                     lyricsButton.classList.add('web-chrome-playback-controls__platter-toggle-buttons', 'web-chrome-playback-control__lyrics-button');
                     lyricsButton.style.marginInlineEnd = "0";
                     lyricsButton.style.width = "auto";
+                    lyricsButton.style.zIndex = "9999";
                     lyricsButton.innerHTML = `
                         <button id="lyricsButton" aria-haspopup="list" aria-expanded="false" class="button-reset web-chrome-playback-controls__meta-btn web-chrome-playback-controls__up-next-btn" aria-label="Lyrics" data-drop-area="" style="padding: 0;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 28 28">
@@ -314,16 +315,21 @@ try {
                         }
                     }, false);
                 }
-            },
+            }},
 
             GetLyrics: (mode, mxmfail) => {
+                const musicType = (MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["type"] ?? '' : '';
                 const trackName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.title ?? '' : '');
                 const artistName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
                 const songID = (MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["_songId"] ?? -1 : -1;
+                const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
                 if (trackName !== '' && !(trackName === "No Title Found" && artistName === '')) {
-                    /* MusixMatch Lyrics*/
+                     /* MusixMatch Lyrics*/
+                     if(musicType === "musicVideo" && preferences.visual.yton){
+                        ipcRenderer.send('YTTranslation', trackName, artistName, preferences.visual.mxmlanguage);
+                    } else/* MusixMatch Lyrics*/
                     if (!mxmfail && preferences.visual.mxmon) {
-                        ipcRenderer.send('MXMTranslation', trackName, artistName, preferences.visual.mxmlanguage);
+                        ipcRenderer.send('MXMTranslation', trackName, artistName, preferences.visual.mxmlanguage, duration);
                     }
                     /* Apple Lyrics (from api lyric query) */
                     else if (songID !== -1) {
@@ -801,6 +807,9 @@ try {
                 }
                 /** End Plugins */
 
+                /** Expose platform to CSS */
+                document.body.setAttribute("platform", navigator.platform);
+                
                 if (preferences.visual.frameType === "") {
                     document.body.setAttribute("frame-type", "disabled");
                 } else {
@@ -850,54 +859,18 @@ try {
                     var tempOutputID = -1;
                     try{
                         if (MusicKit.getInstance().nowPlayingItem["type"] === "musicVideo") {
-                            ipcRenderer.send('muteAudio', false);
                             try{
-
-                            if(!GCOverride){
+                            if(!GCOverride ){
                             MVsource = AMEx.context.createMediaElementSource(document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player'));  
                             MVsource.connect(windowAudioNode); 
-                            /* waitFor(()=>{ return (
-                                document.querySelector('apple-music-video-player') &&
-                                document.querySelector('apple-music-video-player').shadowRoot  && 
-                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal') &&
-                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot && 
-                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player') &&
-                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot && 
-                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player') && 
-                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player').readyState == 4)}, () =>{
-                            var options = {
-                                        mimeType : 'video/webm'
-                            };        
-                            var mediaRecorder2 = new MediaRecorder(document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player').captureStream(),options); 
-                            mediaRecorder2.start(20);
-                            mediaRecorder2.ondataavailable = function(e) {
-                              print('dhs');  
-                              e.data.arrayBuffer().then(buffer =>         
-                                  ipcRenderer.send('writeChunks',buffer)
-                            );                   
-                            }}); */
-                        }
-                            /* if (!EAOverride){ 
-                             tempOutputID = outputID;
-                             EAoutputID = -1;
-                             outputID = -1;    
-                             ipcRenderer.send('muteAudio',false);
-                             ipcRenderer.send('disableExclusiveAudio','');
-                             EAtmpdisable = true;} */
+                                                   }
+                           
                         } catch(e){console.log(e);}
                         } else{
-                            if (!GCOverride) {ipcRenderer.send('muteAudio', true);      
+                            if (!GCOverride ) {   
                             try{
                                 AMEx.result.source.connect(windowAudioNode);}
                                 catch(e){}}
-                           /* try{
-                                if (EAtmpdisable & !EAOverride){
-                                AudioOutputs.startExclusiveAudio(tempOutputID);
-                                EAtmpdisable = false;
-                                }
-                            } catch(e){
-                                console.log(e);
-                            } */
                         }
                     }catch(e){}
                     try{
@@ -934,7 +907,7 @@ try {
                     for (const mutation of mutationList) {
                         for (const child of mutation.addedNodes) {
                             try {
-                                if (document.getElementById("mk-dialog-title").textContent === "cancelled" || document.getElementById("mk-dialog-title").textContent.includes("The play() request was interrupted by a load request")) {
+                                if (document.getElementById("mk-dialog-title").textContent === "cancelled" || document.getElementById("mk-dialog-title").textContent.includes("The play") || document.getElementById("mk-dialog-title").textContent.includes("MEDIA_KEY")) {
                                     document.getElementById("musickit-dialog").remove();
                                     document.getElementById("musickit-dialog-scrim").remove();
                                     break;
@@ -970,13 +943,14 @@ try {
                 }
 
                 /** Need a better way to find the user menu asap, this is embarrassing **/
-
-                var checkForUserMenu = setInterval(function () {
-                    if (document.querySelectorAll(".web-chrome-controls-container>.web-navigation__auth").length) {
-                        _tests.usermenuinit();
-                        clearInterval(checkForUserMenu);
-                    }
-                }, 100);
+                if(MusicKit.getInstance().authorizationStatus !== 0) {
+                    var checkForUserMenu = setInterval(function () {
+                        if (document.querySelectorAll(".web-chrome-controls-container>.web-navigation__auth").length) {
+                            _tests.usermenuinit();
+                            clearInterval(checkForUserMenu);
+                        }
+                    }, 100);
+                }
 
             },
             LoadCustom: () => {

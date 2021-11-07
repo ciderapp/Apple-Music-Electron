@@ -28,7 +28,7 @@ var getPort = require('get-port');
 const {Stream} = require('stream');
 initAnalytics();
 const regedit = require('regedit');
-var lame = require('@suldashi/lame');
+
 
 const handler = {
 
@@ -927,11 +927,11 @@ const handler = {
                 outOptions: {
 
                   channelCount: 2,
-                  sampleFormat: portAudio.SampleFormatFloat32,
+                  sampleFormat: portAudio.SampleFormat16Bit,
                   sampleRate: 48000,
                   maxQueue: 100,
                   deviceId: id,
-                  highwaterMark : 16384, // Use -1 or omit the deviceId to select the default device
+                  highwaterMark : 1024, // Use -1 or omit the deviceId to select the default device
                   closeOnError: false // Close the stream if an audio error is detected, if set false then just log the error
                 }
               });              
@@ -976,11 +976,11 @@ const handler = {
             console.log(portAudio.getHostAPIs());
         });
         console.log(portAudio.getHostAPIs());
-        ipcMain.on('writePCM', function (event, leftpcm, rightpcm) {
+        ipcMain.on('writePCM', function (event, buffer) {
             
             // do anything with stereo pcm here
-            buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm), Float32Array.from(rightpcm)).buffer));
-            EAstream.write(buffer);
+           // buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm), Float32Array.from(rightpcm)).buffer));
+            EAstream.write(Buffer.from(buffer).slice(44));
                 
         });
         ipcMain.on('muteAudio', function (event, mute) {
@@ -1236,8 +1236,8 @@ const handler = {
                 let media = {
                     // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
                     contentId: u,
-                    contentType: 'audio/mpeg',
-                    streamType: 'BUFFERED', // or LIVE
+                    contentType: 'audio/wav',
+                    streamType: 'LIVE', // or LIVE
 
                     // Title and cover displayed while buffering
                     metadata: {
@@ -1256,8 +1256,8 @@ const handler = {
                         let newmedia = {
                             // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
                             contentId: u,
-                            contentType: 'audio/mpeg',
-                            streamType: 'BUFFERED', // or LIVE
+                            contentType: 'audio/wav',
+                            streamType: 'LIVE', // or LIVE
 
                             // Title and cover displayed while buffering
                             metadata: {
