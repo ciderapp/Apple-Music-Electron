@@ -164,6 +164,9 @@ module.exports = {
         if (app.pluginsEnabled) {
             app.ame.load.LoadJS('pluginSystem.js', false)
         }
+        // Load this first so it doesn't stuck
+        app.ame.load.LoadJS('OpusMediaRecorder.umd.js')
+        app.ame.load.LoadJS('encoderWorker.umd.js')
 
         // Lyrics
         app.ame.load.LoadJS('lyrics.js')
@@ -177,8 +180,7 @@ module.exports = {
         app.ame.load.LoadJS('custom.js')
 
         // Audio Manuipulation Stuff
-        app.ame.load.LoadJS('OpusMediaRecorder.umd.js')
-        app.ame.load.LoadJS('encoderWorker.umd.js')
+
         app.ame.load.LoadJS('eq.js')
 
 

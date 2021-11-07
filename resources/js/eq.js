@@ -12,6 +12,7 @@ const workerOptions = {
   OggOpusEncoderWasmPath: 'https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/OggOpusEncoder.wasm',
   WebMOpusEncoderWasmPath: 'https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/WebMOpusEncoder.wasm'
 };
+var recorder;
 
 window.MediaRecorder = OpusMediaRecorder;
 
@@ -183,7 +184,7 @@ var AudioOutputs = {
                         setTimeout(()=>{
                             self.devices.cast = ipcRenderer.sendSync("getKnownCastDevices");
                             self.scanning = false;
-                        }, 5000);
+                        }, 1000);
                         console.log(this.devices);
                         vm.$forceUpdate();
                     },
@@ -210,6 +211,10 @@ var AudioOutputs = {
                 OnCreate() {
                     vm.$mount("#castdevices-vue");
                     vm.scan();
+                    for (var i = 0; i < 3 ;i++){
+                    setTimeout(()=>{  
+                    vm.scan();},3000);                  
+                  }
                 },
                 OnClose() {
                     _vues.destroy(vm);
@@ -527,17 +532,17 @@ var AudioOutputs = {
       catch(e){}
   
       var options = {
-        mimeType : 'audio/ogg'
+        mimeType : 'audio/wav'
       };
       var destnode = AMEx.context.createMediaStreamDestination();
       windowAudioNode.connect(destnode);
-
-      let recorder = new MediaRecorder(destnode.stream,options,workerOptions); 
+      
+      recorder = new MediaRecorder(destnode.stream,options,workerOptions); 
       recorder.start(1);
+
       recorder.ondataavailable = function(e) {
-        console.log('wad');
         e.data.arrayBuffer().then(buffer =>         
-            ipcRenderer.send('writeOPUS',buffer)
+            ipcRenderer.send('writeWAV',buffer)
       );                   
       }
 
@@ -547,6 +552,9 @@ var AudioOutputs = {
     },
     stopGC : function(){
        queueChromecast = false;
+       try{
+         recorder.stop();
+       } catch(e){}
        GCOverride = true;
        this.activeCasts = [];
        ipcRenderer.send('stopGCast','');
