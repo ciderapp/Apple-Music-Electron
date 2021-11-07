@@ -157,7 +157,7 @@ module.exports = {
 
     LoadOneTimeFiles: function () {
         // Inject the custom stylesheet
-        app.ame.load.LoadCSS('custom-stylesheet.css')
+        app.ame.load.LoadCSS('custom-stylesheet.css')       
         app.ame.load.LoadCSS('ameframework.css')
 
         // Inject Plugin Interaction
@@ -167,6 +167,7 @@ module.exports = {
         // Load this first so it doesn't stuck
         app.ame.load.LoadJS('OpusMediaRecorder.umd.js')
         app.ame.load.LoadJS('encoderWorker.umd.js')
+        
 
         // Lyrics
         app.ame.load.LoadJS('lyrics.js')
