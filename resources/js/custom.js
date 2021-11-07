@@ -694,6 +694,9 @@ try {
                 }
                 /** End Plugins */
 
+                /** Expose platform to CSS */
+                document.body.setAttribute("platform", navigator.platform);
+
                 if (preferences.visual.frameType === "") {
                     document.body.setAttribute("frame-type", "disabled");
                 } else {
