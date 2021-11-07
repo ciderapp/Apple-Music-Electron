@@ -65,15 +65,17 @@
                     document.querySelector(`#MVLyricsBox`).style.display = 'block';
                 }
                 var u  = '';
-                if (li.getElementsByClassName('lyrics-translation').length > 0){
-                try{  
+                if (li.getElementsByClassName('lyrics-translation').length > 0 ){
+                try{ 
+                    if(!li.innerText.includes('Instrumental. / Lyrics not found.')){ 
                     u  = li.getElementsByClassName('lyrics-translation')[0].innerText;    
                     document.querySelector(`#MVLyricsBox`).childNodes[1].innerHTML= li.getElementsByClassName('lyrics-translation')[0].innerText;
-                    document.querySelector(`#MVLyricsBox`).childNodes[0].innerHTML= (li.innerText).replace(u,'');
+                    document.querySelector(`#MVLyricsBox`).childNodes[0].innerHTML= (li.innerText).replace(u,'');}
                 } catch(e){}
                 } else {
+                    if(!li.innerText.includes('Instrumental. / Lyrics not found.')){
                     document.querySelector(`#MVLyricsBox`).childNodes[0].innerHTML= li.innerText;  
-                    document.querySelector(`#MVLyricsBox`).childNodes[1].innerHTML= ''; 
+                    document.querySelector(`#MVLyricsBox`).childNodes[1].innerHTML= ''; }
                 }
 
                 

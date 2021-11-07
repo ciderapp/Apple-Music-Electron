@@ -254,8 +254,8 @@ var AudioOutputs = {
                 clearInterval(searchInt);
             }
         }, 1000);
-        waitFor(()=>{return queueChromecast && 
-          (document.getElementById("apple-music-player") != null&& 
+        waitFor(()=>{return queueChromecast &&
+          ((document.getElementById("apple-music-player") != null&& 
            document.getElementById("apple-music-player").readyState == 4) || (
            document.querySelector('apple-music-video-player') &&
            document.querySelector('apple-music-video-player').shadowRoot  && 
@@ -264,7 +264,7 @@ var AudioOutputs = {
            document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player') &&
            document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot && 
            document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player') && 
-           document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player').readyState == 4)  ;},() => AudioOutputs.playGC(selectedGC))
+           document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player').readyState == 4))  ;},() => AudioOutputs.playGC(selectedGC))
         
     },
     amplifyMedia: function (mediaElem, multiplier) {
@@ -459,52 +459,39 @@ var AudioOutputs = {
         EAOverride = false;
         ipcRenderer.send('muteAudio',true);
         ipcRenderer.send('enableExclusiveAudio',id);
-          let blob = new Blob([audioWorklet], {type: 'application/javascript'});
-          if (!AErecorderNode){
-          await AMEx.context.audioWorklet.addModule(URL.createObjectURL(blob))
-          .then(() => {
-            
-              const channels = 2;
-              AErecorderNode = new window.AudioWorkletNode(AMEx.context, 
-                                                              'recorder-worklet', 
-                                                              {parameterData: {numberOfChannels: channels}});
-              AErecorderNode.port.onmessage = (e) => {
-                const data = e.data;
-                switch(data.eventType) {
-                  case "data":
-                    if(!EAOverride || !GCOverride){
-                    const audioData = data.audioBuffer;
-                    const bufferSize = data.bufferSize;
-                    if(!EAOverride){
-                    ipcRenderer.send('writePCM',audioData[0],audioData[1], bufferSize);}
-                    if(!GCOverride){
-                    ipcRenderer.send('writeWAV',audioData[0],audioData[1]);  
-                    }
-                  }
-                    break;
-                  case "stop":            
-                    break;
-                }
-              }
-            
-            
-            
-          });}
-          AErecorderNode.parameters.get('isRecording').setValueAtTime(1, AMEx.context.currentTime);
-          windowAudioNode = AMEx.context.createDynamicsCompressor();
-          AMEx.result.source.connect(windowAudioNode);
-          windowAudioNode.connect(AErecorderNode);  
+        windowAudioNode = AMEx.context.createGain();
+        try{
+          AMEx.result.source.connect(windowAudioNode);}
+        catch(e){}
+    
+        var options = {
+          mimeType : 'audio/wav'
+        };
+        var destnode = AMEx.context.createMediaStreamDestination();
+        windowAudioNode.connect(destnode);
+        if(!recorder){
+        recorder = new MediaRecorder(destnode.stream,options,workerOptions); 
+        recorder.start(1);
+  
+        recorder.ondataavailable = function(e) {
+          e.data.arrayBuffer().then(buffer => {
+              if(!GCOverride)  {ipcRenderer.send('writeWAV',buffer);}
+              if(!EAOverride)  {ipcRenderer.send('writePCM',buffer);}
+            }
+        );                   
+        }}
           
       } else {console.log('device already in exclusive mode');}
     } else {
          outputID = id;
          queueExclusive = true;
-      }
+    }
     },
      stopExclusiveAudio: function(){
-        try{
-          AErecorderNode.parameters.get('isRecording').setValueAtTime(0, AMEx.context.currentTime);
-        } catch(e){}
+      try{
+        recorder.stop();
+        recorder = null;
+      } catch(e){}
         EAOverride = true;
         EAoutputID = -1;
         outputID = -1;
@@ -517,6 +504,7 @@ var AudioOutputs = {
         ipcRenderer.send('getChromeCastDevices','');
     },
     playGC : async function(device){
+      console.log('wot');
     AudioOutputs.activeCasts.push(device);
       GCOverride = false;
     if(AMEx.result.source != null || MVsource != null ){
@@ -536,15 +524,17 @@ var AudioOutputs = {
       };
       var destnode = AMEx.context.createMediaStreamDestination();
       windowAudioNode.connect(destnode);
-      
+      if(!recorder){
       recorder = new MediaRecorder(destnode.stream,options,workerOptions); 
       recorder.start(1);
 
       recorder.ondataavailable = function(e) {
-        e.data.arrayBuffer().then(buffer =>         
-            ipcRenderer.send('writeWAV',buffer)
+        e.data.arrayBuffer().then(buffer => {
+            if(!GCOverride)  {ipcRenderer.send('writeWAV',buffer);}
+            if(!EAOverride)  {ipcRenderer.send('writePCM',buffer);}
+          }
       );                   
-      }
+      }}
 
       } else {queueChromecast = true; selectedGC = device}
              
@@ -554,6 +544,7 @@ var AudioOutputs = {
        queueChromecast = false;
        try{
          recorder.stop();
+         recorder = null;
        } catch(e){}
        GCOverride = true;
        this.activeCasts = [];
