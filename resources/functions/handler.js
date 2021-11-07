@@ -927,7 +927,7 @@ const handler = {
                 outOptions: {
 
                   channelCount: 2,
-                  sampleFormat: portAudio.SampleFormat16Bit,
+                  sampleFormat: portAudio.SampleFormat24Bit,
                   sampleRate: 48000,
                   maxQueue: 100,
                   deviceId: id,
@@ -977,7 +977,10 @@ const handler = {
         });
         console.log(portAudio.getHostAPIs());
         ipcMain.on('writePCM', function (event, buffer) {
-            
+        //     writeFile(join(app.getPath('userData'), 'buffertest5.raw'), Buffer.from(buffer,'binary').slice(44),{flag: 'a+'}, function (err) {
+        //         if (err) throw err;
+        //          console.log('It\'s saved!');
+        //    }); 
             // do anything with stereo pcm here
            // buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm), Float32Array.from(rightpcm)).buffer));
             EAstream.write(Buffer.from(buffer).slice(44));
@@ -1020,6 +1023,7 @@ const handler = {
         audioserver.get('/', playData.bind(this));
 
         function playData(req, res) {
+            headerSent = false;
             console.log("Device requested: /");
             req.connection.setTimeout(Number.MAX_SAFE_INTEGER);
             requests.push({req: req, res: res});
@@ -1028,6 +1032,7 @@ const handler = {
                 console.info("CLOSED", requests.length);
                 requests.splice(pos, 1);
                 console.info("CLOSED", requests.length);
+                headerSent = false;
             });
 
 
@@ -1061,6 +1066,7 @@ const handler = {
                 console.info("CLOSED", requests.length);
                 requests.splice(pos, 1);
                 console.info("CLOSED", requests.length);
+                headerSent = false;
             });
 
 
@@ -1091,22 +1097,12 @@ const handler = {
         ipcMain.on('writeWAV', function (event, pcm) {
             var pcmData = Buffer.from(pcm,'binary').slice(44);
             if (!headerSent) {
-                const header = new Buffer.alloc(44)
-                header.write('RIFF', 0)
+                const header = Buffer.from(pcm,'binary').slice(0,44)
                 header.writeUInt32LE(2147483600, 4)
-                header.write('WAVE', 8)
-                header.write('fmt ', 12)
-                header.writeUInt8(16, 16)
-                header.writeUInt8(1, 20)
-                header.writeUInt8(2, 22)
-                header.writeUInt32LE(48000, 24)
-                header.writeUInt32LE(16, 28)
-                header.writeUInt8(4, 32)
-                header.writeUInt8(16, 34)
-                header.write('data', 36)
                 header.writeUInt32LE(2147483600 + 44 - 8, 40)
                 GCstream.write(Buffer.concat([header, pcmData]));
                 headerSent = true;
+                console.log('done');
             } else {
                 GCstream.write(pcmData);
             }
