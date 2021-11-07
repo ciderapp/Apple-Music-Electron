@@ -222,8 +222,6 @@ const Utils = {
         const themesDir = join(app.getPath("userData"), "themes")
 
         if (existsSync(themesDir)) {
-            console.log('Themes Dir Exists')
-
             if (existsSync(tmpDir)) {
                 rimraf(tmpDir, [], async (err) => {
                     if (err) return err
@@ -240,7 +238,7 @@ const Utils = {
 
             for (const file of updateList) {
                 if (file.split('.').pop() === 'css' && file !== "Template.css") { // Reduces listing compare down to css files
-                    console.log(`[compareDirectories] Comparing ${file}`)
+                    console.verbose(`[compareDirectories] Comparing ${file}`)
 
                     if (!existsSync(join(themesDir, file))) {
                         copyFileSync(join(tmpDir, file), join(themesDir, file))
@@ -259,7 +257,7 @@ const Utils = {
 
             return foundChanges
         } else {
-            console.log('Themes Dir doesnt exist')
+            await mkdir(tmpDir, {recursive: true})
             await clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', themesDir, [], (err) => console.log(err))
             return {'initial': true}
         }

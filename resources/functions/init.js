@@ -1,14 +1,14 @@
 const {app, nativeTheme, nativeImage, Tray} = require("electron"),
     {join, resolve} = require("path"),
     os = require("os"),
-    {existsSync, readdirSync, mkdir} = require("fs"),
+    {existsSync, readdirSync} = require("fs"),
     regedit = require("regedit"),
     {initAnalytics} = require('./utils');
 initAnalytics();
 
 const init = {
 
-    BaseInit: function () {
+    BaseInit: () => {
         const censoredConfig = app.cfg.store;
         censoredConfig.tokens = {};
 
@@ -106,7 +106,7 @@ const init = {
         require('events').EventEmitter.defaultMaxListeners = Infinity;
     },
 
-    LoggingInit: function () {
+    LoggingInit: () => {
         app.log = require("electron-log");
 
         if (app.commandLine.hasSwitch('verbose')) {
@@ -131,7 +131,7 @@ const init = {
         }
     },
 
-    ThemeInstallation: function () {
+    ThemeInstallation: () => {
         const themesPath = join(app.getPath('userData'), "themes");
 
         // Check if the themes folder exists and check permissions
@@ -139,15 +139,7 @@ const init = {
             console.verbose('[ThemeInstallation] Themes Directory Exists. Running Permission Check.')
             app.ame.utils.permissionsCheck(themesPath, 'README.md')
         } else {
-            console.verbose('[ThemeInstallation] Themes folder not found. Cloning repo.')
-            mkdir(themesPath, (err) => {
-                if (!err) {
-                    console.warn('[ThemeInstallation] Themes Directory Created.')
-                    app.ame.utils.updateThemes().catch((e) => console.error(e));
-                } else {
-                    console.error(`[ThemeInstallation] ${err}`)
-                }
-            })
+            app.ame.utils.updateThemes().catch(err => console.error(err))
         }
 
         // Save all the file names to array and log it
@@ -161,7 +153,7 @@ const init = {
         }
     },
 
-    PluginInstallation: function () {
+    PluginInstallation: () => {
         if (!existsSync(resolve(app.getPath("userData"), "plugins"))) {
             return;
         }
@@ -176,7 +168,7 @@ const init = {
         console.log(`[PluginInstallation] Files found in Plugins Directory: [${readdirSync(resolve(app.getPath("userData"), "plugins")).join(', ')}]`);
     },
 
-    AppReady: function () {
+    AppReady: () => {
         console.verbose('[ApplicationReady] Started.');
         app.pluginsEnabled = false;
 
@@ -195,7 +187,7 @@ const init = {
         app.media = {status: false, playParams: {id: 'no-id-found'}};
     },
 
-    TrayInit: function () {
+    TrayInit: () => {
         console.verbose('[InitializeTray] Started.');
 
         const winTray = nativeImage.createFromPath(join(__dirname, `../icons/icon.ico`)).resize({
