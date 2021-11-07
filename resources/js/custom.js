@@ -1034,7 +1034,7 @@ try {
             },
 
             createNotification: (changed) => {
-                if (typeof changed !== 'object') {
+                if (typeof changed !== 'object' || !changed || (Object.keys(changed).length === 0 && changed.constructor === Object)) {
                     return;
                 }
 
@@ -1149,11 +1149,6 @@ try {
                 } else {
                     console.error('[HandleField] No Parent Category Found.');
                     return;
-                }
-
-                if (!preferences[category][element]) {
-                    console.error('[HandleField] No Configuration Found.');
-                    return
                 }
 
                 /* Toggles */
