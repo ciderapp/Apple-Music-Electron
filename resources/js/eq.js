@@ -8,6 +8,14 @@ var queueChromecast = false;
 var selectedGC ;
 var MVsource;
 var windowAudioNode;
+const workerOptions = {
+  OggOpusEncoderWasmPath: 'https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/OggOpusEncoder.wasm',
+  WebMOpusEncoderWasmPath: 'https://cdn.jsdelivr.net/npm/opus-media-recorder@latest/WebMOpusEncoder.wasm'
+};
+var recorder;
+
+window.MediaRecorder = OpusMediaRecorder;
+
 var audioWorklet =  `class RecorderWorkletProcessor extends AudioWorkletProcessor {
     static get parameterDescriptors() {
       return [{
@@ -176,7 +184,7 @@ var AudioOutputs = {
                         setTimeout(()=>{
                             self.devices.cast = ipcRenderer.sendSync("getKnownCastDevices");
                             self.scanning = false;
-                        }, 5000);
+                        }, 1000);
                         console.log(this.devices);
                         vm.$forceUpdate();
                     },
@@ -203,6 +211,10 @@ var AudioOutputs = {
                 OnCreate() {
                     vm.$mount("#castdevices-vue");
                     vm.scan();
+                    for (var i = 0; i < 3 ;i++){
+                    setTimeout(()=>{  
+                    vm.scan();},3000);                  
+                  }
                 },
                 OnClose() {
                     _vues.destroy(vm);
@@ -482,7 +494,7 @@ var AudioOutputs = {
           windowAudioNode = AMEx.context.createDynamicsCompressor();
           AMEx.result.source.connect(windowAudioNode);
           windowAudioNode.connect(AErecorderNode);  
-          windowAudioNode.connect(AMEx.context.destination);            
+          
       } else {console.log('device already in exclusive mode');}
     } else {
          outputID = id;
@@ -513,51 +525,36 @@ var AudioOutputs = {
       const trackName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.title ?? '' : '');
       const artistName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
       const albumName = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.albumName ?? '' : '');
-      ipcRenderer.send('performGCCast',device, "Apple Music Electron",'Playing ...','','');
-      let blob = new Blob([audioWorklet], {type: 'application/javascript'});
-      if (!AErecorderNode){
-      await AMEx.context.audioWorklet.addModule(URL.createObjectURL(blob))
-      .then(() => {
-        
-          const channels = 2;
-          AErecorderNode = new window.AudioWorkletNode(AMEx.context, 
-                                                          'recorder-worklet', 
-                                                          {parameterData: {numberOfChannels: channels}});
-          AErecorderNode.port.onmessage = (e) => {
-            const data = e.data;
-            switch(data.eventType) {
-              case "data":
-                if(!EAOverride || !GCOverride){
-                const audioData = data.audioBuffer;
-                const bufferSize = data.bufferSize;
-                if(!EAOverride){
-                ipcRenderer.send('writePCM',audioData[0],audioData[1], bufferSize);}
-                if(!GCOverride){
-                ipcRenderer.send('writeWAV',audioData[0],audioData[1]);  
-                }
-              }
-                break;
-              case "stop":            
-                break;
-            }
-          }
-        
-        
-        
-      });}
-      AErecorderNode.parameters.get('isRecording').setValueAtTime(1, AMEx.context.currentTime);
+      ipcRenderer.send('performGCCast',device, "Apple Music Electron","Playing ...","3.0.0 beta",'');
       windowAudioNode = AMEx.context.createGain();
       try{
         AMEx.result.source.connect(windowAudioNode);}
       catch(e){}
-      windowAudioNode.connect(AErecorderNode);  
-      windowAudioNode.connect(AMEx.context.destination); 
+  
+      var options = {
+        mimeType : 'audio/wav'
+      };
+      var destnode = AMEx.context.createMediaStreamDestination();
+      windowAudioNode.connect(destnode);
+      
+      recorder = new MediaRecorder(destnode.stream,options,workerOptions); 
+      recorder.start(1);
+
+      recorder.ondataavailable = function(e) {
+        e.data.arrayBuffer().then(buffer =>         
+            ipcRenderer.send('writeWAV',buffer)
+      );                   
+      }
+
       } else {queueChromecast = true; selectedGC = device}
              
      
     },
     stopGC : function(){
        queueChromecast = false;
+       try{
+         recorder.stop();
+       } catch(e){}
        GCOverride = true;
        this.activeCasts = [];
        ipcRenderer.send('stopGCast','');
@@ -584,7 +581,6 @@ document.addEventListener('keydown', function (event) {
 
 function waitFor(condition, callback) {
   if(condition() == null || !condition() ) {
-      console.log('yah');
       window.setTimeout(waitFor.bind(null, condition, callback), 1000); 
   } else {
       callback();

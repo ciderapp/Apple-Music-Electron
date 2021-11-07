@@ -26,9 +26,9 @@ var MediaRendererClient = require('upnp-mediarenderer-client');
 const DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
 var getPort = require('get-port');
 const {Stream} = require('stream');
-
 initAnalytics();
 const regedit = require('regedit');
+var lame = require('@suldashi/lame');
 
 const handler = {
 
@@ -989,6 +989,14 @@ const handler = {
             app.win.webContents.setAudioMuted(mute);
         });
 
+        ipcMain.on('writeChunks', function(event, blob){
+
+            writeFile(join(app.getPath('userData'), 'buffertest.raw'), Buffer.from(blob,'binary'),{flag: 'a+'}, function (err) {
+                 if (err) throw err;
+                  console.log('It\'s saved!');
+            });   
+        })
+
 
     },
     GoogleCastHandler: function () {
@@ -1037,10 +1045,10 @@ const handler = {
         audioserver.get('/a.wav', playData2.bind(this));
 
         function playData2(req, res) {
-            console.log("Device requested: /");
+            console.log("Device requested: /a.wav");
             req.connection.setTimeout(Number.MAX_SAFE_INTEGER);
             res.setHeader('Accept-Ranges', 'bytes')
-            res.setHeader('Content-Type', 'audio/wav')
+            res.setHeader('Content-Type', 'audio/l16')
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.statusCode = 200;
             res.setHeader('transferMode.dlna.org', 'Streaming');
@@ -1068,101 +1076,24 @@ const handler = {
 
         }
 
-        ipcMain.on('writeWAV', function (event, leftpcm, rightpcm, bufferlength) {
+        ipcMain.on('writeOPUS', function(event,buffer){
 
-            function interleave16(leftChannel, rightChannel) {
-                var length = leftChannel.length + rightChannel.length;
-                var result = new Int16Array(length);
+                var pcm = Buffer.from(buffer,'binary').slice(44); //stereo, 48k, 16signed in 8bit buffer
+              
+                // Pipe it to something else  (i.e. stdout)
+                
 
-                var inputIndex = 0;
+            //     writeFile(join(app.getPath('userData'), 'buffertest3.raw'), Encoder.,{flag: 'a+'}, function (err) {
+            //         if (err) throw err;
+            //          console.log('It\'s saved!');
+            //    });   
+            //     //GCstream.write(mp3Tmp);
 
-                for (var index = 0; index < length;) {
-                    result[index++] = leftChannel[inputIndex];
-                    result[index++] = rightChannel[inputIndex];
-                    inputIndex++;
-                }
-                return result;
-            }
-
-            //https://github.com/HSU-ANT/jsdafx
-            function quantization(audiobufferleft, audiobufferright) {
-                var h = Float32Array.from([1]);
-                var nsState = new Array(0);
-                var ditherstate = new Float32Array(0);
-                var qt = Math.pow(2, 1 - 16);
-
-                //noise shifting order 3
-                h = Float32Array.from([1.623, -0.982, 0.109]);
-                for (let i = 0; i < nsState.length; i++) {
-                    nsState[i] = new Float32Array(h.length);
-                }
-
-                function setChannelCount(nc) {
-                    if (ditherstate.length !== nc) {
-                        ditherstate = new Float32Array(nc);
-                    }
-                    if (nsState.length !== nc) {
-                        nsState = new Array(nc);
-                        for (let i = 0; i < nsState.length; i++) {
-                            nsState[i] = new Float32Array(h.length);
-                        }
-                    }
-                }
-
-                function hpDither(channel) {
-                    const rnd = Math.random() - 0.5;
-                    const d = rnd - ditherstate[channel];
-                    ditherstate[channel] = rnd;
-                    return d;
-                }
-
-
-                setChannelCount(2);
-                const inputs = [audiobufferleft, audiobufferright];
-                const outputs = [audiobufferleft, audiobufferright];
-
-                for (let channel = 0; channel < inputs.length; channel++) {
-                    const inputData = inputs[channel];
-                    const outputData = outputs[channel];
-                    for (let sample = 0; sample < bufferlength; sample++) {
-                        let input = inputData[sample];
-
-                        for (let i = 0; i < h.length; i++) {
-                            input -= h[i] * nsState[channel][i];
-                        }
-
-                        let d_rand = 0.0;
-                        ditherstate = 0.0;
-                        d_rand = hpDither(channel);
-
-                        const tmpOutput = qt * Math.round(input / qt + d_rand);
-                        for (let i = h.length - 1; i >= 0; i--) {
-                            nsState[channel][i] = nsState[channel][i - 1];
-                        }
-                        nsState[channel][0] = tmpOutput - input;
-                        outputData[sample] = tmpOutput;
-                    }
-                }
-                return outputs;
-            }
-
-
-            function convert(n) {
-                var v = n < 0 ? n * 32768 : n * 32767;       // convert in range [-32768, 32767]
-                return Math.max(-32768, Math.min(32768, v)); // clamp
-            }
-
-            var newaudio = quantization(leftpcm, rightpcm);
-
-            //  writeFile(join(app.getPath('userData'), 'buffertest.raw'), Buffer.from(new Int8Array(interleave16(Int16Array.from(newaudio[0], x => convert(x)),Int16Array.from(newaudio[1], x => convert(x))).buffer)),{flag: 'a+'}, function (err) {
-            //     if (err) throw err;
-            //      console.log('It\'s saved!');
-            //  });
-            //do anything with stereo pcm here
-            var pcmData = Buffer.from(new Int8Array(interleave16(Int16Array.from(newaudio[0], x => convert(x)), Int16Array.from(newaudio[1], x => convert(x))).buffer));
+        })
+        ipcMain.on('writeWAV', function (event, pcm) {
+            var pcmData = Buffer.from(pcm,'binary').slice(44);
             if (!headerSent) {
                 const header = new Buffer.alloc(44)
-
                 header.write('RIFF', 0)
                 header.writeUInt32LE(2147483600, 4)
                 header.write('WAVE', 8)
@@ -1250,17 +1181,17 @@ const handler = {
 
                 ssdpBrowser.search('urn:dial-multiscreen-org:device:dial:1');
 
-                // actual upnp devices  
-                let ssdpBrowser2 = new ssdp();
-                ssdpBrowser2.on('response', (msg, rinfo) => {
-                    console.log(msg);
-                    var location = getLocation(msg);
-                    if (location != null) {
-                        getServiceDescription(location, rinfo.address);
-                    }
+                // // actual upnp devices  
+                // let ssdpBrowser2 = new ssdp();
+                // ssdpBrowser2.on('response', (msg, rinfo) => {
+                //     console.log(msg);
+                //     var location = getLocation(msg);
+                //     if (location != null) {
+                //         getServiceDescription(location, rinfo.address);
+                //     }
 
-                });
-                ssdpBrowser2.search('urn:schemas-upnp-org:device:MediaRenderer:1');
+                // });
+                // ssdpBrowser2.search('urn:schemas-upnp-org:device:MediaRenderer:1');
 
             } catch (e) {
                 console.log('Search GC err');
@@ -1298,6 +1229,7 @@ const handler = {
         }
 
         function loadMedia(client, song, artist, album, albumart, cb) {
+            var u =  'http://' + getIp() + ':' + server.address().port + '/';
             client.launch(DefaultMediaReceiver, (err, player) => {
                 if (err) {
                     console.log(err);
@@ -1305,8 +1237,8 @@ const handler = {
                 }
                 let media = {
                     // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
-                    contentId: 'http://' + getIp() + ':' + server.address().port + '/',
-                    contentType: 'audio/vnd.wav',
+                    contentId: u,
+                    contentType: 'audio/mpeg',
                     streamType: 'BUFFERED', // or LIVE
 
                     // Title and cover displayed while buffering
@@ -1322,30 +1254,32 @@ const handler = {
                 };
                 ipcMain.on('setupNewTrack', function (event, song, artist, album, albumart) {
                     try {
+                        
                         let newmedia = {
                             // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
-                            contentId: 'http://' + getIp() + ':' + server.address().port + '/',
-                            contentType: 'audio/vnd.wav',
+                            contentId: u,
+                            contentType: 'audio/mpeg',
                             streamType: 'BUFFERED', // or LIVE
 
                             // Title and cover displayed while buffering
                             metadata: {
                                 type: 0,
                                 metadataType: 3,
-                                title: song,
-                                albumName: album,
-                                artist: artist,
+                                title: song ?? "",
+                                albumName: album ?? '',
+                                artist: artist ?? '',
                                 images: [
-                                    {url: albumart}]
+                                    {url: albumart ?? ''}]
                             }
                         };
-                        player.pause();
                         headerSent = false;
-                        player.load(newmedia, {
+
+                        player.queueUpdate(newmedia, {
                             autoplay: true
                         }, (err, status) => {
                             console.log('media loaded playerState=%s', status);
                         });
+                        
                     } catch (e) {
                         console.log('GCerror', e)
                     }
