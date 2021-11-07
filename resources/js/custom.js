@@ -1,5 +1,13 @@
-try {
 
+try {
+    /* Add AM Lyrics Font JP, JR */
+    var headID = document.getElementsByTagName('head')[0];
+    var link = document.createElement('link');
+    link.type = 'text/css';
+    link.rel = 'stylesheet';
+    link.setAttribute('name','fonts');
+    headID.appendChild(link);
+    link.href = "//www.apple.com/wss/fonts?families=SF+Pro,v3|SF+Pro+Icons,v3|SF+Pro+KR,v2|SF+Pro+JP,v1";
     function GetXPath(path) {
         return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     }
@@ -83,8 +91,21 @@ try {
     if (typeof _lyrics == "undefined") {
         var _lyrics = {
             CreateButton: () => {
+
                 const mediaControlsElement = document.querySelector('.web-chrome-controls-container');
 
+                /* Chromecast / Airplay Button */
+                    if (!document.querySelector('#airplayButton') && mediaControlsElement) {
+                        const lyricsButton = document.createElement("div");
+                        lyricsButton.style.height = "22px";
+                        lyricsButton.style.width = "22px";
+                        lyricsButton.style.marginInlineEnd = "22px";
+                        lyricsButton.style.zIndex = "9999";
+                        lyricsButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width: "100%" height: "100%" viewBox: "0 0 30 22" version="1.1" style: "fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421"><path d="M16.811,12.75c0.245,-0.355 0.389,-0.786 0.389,-1.25c0,-1.215 -0.985,-2.2 -2.2,-2.2c-1.215,0 -2.2,0.985 -2.2,2.2c0,0.466 0.145,0.898 0.392,1.254l-0.83,1.047c-0.537,-0.616 -0.862,-1.42 -0.862,-2.301c0,-1.933 1.567,-3.5 3.5,-3.5c1.933,0 3.5,1.567 3.5,3.5c0,0.879 -0.324,1.683 -0.859,2.297l-0.83,-1.047Zm1.271,1.604c0.694,-0.749 1.118,-1.752 1.118,-2.854c0,-2.32 -1.88,-4.2 -4.2,-4.2c-2.32,0 -4.2,1.88 -4.2,4.2c0,1.103 0.425,2.107 1.121,2.857l-0.814,1.028c-0.993,-0.995 -1.607,-2.368 -1.607,-3.885c0,-3.038 2.462,-5.5 5.5,-5.5c3.038,0 5.5,2.462 5.5,5.5c0,1.515 -0.613,2.887 -1.604,3.882l-0.814,-1.028Zm1.252,1.58c1.151,-1.126 1.866,-2.697 1.866,-4.434c0,-3.424 -2.776,-6.2 -6.2,-6.2c-3.424,0 -6.2,2.776 -6.2,6.2c0,1.739 0.716,3.311 1.869,4.437l-0.811,1.023c-1.452,-1.368 -2.358,-3.308 -2.358,-5.46c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5c0,2.15 -0.905,4.089 -2.355,5.457l-0.811,-1.023Zm-0.227,2.066l-8.219,0c-0.355,0 -0.515,-0.434 -0.27,-0.717l4.058,-5.12c0.178,-0.217 0.474,-0.217 0.652,0l4.058,5.12c0.237,0.283 0.085,0.717 -0.279,0.717Z" style="fill-rule:nonzero"/></svg>`;
+                        lyricsButton.id = "airplayButton";
+                        lyricsButton.className = "web-chrome-playback-controls__platter-toggle-buttons web-chrome-playback-controls__meta-btn";
+                        mediaControlsElement.insertBefore(lyricsButton, mediaControlsElement.childNodes[4]);
+                }
                 /* Create the Button */
                 if (!document.querySelector('[aria-label="Lyrics"]') && mediaControlsElement) {
                     const lyricsButton = document.createElement("div");
@@ -98,11 +119,39 @@ try {
                             </svg>
                         </button>
                     `;
-                    mediaControlsElement.insertBefore(lyricsButton, mediaControlsElement.childNodes[4]);
+                    mediaControlsElement.insertBefore(lyricsButton, mediaControlsElement.childNodes[5]);
+
+
+               
+                let clonedElement2;
+
+                clonedElement2 = document.querySelector('#airplayButton').cloneNode(true);
+                document.querySelector('#airplayButton').replaceWith(clonedElement2);
+
+                document.getElementById("airplayButton").addEventListener('click', function () {
+                    try{AudioOutputs.castUI();
+                    }catch(e){}
+                });
+            
+                
+                /* Lyric View for MV */
+                if (!document.querySelector('#MVLyricsBox')){
+                const lyricsMV = document.createElement("div");
+                lyricsMV.id = "MVLyricsBox";
+                lyricsMV.style.zIndex = 9999999;
+                lyricsMV.style.backgroundColor= "rgba(0,0,0,0.7)";
+                lyricsMV.style.display = "none";
+                lyricsMV.style.color = "yellow";
+                try{
+                document.body.appendChild(lyricsMV);}
+                catch(e){}
+                lyricsMV.innerHTML = `<div id="mvlyrics"></div><div id="mvlyricstrans"></div>`;
+
                 }
 
                 /* Lyrics Button Click Event Handling */
-                const upNextSideBarToggle = document.querySelector('[aria-label="Up next"]');
+
+                const upNextSideBarToggle = mediaControlsElement.childNodes[6].getElementsByTagName('button')[0];
                 let clonedElement;
                 if (document.querySelector("#lyricsButton") && upNextSideBarToggle) {
 
@@ -128,7 +177,6 @@ try {
                             _lyrics.GetLyrics(1, false);
                         }
                     }
-
                     function closeLyrics() {
                         document.body.classList.remove("web-chrome-drawer-open");
                         document.body.classList.remove("web-chrome-drawer-closing");
@@ -140,6 +188,52 @@ try {
 
                     clonedElement = document.querySelector('#lyricsButton').cloneNode(true);
                     document.querySelector('#lyricsButton').replaceWith(clonedElement);
+
+
+                    if (!document.getElementById("lyricer")) {
+
+                        const sidebar = document.querySelector('.web-chrome-drawer');
+                        if (sidebar) {
+                            sidebar.innerHTML = `<div id="lyrics_none">Play a song to see the lyrics here.</div><div id="lyricer"></div>`;
+                        }
+
+                        let text = "";
+                        let lrc = new Lyricer();
+                        ipcRenderer.on('truelyrics', function (event, lrcfile) {
+                            if (lrcfile.startsWith("netease=")) {
+                                ipcRenderer.send('NetEaseLyricsHandler', lrcfile);
+                            } else {
+                                if (lrcfile!= null && lrcfile.length > 0)
+
+                                lrc.setLrc(lrcfile);
+                                
+                            }
+                        });
+    
+                        ipcRenderer.on('lyricstranslation', function (event, data) {
+                            lrc.setMXMTranslation(data);
+                        });
+    
+                        ipcRenderer.on('backuplyrics', function (_event, _data) {
+                            _lyrics.GetLyrics(1, true);
+                        });
+
+                        ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
+                            if (data < 0) {
+                                data = 0
+                            }
+                            lrc.move(data);
+                        });
+
+
+                        lrc.setLrc(text);
+                        document.addEventListener("lyricerclick", function (e) {
+                            ipcRenderer.send('ProgressTimeUpdateFromLyrics', e.detail.time);
+                            document.body.setAttribute("background-color", `var(--systemToolbarTitlebarMaterialSover-inactive)`);
+                        });
+
+                        _lyrics.GetLyrics(2, false);
+                    }
 
                     document.getElementById("lyricsButton").addEventListener('click', function () {
                         if (document.querySelector('.web-chrome-drawer').querySelector('.web-navigation__up-next.web-chrome-up-next.up-next') == null) {
@@ -180,14 +274,15 @@ try {
                                 if (lrcfile.startsWith("netease=")) {
                                     ipcRenderer.send('NetEaseLyricsHandler', lrcfile);
                                 } else {
-                                    lrc.setLrc(lrcfile);
+                                    if (lrcfile!= null && lrcfile.length > 0)
+                                        lrc.setLrc(lrcfile);
                                 }
                             });
-
+        
                             ipcRenderer.on('lyricstranslation', function (event, data) {
                                 lrc.setMXMTranslation(data);
                             });
-
+        
                             ipcRenderer.on('backuplyrics', function (_event, _data) {
                                 _lyrics.GetLyrics(1, true);
                             });
@@ -613,6 +708,13 @@ try {
                                         --musicKit-artwork: url("${artwork.replace("{w}", 2000).replace("{h}", 2000)}");
                                     }
                                 `);
+                                
+                                if (MusicKit.getInstance().nowPlayingItem.title != "" & !(MusicKit.getInstance().nowPlayingItem.title == "No Title Found" && MusicKit.getInstance().nowPlayingItem.artistName == "")){
+                                    ipcRenderer.send('updateMiniPlayerArt',artwork.replace("{w}", 2000).replace("{h}", 2000));
+                                    ipcRenderer.send('updateMiniPlayerMetaData',MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName);
+                                    ipcRenderer.send('setupNewTrack',MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,artwork.replace("{w}", 256).replace("{h}", 256));}
+
+                        
                                 this.refresh();
                             }
                         });
@@ -620,7 +722,7 @@ try {
                         console.error(e);
                     }
                 }
-
+                
                 this._styleSheets.Meta.replaceSync(`
                 :root {
                     --musicKit-artwork-64: url("${artwork.replace("{w}", 64).replace("{h}", 64)}");
@@ -629,6 +731,11 @@ try {
                     --musicKit-artwork: url("${artwork.replace("{w}", 2000).replace("{h}", 2000)}");
                 }
             `);
+            if ( (artwork === '' || !artwork) && MusicKit.getInstance().nowPlayingItem.title != "" & !(MusicKit.getInstance().nowPlayingItem.title == "No Title Found" && MusicKit.getInstance().nowPlayingItem.artistName == "")){
+                ipcRenderer.send('updateMiniPlayerArt',artwork.replace("{w}", 2000).replace("{h}", 2000));
+                ipcRenderer.send('updateMiniPlayerMetaData',MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName);
+                ipcRenderer.send('setupNewTrack',MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName,artwork.replace("{w}", 256).replace("{h}", 256));}
+
                 this.refresh();
             },
             setTransparency(val) {
@@ -739,6 +846,70 @@ try {
                     ipcRenderer.send('LyricsTimeUpdate', MusicKit.getInstance().currentPlaybackTime + 0.250);
                 });
                 MusicKit.getInstance().addEventListener(MusicKit.Events.nowPlayingItemDidChange, function () {
+                    var EAtmpdisable = false;
+                    var tempOutputID = -1;
+                    try{
+                        if (MusicKit.getInstance().nowPlayingItem["type"] === "musicVideo") {
+                            ipcRenderer.send('muteAudio', false);
+                            try{
+
+                            if(!GCOverride){
+                            MVsource = AMEx.context.createMediaElementSource(document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player'));  
+                            MVsource.connect(windowAudioNode); 
+                            /* waitFor(()=>{ return (
+                                document.querySelector('apple-music-video-player') &&
+                                document.querySelector('apple-music-video-player').shadowRoot  && 
+                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal') &&
+                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot && 
+                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player') &&
+                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot && 
+                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player') && 
+                                document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player').readyState == 4)}, () =>{
+                            var options = {
+                                        mimeType : 'video/webm'
+                            };        
+                            var mediaRecorder2 = new MediaRecorder(document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player').captureStream(),options); 
+                            mediaRecorder2.start(20);
+                            mediaRecorder2.ondataavailable = function(e) {
+                              print('dhs');  
+                              e.data.arrayBuffer().then(buffer =>         
+                                  ipcRenderer.send('writeChunks',buffer)
+                            );                   
+                            }}); */
+                        }
+                            /* if (!EAOverride){ 
+                             tempOutputID = outputID;
+                             EAoutputID = -1;
+                             outputID = -1;    
+                             ipcRenderer.send('muteAudio',false);
+                             ipcRenderer.send('disableExclusiveAudio','');
+                             EAtmpdisable = true;} */
+                        } catch(e){console.log(e);}
+                        } else{
+                            if (!GCOverride) {ipcRenderer.send('muteAudio', true);      
+                            try{
+                                AMEx.result.source.connect(windowAudioNode);}
+                                catch(e){}}
+                           /* try{
+                                if (EAtmpdisable & !EAOverride){
+                                AudioOutputs.startExclusiveAudio(tempOutputID);
+                                EAtmpdisable = false;
+                                }
+                            } catch(e){
+                                console.log(e);
+                            } */
+                        }
+                    }catch(e){}
+                    try{
+                        if (MusicKit.getInstance().nowPlayingItem["type"] === "musicVideo") {
+                            document.querySelector(`#MVLyricsBox`).style.display = 'block';
+                        } else {
+                            document.querySelector(`#MVLyricsBox`).style.display = 'none';
+                        }
+                        document.querySelector(`#MVLyricsBox`).childNodes[0].innerHTML= "";
+                        document.querySelector(`#MVLyricsBox`).childNodes[1].innerHTML= "";
+                    }
+                    catch (e){}
                     try {
                         GetXPath("/html/body/div[4]/div[3]/div[3]/div/div[2]/div[1]/img").src = "https://music.apple.com/assets/product/MissingArtworkMusic.svg";
                     } catch (e) {
@@ -751,7 +922,7 @@ try {
                     }
 
                     const sidebar = document.querySelector('.web-chrome-drawer');
-                    if (sidebar && document.body.classList.contains('web-chrome-drawer-open')) {
+                    if ((sidebar && document.body.classList.contains('web-chrome-drawer-open')) || (MusicKit.getInstance().nowPlayingItem != null && MusicKit.getInstance().nowPlayingItem["type"] == "musicVideo")) {
                         _lyrics.GetLyrics(1, false);
                     }
 
@@ -763,7 +934,7 @@ try {
                     for (const mutation of mutationList) {
                         for (const child of mutation.addedNodes) {
                             try {
-                                if (document.getElementById("mk-dialog-title").textContent === "cancelled") {
+                                if (document.getElementById("mk-dialog-title").textContent === "cancelled" || document.getElementById("mk-dialog-title").textContent.includes("The play() request was interrupted by a load request")) {
                                     document.getElementById("musickit-dialog").remove();
                                     document.getElementById("musickit-dialog-scrim").remove();
                                     break;
@@ -799,6 +970,7 @@ try {
                 }
 
                 /** Need a better way to find the user menu asap, this is embarrassing **/
+
                 var checkForUserMenu = setInterval(function () {
                     if (document.querySelectorAll(".web-chrome-controls-container>.web-navigation__auth").length) {
                         _tests.usermenuinit();
@@ -1229,6 +1401,7 @@ try {
                     AMSettings.HandleField('transparencyTheme');
                     AMSettings.HandleField('transparencyDisableBlur');
                     AMSettings.HandleField('transparencyMaximumRefreshRate');
+                    AMSettings.HandleField('yton');
                     AMSettings.HandleField('mxmon');
                     AMSettings.HandleField('mxmlanguage');
                     AMSettings.HandleField('streamerMode');
@@ -1242,6 +1415,8 @@ try {
                     /* Audio Settings */
                     AMSettings.HandleField('audioQuality');
                     AMSettings.HandleField('seamlessAudioTransitions');
+                    AMSettings.HandleField('volume');
+
 
                     /* Window Settings */
                     AMSettings.HandleField('appStartupBehavior');

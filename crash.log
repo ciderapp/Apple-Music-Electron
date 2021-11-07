@@ -1,0 +1,1947 @@
+PID 7792 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 14128 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 1144 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 13612 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 1764 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 3388 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 9876 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 5964 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 12944 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 16372 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 13576 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 10440 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 1792 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 10536 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 13776 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 14448 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF71D0C9CB6 (electron): (filename not available): IsSandboxedProcess
+00007FF71D0C9C0A (electron): (filename not available): IsSandboxedProcess
+00007FF71CAF669D (electron): (filename not available): IsSandboxedProcess
+00007FF71C07532D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF719248E08 (electron): (filename not available): uv_fs_get_ptr
+00007FF7192488ED (electron): (filename not available): uv_fs_get_ptr
+00007FF7183DE388 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF71AC80688 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71ACDF16C (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF71AC89C7B (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7192556F8 (electron): (filename not available): uv_fs_get_ptr
+00007FF7196B0E77 (electron): (filename not available): uv_sleep
+00007FF71923262E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71BF6E3D3 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF71BF6FAF1 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF718CA03AC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF71884286A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF71884226A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF718841053 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7188417E6 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7181298FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF71AECAD82 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 14680 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 5884 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 15068 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 14504 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 16568 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 7244 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 16336 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 16412 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 15624 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD76E4 (RPCRT4): (filename not available): NdrGetUserMarshalInfo
+00007FFE4BAD76C0 (RPCRT4): (filename not available): NdrGetUserMarshalInfo
+00007FFE4BA824BB (RPCRT4): (filename not available): RpcAsyncCompleteCall
+00007FFE4BB64F79 (RPCRT4): (filename not available): Ndr64AsyncClientCall
+00007FFE4BA82290 (RPCRT4): (filename not available): RpcAsyncCompleteCall
+00007FFE4BA821A8 (RPCRT4): (filename not available): RpcAsyncCompleteCall
+00007FFE48BF2BA4 (WINSTA): (filename not available): WinStationRegisterConsoleNotification
+00007FFE48BF29CD (WINSTA): (filename not available): WinStationRegisterConsoleNotification
+00007FFE48BF295D (WINSTA): (filename not available): WinStationRegisterConsoleNotification
+00007FFE4BAAED83 (RPCRT4): (filename not available): NdrTypeMarshall
+00007FFE4BAAEC1A (RPCRT4): (filename not available): NdrTypeMarshall
+00007FFE4BAE434B (RPCRT4): (filename not available): RpcSsContextLockExclusive
+00007FFE4BAE7810 (RPCRT4): (filename not available): RpcBindingFromStringBindingA
+00007FFE4BAE75A9 (RPCRT4): (filename not available): RpcBindingFromStringBindingA
+00007FFE4BAE73F8 (RPCRT4): (filename not available): RpcBindingFromStringBindingA
+00007FFE4BAE8526 (RPCRT4): (filename not available): RpcAsyncCancelCall
+00007FFE48BF1FFC (WINSTA): (filename not available): WinStationRegisterCurrentSessionNotificationEvent
+00007FFE48BF1E67 (WINSTA): (filename not available): WinStationRegisterCurrentSessionNotificationEvent
+00007FFE48BF1E06 (WINSTA): (filename not available): WinStationRegisterCurrentSessionNotificationEvent
+00007FFE48BF221E (WINSTA): (filename not available): WinStationUnRegisterConsoleNotification
+00007FFE48BF2141 (WINSTA): (filename not available): WinStationUnRegisterConsoleNotification
+00007FFE457A22E3 (WTSAPI32): (filename not available): WTSUnRegisterSessionNotification
+00007FF7EDD75649 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDD7576B (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDCB8DFE (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDCB8188 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFCFEE (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFF970 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFDF5 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305E8 (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 16940 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 7708 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 17932 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 2252 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 17940 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 14692 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 15668 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 2008 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 10492 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 6904 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 3028 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 6076 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 16276 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 17772 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 17808 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 14592 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 18676 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 19096 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 132 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD76E4 (RPCRT4): (filename not available): NdrGetUserMarshalInfo
+00007FFE4BAD76C0 (RPCRT4): (filename not available): NdrGetUserMarshalInfo
+00007FFE4BA824BB (RPCRT4): (filename not available): RpcAsyncCompleteCall
+00007FFE4BB64F79 (RPCRT4): (filename not available): Ndr64AsyncClientCall
+00007FFE4BA82290 (RPCRT4): (filename not available): RpcAsyncCompleteCall
+00007FFE4BA821A8 (RPCRT4): (filename not available): RpcAsyncCompleteCall
+00007FFE48BF2BA4 (WINSTA): (filename not available): WinStationRegisterConsoleNotification
+00007FFE48BF29CD (WINSTA): (filename not available): WinStationRegisterConsoleNotification
+00007FFE48BF295D (WINSTA): (filename not available): WinStationRegisterConsoleNotification
+00007FFE4BAAED83 (RPCRT4): (filename not available): NdrTypeMarshall
+00007FFE4BAAEC1A (RPCRT4): (filename not available): NdrTypeMarshall
+00007FFE4BAE434B (RPCRT4): (filename not available): RpcSsContextLockExclusive
+00007FFE4BAE7810 (RPCRT4): (filename not available): RpcBindingFromStringBindingA
+00007FFE4BAE75A9 (RPCRT4): (filename not available): RpcBindingFromStringBindingA
+00007FFE4BAE73F8 (RPCRT4): (filename not available): RpcBindingFromStringBindingA
+00007FFE4BAE8526 (RPCRT4): (filename not available): RpcAsyncCancelCall
+00007FFE48BF1FFC (WINSTA): (filename not available): WinStationRegisterCurrentSessionNotificationEvent
+00007FFE48BF1E67 (WINSTA): (filename not available): WinStationRegisterCurrentSessionNotificationEvent
+00007FFE48BF1E06 (WINSTA): (filename not available): WinStationRegisterCurrentSessionNotificationEvent
+00007FFE48BF221E (WINSTA): (filename not available): WinStationUnRegisterConsoleNotification
+00007FFE48BF2141 (WINSTA): (filename not available): WinStationUnRegisterConsoleNotification
+00007FFE457A22E3 (WTSAPI32): (filename not available): WTSUnRegisterSessionNotification
+00007FF7EDD75649 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDD7576B (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDCB8DFE (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDCB8188 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFCFEE (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFF970 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFDF5 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305E8 (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart
+PID 9096 received SIGSEGV for address: 0x4a2d4f99
+SymInit: Symbol-SearchPath: '.;E:\Apple-Music-Electron;E:\Apple-Music-Electron\node_modules\electron\dist;C:\Windows;C:\Windows\system32;SRV*C:\websymbols*http://msdl.microsoft.com/download/symbols;', symOptions: 530, UserName: 'vieta'
+OS-Version: 10.0.19042 () 0x300-0x1
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\StackWalker.cpp (941): StackWalker::ShowCallstack
+E:\Apple-Music-Electron\node_modules\segfault-handler\src\segfault-handler.cpp (242): segfault_handler
+00007FFE4C5E8A3C (ntdll): (filename not available): RtlDeleteAce
+00007FFE4C5C1276 (ntdll): (filename not available): RtlRaiseException
+00007FFE4C5C11A5 (ntdll): (filename not available): RtlRaiseException
+00007FFE4A2D4F99 (KERNELBASE): (filename not available): RaiseException
+00007FFE4BAD7740 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BAD7704 (RPCRT4): (filename not available): RpcRaiseException
+00007FFE4BB60229 (RPCRT4): (filename not available): Ndr64AsyncServerCallAll
+00007FFE4BB63840 (RPCRT4): (filename not available): NdrClientCall3
+00007FFE48BF7A78 (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF9D76 (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF9CCE (WINSTA): (filename not available): WinStationQueryCurrentSessionInformation
+00007FFE48BF7FCD (WINSTA): (filename not available): WinStationNameFromLogonIdW
+00007FFE48BF8586 (WINSTA): (filename not available): WinStationQueryInformationW
+00007FFE457A15E3 (WTSAPI32): (filename not available): WTSQuerySessionInformationW
+00007FF7EEC59EF6 (electron): (filename not available): IsSandboxedProcess
+00007FF7EEC59E4A (electron): (filename not available): IsSandboxedProcess
+00007FF7EE6868DD (electron): (filename not available): IsSandboxedProcess
+00007FF7EDC0556D (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EADD9038 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EADD8B1D (electron): (filename not available): uv_fs_get_ptr
+00007FF7E9F6E5B8 (electron): (filename not available): electron::fuses::IsOnlyLoadAppFromAsarEnabled
+00007FF7EC8108C8 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC86F3AC (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EC819EBB (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FF7EADE5928 (electron): (filename not available): uv_fs_get_ptr
+00007FF7EB2410A7 (electron): (filename not available): uv_sleep
+00007FF7EADC285E (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EDAFE613 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EDAFFD31 (electron): (filename not available): v8_inspector::V8StackTraceId::V8StackTraceId
+00007FF7EA8305DC (electron): (filename not available): node::GetEnvironmentIsolateData
+00007FF7EA3D2A9A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D249A (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1283 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7EA3D1A16 (electron): (filename not available): v8::MemorySpan<char const >::operator=
+00007FF7E9CB98FD (electron): (filename not available): cppgc::NameProvider::HideInternalNames
+00007FF7ECA5AFC2 (electron): (filename not available): cppgc::internal::WriteBarrier::DijkstraMarkingBarrierRangeSlow
+00007FFE4C117034 (KERNEL32): (filename not available): BaseThreadInitThunk
+00007FFE4C5C2651 (ntdll): (filename not available): RtlUserThreadStart

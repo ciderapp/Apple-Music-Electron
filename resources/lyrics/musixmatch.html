@@ -26,7 +26,7 @@
      return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10);
     }
 	/* get token */
-	function getToken(mode, track, artist, songid, lang) {
+	function getToken(mode, track, artist, songid, lang, time) {
 		    var url  = "https://apic-desktop.musixmatch.com/ws/1.1/token.get?app_id=web-desktop-app-v1.0&t="+revisedRandId();
 			var req = new XMLHttpRequest();  
 			req.overrideMimeType("application/json");
@@ -42,7 +42,7 @@
 				// token good
 				globaltoken = token;
 				if (mode == 1){
-                    getMXMSubs(track, artist, token, lang);
+                    getMXMSubs(track, artist, token, lang, time);
 				} else {
 					getMXMTrans(songid, lang, token);
 				}
@@ -61,9 +61,10 @@
 	    }
 		req.send();
     }
-	function getMXMSubs(track, artist, token, lang) {
+	function getMXMSubs(track, artist, token, lang, time) {
 		var usertoken = encodeURIComponent(token);
-		var url  = "https://apic-desktop.musixmatch.com/ws/1.1/macro.subtitles.get?format=json&namespace=lyrics_richsynched&subtitle_format=lrc&q_artist="+artist+"&q_track="+track+"&usertoken="+usertoken+"&app_id=web-desktop-app-v1.0&t="+revisedRandId();
+		var timecustom = `&f_subtitle_length=${time}&q_duration=${time}&f_subtitle_length_max_deviation=40`;
+		var url  = "https://apic-desktop.musixmatch.com/ws/1.1/macro.subtitles.get?format=json&namespace=lyrics_richsynched&subtitle_format=lrc&q_artist="+artist+"&q_track="+track+"&usertoken="+usertoken+timecustom+"&app_id=web-desktop-app-v1.0&t="+revisedRandId();
 		var req = new XMLHttpRequest();  
         req.overrideMimeType("application/json");
         req.open('GET', url, true);
@@ -72,6 +73,7 @@
         var jsonResponse = JSON.parse(this.responseText);
 		console.log(jsonResponse);
 		var status1 = jsonResponse["message"]["header"]["status_code"] ;
+
 		if (status1 == 200){    
 			var id = '';
 			try{
@@ -133,7 +135,7 @@
 			ipcRenderer.send('LyricsMXMFailed','');
 			}
 		} else { //4xx rejected
-			getToken(1, track, artist, '', lang);}
+			getToken(1, track, artist, '', lang, time);}
 		}
 		req.send(); 
     }
@@ -159,22 +161,22 @@
 				      /// not found trans -> ignore		
 					}
 				} else { //4xx rejected
-			        getToken(2,'', '', id, lang);   
+			        getToken(2,'', '', id, lang, '');   
 				}
 		    }
 			req2.send();
 		}		
 	}
 
-	ipcRenderer.on('mxmcors', function (event, track, artist, lang) {
+	ipcRenderer.on('mxmcors', function (event, track, artist, lang, time) {
 		console.log("hello");
 		if (track != "" & track != "No Title Found"){
 			if ( globaltoken != null && globaltoken != '' ) {
 			console.log("we good");
-			getMXMSubs(track, artist, token, lang)
+			getMXMSubs(track, artist, token, lang, time)
 			} else {
 			console.log("get token");
-			getToken(1,track, artist, '', lang);
+			getToken(1,track, artist, '', lang, time);
 			}
 		}	
     });
