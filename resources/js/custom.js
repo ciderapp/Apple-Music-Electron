@@ -1390,6 +1390,8 @@ try {
                     /* Audio Settings */
                     AMSettings.HandleField('audioQuality');
                     AMSettings.HandleField('seamlessAudioTransitions');
+                    AMSettings.HandleField('castingBitDepth');
+                    AMSettings.HandleField('enableDLNA');
                     AMSettings.HandleField('volume');
 
 

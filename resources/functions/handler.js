@@ -1051,6 +1051,7 @@ const handler = {
         function playData2(req, res) {
             console.log("Device requested: /a.wav");
             req.connection.setTimeout(Number.MAX_SAFE_INTEGER);
+            headerSent = false;
             res.setHeader('Accept-Ranges', 'bytes')
             res.setHeader('Connection', 'keep-alive')
             res.setHeader('Content-Type', 'audio/wav')
@@ -1195,19 +1196,23 @@ const handler = {
                 ssdpBrowser.search('urn:dial-multiscreen-org:device:dial:1');
 
                 // actual upnp devices  
-                let ssdpBrowser2 = new ssdp();
-                ssdpBrowser2.on('response', (msg, rinfo) => {
-                    console.log(msg);
-                    var location = getLocation(msg);
-                    if (location != null) {
-                        getServiceDescription(location, rinfo.address);
-                    }
-
-                });
-                ssdpBrowser2.search('urn:schemas-upnp-org:device:MediaRenderer:1');
+                if (app.cfg.get("audio.enableDLNA")){
+                        let ssdpBrowser2 = new ssdp();
+                        ssdpBrowser2.on('response', (msg, rinfo) => {
+                            console.log(msg);
+                            var location = getLocation(msg);
+                            if (location != null) {
+                                getServiceDescription(location, rinfo.address);
+                            }
+        
+                        });
+                        ssdpBrowser2.search('urn:schemas-upnp-org:device:MediaRenderer:1');
+                    
+                }
+                
 
             } catch (e) {
-                console.log('Search GC err');
+                console.log('Search GC err',e);
             }
         }
 
@@ -1265,38 +1270,38 @@ const handler = {
                             {url: albumart ?? ""}]
                     }
                 };
-                ipcMain.on('setupNewTrack', function (event, song, artist, album, albumart) {
-                    try {
+                // ipcMain.on('setupNewTrack', function (event, song, artist, album, albumart) {
+                //     try {
                         
-                        let newmedia = {
-                            // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
-                            contentId: u,
-                            contentType: 'audio/wav',
-                            streamType: 'LIVE', // or LIVE
+                //         let newmedia = {
+                //             // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
+                //             contentId: u,
+                //             contentType: 'audio/wav',
+                //             streamType: 'LIVE', // or LIVE
 
-                            // Title and cover displayed while buffering
-                            metadata: {
-                                type: 0,
-                                metadataType: 3,
-                                title: song ?? "",
-                                albumName: album ?? '',
-                                artist: artist ?? '',
-                                images: [
-                                    {url: albumart ?? ''}]
-                            }
-                        };
-                        headerSent = false;
+                //             // Title and cover displayed while buffering
+                //             metadata: {
+                //                 type: 0,
+                //                 metadataType: 3,
+                //                 title: song ?? "",
+                //                 albumName: album ?? '',
+                //                 artist: artist ?? '',
+                //                 images: [
+                //                     {url: albumart ?? ''}]
+                //             }
+                //         };
+                //         headerSent = false;
 
-                        player.queueUpdate(newmedia, {
-                            autoplay: true
-                        }, (err, status) => {
-                            console.log('media loaded playerState=%s', status);
-                        });
+                //         player.queueUpdate(newmedia, {
+                //             autoplay: true
+                //         }, (err, status) => {
+                //             console.log('media loaded playerState=%s', status);
+                //         });
                         
-                    } catch (e) {
-                        console.log('GCerror', e)
-                    }
-                });
+                //     } catch (e) {
+                //         console.log('GCerror', e)
+                //     }
+                // });
 
 
                 player.on('status', status => {

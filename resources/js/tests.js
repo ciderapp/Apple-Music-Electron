@@ -333,6 +333,7 @@ var _tests = {
                             audioQuality: "auto",
                             seamlessAudioTransitions: true,
                             castingBitDepth: '16',
+                            enableDLNA: false,
                         },
                         window: {
                             closeButtonMinimize: true
@@ -356,6 +357,10 @@ var _tests = {
                         
                         ipcRenderer.invoke("getStoreValue", "audio.castingBitDepth").then((result) => {
                             self.prefs.audio.castingBitDepth = result
+                        })
+
+                        ipcRenderer.invoke("getStoreValue", "audio.enableDLNA").then((result) => {
+                            self.prefs.audio.enableDLNA = result
                         })
 
                         ipcRenderer.invoke("getStoreValue", "general.storefront").then((result) => {
@@ -408,6 +413,7 @@ var _tests = {
                         ipcRenderer.invoke("setStoreValue", "audio.audioQuality", self.prefs.audio.audioQuality)
                         ipcRenderer.invoke("setStoreValue", "audio.seamlessAudioTransitions", self.prefs.audio.seamlessAudioTransitions)
                         ipcRenderer.invoke("setStoreValue", "audio.castingBitDepth", self.prefs.audio.castingBitDepth)
+                        ipcRenderer.invoke("setStoreValue", "audio.enableDLNA", self.prefs.audio.enableDLNA)
                         ipcRenderer.invoke("setStoreValue", "general.storefront", self.prefs.general.storefront)
                         ipcRenderer.invoke("setStoreValue", "general.discordRPC", self.prefs.general.discordRPC)
                         ipcRenderer.invoke("setStoreValue", "general.analyticsEnabled", self.prefs.general.analyticsEnabled)
