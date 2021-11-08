@@ -481,7 +481,7 @@ var AudioOutputs = {
   
         recorder.ondataavailable = function(e) {
           e.data.arrayBuffer().then(buffer => {
-              if(!GCOverride)  {ipcRenderer.send('writeWAV',buffer);}
+              if(!GCOverride)  {ipcRenderer.send('writeWAV',buffer,preferences.audio.castingBitDepth);}
               if(!EAOverride)  {ipcRenderer.send('writePCM',buffer);}
             }
         );                   
@@ -536,7 +536,9 @@ var AudioOutputs = {
 
       recorder.ondataavailable = function(e) {
         e.data.arrayBuffer().then(buffer => {
-            if(!GCOverride)  {ipcRenderer.send('writeWAV',buffer);}
+            if(!GCOverride)  {
+              ipcRenderer.send('writeWAV',buffer,preferences.audio.castingBitDepth);
+            }
             if(!EAOverride)  {ipcRenderer.send('writePCM',buffer);}
           }
       );                   

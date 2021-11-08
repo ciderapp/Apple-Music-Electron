@@ -49,6 +49,7 @@
     "source-map-support": "^0.5.20",
     "upnp-mediarenderer-client": "github:vapormusic/node-upnp-mediarenderer-client",
     "v8-compile-cache": "^2.3.0",
+    "wavefile": "^11.0.0",
     "xml2js": "^0.4.23",
     "youtube-search-without-api-key": "github:vapormusic/youtube-search"
   },
