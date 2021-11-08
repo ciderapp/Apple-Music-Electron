@@ -147,8 +147,10 @@ module.exports = {
         /* Load Back Button */
         if (BackButtonChecks(app.win.webContents.getURL())) {
             app.ame.load.LoadJS('backButton.js')
+            app.win.webContents.executeJavaScript(`document.body.setAttribute('back-button', 1)`)
         } else { /* Removes the button if the check failed. */
             app.win.webContents.executeJavaScript(`if (document.querySelector('#backButtonBar')) { document.getElementById('backButtonBar').remove() };`).catch((e) => console.error(e));
+            app.win.webContents.executeJavaScript(`document.body.removeAttribute('back-button')`)
         }
 
         /* Load the Startup JavaScript Function */
