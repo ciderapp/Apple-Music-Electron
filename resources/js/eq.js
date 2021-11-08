@@ -210,11 +210,9 @@ var AudioOutputs = {
                 },
                 OnCreate() {
                     vm.$mount("#castdevices-vue");
-                    vm.scan();
-                    for (var i = 0; i < 3 ;i++){
-                    setTimeout(()=>{  
-                    vm.scan();},3000);                  
-                  }
+                    vm.scan();                   
+                    setIntervalX(()=>{  
+                    vm.scan();},3000,5);                  
                 },
                 OnClose() {
                     _vues.destroy(vm);
@@ -576,6 +574,18 @@ function waitFor(condition, callback) {
   } else {
       callback();
   }
+}
+
+function setIntervalX(callback, delay, repetitions) {
+  var x = 0;
+  var intervalID = window.setInterval(function () {
+
+     callback();
+
+     if (++x === repetitions) {
+         window.clearInterval(intervalID);
+     }
+  }, delay);
 }
 
 AudioOutputs.init()
