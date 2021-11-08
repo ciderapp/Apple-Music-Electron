@@ -1051,7 +1051,8 @@ const handler = {
             console.log("Device requested: /a.wav");
             req.connection.setTimeout(Number.MAX_SAFE_INTEGER);
             res.setHeader('Accept-Ranges', 'bytes')
-            res.setHeader('Content-Type', 'audio/l16')
+            res.setHeader('Connection', 'keep-alive')
+            res.setHeader('Content-Type', 'audio/wav')
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.statusCode = 200;
             res.setHeader('transferMode.dlna.org', 'Streaming');
@@ -1059,7 +1060,6 @@ const handler = {
               'contentFeatures.dlna.org',
               'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000'
             );
-            res.setHeader('Content-Length',99999999999);
             requests.push({req: req, res: res});
             var pos = requests.length - 1;
             req.on("close", () => {
@@ -1175,17 +1175,17 @@ const handler = {
 
                 ssdpBrowser.search('urn:dial-multiscreen-org:device:dial:1');
 
-                // // actual upnp devices  
-                // let ssdpBrowser2 = new ssdp();
-                // ssdpBrowser2.on('response', (msg, rinfo) => {
-                //     console.log(msg);
-                //     var location = getLocation(msg);
-                //     if (location != null) {
-                //         getServiceDescription(location, rinfo.address);
-                //     }
+                // actual upnp devices  
+                let ssdpBrowser2 = new ssdp();
+                ssdpBrowser2.on('response', (msg, rinfo) => {
+                    console.log(msg);
+                    var location = getLocation(msg);
+                    if (location != null) {
+                        getServiceDescription(location, rinfo.address);
+                    }
 
-                // });
-                // ssdpBrowser2.search('urn:schemas-upnp-org:device:MediaRenderer:1');
+                });
+                ssdpBrowser2.search('urn:schemas-upnp-org:device:MediaRenderer:1');
 
             } catch (e) {
                 console.log('Search GC err');
