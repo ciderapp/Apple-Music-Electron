@@ -1,10 +1,18 @@
+:root {
+    --backButtonBar-height: 40px;
+}
+
 /* Back Button CSS */
+
+body[back-button] .playlist .songs-list__header-col, .room .songs-list__header-col {
+    top: var(--backButtonBar-height)!important;
+}
 
 #backButtonBar {
     position: absolute;
     width: calc(100vw - var(--web-navigation-width));
     top: 0;
-    height: 40px;
+    height: var(--backButtonBar-height);
     transition: 0.2s;
     background-color: transparent;
     padding: 5px 10px;

@@ -212,7 +212,15 @@ var AudioOutputs = {
                     vm.$mount("#castdevices-vue");
                     vm.scan();                   
                     setIntervalX(()=>{  
-                    vm.scan();},3000,5);                  
+                      let self = this;
+                      AudioOutputs.getGCDevices();
+                      setTimeout(()=>{
+                          self.devices.cast = ipcRenderer.sendSync("getKnownCastDevices");
+                          self.scanning = false;
+                      }, 1000);
+                      console.log(this.devices);
+                      vm.$forceUpdate();
+                  },5000,3);                  
                 },
                 OnClose() {
                     _vues.destroy(vm);
