@@ -325,7 +325,7 @@ try {
                 const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
                 if (trackName !== '' && !(trackName === "No Title Found" && artistName === '')) {
                      /* MusixMatch Lyrics*/
-                     if(musicType === "musicVideo" && preferences.visual.yton){
+                    if(musicType === "musicVideo" && preferences.visual.yton){
                         ipcRenderer.send('YTTranslation', trackName, artistName, preferences.visual.mxmlanguage);
                     } else/* MusixMatch Lyrics*/
                     if (!mxmfail && preferences.visual.mxmon) {

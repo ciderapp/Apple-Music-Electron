@@ -28,6 +28,7 @@ var getPort = require('get-port');
 const {Stream} = require('stream');
 initAnalytics();
 const regedit = require('regedit');
+const WaveFile = require('wavefile').WaveFile;
 
 
 const handler = {
@@ -1094,7 +1095,8 @@ const handler = {
             //     //GCstream.write(mp3Tmp);
 
         })
-        ipcMain.on('writeWAV', function (event, pcm) {
+        ipcMain.on('writeWAV', function (event, pcm, extremeAudio) {
+        if(extremeAudio == '24'){
             var pcmData = Buffer.from(pcm,'binary').slice(44);
             if (!headerSent) {
                 const header = Buffer.from(pcm,'binary').slice(0,44)
@@ -1107,7 +1109,24 @@ const handler = {
                 GCstream.write(pcmData);
             }
 
-        });
+        } else {
+            //sample down to 16 (default)
+            let wav = new WaveFile(Buffer.from(pcm,'binary')); 
+            wav.toBitDepth("16");
+            var newpcm = wav.toBuffer();
+            var pcmData = Buffer.from(newpcm,'binary').slice(44);
+            if (!headerSent) {
+                const header = Buffer.from(newpcm,'binary').slice(0,44)
+                header.writeUInt32LE(2147483600, 4)
+                header.writeUInt32LE(2147483600 + 44 - 8, 40)
+                GCstream.write(Buffer.concat([header, pcmData]));
+                headerSent = true;
+                console.log('done');
+            } else {
+                GCstream.write(pcmData);
+            }
+        }}
+        );
 
         function getServiceDescription(url, address) {
             var request = require('request');

@@ -331,7 +331,8 @@ var _tests = {
                         },
                         audio: {
                             audioQuality: "auto",
-                            seamlessAudioTransitions: true
+                            seamlessAudioTransitions: true,
+                            castingBitDepth: '16',
                         },
                         window: {
                             closeButtonMinimize: true
@@ -351,6 +352,10 @@ var _tests = {
 
                         ipcRenderer.invoke("getStoreValue", "audio.seamlessAudioTransitions").then((result) => {
                             self.prefs.audio.seamlessAudioTransitions = result
+                        })
+                        
+                        ipcRenderer.invoke("getStoreValue", "audio.castingBitDepth").then((result) => {
+                            self.prefs.audio.castingBitDepth = result
                         })
 
                         ipcRenderer.invoke("getStoreValue", "general.storefront").then((result) => {
@@ -390,7 +395,6 @@ var _tests = {
                             self.prefs.visual.yton = result
                         })
 
-
                         ipcRenderer.invoke("getStoreValue", "visual.mxmlanguage").then((result) => {
                             self.prefs.visual.mxmlanguage = result
                         })
@@ -403,6 +407,7 @@ var _tests = {
                         let self = this
                         ipcRenderer.invoke("setStoreValue", "audio.audioQuality", self.prefs.audio.audioQuality)
                         ipcRenderer.invoke("setStoreValue", "audio.seamlessAudioTransitions", self.prefs.audio.seamlessAudioTransitions)
+                        ipcRenderer.invoke("setStoreValue", "audio.castingBitDepth", self.prefs.audio.castingBitDepth)
                         ipcRenderer.invoke("setStoreValue", "general.storefront", self.prefs.general.storefront)
                         ipcRenderer.invoke("setStoreValue", "general.discordRPC", self.prefs.general.discordRPC)
                         ipcRenderer.invoke("setStoreValue", "general.analyticsEnabled", self.prefs.general.analyticsEnabled)
