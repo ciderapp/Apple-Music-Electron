@@ -174,7 +174,10 @@ module.exports = {
         app.ame.load.LoadJS('vue.js')
         app.ame.load.LoadJS('utils.js', false)
         app.ame.load.LoadJS('tests.js', false)
-
+        // wsapi
+        app.ame.load.LoadJS('WSAPI_Interop.js', false)
+        // wsapi
+        
         // Bulk JavaScript Functions
         app.ame.load.LoadJS('custom.js')
 

@@ -6,7 +6,12 @@ let cache = {playParams: {id: 0}, status: null, remainingTime: 0},
 
 const MusicKitInterop = {
     init: function () {
+        const self = this;
         MusicKit.getInstance().addEventListener(MusicKit.Events.playbackStateDidChange, () => {
+            /** wsapi */
+            ipcRenderer.send('wsapi-updatePlaybackState', self.getAttributes());
+            /** wsapi */
+
             if (MusicKitInterop.filterTrack(MusicKitInterop.getAttributes(), true, false)) {
                 global.ipcRenderer.send('playbackStateDidChange', MusicKitInterop.getAttributes())
                 if (typeof _plugins != "undefined") {
@@ -36,6 +41,12 @@ const MusicKitInterop = {
                 }
             }
         });
+
+        /** wsapi */
+        MusicKit.getInstance().addEventListener(MusicKit.Events.playbackProgressDidChange, () => {
+            ipcRenderer.send('wsapi-updatePlaybackState', self.getAttributes());
+        });
+        /** wsapi */
 
         MusicKit.getInstance().addEventListener(MusicKit.Events.nowPlayingItemDidChange, () => {
             if (MusicKitInterop.filterTrack(MusicKitInterop.getAttributes(), false, true)) {
