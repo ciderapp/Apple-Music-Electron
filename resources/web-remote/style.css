@@ -1,0 +1,119 @@
+@import url("ameframework.css");
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+#app{
+    width: 100%;
+    height: 100%;
+    background:rgb(31 27 42);
+    color: white;
+}
+
+body {
+    background: #eee;
+    font-family: "Segoe UI Variable Text", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.nopadding {
+    padding: 0px;
+}
+
+.md-btn {
+    font-family: inherit;
+}
+
+.player-artwork-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-duration-container {
+    font-size: 0.85em;
+    font-weight: 500;
+}
+
+.media-artwork {
+    --artwork: url("");
+    width: 70vw;
+    height: 70vw;
+    max-height: 400px;
+    max-width: 400px;
+    background: black;
+    background-image: var(--artwork);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 8px;
+    box-shadow: 0 8px 40px rgb(0 0 0 / 0.55);
+}
+
+.playback-slider {
+    width: 90%;
+}
+
+.volume-slider {
+    width: 90%;
+}
+
+.playback-button {
+    font-size: 2em;
+    width: 64px;
+    height: 64px;
+    padding:0px;
+    color: inherit;
+}
+
+.playback-button--small {
+    font-size: 1em;
+    color: inherit;
+}
+
+.player-track-info {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.player-song-title {
+    font-size: 1.5em;
+    text-align: left;
+    margin: 0 auto;
+}
+
+.player-song-artist {
+    font-size: 1.0em;
+    text-align: left;
+    margin: 0 auto;
+}
+
+.player-more-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-more-button {
+    appearance: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 0px;
+    background: blueviolet;
+}
+
+.search-input {
+    width:100%;
+    padding: 12px;
+    font-size: 1.5em;
+}
+
+.md-container {
+    width:100%;
+}

@@ -106,7 +106,7 @@ const wsapi = {
                         app.win.webContents.executeJavaScript(`wsapi.toggleRepeat()`);
                     break;
                     case "seek":
-                        app.win.webContents.executeJavaScript(`MusicKit.getInstance().seetToTime(${parseFloat(data.time)})`);
+                        app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime(${parseFloat(data.time)})`);
                         response.message = "Seek";
                     break;
                     case "pause":
@@ -218,6 +218,7 @@ const wsapi = {
     },
     InitWebServer () {
         // Web Remote
+        
     }
 }
 
