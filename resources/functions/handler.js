@@ -11,21 +11,24 @@ const {
         clipboard
     } = require('electron'),
     {join, resolve} = require('path'),
-     {readFile, readFileSync, writeFile, existsSync, watch} = require('fs'),
-    os = require('os'),
-    portAudio = require('naudiodon'),
-    mdns = require('mdns-js'),
-    ssdp = require('node-ssdp-lite'),
-    express = require('express'),
-    audioClient = require('castv2-client').Client,
-    MediaRendererClient = require('upnp-mediarenderer-client'),
-    DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver,
-    getPort = require('get-port'),
-    {Stream} = require('stream'),
-    regedit = require('regedit'),
-    WaveFile = require('wavefile').WaveFile,
+
+    {readFile, readFileSync, writeFile, existsSync, watch} = require('fs'),
     {initAnalytics} = require('./utils');
+
+
+const os = require('os');
+const mdns = require('mdns-js');
+const ssdp = require('node-ssdp-lite');
+const express = require('express');
+const audioClient = require('castv2-client').Client;
+var MediaRendererClient = require('upnp-mediarenderer-client');
+const DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
+var getPort = require('get-port');
+const {Stream} = require('stream');
 initAnalytics();
+const regedit = require('regedit');
+const WaveFile = require('wavefile').WaveFile;
+
 
 const handler = {
 
@@ -152,13 +155,13 @@ const handler = {
         // Windows specific: Handles window states
         // Needed because Aero Snap events do not send the same way as clicking the frame buttons.
         if (process.platform === "win32" && app.cfg.get('visual.frameType') !== 'mac' || app.cfg.get('visual.frameType') !== 'mac-right') {
-            const WND_STATE = {
+            var WND_STATE = {
                 MINIMIZED: 0,
                 NORMAL: 1,
                 MAXIMIZED: 2,
                 FULL_SCREEN: 3
-            };
-            let wndState = WND_STATE.NORMAL;
+            }
+            var wndState = WND_STATE.NORMAL
 
             app.win.on("resize", (_event) => {
                 const isMaximized = app.win.isMaximized()
@@ -340,7 +343,7 @@ const handler = {
                 app.win.webContents.executeJavaScript(`AMStyling.setMica(true);`).catch((e) => console.error(e));
                 app.transparency = false;
                 app.win.setVibrancy();
-            } else {
+            }else{
                 app.win.webContents.executeJavaScript(`AMStyling.setMica(false);`).catch((e) => console.error(e));
             }
             if (app.transparency && updatedVibrancy && process.platform !== 'darwin') {
@@ -453,7 +456,7 @@ const handler = {
         })
 
         // Update Themes
-        ipcMain.handle('updateThemes', () => {
+        ipcMain.handle('updateThemes',  () => {
             return app.ame.utils.updateThemes()
         });
 
@@ -546,7 +549,7 @@ const handler = {
                     ipcMain.emit("set-miniplayer", false)
                 }
             },
-
+              
             ]
             const menu = Menu.buildFromTemplate(menuOptions)
             menu.popup(app.win)
@@ -632,6 +635,7 @@ const handler = {
 
     },
 
+
     LyricsHandler: () => {
         app.lyrics = {
             neteaseWin: null,
@@ -675,6 +679,11 @@ const handler = {
             },
         });
 
+      
+
+       
+       
+      
         ipcMain.on('YTTranslation', function (event, track, artist, lang) {
             try {
                 if (app.lyrics.ytWin == null) {
@@ -748,7 +757,6 @@ const handler = {
                 console.error(e)
             }
         });
-
         ipcMain.on('NetEaseLyricsHandler', function (event, data) {
             try {
                 if (app.lyrics.neteaseWin == null) {
@@ -785,6 +793,7 @@ const handler = {
         });
 
         ipcMain.on('LyricsHandler', function (event, data, artworkURL) {
+           
             app.win.send('truelyrics', data);
             app.win.send('albumart', artworkURL);
             app.lyrics.savedLyric = data;
@@ -793,22 +802,27 @@ const handler = {
 
         ipcMain.on('updateMiniPlayerArt', function (event, artworkURL) {
             app.lyrics.albumart = artworkURL;
-        });
 
+
+        })
         ipcMain.on('LyricsHandlerNE', function (event, data) {
+           
             app.win.send('truelyrics', data);
             app.lyrics.savedLyric = data;
         });
 
         ipcMain.on('LyricsHandlerTranslation', function (event, data) {
+
             app.win.send('lyricstranslation', data);
         });
 
         ipcMain.on('LyricsTimeUpdate', function (event, data) {
+
             app.win.send('ProgressTimeUpdate', data);
         });
 
         ipcMain.on('LyricsUpdate', function (event, data, artworkURL) {
+
             app.win.send('truelyrics', data);
             app.win.send('albumart', artworkURL);
             app.lyrics.savedLyric = data;
@@ -826,60 +840,67 @@ const handler = {
         ipcMain.on('ProgressTimeUpdateFromLyrics', function (event, data) {
             app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`).catch((e) => console.error(e));
         });
+
+
     },
 
-    AudioHandler: () => {
-
-        let EAstream = new Stream.PassThrough();
-        let ao;
-
+    AudioHandler: function () {
+        ipcMain.on('muteAudio', function (event, mute) {
+            app.win.webContents.setAudioMuted(mute);
+        });
+        
+        if (process.platform == "win32"){
+        var EAstream = new Stream.PassThrough();
+        var ao;
+        const portAudio = require('naudiodon');
         console.log(portAudio.getDevices());
-        ipcMain.on('getAudioDevices', function (_event) {
-            for (let id = 0; id < portAudio.getDevices().length; id++) {
-                if (portAudio.getDevices()[id].maxOutputChannels > 0)
-                    app.win.webContents.executeJavaScript(`console.log('id:','${id}','${portAudio.getDevices()[id].name}','outputChannels:','${portAudio.getDevices()[id].maxOutputChannels}','preferedSampleRate','${portAudio.getDevices()[id].defaultSampleRate}','nativeFormats','${portAudio.getDevices()[id].hostAPIName}')`);
-            }
+        ipcMain.on('getAudioDevices',function(event){
+            for (let id = 0; id < portAudio.getDevices().length; id++ ){
+            if (portAudio.getDevices()[id].maxOutputChannels > 0)    
+            app.win.webContents.executeJavaScript(`console.log('id:','${id}','${portAudio.getDevices()[id].name}','outputChannels:','${portAudio.getDevices()[id].maxOutputChannels}','preferedSampleRate','${portAudio.getDevices()[id].defaultSampleRate}','nativeFormats','${portAudio.getDevices()[id].hostAPIName}')`);
+        }
         })
-        ipcMain.on('enableExclusiveAudio', function (event, id) {
-            ao = new portAudio.AudioIO({
+        ipcMain.on('enableExclusiveAudio',function(event,id){
+           ao = new portAudio.AudioIO({
                 outOptions: {
 
-                    channelCount: 2,
-                    sampleFormat: portAudio.SampleFormat24Bit,
-                    sampleRate: 48000,
-                    maxQueue: 100,
-                    deviceId: id,
-                    highwaterMark: 1024, // Use -1 or omit the deviceId to select the default device
-                    closeOnError: false // Close the stream if an audio error is detected, if set false then just log the error
+                  channelCount: 2,
+                  sampleFormat: portAudio.SampleFormat24Bit,
+                  sampleRate: 48000,
+                  maxQueue: 100,
+                  deviceId: id,
+                  highwaterMark : 1024, // Use -1 or omit the deviceId to select the default device
+                  closeOnError: false // Close the stream if an audio error is detected, if set false then just log the error
                 }
-            });
-            // Create a stream to pipe into the AudioOutput
-            // Note that this does not strip the WAV header so a click will be heard at the beginning
-            EAstream.pipe(ao);
-            EAstream.once('data', (_data) => {
+              });              
+              // Create a stream to pipe into the AudioOutput
+              // Note that this does not strip the WAV header so a click will be heard at the beginning
+              EAstream.pipe(ao);
+              EAstream.once('data', (data)=>{
                 ao.start();
-            })
-
-            // Start piping data and start streaming
-
+              })
+            
+              // Start piping data and start streaming
+              
         })
-        ipcMain.on('disableExclusiveAudio', function (_event, _data) {
-            if (ao) {
-                ao.quit();
+        ipcMain.on('disableExclusiveAudio',function(event,data){
+            if(ao){
+              ao.quit();  
             }
         })
 
-        app.win.on('quit', () => {
-            if (ao) {
-                ao.quit();
+        app.win.on('quit', ()=>{
+            if(ao){
+                ao.quit();   
             }
         })
 
         // mix the channels
         function interleave(leftChannel, rightChannel) {
-            const length = leftChannel.length + rightChannel.length;
-            let result = new Float32Array(length);
-            let inputIndex = 0;
+            var length = leftChannel.length + rightChannel.length;
+            var result = new Float32Array(length);
+
+            var inputIndex = 0;
 
             for (var index = 0; index < length;) {
                 result[index++] = leftChannel[inputIndex];
@@ -889,44 +910,42 @@ const handler = {
             return result;
         }
 
-        ipcMain.on('changeAudioMode', function (_event, _mode) {
+        ipcMain.on('changeAudioMode', function (event, mode) {
             console.log(portAudio.getHostAPIs());
         });
-
         console.log(portAudio.getHostAPIs());
         ipcMain.on('writePCM', function (event, buffer) {
-            //     writeFile(join(app.getPath('userData'), 'buffertest5.raw'), Buffer.from(buffer,'binary').slice(44),{flag: 'a+'}, function (err) {
-            //         if (err) throw err;
-            //          console.log('It\'s saved!');
-            //    });
+        //     writeFile(join(app.getPath('userData'), 'buffertest5.raw'), Buffer.from(buffer,'binary').slice(44),{flag: 'a+'}, function (err) {
+        //         if (err) throw err;
+        //          console.log('It\'s saved!');
+        //    }); 
             // do anything with stereo pcm here
-            // buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm), Float32Array.from(rightpcm)).buffer));
+           // buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm), Float32Array.from(rightpcm)).buffer));
             EAstream.write(Buffer.from(buffer).slice(44));
+                
         });
 
-        ipcMain.on('muteAudio', function (event, mute) {
-            app.win.webContents.setAudioMuted(mute);
-        });
+        ipcMain.on('writeChunks', function(event, blob){
 
-        ipcMain.on('writeChunks', function (event, blob) {
-            writeFile(join(app.getPath('userData'), 'buffertest.raw'), Buffer.from(blob, 'binary'), {flag: 'a+'}, function (err) {
-                if (err) throw err;
-                console.log('It\'s saved!');
-            });
+            writeFile(join(app.getPath('userData'), 'buffertest.raw'), Buffer.from(blob,'binary'),{flag: 'a+'}, function (err) {
+                 if (err) throw err;
+                  console.log('It\'s saved!');
+            });   
         })
-    },
 
-    GoogleCastHandler: () => {
-        const devices = [];
-        const castDevices = [];
-        let GCRunning = false;
-        let GCBuffer;
-        let expectedConnections = 0;
-        let currentConnections = 0;
-        let activeConnections = [];
-        let requests = [];
-        let GCstream = new Stream.PassThrough();
-        let connectedHosts = {};
+    }
+    },
+    GoogleCastHandler: function () {
+        var devices = [];
+        var castDevices = []
+        var GCRunning = false;
+        var GCBuffer;
+        var expectedConnections = 0;
+        var currentConnections = 0;
+        var activeConnections = [];
+        var requests = [];
+        var GCstream = new Stream.PassThrough();
+        var connectedHosts = {};
 
 
         var port = false;
@@ -961,7 +980,6 @@ const handler = {
             })
 
         }
-
         audioserver.get('/a.wav', playData2.bind(this));
 
         function playData2(req, res) {
@@ -975,11 +993,11 @@ const handler = {
             res.statusCode = 200;
             res.setHeader('transferMode.dlna.org', 'Streaming');
             res.setHeader(
-                'contentFeatures.dlna.org',
-                'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000'
+              'contentFeatures.dlna.org',
+              'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000'
             );
             requests.push({req: req, res: res});
-            const pos = requests.length - 1;
+            var pos = requests.length - 1;
             req.on("close", () => {
                 console.info("CLOSED", requests.length);
                 requests.splice(pos, 1);
@@ -998,12 +1016,12 @@ const handler = {
 
         }
 
-        ipcMain.on('writeOPUS', function (event, buffer) {
+        ipcMain.on('writeOPUS', function(event,buffer){
 
-            const pcm = Buffer.from(buffer, 'binary').slice(44); //stereo, 48k, 16signed in 8bit buffer
-
-            // Pipe it to something else  (i.e. stdout)
-
+                var pcm = Buffer.from(buffer,'binary').slice(44); //stereo, 48k, 16signed in 8bit buffer
+              
+                // Pipe it to something else  (i.e. stdout)
+                
 
             //     writeFile(join(app.getPath('userData'), 'buffertest3.raw'), Encoder.,{flag: 'a+'}, function (err) {
             //         if (err) throw err;
@@ -1013,79 +1031,76 @@ const handler = {
 
         })
         ipcMain.on('writeWAV', function (event, pcm, extremeAudio) {
-                let pcmData;
-                if (extremeAudio === '24') {
-                    pcmData = Buffer.from(pcm, 'binary').slice(44);
-                    if (!headerSent) {
-                        const header = Buffer.from(pcm, 'binary').slice(0, 44)
-                        header.writeUInt32LE(2147483600, 4)
-                        header.writeUInt32LE(2147483600 + 44 - 8, 40)
-                        GCstream.write(Buffer.concat([header, pcmData]));
-                        headerSent = true;
-                        console.log('done');
-                    } else {
-                        GCstream.write(pcmData);
-                    }
-
-                } else {
-                    //sample down to 16 (default)
-                    let wav = new WaveFile(Buffer.from(pcm, 'binary'));
-                    wav.toBitDepth("16");
-                    const newpcm = wav.toBuffer();
-                    pcmData = Buffer.from(newpcm, 'binary').slice(44);
-                    if (!headerSent) {
-                        const header = Buffer.from(newpcm, 'binary').slice(0, 44)
-                        header.writeUInt32LE(2147483600, 4)
-                        header.writeUInt32LE(2147483600 + 44 - 8, 40)
-                        GCstream.write(Buffer.concat([header, pcmData]));
-                        headerSent = true;
-                        console.log('done');
-                    } else {
-                        GCstream.write(pcmData);
-                    }
-                }
+        if(extremeAudio == '24'){
+            var pcmData = Buffer.from(pcm,'binary').slice(44);
+            if (!headerSent) {
+                const header = Buffer.from(pcm,'binary').slice(0,44)
+                header.writeUInt32LE(2147483600, 4)
+                header.writeUInt32LE(2147483600 + 44 - 8, 40)
+                GCstream.write(Buffer.concat([header, pcmData]));
+                headerSent = true;
+                console.log('done');
+            } else {
+                GCstream.write(pcmData);
             }
+
+        } else {
+            //sample down to 16 (default)
+            let wav = new WaveFile(Buffer.from(pcm,'binary')); 
+            wav.toBitDepth("16");
+            var newpcm = wav.toBuffer();
+            var pcmData = Buffer.from(newpcm,'binary').slice(44);
+            if (!headerSent) {
+                const header = Buffer.from(newpcm,'binary').slice(0,44)
+                header.writeUInt32LE(2147483600, 4)
+                header.writeUInt32LE(2147483600 + 44 - 8, 40)
+                GCstream.write(Buffer.concat([header, pcmData]));
+                headerSent = true;
+                console.log('done');
+            } else {
+                GCstream.write(pcmData);
+            }
+        }}
         );
 
         function getServiceDescription(url, address) {
-            const request = require('request');
+            var request = require('request');
             request.get(url, (error, response, body) => {
-                if (!error && response.statusCode === 200) {
+                if (!error && response.statusCode == 200) {
                     parseServiceDescription(body, address, url);
                 }
             });
         }
 
         function ondeviceup(host, name, location, type) {
-            if (castDevices.findIndex((item) => item.host === host && item.name === name && item.location === location && item.type === type) === -1) {
+            if (castDevices.findIndex((item) => item.host == host && item.name == name && item.location == location && item.type == type) == -1) {
                 castDevices.push({
                     name: name,
                     host: host,
-                    location: location,
+                    location : location,
                     type: type
                 });
-                if (devices.indexOf(host) === -1) {
-                    devices.push(host);
-                }
+                if (devices.indexOf(host) == -1){
+                devices.push(host);}
                 if (name) {
-                    app.win.webContents.executeJavaScript(`console.log('deviceFound','ip: ${host} name:${name}')`).catch(err => console.error(err));
+                    app.win.webContents.executeJavaScript(`console.log('deviceFound','ip: ${host} name:${name}')`);
                     console.log("deviceFound", host, name);
                 }
             } else {
-                app.win.webContents.executeJavaScript(`console.log('deviceFound (added)','ip: ${host} name:${name}')`).catch(err => console.error(err));
+                app.win.webContents.executeJavaScript(`console.log('deviceFound (added)','ip: ${host} name:${name}')`);
                 console.log("deviceFound (added)", host, name);
             }
         }
 
         function searchForGCDevices() {
-            try {
-
+            try {                            
+                  
                 let browser = mdns.createBrowser(mdns.tcp('googlecast'));
                 browser.on('ready', browser.discover);
 
                 browser.on('update', (service) => {
                     if (service.addresses && service.fullname) {
-                        ondeviceup(service.addresses[0], service.fullname.substring(0, service.fullname.indexOf("._googlecast")) + " " + (service.type[0].description ?? ""), '', 'googlecast');
+                        ondeviceup(service.addresses[0], service.fullname.substring(0, service.fullname.indexOf("._googlecast")) +" "+ (service.type[0].description ?? ""),'','googlecast');
                     }
                 });
 
@@ -1104,11 +1119,10 @@ const handler = {
                     var headers = msg.split('\n');
                     var location = null;
                     for (var i = 0; i < headers.length; i++) {
-                        if (headers[i].indexOf('LOCATION') === 0) {
-                            location = headers[i].replace('LOCATION:', '').trim();
-                        } else if (headers[i].indexOf('Location') === 0) {
-                            location = headers[i].replace('Location:', '').trim();
-                        }
+                        if (headers[i].indexOf('LOCATION') == 0)
+                            {location = headers[i].replace('LOCATION:', '').trim();}
+                        else if (headers[i].indexOf('Location') == 0) 
+                            {location = headers[i].replace('Location:', '').trim();}  
                     }
                     return location;
                 }
@@ -1116,23 +1130,23 @@ const handler = {
                 ssdpBrowser.search('urn:dial-multiscreen-org:device:dial:1');
 
                 // actual upnp devices  
-                if (app.cfg.get("audio.enableDLNA")) {
-                    let ssdpBrowser2 = new ssdp();
-                    ssdpBrowser2.on('response', (msg, rinfo) => {
-                        console.log(msg);
-                        var location = getLocation(msg);
-                        if (location != null) {
-                            getServiceDescription(location, rinfo.address);
-                        }
-
-                    });
-                    ssdpBrowser2.search('urn:schemas-upnp-org:device:MediaRenderer:1');
-
+                if (app.cfg.get("audio.enableDLNA")){
+                        let ssdpBrowser2 = new ssdp();
+                        ssdpBrowser2.on('response', (msg, rinfo) => {
+                            console.log(msg);
+                            var location = getLocation(msg);
+                            if (location != null) {
+                                getServiceDescription(location, rinfo.address);
+                            }
+        
+                        });
+                        ssdpBrowser2.search('urn:schemas-upnp-org:device:MediaRenderer:1');
+                    
                 }
-
+                
 
             } catch (e) {
-                console.log('Search GC err', e);
+                console.log('Search GC err',e);
             }
         }
 
@@ -1155,20 +1169,19 @@ const handler = {
             var parseString = require('xml2js').parseString;
             parseString(body, (err, result) => {
                 if (!err && result && result.root && result.root.device) {
-                    const device = result.root.device[0];
+                    var device = result.root.device[0];
                     console.log('device', device);
-                    let devicetype = 'googlecast';
+                    var devicetype = 'googlecast';
                     console.log()
-                    if (device.deviceType && device.deviceType.toString() === 'urn:schemas-upnp-org:device:MediaRenderer:1') {
-                        devicetype = 'upnp';
-                    }
+                    if(device.deviceType && device.deviceType.toString() == 'urn:schemas-upnp-org:device:MediaRenderer:1')
+                    {devicetype = 'upnp';}
                     ondeviceup(address, device.friendlyName.toString(), url, devicetype);
                 }
             });
         }
 
         function loadMedia(client, song, artist, album, albumart, cb) {
-            const u = 'http://' + getIp() + ':' + server.address().port + '/';
+            var u =  'http://' + getIp() + ':' + server.address().port + '/';
             client.launch(DefaultMediaReceiver, (err, player) => {
                 if (err) {
                     console.log(err);
@@ -1193,6 +1206,7 @@ const handler = {
                 };
                 // ipcMain.on('setupNewTrack', function (event, song, artist, album, albumart) {
                 //     try {
+                        
                 //         let newmedia = {
                 //             // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
                 //             contentId: u,
@@ -1217,6 +1231,7 @@ const handler = {
                 //         }, (err, status) => {
                 //             console.log('media loaded playerState=%s', status);
                 //         });
+                        
                 //     } catch (e) {
                 //         console.log('GCerror', e)
                 //     }
@@ -1249,10 +1264,10 @@ const handler = {
 
 
         function getIp() {
-            let ip = false;
-            let alias = 0;
+            var ip = false
+            var alias = 0;
             let ifaces = os.networkInterfaces();
-            for (const dev in ifaces) {
+            for (var dev in ifaces) {
                 ifaces[dev].forEach(details => {
                     if (details.family === 'IPv4') {
                         if (!/(loopback|vmware|internal|hamachi|vboxnet|virtualbox)/gi.test(dev + (alias ? ':' + alias : ''))) {
@@ -1271,68 +1286,63 @@ const handler = {
         }
 
         function stream(device, song, artist, album, albumart) {
-            let castMode = 'googlecast';
-            let UPNPDesc = '';
+            var castMode = 'googlecast'; 
+            var UPNPDesc = '';
             castMode = device.type;
             UPNPDesc = device.location;
 
-            let client;
-            if (castMode === 'googlecast') {
-                client = new audioClient();
-                client.volume = 100;
-                client.stepInterval = 0.5;
-                client.muted = false;
+            if (castMode == 'googlecast'){                
+            let client = new audioClient();
+            client.volume = 100;
+            client.stepInterval = 0.5;
+            client.muted = false;
 
-                client.connect(device.host, () => {
-                    console.log('connected, launching app ...', 'http://' + getIp() + ':' + server.address().port + '/');
-                    if (!connectedHosts[device.host]) {
-                        connectedHosts[device.host] = client;
-                        activeConnections.push(client);
-                    }
-                    loadMedia(client, song, artist, album, albumart);
-                });
-
-                client.on('close', () => {
-                    console.info("Client Closed");
-                    for (let i = activeConnections.length - 1; i >= 0; i--) {
-                        if (activeConnections[i] === client) {
-                            activeConnections.splice(i, 1);
-                            return;
-                        }
-                    }
-                });
-
-                client.on('error', err => {
-                    console.log('Error: %s', err.message);
-                    client.close();
-                    delete connectedHosts[device.host];
-                });
-            } else {
-                // upnp devices
-                try {
-                    client = new MediaRendererClient(UPNPDesc);
-                    const options = {
-                        autoplay: true,
-                        contentType: 'audio/x-wav',
-                        dlnaFeatures: 'DLNA.ORG_PN=-;DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000',
-                        metadata: {
-                            title: 'Apple Music Electron',
-                            creator: 'Streaming ...',
-                            type: 'audio', // can be 'video', 'audio' or 'image'
-                            //  url: 'http://' + getIp() + ':' + server.address().port + '/',
-                            //  protocolInfo: 'DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000;
-                        }
-                    };
-
-                    client.load('http://' + getIp() + ':' + server.address().port + '/a.wav', options, function (err, _result) {
-                        if (err) throw err;
-                        console.log('playing ...');
-                    });
-
-                } catch (e) {
+            client.connect(device.host, () => {
+                console.log('connected, launching app ...', 'http://' + getIp() + ':' + server.address().port + '/');
+                if (!connectedHosts[device.host]) {
+                    connectedHosts[device.host] = client;
+                    activeConnections.push(client);
                 }
-            }
-        }
+                loadMedia(client, song, artist, album, albumart);
+            });
+            client.on('close', () => {
+                console.info("Client Closed");
+                for (var i = activeConnections.length - 1; i >= 0; i--) {
+                    if (activeConnections[i] == client) {
+                        activeConnections.splice(i, 1);
+                        return;
+                    }
+                }
+            });
+            client.on('error', err => {
+                console.log('Error: %s', err.message);
+                client.close();
+                delete connectedHosts[device.host];
+            });
+           } else {
+               // upnp devices
+            try{
+            client = new MediaRendererClient(UPNPDesc);
+            var options = { 
+                autoplay: true,
+                contentType: 'audio/x-wav',
+                dlnaFeatures: 'DLNA.ORG_PN=-;DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000',
+                metadata: {
+                  title: 'Apple Music Electron',
+                  creator: 'Streaming ...',
+                  type: 'audio', // can be 'video', 'audio' or 'image'
+                //  url: 'http://' + getIp() + ':' + server.address().port + '/',
+                //  protocolInfo: 'DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000;
+                }
+              };
+              
+             client.load('http://' + getIp() + ':' + server.address().port + '/a.wav', options, function(err, result) {
+                if(err) throw err;
+                console.log('playing ...');
+              });
+              
+           } catch(e){}
+        }}
 
         ipcMain.on('getKnownCastDevices', function (event) {
             event.returnValue = castDevices
@@ -1346,11 +1356,11 @@ const handler = {
             })
         });
 
-        ipcMain.on('getChromeCastDevices', function (_event, _data) {
+        ipcMain.on('getChromeCastDevices', function (event, data) {
             searchForGCDevices();
         });
 
-        ipcMain.on('stopGCast', function (_event) {
+        ipcMain.on('stopGCast', function (event) {
             app.win.webContents.setAudioMuted(false);
             GCRunning = false;
             expectedConnections = 0;
