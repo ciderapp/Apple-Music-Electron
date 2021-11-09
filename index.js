@@ -10,6 +10,7 @@ app.ame.init.LoggingInit();
 app.ame.handler.LaunchHandler();
 app.ame.handler.InstanceHandler();
 app.ame.init.BaseInit();
+app.ame.wsapi.InitWebSockets()
 
 // Creating the Application Window and Calling all the Functions
 function CreateWindow() {

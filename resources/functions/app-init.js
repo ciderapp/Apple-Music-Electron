@@ -154,6 +154,7 @@ module.exports = () => {
         discord: discordFuncs,
         lastfm: lastfmFuncs,
         mpris: mprisFuncs,
+        wsapi: require('./wsapi'),
         showOOBE: showIntro
     };
 }

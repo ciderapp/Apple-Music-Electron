@@ -38,7 +38,8 @@
     "register-scheme": "github:devsnek/node-register-scheme",
     "rimraf": "^3.0.2",
     "source-map-support": "^0.5.20",
-    "v8-compile-cache": "^2.3.0"
+    "v8-compile-cache": "^2.3.0",
+    "ws": "^8.2.3"
   },
   "devDependencies": {
     "electron": "https://github.com/castlabs/electron-releases.git",
