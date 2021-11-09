@@ -4,10 +4,18 @@ var app = new Vue({
     data: {
         screen: "player",
         player: {
-            currentMediaItem: {}
+            currentMediaItem: {},
+            songActions: false
         }
     },
     methods: {
+        artworkPlaying() {
+            if(this.player.currentMediaItem.status) {
+                return
+            }else{
+                return ["paused"]
+            }
+        },
         seekTo(time) {
             console.log(time / 1000)
             socket.send(JSON.stringify({
