@@ -550,12 +550,7 @@ const handler = {
                     ipcMain.emit("set-miniplayer", false)
                 }
             },
-                //     {
-                //     label: "Full Screen Miniplayer",
-                //     click: () => {
-                //         ipcMain.emit("set-miniplayerLarge", false)
-                //     }
-                // }
+              
             ]
             const menu = Menu.buildFromTemplate(menuOptions)
             menu.popup(app.win)
@@ -647,7 +642,6 @@ const handler = {
             neteaseWin: null,
             mxmWin: null,
             ytWin: null,
-            miniPlayerLarge: null,
             artworkURL: '',
             savedLyric: ''
         }
@@ -686,55 +680,11 @@ const handler = {
             },
         });
 
-        // app.lyrics.miniPlayerLarge = new BrowserWindow({
-        //     width: 800,
-        //     height: 600,
-        //     show: false,
-        //     autoHideMenuBar: true,
-        //     webPreferences: {
-        //         fullscreen: true,
-        //         nodeIntegration: true,
-        //         contextIsolation: false,
+      
 
-        //     }
-        // });  
-
-        // ipcMain.on('set-miniplayerLarge', (event)=> {
-        //         if (app.lyrics.miniPlayerLarge == null){
-        //             app.lyrics.miniPlayerLarge = new BrowserWindow({
-        //                 width: 800,
-        //                 height: 600,
-        //                 show: false,
-        //                 autoHideMenuBar: true,
-        //                 webPreferences: {
-        //                     fullscreen: true,
-        //                     nodeIntegration: true,
-        //                     contextIsolation: false,
-
-        //             }                   
-        //         });
-        //         }
-        //         // Or load a local HTML file
-        //         app.lyrics.miniPlayerLarge.loadFile(join(__dirname, '../lyrics/index.html'));
-        //         app.lyrics.miniPlayerLarge.show();
-        //         app.lyrics.miniPlayerLarge.on('closed', () => {
-        //             app.lyrics.miniPlayerLarge  = null
-        //         });
-        //             app.win.webContents.executeJavaScript(`ipcRenderer.send('updateMiniPlayerMetaData',MusicKit.getInstance().nowPlayingItem.title,MusicKit.getInstance().nowPlayingItem.artistName,MusicKit.getInstance().nowPlayingItem.albumName);`);
-        //         app.lyrics.miniPlayerLarge.webContents.on('did-finish-load', ()=>{
-        //             if (app.lyrics.miniPlayerLarge){
-        //                 app.lyrics.miniPlayerLarge.webContents.send('truelyrics', app.lyrics.savedLyric);
-        //                 app.lyrics.miniPlayerLarge.webContents.send('albumart', app.lyrics.albumart);
-        //         }    
-        //         })
-
-        // })
-        // ipcMain.on('updateMiniPlayerMetaData', function (event, track, artist, album){
-        //     if (app.lyrics.miniPlayerLarge){
-        //         app.lyrics.miniPlayerLarge.webContents.executeJavaScript(`lrc.setLrc('')`);
-        //         app.win.webContents.executeJavaScript(`_lyrics.GetLyrics(1,false)`);
-        //         app.lyrics.miniPlayerLarge.webContents.send('updateMiniPlayerMetaData',track, artist, album)};
-        // })
+       
+       
+      
         ipcMain.on('YTTranslation', function (event, track, artist, lang) {
             try {
                 if (app.lyrics.ytWin == null) {
@@ -837,19 +787,14 @@ const handler = {
 
             } catch (e) {
                 console.log(e);
-                // if (app.lyrics.miniPlayerLarge){
-                //     app.lyrics.miniPlayerLarge.webContents.send('truelyrics', '[00:00] Instrumental. / Lyrics not found.');
-                // }
+
                 app.lyrics.savedLyric = '[00:00] Instrumental. / Lyrics not found.';
                 app.win.send('truelyrics', '[00:00] Instrumental. / Lyrics not found.');
             }
         });
 
         ipcMain.on('LyricsHandler', function (event, data, artworkURL) {
-            // if (app.lyrics.miniPlayerLarge){
-            //     app.lyrics.miniPlayerLarge.webContents.send('truelyrics', data);
-            //     app.lyrics.miniPlayerLarge.webContents.send('albumart', artworkURL);
-            // }
+           
             app.win.send('truelyrics', data);
             app.win.send('albumart', artworkURL);
             app.lyrics.savedLyric = data;
@@ -858,38 +803,27 @@ const handler = {
 
         ipcMain.on('updateMiniPlayerArt', function (event, artworkURL) {
             app.lyrics.albumart = artworkURL;
-            // if (app.lyrics.miniPlayerLarge){
-            //     app.lyrics.miniPlayerLarge.webContents.send('albumart', artworkURL);
-            // }
+
 
         })
         ipcMain.on('LyricsHandlerNE', function (event, data) {
-            if (app.lyrics.miniPlayerLarge) {
-                app.lyrics.miniPlayerLarge.webContents.send('truelyrics', data);
-            }
+           
             app.win.send('truelyrics', data);
             app.lyrics.savedLyric = data;
         });
 
         ipcMain.on('LyricsHandlerTranslation', function (event, data) {
-            // if (app.lyrics.miniPlayerLarge){
-            // app.lyrics.miniPlayerLarge.send('lyricstranslation', data);
-            // }
+
             app.win.send('lyricstranslation', data);
         });
 
         ipcMain.on('LyricsTimeUpdate', function (event, data) {
-            // if (app.lyrics.miniPlayerLarge){
-            //     app.lyrics.miniPlayerLarge.webContents.send('ProgressTimeUpdate', data);
-            // }
+
             app.win.send('ProgressTimeUpdate', data);
         });
 
         ipcMain.on('LyricsUpdate', function (event, data, artworkURL) {
-            // if (app.lyrics.miniPlayerLarge){
-            //     app.lyrics.miniPlayerLarge.webContents.send('truelyrics', data);
-            //     app.lyrics.miniPlayerLarge.webContents.send('albumart', artworkURL);
-            // }
+
             app.win.send('truelyrics', data);
             app.win.send('albumart', artworkURL);
             app.lyrics.savedLyric = data;
