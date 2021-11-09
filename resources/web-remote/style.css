@@ -63,10 +63,10 @@ body {
 
 .media-artwork {
     --artwork: url("");
-    width: 70vw;
-    height: 70vw;
-    max-height: 400px;
-    max-width: 400px;
+    width: 80vw;
+    height: 80vw;
+    max-height: 500px;
+    max-width: 500px;
     background: black;
     background-image: var(--artwork);
     background-size: cover;
@@ -109,7 +109,7 @@ body {
 }
 
 .player-song-title {
-    font-size: 1.5em;
+    font-size: 1.35em;
     text-align: left;
     margin: 0 auto;
     font-weight: 500;
@@ -140,7 +140,13 @@ body {
     height: 32px;
     border-radius: 50%;
     border: 0px;
-    background: blueviolet;
+    background: var(--keyColor);
+    cursor: pointer;
+    box-shadow: inset 0px 0px 0px 1px rgb(200 200 200 / 16%);
+    color: white;
+    font-weight: bold;
+    padding:0px;
+    font-size: 16px;
 }
 
 .search-input {
@@ -168,14 +174,23 @@ body {
     appearance: none;
     width:100%;
     display: block;
-    font-size: 1.25em;
-    padding: 14px 16px;
+    font-size: 1.10em;
+    padding: 18px 20px;
     font-family: inherit;
     border:0px;
     font-weight: 600;
     border-radius: 0px;
-    border-bottom: 1px solid rgb(0 0 0 / 15%);
+    border-bottom: 1px solid rgb(200 200 200 / 15%);
     margin:0px;
+    background: rgb(60 60 60 / 80%);
+    backdrop-filter: blur(16px) saturate(180%);
+    color: #ccc;
+}
+.context-menu .context-menu-item:hover {
+    cursor: pointer;
+}
+.context-menu .context-menu-item:active {
+    filter: brightness(75%);
 }
 
 .context-menu .context-menu-item:first-child {

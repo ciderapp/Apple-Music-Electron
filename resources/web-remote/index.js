@@ -9,6 +9,36 @@ var app = new Vue({
         }
     },
     methods: {
+        musicAppVariant() {
+            if (navigator.userAgent.match(/Android/i)) {
+                return "Apple Music";
+            } else if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+                return "Music";
+            } else {               
+                if (navigator.userAgent.indexOf('Mac') > 0) {
+                    return 'Music';
+                } else if (navigator.userAgent.indexOf('Win') > 0) {
+                    return 'Apple Music Electron';
+                } else {
+                    return 'Apple Music Electron';
+                }
+            }
+        },
+        checkPlatform() {
+            if (navigator.userAgent.match(/Android/i)) {
+                return "android";
+            } else if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+                return "ios";
+            } else {               
+                if (navigator.userAgent.indexOf('Mac') > 0) {
+                    return 'mac';
+                } else if (navigator.userAgent.indexOf('Win') > 0) {
+                    return 'win';
+                } else {
+                    return 'linux';
+                }
+            }
+        },
         artworkPlaying() {
             if(this.player.currentMediaItem.status) {
                 return

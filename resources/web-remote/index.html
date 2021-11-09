@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,15 +10,16 @@
     <script src="vue.js"></script>
     <link rel="manifest" href="./manifest.json">
 </head>
-<body>
+
+<body oncontextmenu="return false;">
     <div id="app">
         <div class="md-container md-container_panel" v-if="screen == 'player'">
             <div class="md-body player-artwork-container">
                 <div class="media-artwork" :class="artworkPlaying()" :style="{'--artwork': getAlbumArtUrl()}">
-                    
+
                 </div>
             </div>
-    
+
             <div class="md-footer">
                 <div class="row player-track-info">
                     <div class="col nopadding">
@@ -29,19 +31,16 @@
                         </div>
                     </div>
                     <div class="col-auto nopadding player-more-container" style="">
-                        <button @click="player.songActions = true;" class="player-more-button"></button>
+                        <button @click="player.songActions = true;" class="player-more-button">...</button>
                     </div>
                 </div>
             </div>
-    
+
             <div class="md-footer">
-                <input type="range" 
-                min="0"
-                :value="player.currentMediaItem.durationInMillis - player.currentMediaItem.remainingTime"
-                :max="player.currentMediaItem.durationInMillis"
-                class="md-slider playback-slider"
-                @change="seekTo($event.target.value)"
-                >
+                <input type="range" min="0"
+                    :value="player.currentMediaItem.durationInMillis - player.currentMediaItem.remainingTime"
+                    :max="player.currentMediaItem.durationInMillis" class="md-slider playback-slider"
+                    @change="seekTo($event.target.value)">
                 <div class="row nopadding player-duration-container" style="width: 90%;margin: 0 auto;">
                     <div class="col nopadding player-duration-time" style="text-align:left">
                         {{ parseTime(player.currentMediaItem.durationInMillis - player.currentMediaItem.remainingTime) }}
@@ -51,27 +50,28 @@
                     </div>
                 </div>
             </div>
-    
+
             <div class="md-footer">
                 <button class="md-btn playback-button--small" @click="repeat()">🔁</button>
                 <button class="md-btn playback-button" @click="previous()">⏮️</button>
-                <button class="md-btn playback-button" @click="pause()" v-if="player.currentMediaItem.status">⏸️</button>
+                <button class="md-btn playback-button" @click="pause()"
+                    v-if="player.currentMediaItem.status">⏸️</button>
                 <button class="md-btn playback-button" @click="play()" v-else>▶️</button>
                 <button class="md-btn playback-button" @click="next()">⏭️</button>
                 <button class="md-btn playback-button--small" @click="shuffle()">🔀</button>
             </div>
-    
-    
+
+
             <div class="md-footer">
                 <input type="range" class="md-slider volume-slider">
             </div>
-    
+
             <div class="md-footer">
                 <button class="md-btn playback-button--small">Lyrics</button>
                 <button class="md-btn playback-button--small">Up Next</button>
                 <button class="md-btn playback-button--small" @click="quickSearch()">Search</button>
             </div>
-    
+
         </div>
         <div class="md-container md-container_panel" v-if="screen == 'quickSearch'">
             <div class="md-header">
@@ -90,13 +90,49 @@
 
             </div>
             <div class="md-body context-menu-body">
-                <button class="context-menu-item context-menu-item--left">➕ Add To Library</button>
-                <button class="context-menu-item context-menu-item--left">❤️ Love</button>
-                <button class="context-menu-item context-menu-item--left">🌐 Share</button>
-                <button class="context-menu-item context-menu-item--left">🎵 Open in Music</button>
+                <button class="context-menu-item context-menu-item--left">
+                    <div class="row">
+                        <div class="col">
+                            Add To Library
+                        </div>
+                        <div class="col-auto">
+                            ➕
+                        </div>
+                    </div>
+                </button>
+                <button class="context-menu-item context-menu-item--left">
+                    <div class="row">
+                        <div class="col">
+                            Love
+                        </div>
+                        <div class="col-auto">
+                            ❤️
+                        </div>
+                    </div>
+                </button>
+                <button class="context-menu-item context-menu-item--left">
+                    <div class="row">
+                        <div class="col">
+                            Share
+                        </div>
+                        <div class="col-auto">
+                            🌐
+                        </div>
+                    </div>
+                </button>
+                <button class="context-menu-item context-menu-item--left">
+                    <div class="row">
+                        <div class="col">
+                            Open in {{ musicAppVariant() }}
+                        </div>
+                        <div class="col-auto">
+                            🎵
+                        </div>
+                    </div>
+                </button>
             </div>
             <div class="md-footer">
-                <button class="context-menu-item" @click="player.songActions = false">Close</button>
+                <button class="context-menu-item" @click="player.songActions = false">Cancel</button>
             </div>
         </div>
         <div class="md-container md-container_panel" v-if="false">
@@ -114,4 +150,5 @@
     <script src="index.js"></script>
 
 </body>
+
 </html>
