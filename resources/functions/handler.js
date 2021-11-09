@@ -845,6 +845,10 @@ const handler = {
     },
 
     AudioHandler: function () {
+        ipcMain.on('muteAudio', function (event, mute) {
+            app.win.webContents.setAudioMuted(mute);
+        });
+        
         if (process.platform == "win32"){
         var EAstream = new Stream.PassThrough();
         var ao;
@@ -919,9 +923,6 @@ const handler = {
            // buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm), Float32Array.from(rightpcm)).buffer));
             EAstream.write(Buffer.from(buffer).slice(44));
                 
-        });
-        ipcMain.on('muteAudio', function (event, mute) {
-            app.win.webContents.setAudioMuted(mute);
         });
 
         ipcMain.on('writeChunks', function(event, blob){
