@@ -13,8 +13,7 @@ const {
     {join, resolve} = require('path'),
 
     {readFile, readFileSync, writeFile, existsSync, watch} = require('fs'),
-    {initAnalytics} = require('./utils'),
-    portAudio = require('naudiodon');
+    {initAnalytics} = require('./utils');
 
 
 const os = require('os');
@@ -846,10 +845,14 @@ const handler = {
     },
 
     AudioHandler: function () {
-
+        ipcMain.on('muteAudio', function (event, mute) {
+            app.win.webContents.setAudioMuted(mute);
+        });
+        
+        if (process.platform == "win32"){
         var EAstream = new Stream.PassThrough();
         var ao;
-
+        const portAudio = require('naudiodon');
         console.log(portAudio.getDevices());
         ipcMain.on('getAudioDevices',function(event){
             for (let id = 0; id < portAudio.getDevices().length; id++ ){
@@ -921,9 +924,6 @@ const handler = {
             EAstream.write(Buffer.from(buffer).slice(44));
                 
         });
-        ipcMain.on('muteAudio', function (event, mute) {
-            app.win.webContents.setAudioMuted(mute);
-        });
 
         ipcMain.on('writeChunks', function(event, blob){
 
@@ -933,7 +933,7 @@ const handler = {
             });   
         })
 
-
+    }
     },
     GoogleCastHandler: function () {
         var devices = [];
