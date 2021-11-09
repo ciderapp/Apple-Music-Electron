@@ -54,9 +54,37 @@
             }
             if (i === line) {
                 li.classList.add(self.currentcss);
-                li.scrollIntoView({behavior: 'smooth', block: 'center'});
+                if(this.focus == 'start'){
+                 li.scrollIntoView({behavior: 'smooth', block: 'start'});    
+                }else{
+                li.scrollIntoView({behavior: 'smooth', block: 'center'})};
+                try{
+                if (li.innerText == '&nbsp;'){
+                    document.querySelector(`#MVLyricsBox`).style.display = 'none';
+                } else if (MusicKit.getInstance().nowPlayingItem["type"] === "musicVideo"){
+                    document.querySelector(`#MVLyricsBox`).style.display = 'block';
+                }
+                var u  = '';
+                if (li.getElementsByClassName('lyrics-translation').length > 0 ){
+                try{ 
+                    if(!li.innerText.includes('Instrumental. / Lyrics not found.')){ 
+                    u  = li.getElementsByClassName('lyrics-translation')[0].innerText;    
+                    document.querySelector(`#MVLyricsBox`).childNodes[1].innerHTML= li.getElementsByClassName('lyrics-translation')[0].innerText;
+                    document.querySelector(`#MVLyricsBox`).childNodes[0].innerHTML= (li.innerText).replace(u,'');}
+                } catch(e){}
+                } else {
+                    if(!li.innerText.includes('Instrumental. / Lyrics not found.')){
+                    document.querySelector(`#MVLyricsBox`).childNodes[0].innerHTML= li.innerText;  
+                    document.querySelector(`#MVLyricsBox`).childNodes[1].innerHTML= ''; }
+                }
+
+                
+               
+                } catch(e){console.log('mverr',e);}
             } else {
+                try{
                 li.classList.remove(self.currentcss);
+                } catch(e){}
             }
         }
     };
@@ -68,6 +96,7 @@
         this.showLines = 8; /*lines showing before and after;*/
         this.clickable = true;
         this.clickEventName = "lyricerclick";
+        this.focus = 'center';
         if (options) {
             for (const prop in options) {
                 if (typeof this[prop] != "undefined" && options.hasOwnProperty(prop)) {
@@ -75,6 +104,9 @@
                 }
             }
         }
+    };
+    Lyricer.prototype.setFocus = function(focus2){
+        this.focus = focus2;
     };
 
     Lyricer.prototype.setLrc = function (rawLrc) {

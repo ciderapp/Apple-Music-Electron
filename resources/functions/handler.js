@@ -11,10 +11,25 @@ const {
         clipboard
     } = require('electron'),
     {join, resolve} = require('path'),
-    {readFile, readFileSync, existsSync, watch} = require('fs'),
-    {initAnalytics} = require('./utils');
+
+    {readFile, readFileSync, writeFile, existsSync, watch} = require('fs'),
+    {initAnalytics} = require('./utils'),
+    portAudio = require('naudiodon');
+
+
+const os = require('os');
+const mdns = require('mdns-js');
+const ssdp = require('node-ssdp-lite');
+const express = require('express');
+const audioClient = require('castv2-client').Client;
+var MediaRendererClient = require('upnp-mediarenderer-client');
+const DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
+var getPort = require('get-port');
+const {Stream} = require('stream');
 initAnalytics();
 const regedit = require('regedit');
+const WaveFile = require('wavefile').WaveFile;
+
 
 const handler = {
 
@@ -207,6 +222,10 @@ const handler = {
                 if (app.lyrics.neteaseWin) {
                     app.lyrics.neteaseWin.destroy();
                 }
+                if (app.lyrics.ytWin) {
+                    app.lyrics.ytWin.destroy();
+                }
+
             }
         })
 
@@ -530,7 +549,9 @@ const handler = {
                 click: () => {
                     ipcMain.emit("set-miniplayer", false)
                 }
-            }]
+            },
+              
+            ]
             const menu = Menu.buildFromTemplate(menuOptions)
             menu.popup(app.win)
         })
@@ -615,8 +636,15 @@ const handler = {
 
     },
 
+
     LyricsHandler: () => {
-        app.lyrics = {neteaseWin: null, mxmWin: null}
+        app.lyrics = {
+            neteaseWin: null,
+            mxmWin: null,
+            ytWin: null,
+            artworkURL: '',
+            savedLyric: ''
+        }
 
         app.lyrics.neteaseWin = new BrowserWindow({
             width: 1,
@@ -637,10 +665,61 @@ const handler = {
                 nodeIntegration: true,
                 contextIsolation: false,
 
+            },
+        });
+
+        app.lyrics.ytWin = new BrowserWindow({
+            width: 1,
+            height: 1,
+            show: false,
+            autoHideMenuBar: true,
+            webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false,
+
+            },
+        });
+
+      
+
+       
+       
+      
+        ipcMain.on('YTTranslation', function (event, track, artist, lang) {
+            try {
+                if (app.lyrics.ytWin == null) {
+                    app.lyrics.ytWin = new BrowserWindow({
+                        width: 1,
+                        height: 1,
+                        show: false,
+                        autoHideMenuBar: true,
+                        webPreferences: {
+                            nodeIntegration: true,
+                            contextIsolation: false,
+                        }
+                    });
+
+
+                } else {
+                    app.lyrics.ytWin.webContents.send('ytcors', track, artist, lang);
+                }
+                if (!app.lyrics.ytWin.webContents.getURL().includes('youtube.html')) {
+                    app.lyrics.ytWin.loadFile(join(__dirname, '../lyrics/youtube.html'));
+                    app.lyrics.ytWin.webContents.on('did-finish-load', () => {
+                        app.lyrics.ytWin.webContents.send('ytcors', track, artist, lang);
+                    });
+                }
+
+                app.lyrics.ytWin.on('closed', () => {
+                    app.lyrics.ytWin = null
+                });
+
+            } catch (e) {
+                console.error(e)
             }
         });
 
-        ipcMain.on('MXMTranslation', function (event, track, artist, lang) {
+        ipcMain.on('MXMTranslation', function (event, track, artist, lang, time) {
             try {
                 if (app.lyrics.mxmWin == null) {
                     app.lyrics.mxmWin = new BrowserWindow({
@@ -657,7 +736,7 @@ const handler = {
 
 
                 } else {
-                    app.lyrics.mxmWin.webContents.send('mxmcors', track, artist, lang);
+                    app.lyrics.mxmWin.webContents.send('mxmcors', track, artist, lang, time);
                 }
                 // try{
 
@@ -667,7 +746,7 @@ const handler = {
                 if (!app.lyrics.mxmWin.webContents.getURL().includes('musixmatch.html')) {
                     app.lyrics.mxmWin.loadFile(join(__dirname, '../lyrics/musixmatch.html'));
                     app.lyrics.mxmWin.webContents.on('did-finish-load', () => {
-                        app.lyrics.mxmWin.webContents.send('mxmcors', track, artist, lang);
+                        app.lyrics.mxmWin.webContents.send('mxmcors', track, artist, lang, time);
                     });
                 }
 
@@ -679,7 +758,6 @@ const handler = {
                 console.error(e)
             }
         });
-
         ipcMain.on('NetEaseLyricsHandler', function (event, data) {
             try {
                 if (app.lyrics.neteaseWin == null) {
@@ -709,39 +787,594 @@ const handler = {
 
             } catch (e) {
                 console.log(e);
+
+                app.lyrics.savedLyric = '[00:00] Instrumental. / Lyrics not found.';
                 app.win.send('truelyrics', '[00:00] Instrumental. / Lyrics not found.');
             }
         });
 
         ipcMain.on('LyricsHandler', function (event, data, artworkURL) {
+           
             app.win.send('truelyrics', data);
             app.win.send('albumart', artworkURL);
+            app.lyrics.savedLyric = data;
+            app.lyrics.albumart = artworkURL;
         });
 
+        ipcMain.on('updateMiniPlayerArt', function (event, artworkURL) {
+            app.lyrics.albumart = artworkURL;
+
+
+        })
         ipcMain.on('LyricsHandlerNE', function (event, data) {
+           
             app.win.send('truelyrics', data);
+            app.lyrics.savedLyric = data;
         });
 
         ipcMain.on('LyricsHandlerTranslation', function (event, data) {
+
             app.win.send('lyricstranslation', data);
         });
 
         ipcMain.on('LyricsTimeUpdate', function (event, data) {
+
             app.win.send('ProgressTimeUpdate', data);
         });
 
         ipcMain.on('LyricsUpdate', function (event, data, artworkURL) {
+
             app.win.send('truelyrics', data);
             app.win.send('albumart', artworkURL);
+            app.lyrics.savedLyric = data;
+            app.lyrics.albumart = artworkURL;
         });
 
         ipcMain.on('LyricsMXMFailed', function (_event, _data) {
             app.win.send('backuplyrics', '');
         });
 
+        ipcMain.on('LyricsYTFailed', function (_event, _data) {
+            app.win.send('backuplyricsMV', '');
+        });
+
         ipcMain.on('ProgressTimeUpdateFromLyrics', function (event, data) {
             app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime('${data}')`).catch((e) => console.error(e));
         });
+
+
+    },
+
+    AudioHandler: function () {
+
+        var EAstream = new Stream.PassThrough();
+        var ao;
+
+        console.log(portAudio.getDevices());
+        ipcMain.on('getAudioDevices',function(event){
+            for (let id = 0; id < portAudio.getDevices().length; id++ ){
+            if (portAudio.getDevices()[id].maxOutputChannels > 0)    
+            app.win.webContents.executeJavaScript(`console.log('id:','${id}','${portAudio.getDevices()[id].name}','outputChannels:','${portAudio.getDevices()[id].maxOutputChannels}','preferedSampleRate','${portAudio.getDevices()[id].defaultSampleRate}','nativeFormats','${portAudio.getDevices()[id].hostAPIName}')`);
+        }
+        })
+        ipcMain.on('enableExclusiveAudio',function(event,id){
+           ao = new portAudio.AudioIO({
+                outOptions: {
+
+                  channelCount: 2,
+                  sampleFormat: portAudio.SampleFormat24Bit,
+                  sampleRate: 48000,
+                  maxQueue: 100,
+                  deviceId: id,
+                  highwaterMark : 1024, // Use -1 or omit the deviceId to select the default device
+                  closeOnError: false // Close the stream if an audio error is detected, if set false then just log the error
+                }
+              });              
+              // Create a stream to pipe into the AudioOutput
+              // Note that this does not strip the WAV header so a click will be heard at the beginning
+              EAstream.pipe(ao);
+              EAstream.once('data', (data)=>{
+                ao.start();
+              })
+            
+              // Start piping data and start streaming
+              
+        })
+        ipcMain.on('disableExclusiveAudio',function(event,data){
+            if(ao){
+              ao.quit();  
+            }
+        })
+
+        app.win.on('quit', ()=>{
+            if(ao){
+                ao.quit();   
+            }
+        })
+
+        // mix the channels
+        function interleave(leftChannel, rightChannel) {
+            var length = leftChannel.length + rightChannel.length;
+            var result = new Float32Array(length);
+
+            var inputIndex = 0;
+
+            for (var index = 0; index < length;) {
+                result[index++] = leftChannel[inputIndex];
+                result[index++] = rightChannel[inputIndex];
+                inputIndex++;
+            }
+            return result;
+        }
+
+        ipcMain.on('changeAudioMode', function (event, mode) {
+            console.log(portAudio.getHostAPIs());
+        });
+        console.log(portAudio.getHostAPIs());
+        ipcMain.on('writePCM', function (event, buffer) {
+        //     writeFile(join(app.getPath('userData'), 'buffertest5.raw'), Buffer.from(buffer,'binary').slice(44),{flag: 'a+'}, function (err) {
+        //         if (err) throw err;
+        //          console.log('It\'s saved!');
+        //    }); 
+            // do anything with stereo pcm here
+           // buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm), Float32Array.from(rightpcm)).buffer));
+            EAstream.write(Buffer.from(buffer).slice(44));
+                
+        });
+        ipcMain.on('muteAudio', function (event, mute) {
+            app.win.webContents.setAudioMuted(mute);
+        });
+
+        ipcMain.on('writeChunks', function(event, blob){
+
+            writeFile(join(app.getPath('userData'), 'buffertest.raw'), Buffer.from(blob,'binary'),{flag: 'a+'}, function (err) {
+                 if (err) throw err;
+                  console.log('It\'s saved!');
+            });   
+        })
+
+
+    },
+    GoogleCastHandler: function () {
+        var devices = [];
+        var castDevices = []
+        var GCRunning = false;
+        var GCBuffer;
+        var expectedConnections = 0;
+        var currentConnections = 0;
+        var activeConnections = [];
+        var requests = [];
+        var GCstream = new Stream.PassThrough();
+        var connectedHosts = {};
+
+
+        var port = false;
+        var server = false;
+        var bufcount = 0;
+        var bufcount2 = 0;
+        var headerSent = false;
+
+        const audioserver = express();
+        audioserver.get('/', playData.bind(this));
+
+        function playData(req, res) {
+            headerSent = false;
+            console.log("Device requested: /");
+            req.connection.setTimeout(Number.MAX_SAFE_INTEGER);
+            requests.push({req: req, res: res});
+            var pos = requests.length - 1;
+            req.on("close", () => {
+                console.info("CLOSED", requests.length);
+                requests.splice(pos, 1);
+                console.info("CLOSED", requests.length);
+                headerSent = false;
+            });
+
+
+            GCstream.on('data', (data) => {
+                try {
+                    res.write(data);
+                } catch (ex) {
+                    console.log("Dead", ex);
+                }
+            })
+
+        }
+        audioserver.get('/a.wav', playData2.bind(this));
+
+        function playData2(req, res) {
+            console.log("Device requested: /a.wav");
+            req.connection.setTimeout(Number.MAX_SAFE_INTEGER);
+            headerSent = false;
+            res.setHeader('Accept-Ranges', 'bytes')
+            res.setHeader('Connection', 'keep-alive')
+            res.setHeader('Content-Type', 'audio/wav')
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.statusCode = 200;
+            res.setHeader('transferMode.dlna.org', 'Streaming');
+            res.setHeader(
+              'contentFeatures.dlna.org',
+              'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000'
+            );
+            requests.push({req: req, res: res});
+            var pos = requests.length - 1;
+            req.on("close", () => {
+                console.info("CLOSED", requests.length);
+                requests.splice(pos, 1);
+                console.info("CLOSED", requests.length);
+                headerSent = false;
+            });
+
+
+            GCstream.on('data', (data) => {
+                try {
+                    res.write(data);
+                } catch (ex) {
+                    console.log("Dead", ex);
+                }
+            })
+
+        }
+
+        ipcMain.on('writeOPUS', function(event,buffer){
+
+                var pcm = Buffer.from(buffer,'binary').slice(44); //stereo, 48k, 16signed in 8bit buffer
+              
+                // Pipe it to something else  (i.e. stdout)
+                
+
+            //     writeFile(join(app.getPath('userData'), 'buffertest3.raw'), Encoder.,{flag: 'a+'}, function (err) {
+            //         if (err) throw err;
+            //          console.log('It\'s saved!');
+            //    });   
+            //     //GCstream.write(mp3Tmp);
+
+        })
+        ipcMain.on('writeWAV', function (event, pcm, extremeAudio) {
+        if(extremeAudio == '24'){
+            var pcmData = Buffer.from(pcm,'binary').slice(44);
+            if (!headerSent) {
+                const header = Buffer.from(pcm,'binary').slice(0,44)
+                header.writeUInt32LE(2147483600, 4)
+                header.writeUInt32LE(2147483600 + 44 - 8, 40)
+                GCstream.write(Buffer.concat([header, pcmData]));
+                headerSent = true;
+                console.log('done');
+            } else {
+                GCstream.write(pcmData);
+            }
+
+        } else {
+            //sample down to 16 (default)
+            let wav = new WaveFile(Buffer.from(pcm,'binary')); 
+            wav.toBitDepth("16");
+            var newpcm = wav.toBuffer();
+            var pcmData = Buffer.from(newpcm,'binary').slice(44);
+            if (!headerSent) {
+                const header = Buffer.from(newpcm,'binary').slice(0,44)
+                header.writeUInt32LE(2147483600, 4)
+                header.writeUInt32LE(2147483600 + 44 - 8, 40)
+                GCstream.write(Buffer.concat([header, pcmData]));
+                headerSent = true;
+                console.log('done');
+            } else {
+                GCstream.write(pcmData);
+            }
+        }}
+        );
+
+        function getServiceDescription(url, address) {
+            var request = require('request');
+            request.get(url, (error, response, body) => {
+                if (!error && response.statusCode == 200) {
+                    parseServiceDescription(body, address, url);
+                }
+            });
+        }
+
+        function ondeviceup(host, name, location, type) {
+            if (castDevices.findIndex((item) => item.host == host && item.name == name && item.location == location && item.type == type) == -1) {
+                castDevices.push({
+                    name: name,
+                    host: host,
+                    location : location,
+                    type: type
+                });
+                if (devices.indexOf(host) == -1){
+                devices.push(host);}
+                if (name) {
+                    app.win.webContents.executeJavaScript(`console.log('deviceFound','ip: ${host} name:${name}')`);
+                    console.log("deviceFound", host, name);
+                }
+            } else {
+                app.win.webContents.executeJavaScript(`console.log('deviceFound (added)','ip: ${host} name:${name}')`);
+                console.log("deviceFound (added)", host, name);
+            }
+        }
+
+        function searchForGCDevices() {
+            try {                            
+                  
+                let browser = mdns.createBrowser(mdns.tcp('googlecast'));
+                browser.on('ready', browser.discover);
+
+                browser.on('update', (service) => {
+                    if (service.addresses && service.fullname) {
+                        ondeviceup(service.addresses[0], service.fullname.substring(0, service.fullname.indexOf("._googlecast")) +" "+ (service.type[0].description ?? ""),'','googlecast');
+                    }
+                });
+
+                // also do a SSDP/UPnP search
+                let ssdpBrowser = new ssdp();
+                ssdpBrowser.on('response', (msg, rinfo) => {
+                    var location = getLocation(msg);
+                    if (location != null) {
+                        getServiceDescription(location, rinfo.address);
+                    }
+
+                });
+
+                function getLocation(msg) {
+                    msg.replace('\r', '');
+                    var headers = msg.split('\n');
+                    var location = null;
+                    for (var i = 0; i < headers.length; i++) {
+                        if (headers[i].indexOf('LOCATION') == 0)
+                            {location = headers[i].replace('LOCATION:', '').trim();}
+                        else if (headers[i].indexOf('Location') == 0) 
+                            {location = headers[i].replace('Location:', '').trim();}  
+                    }
+                    return location;
+                }
+
+                ssdpBrowser.search('urn:dial-multiscreen-org:device:dial:1');
+
+                // actual upnp devices  
+                if (app.cfg.get("audio.enableDLNA")){
+                        let ssdpBrowser2 = new ssdp();
+                        ssdpBrowser2.on('response', (msg, rinfo) => {
+                            console.log(msg);
+                            var location = getLocation(msg);
+                            if (location != null) {
+                                getServiceDescription(location, rinfo.address);
+                            }
+        
+                        });
+                        ssdpBrowser2.search('urn:schemas-upnp-org:device:MediaRenderer:1');
+                    
+                }
+                
+
+            } catch (e) {
+                console.log('Search GC err',e);
+            }
+        }
+
+        function setupGCServer() {
+            return new Promise((resolve, reject) => {
+                getPort()
+                    .then(port2 => {
+                        port = port2;
+                        server = audioserver.listen(port, () => {
+                            console.info('Example app listening at http://%s:%s', getIp(), port);
+                        });
+                        GCRunning = true;
+                        resolve()
+                    })
+                    .catch(reject);
+            });
+        }
+
+        function parseServiceDescription(body, address, url) {
+            var parseString = require('xml2js').parseString;
+            parseString(body, (err, result) => {
+                if (!err && result && result.root && result.root.device) {
+                    var device = result.root.device[0];
+                    console.log('device', device);
+                    var devicetype = 'googlecast';
+                    console.log()
+                    if(device.deviceType && device.deviceType.toString() == 'urn:schemas-upnp-org:device:MediaRenderer:1')
+                    {devicetype = 'upnp';}
+                    ondeviceup(address, device.friendlyName.toString(), url, devicetype);
+                }
+            });
+        }
+
+        function loadMedia(client, song, artist, album, albumart, cb) {
+            var u =  'http://' + getIp() + ':' + server.address().port + '/';
+            client.launch(DefaultMediaReceiver, (err, player) => {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                let media = {
+                    // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
+                    contentId: u,
+                    contentType: 'audio/wav',
+                    streamType: 'LIVE', // or LIVE
+
+                    // Title and cover displayed while buffering
+                    metadata: {
+                        type: 0,
+                        metadataType: 3,
+                        title: song ?? "",
+                        albumName: album ?? "",
+                        artist: artist ?? "",
+                        images: [
+                            {url: albumart ?? ""}]
+                    }
+                };
+                // ipcMain.on('setupNewTrack', function (event, song, artist, album, albumart) {
+                //     try {
+                        
+                //         let newmedia = {
+                //             // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
+                //             contentId: u,
+                //             contentType: 'audio/wav',
+                //             streamType: 'LIVE', // or LIVE
+
+                //             // Title and cover displayed while buffering
+                //             metadata: {
+                //                 type: 0,
+                //                 metadataType: 3,
+                //                 title: song ?? "",
+                //                 albumName: album ?? '',
+                //                 artist: artist ?? '',
+                //                 images: [
+                //                     {url: albumart ?? ''}]
+                //             }
+                //         };
+                //         headerSent = false;
+
+                //         player.queueUpdate(newmedia, {
+                //             autoplay: true
+                //         }, (err, status) => {
+                //             console.log('media loaded playerState=%s', status);
+                //         });
+                        
+                //     } catch (e) {
+                //         console.log('GCerror', e)
+                //     }
+                // });
+
+
+                player.on('status', status => {
+                    console.log('status broadcast playerState=%s', status);
+                });
+
+                console.log('app "%s" launched, loading media %s ...', player, media);
+
+                player.load(media, {
+                    autoplay: true
+                }, (err, status) => {
+                    console.log('media loaded playerState=%s', status);
+                });
+
+
+                client.getStatus((x, status) => {
+                    if (status && status.volume) {
+                        client.volume = status.volume.level;
+                        client.muted = status.volume.muted;
+                        client.stepInterval = status.volume.stepInterval;
+                    }
+                })
+
+            });
+        }
+
+
+        function getIp() {
+            var ip = false
+            var alias = 0;
+            let ifaces = os.networkInterfaces();
+            for (var dev in ifaces) {
+                ifaces[dev].forEach(details => {
+                    if (details.family === 'IPv4') {
+                        if (!/(loopback|vmware|internal|hamachi|vboxnet|virtualbox)/gi.test(dev + (alias ? ':' + alias : ''))) {
+                            if (details.address.substring(0, 8) === '192.168.' ||
+                                details.address.substring(0, 7) === '172.16.' ||
+                                details.address.substring(0, 3) === '10.'
+                            ) {
+                                ip = details.address;
+                                ++alias;
+                            }
+                        }
+                    }
+                });
+            }
+            return ip;
+        }
+
+        function stream(device, song, artist, album, albumart) {
+            var castMode = 'googlecast'; 
+            var UPNPDesc = '';
+            castMode = device.type;
+            UPNPDesc = device.location;
+
+            if (castMode == 'googlecast'){                
+            let client = new audioClient();
+            client.volume = 100;
+            client.stepInterval = 0.5;
+            client.muted = false;
+
+            client.connect(device.host, () => {
+                console.log('connected, launching app ...', 'http://' + getIp() + ':' + server.address().port + '/');
+                if (!connectedHosts[device.host]) {
+                    connectedHosts[device.host] = client;
+                    activeConnections.push(client);
+                }
+                loadMedia(client, song, artist, album, albumart);
+            });
+            client.on('close', () => {
+                console.info("Client Closed");
+                for (var i = activeConnections.length - 1; i >= 0; i--) {
+                    if (activeConnections[i] == client) {
+                        activeConnections.splice(i, 1);
+                        return;
+                    }
+                }
+            });
+            client.on('error', err => {
+                console.log('Error: %s', err.message);
+                client.close();
+                delete connectedHosts[device.host];
+            });
+           } else {
+               // upnp devices
+            try{
+            client = new MediaRendererClient(UPNPDesc);
+            var options = { 
+                autoplay: true,
+                contentType: 'audio/x-wav',
+                dlnaFeatures: 'DLNA.ORG_PN=-;DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000',
+                metadata: {
+                  title: 'Apple Music Electron',
+                  creator: 'Streaming ...',
+                  type: 'audio', // can be 'video', 'audio' or 'image'
+                //  url: 'http://' + getIp() + ':' + server.address().port + '/',
+                //  protocolInfo: 'DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000;
+                }
+              };
+              
+             client.load('http://' + getIp() + ':' + server.address().port + '/a.wav', options, function(err, result) {
+                if(err) throw err;
+                console.log('playing ...');
+              });
+              
+           } catch(e){}
+        }}
+
+        ipcMain.on('getKnownCastDevices', function (event) {
+            event.returnValue = castDevices
+        });
+
+        ipcMain.on('performGCCast', function (event, device, song, artist, album, albumart) {
+            setupGCServer().then(function () {
+                app.win.webContents.setAudioMuted(true);
+                console.log(device);
+                stream(device, song, artist, album, albumart);
+            })
+        });
+
+        ipcMain.on('getChromeCastDevices', function (event, data) {
+            searchForGCDevices();
+        });
+
+        ipcMain.on('stopGCast', function (event) {
+            app.win.webContents.setAudioMuted(false);
+            GCRunning = false;
+            expectedConnections = 0;
+            currentConnections = 0;
+            activeConnections = [];
+            requests = [];
+            GCstream = new Stream.PassThrough();
+            connectedHosts = {};
+            port = false;
+            server = false;
+            bufcount = 0;
+            bufcount2 = 0;
+            headerSent = false;
+        })
     }
 }
 

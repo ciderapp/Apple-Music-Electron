@@ -115,6 +115,10 @@ const Utils = {
             app.transparency = false;
             return false
         }
+        
+        if(process.platform === "win32" && app.cfg.get('visual.transparencyEffect') == "mica") {
+            return false
+        }
 
         if(process.platform === "win32" && app.cfg.get('visual.transparencyEffect') == "mica") {
             return false
