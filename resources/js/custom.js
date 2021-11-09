@@ -219,6 +219,10 @@ try {
                             _lyrics.GetLyrics(1, true);
                         });
 
+                        ipcRenderer.on('backuplyricsMV', function (_event, _data) {
+                            _lyrics.GetLyrics(1, false);
+                        });
+
                         ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
                             if (data < 0) {
                                 data = 0
@@ -286,6 +290,10 @@ try {
         
                             ipcRenderer.on('backuplyrics', function (_event, _data) {
                                 _lyrics.GetLyrics(1, true);
+                            });
+
+                            ipcRenderer.on('backuplyricsMV', function (_event, _data) {
+                                _lyrics.GetLyrics(1, false);
                             });
 
                             ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
