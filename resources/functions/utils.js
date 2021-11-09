@@ -120,6 +120,10 @@ const Utils = {
             return false
         }
 
+        if(process.platform === "win32" && app.cfg.get('visual.transparencyEffect') == "mica") {
+            return false
+        }
+
         console.log('[fetchTransparencyOptions] Fetching Transparency Options')
         let transparencyOptions = {
             theme: null,

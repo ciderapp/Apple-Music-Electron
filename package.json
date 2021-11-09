@@ -37,7 +37,7 @@
     "mdns-js": "github:bitfocus/node-mdns-js",
     "mpris-service": "^2.1.2",
     "naudiodon": "github:vapormusic/naudiodon",
-    "node-fetch": "^3.0.0",
+    "node-fetch": "^3.1.0",
     "node-ssdp-lite": "^0.2.0",
     "opus-media-recorder": "^0.8.0",
     "react": "^17.0.2",
