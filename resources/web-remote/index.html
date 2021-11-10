@@ -12,7 +12,7 @@
 </head>
 
 <body oncontextmenu="return false;">
-    <div id="app">
+    <div id="app" :style="{'--artwork': getAlbumArtUrl()}">
         <transition name="wpfade">
             <div class="md-container md-container_panel" v-if="screen == 'player'">
                 <div class="md-body player-artwork-container">
@@ -89,7 +89,7 @@
             </div>
         </transition>
         <transition name="wpfade">
-            <div class="md-container md-container_panel" v-if="screen == 'search'">
+            <div class="md-container md-container_panel search-panel" v-if="screen == 'search'">
                 <div class="md-header">
                     <div class="row">
                         <div class="col-auto">
