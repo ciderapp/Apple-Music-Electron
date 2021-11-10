@@ -4,6 +4,11 @@ var wsapi = {
             ipcRenderer.send('wsapi-returnSearch', JSON.stringify(results))
         })
     },
+    searchLibrary(term, limit) {
+        MusicKit.getInstance().api.library.search(term, {limit: limit, types: 'library-songs,library-artists,library-albums'}).then((results)=>{
+            ipcRenderer.send('wsapi-returnSearchLibrary', JSON.stringify(results))
+        })
+    },
     getLyrics() {
         MusicKit.getInstance().api.lyric(
             MusicKit.getInstance().nowPlayingItem.id

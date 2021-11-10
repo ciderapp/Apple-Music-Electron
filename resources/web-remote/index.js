@@ -15,7 +15,10 @@ var app = new Vue({
             query: "",
             results: [],
             state: 0,
-            tab: "all"
+            tab: "all",
+            searchType: "applemusic",
+            trackSelect: false,
+            selected: {}
         },
         connectedState: 0
     },
@@ -95,6 +98,17 @@ var app = new Vue({
             this.screen = "search";
             this.searchQuery();
         },
+        trackSelect(song) {
+            this.search.selected = song;
+            this.search.trackSelect = true
+        },
+        clearSelectedTrack() {
+            this.search.selected = {}
+            this.search.trackSelect = false
+        },
+        getArtworkColor(hex) {
+            return `#${hex}`
+        },
         playMediaItemById(id) {
             socket.send(JSON.stringify({
                 action: "play-mediaitem",
@@ -108,8 +122,12 @@ var app = new Vue({
                 return;
             }
             this.search.state = 1;
+            var actionType = "search"
+            if(this.search.searchType == "library") {
+                actionType = "library-search"
+            }
             socket.send(JSON.stringify({
-                "action": "search",
+                "action": actionType,
                 "term": this.search.query,
                 "limit": 20
             }))
@@ -181,6 +199,11 @@ var app = new Vue({
                 return "active";
             }
         },
+        searchTypeClass(type) {
+            if (type == this.search.searchType) {
+                return "active";
+            }
+        },
         showLyrics() {
             socket.send(JSON.stringify({
                 action: "get-lyrics",
@@ -236,6 +259,10 @@ var app = new Vue({
                     case "lyrics":
                         self.player.lyricsMediaItem = response.data;
                         break;
+                    case "searchResultsLibrary":
+                        self.search.results = response.data;
+                        self.search.state = 2;
+                    break;
                     case "searchResults":
                         self.search.results = response.data;
                         self.search.state = 2;

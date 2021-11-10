@@ -106,6 +106,12 @@
                         </div>
 
                     </div>
+                    <div class="md-header search-type-container">
+                        <button class="search-type-button" @click="search.searchType = 'applemusic';searchQuery()"
+                            :class="searchTypeClass('applemusic')" style="width:100%;">Apple Music</button>
+                        <button class="search-type-button" @click="search.searchType = 'library';searchQuery()"
+                            :class="searchTypeClass('library')" style="width:100%;">Library</button>
+                    </div>
                     <div class="md-header search-tab-container" v-if="search.state == 2">
                         <button class="search-tab" @click="search.tab = 'all'" :class="searchTabClass('all')">All
                             Results</button>
@@ -135,8 +141,9 @@
                             <div class="md-body search-body" style="overflow-y:scroll;" v-if="search.state == 2">
                                 <template v-if="canShowSearchTab('songs')">
                                     <div class="list-entry-header">Songs</div>
+
                                     <div class="list-entry" v-for="song in search.results.songs"
-                                        @click="playMediaItemById(song.id)">
+                                        @click="trackSelect(song)">
                                         <div class="row">
                                             <div class="col-auto flex-center">
                                                 <div class="list-entry-image" v-if="song.artwork"
@@ -153,11 +160,31 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="list-entry" v-for="song in search.results['library-songs']"
+                                        @click="trackSelect(song)">
+                                        <div class="row">
+                                            <div class="col-auto flex-center">
+                                                <div class="list-entry-image" v-if="song.artwork"
+                                                    :style="{'--artwork': getAlbumArtUrlList(song.artwork.url)}">
+                                                </div>
+                                            </div>
+                                            <div class="col flex-center">
+                                                <div class="list-entry-name">
+                                                    {{ song.name }}
+                                                </div>
+                                                <div class="list-entry-artist">
+                                                    {{ song.artistName }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </template>
                                 <template v-if="canShowSearchTab('albums')">
                                     <div class="list-entry-header">Albums</div>
-                                    <div class="list-entry" v-for="album in search.results.albums"
-                                        @click="playMediaItemById(album.id)">
+
+                                    <div class="list-entry" v-for="album in search.results.albums">
                                         <div class="row">
                                             <div class="col-auto flex-center">
                                                 <div class="list-entry-image" v-if="album.artwork"
@@ -174,11 +201,30 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="list-entry" v-for="album in search.results['library-albums']">
+                                        <div class="row">
+                                            <div class="col-auto flex-center">
+                                                <div class="list-entry-image" v-if="album.artwork"
+                                                    :style="{'--artwork': getAlbumArtUrlList(album.artwork.url)}">
+                                                </div>
+                                            </div>
+                                            <div class="col flex-center">
+                                                <div class="list-entry-name">
+                                                    {{ album.name }}
+                                                </div>
+                                                <div class="list-entry-artist">
+                                                    {{ album.artistName }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </template>
                                 <template v-if="canShowSearchTab('artists')">
                                     <div class="list-entry-header">Artists</div>
-                                    <div class="list-entry" v-for="artist in search.results.artists"
-                                        @click="playMediaItemById(artist.id)">
+
+                                    <div class="list-entry" v-for="artist in search.results.artists">
                                         <div class="row">
                                             <div class="col-auto flex-center">
                                                 <div class="list-entry-image artist" v-if="artist.artwork"
@@ -195,9 +241,104 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="list-entry" v-for="artist in search.results['library-artists']">
+                                        <div class="row">
+                                            <div class="col-auto flex-center">
+                                                <div class="list-entry-image artist" v-if="artist.artwork"
+                                                    :style="{'--artwork': getAlbumArtUrlList(artist.artwork.url)}">
+                                                </div>
+                                            </div>
+                                            <div class="col flex-center">
+                                                <div class="list-entry-name">
+                                                    {{ artist.name }}
+                                                </div>
+                                                <div class="list-entry-artist">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </template>
                             </div>
                         </transition>
+                    </div>
+                </div>
+            </transition>
+            <transition name="wpfade">
+                <div class="md-container md-container_panel context-menu" v-if="search.trackSelect">
+                    <div class="md-header">
+
+                    </div>
+                    <div class="md-body context-menu-body">
+                        <button class="context-menu-item context-menu-item--left"
+                            @click="playMediaItemById(search.selected.id);clearSelectedTrack()">
+                            <div class="row">
+                                <div class="col-auto flex-center" style="display:flex;align-items: center;">
+                                    <div class="list-entry-image"
+                                        :style="{'--artwork': getAlbumArtUrlList(search.selected.artwork.url)}">
+                                    </div>
+                                </div>
+                                <div class="col flex-center" style="display:flex;align-items: center;">
+                                    <div style="width:100%;font-size: 18px;">
+                                        {{ search.selected.name }}
+                                    </div>
+                                    <div style="width:100%;font-size: 16px;">
+                                        {{ search.selected.artistName }}
+                                    </div>
+                                    <div style="width:100%;font-size: 14px;">
+                                        {{ parseTime(search.selected.durationInMillis) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="md-body context-menu-body" style="height: auto;">
+                        <button class="context-menu-item context-menu-item--left"
+                            @click="playMediaItemById(search.selected.id);clearSelectedTrack()">
+                            <div class="row">
+                                <div class="col">
+                                    Play
+                                </div>
+                                <div class="col-auto">
+                                    ▶️
+                                </div>
+                            </div>
+                        </button>
+                        <button class="context-menu-item context-menu-item--left">
+                            <div class="row">
+                                <div class="col">
+                                    Play Next
+                                </div>
+                                <div class="col-auto">
+                                    ⏭️
+                                </div>
+                            </div>
+                        </button>
+                        <button class="context-menu-item context-menu-item--left">
+                            <div class="row">
+                                <div class="col">
+                                    Play Later
+                                </div>
+                                <div class="col-auto">
+                                    ⌛
+                                </div>
+                            </div>
+                        </button>
+                        <button class="context-menu-item context-menu-item--left">
+                            <div class="row">
+                                <div class="col">
+                                    Open in {{ musicAppVariant() }}
+                                </div>
+                                <div class="col-auto">
+                                    🎵
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="md-footer">
+                        <button class="context-menu-item" @click="clearSelectedTrack()">Cancel</button>
                     </div>
                 </div>
             </transition>
@@ -271,7 +412,9 @@
                         <template v-if="player.lyrics['tt']">
                             <div v-for="segment in player.lyrics['tt']['body']['div']">
                                 <div v-for="line in segment['p']">
-                                    <h3 class="lyric-line" :class="getLyricClass(line['@attributes']['begin'], line['@attributes']['end'])">{{ line["#text"] }}</h3>
+                                    <h3 class="lyric-line"
+                                        :class="getLyricClass(line['@attributes']['begin'], line['@attributes']['end'])">
+                                        {{ line["#text"] }}</h3>
                                 </div>
                             </div>
                         </template>
@@ -280,7 +423,7 @@
                         </template>
                     </div>
                     <div class="md-footer">
-    
+
                     </div>
                 </div>
             </transition>
@@ -290,19 +433,13 @@
                 <div class="md-header">
 
                 </div>
-                <div class="md-body">
+                <div class="md-body" style="display:flex;justify-content: center;align-items: center;">
                     <div v-if="connectedState == 0">
                         Loading...
                     </div>
-                    <div v-if="connectedState == 1">
-                        Connection Inturrupted
-                        <br>
-                        <button class="md-btn md-btn-primary" @click="connect()">Retry</button>
-                    </div>
-                    <div v-if="connectedState == 2">
-                        Connection Inturrupted
-                        <br>
-                        <button class="md-btn md-btn-primary" @click="connect()">Retry</button>
+                    <div v-else>
+                        <h3 style="text-align:center;">Connection Inturrupted</h3>
+                        <button class="md-btn md-btn-primary" style="font-weight:500;width: 120px;border-radius: 50px;display:block;margin: 0 auto;" @click="connect()">Retry</button>
                     </div>
                 </div>
                 <div class="md-footer">

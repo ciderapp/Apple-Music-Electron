@@ -426,6 +426,29 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     background: rgb(0 0 0 / 50%);
 }
 
+.search-type-container {
+    display:flex;
+}
+
+.search-type-button {
+    background: rgb(20 20 20 / 0.85);
+    border-radius: 50px;
+    color: white;
+    border: 0px;
+    box-shadow: unset;
+    font-family: inherit;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 8px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.search-type-button.active {
+    background: var(--keyColor);
+}
+
 .search-tab-container {
     overflow: auto;
     white-space: nowrap;

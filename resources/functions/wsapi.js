@@ -6,10 +6,15 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 const port = process.argv[2] || 9000;
-const {ipcMain, app} = require('electron');
+const express = require('express');
+const router = express.Router();
+const {
+    ipcMain,
+    app
+} = require('electron');
 
 const wsapi = {
-    standardResponse: function(status, data, message, type = "generic") {
+    standardResponse: function (status, data, message, type = "generic") {
         this.status = status;
         this.message = message;
         this.data = data;
@@ -21,11 +26,12 @@ const wsapi = {
     createId() {
         // create random guid
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            var r = Math.random() * 16 | 0,
+                v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
     },
-    InitWebSockets () {
+    InitWebSockets() {
         ipcMain.on('wsapi-updatePlaybackState', (event, arg) => {
             wsapi.updatePlaybackState(arg);
         })
@@ -36,6 +42,10 @@ const wsapi = {
 
         ipcMain.on('wsapi-returnSearch', (event, arg) => {
             wsapi.returnSearch(JSON.parse(arg));
+        });
+
+        ipcMain.on('wsapi-returnSearchLibrary', (event, arg) => {
+            wsapi.returnSearchLibrary(JSON.parse(arg));
         });
 
         ipcMain.on('wsapi-returnLyrics', (event, arg) => {
@@ -64,7 +74,7 @@ const wsapi = {
                 // should not be compressed if context takeover is disabled.
             }
         })
-        
+
         const defaultResponse = new wsapi.standardResponse(0, {}, "OK");
 
         console.log(`WebSocketServer started on port: ${this.port}`);
@@ -79,13 +89,13 @@ const wsapi = {
             ws.on('message', function incoming(message) {
                 let data = JSON.parse(message);
                 let response = new wsapi.standardResponse(0, {}, "OK");;
-                if(data.action) {
+                if (data.action) {
                     data.action.toLowerCase();
                 }
                 switch (data.action) {
                     default:
                         response.message = "Action not found";
-                    break;
+                        break;
                     case "identify":
                         response.message = "Thanks for identifying!"
                         response.data = {
@@ -97,87 +107,93 @@ const wsapi = {
                             description: data.description,
                             version: data.version
                         }
-                    break;
+                        break;
                     case "quick-play":
                         app.win.webContents.executeJavaScript(`wsapi.quickPlay(\`${data.term}\`)`);
                         response.message = "Quick Play";
-                    break;
+                        break;
                     case "get-lyrics":
                         app.win.webContents.executeJavaScript(`wsapi.getLyrics()`);
-                    break;
+                        break;
                     case "shuffle":
                         app.win.webContents.executeJavaScript(`wsapi.toggleShuffle()`);
-                    break;
+                        break;
                     case "repeat":
                         app.win.webContents.executeJavaScript(`wsapi.toggleRepeat()`);
-                    break;
+                        break;
                     case "seek":
                         app.win.webContents.executeJavaScript(`MusicKit.getInstance().seekToTime(${parseFloat(data.time)})`);
                         response.message = "Seek";
-                    break;
+                        break;
                     case "pause":
                         app.win.webContents.executeJavaScript(`MusicKit.getInstance().pause()`);
                         response.message = "Paused";
-                    break;
+                        break;
                     case "play":
                         app.win.webContents.executeJavaScript(`MusicKit.getInstance().play()`);
                         response.message = "Playing";
-                    break;
+                        break;
                     case "stop":
                         app.win.webContents.executeJavaScript(`MusicKit.getInstance().stop()`);
                         response.message = "Stopped";
-                    break;
+                        break;
                     case "volume":
                         app.win.webContents.executeJavaScript(`MusicKit.getInstance().volume = ${parseFloat(data.volume)}`);
                         response.message = "Volume";
-                    break;
+                        break;
                     case "mute":
                         app.win.webContents.executeJavaScript(`MusicKit.getInstance().mute()`);
                         response.message = "Muted";
-                    break;
+                        break;
                     case "unmute":
                         app.win.webContents.executeJavaScript(`MusicKit.getInstance().unmute()`);
                         response.message = "Unmuted";
-                    break;
+                        break;
                     case "next":
                         app.win.webContents.executeJavaScript(`MusicKit.getInstance().skipToNextItem()`);
                         response.message = "Next";
-                    break;
+                        break;
                     case "previous":
                         app.win.webContents.executeJavaScript(`MusicKit.getInstance().skipToPreviousItem()`);
                         response.message = "Previous";
-                    break;
+                        break;
                     case "musickit-api":
-        
-                    break;
+
+                        break;
                     case "musickit-library-api":
-        
-                    break;
+
+                        break;
                     case "get-queue":
                         app.win.webContents.executeJavaScript(`wsapi.getQueue()`);
-                    break;
+                        break;
                     case "search":
-                        if(!data.limit) {
+                        if (!data.limit) {
                             data.limit = 10;
                         }
                         app.win.webContents.executeJavaScript(`wsapi.search(\`${data.term}\`, \`${data.limit}\`)`);
-                    break;
+                        break;
+                    case "library-search":
+                        if (!data.limit) {
+                            data.limit = 10;
+                        }
+                        app.win.webContents.executeJavaScript(`wsapi.searchLibrary(\`${data.term}\`, \`${data.limit}\`)`);
+                        break;
                     case "show-window":
                         app.win.show()
-                    break;
+                        break;
                     case "hide-window":
                         app.win.hide()
-                    break;
+                        break;
                     case "play-mediaitem":
                         app.win.webContents.executeJavaScript(`wsapi.playTrackById(${data.id})`);
                         response.message = "Playing track";
-                    break;
+                        break;
                     case "get-status":
                         response.data = {
                             isAuthorized: true
                         };
                         response.message = "Status";
-                    break;
+                        break;
                     case "get-currentmediaitem":
                         response.data = {
                             "id": "1",
@@ -188,11 +204,11 @@ const wsapi = {
                             "cover": "",
                             "url": ""
                         };
-                    break;
+                        break;
                 }
                 ws.send(JSON.stringify(response));
             });
-            
+
             ws.on('close', function close() {
                 // remove client from list
                 wsapi.clients.splice(wsapi.clients.indexOf(ws), 1);
@@ -222,15 +238,31 @@ const wsapi = {
             client.send(JSON.stringify(response));
         });
     },
+    returnSearchLibrary(results) {
+        const response = new wsapi.standardResponse(0, results, "OK", "searchResultsLibrary");
+        wsapi.clients.forEach(function each(client) {
+            client.send(JSON.stringify(response));
+        });
+    },
     returnQueue(queue) {
         const response = new wsapi.standardResponse(0, queue, "OK", "returnQueue");
         wsapi.clients.forEach(function each(client) {
             client.send(JSON.stringify(response));
         });
     },
-    InitWebServer () {
+    webRemotePort: 8090,
+    InitWebServer() {
         // Web Remote
-        
+        // express server that will serve static files in the "../web-remote" folder
+        const webapp = express();
+        const webRemotePath = path.join(__dirname, '../web-remote');
+        webapp.use(express.static(webRemotePath));
+        webapp.get('/', function (req, res) {
+            res.sendFile(path.join(webRemotePath, 'index.html'));
+        });
+        webapp.listen(wsapi.webRemotePort, function () {
+            console.log(`Web Remote listening on port ${wsapi.webRemotePort}`);
+        });
     }
 }
 
