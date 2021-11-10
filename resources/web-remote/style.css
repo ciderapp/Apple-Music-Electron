@@ -67,6 +67,7 @@ body {
     user-select: none;
     margin: 0 auto;
     position: relative;
+    overflow: hidden;
 }
 
 #app:before {
@@ -222,6 +223,14 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
 
 .playback-button--small.lyrics {
     background-image: url("./assets/quote-right.svg");
+}
+
+.playback-button--small.shuffle {
+    background-image: url("./assets/shuffle.svg");
+}
+
+.playback-button--small.repeat {
+    background-image: url("./assets/repeat.svg");
 }
 
 .playback-button.pause {
@@ -413,6 +422,10 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     background: rgb(0 0 0 / 50%);
 }
 
+.connection-error-panel {
+    background: rgb(0 0 0 / 50%);
+}
+
 .search-tab-container {
     overflow: auto;
     white-space: nowrap;
@@ -509,6 +522,20 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     align-items: flex-end;
     justify-content: flex-end;
     flex-direction: column;
+}
+
+.lyric-line {
+    color: white;
+    font-size: 28px;
+    transform:scale(0.8);
+    transform-origin: left center;
+    transition: transform 0.2s var(--appleEase);
+    opacity: 0.75;
+}
+
+.lyric-line.active {
+    opacity: 1;
+    transform: scale(1);
 }
 
 /* Small Screen */

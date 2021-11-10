@@ -1,3 +1,5 @@
+var socket;
+
 // vue instance
 var app = new Vue({
     el: '#app',
@@ -5,14 +7,17 @@ var app = new Vue({
         screen: "player",
         player: {
             currentMediaItem: {},
-            songActions: false
+            songActions: false,
+            lyrics: {},
+            lyricsMediaItem: {}
         },
         search: {
             query: "",
             results: [],
             state: 0,
             tab: "all"
-        }
+        },
+        connectedState: 0
     },
     methods: {
         musicAppVariant() {
@@ -125,6 +130,42 @@ var app = new Vue({
             var seconds = ((value % 60000) / 1000).toFixed(0);
             return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
         },
+        parseTimeDecimal(value) {
+            var minutes = Math.floor(value / 60000);
+            var seconds = ((value % 60000) / 1000).toFixed(0);
+            return minutes + "." + (seconds < 10 ? '0' : '') + seconds;
+        },
+        hmsToSecondsOnly(str) {
+            var p = str.split(':'),
+                s = 0,
+                m = 1;
+
+            while (p.length > 0) {
+                s += m * parseInt(p.pop(), 10);
+                m *= 60;
+            }
+
+            return s;
+        },
+        getLyricClass(start, end) {
+            var currentTime = parseFloat(this.hmsToSecondsOnly(this.parseTime(this.player.currentMediaItem.durationInMillis - this.player.currentMediaItem.remainingTime)));
+            start = parseFloat(this.hmsToSecondsOnly(start))
+            end = parseFloat(this.hmsToSecondsOnly(end))
+
+            console.log(`current: ${currentTime}\nstart: ${start}\nend: ${end}`);
+            // check if currenttime is between start and end
+            if (currentTime >= start && currentTime <= end) {
+                setTimeout(()=>{
+                    if(document.querySelector(".lyric-line.active")) {
+                        document.querySelector(".lyric-line.active").scrollIntoView({behavior: "smooth"})
+                    }
+                }, 200)
+                return "active"
+            } else {
+                return ""
+            }
+
+        },
         getAlbumArtUrl(size = 600) {
             if (this.player.currentMediaItem.artwork) {
                 return `url("${this.player.currentMediaItem.artwork.url.replace('{w}', size).replace('{h}', size)}")`;
@@ -140,45 +181,111 @@ var app = new Vue({
                 return "active";
             }
         },
+        showLyrics() {
+            socket.send(JSON.stringify({
+                action: "get-lyrics",
+            }))
+            this.parseLyrics()
+            this.screen = "lyrics"
+        },
+        parseLyrics() {
+            var xml = this.stringToXml(this.player.lyricsMediaItem.ttml)
+            var json = xmlToJson(xml);
+            this.player.lyrics = json
+        },
+        stringToXml(st) {
+            // string to xml
+            var xml = (new DOMParser()).parseFromString(st, "text/xml");
+            return xml;
+        },
         canShowSearchTab(tab) {
             if (tab == this.search.tab || this.search.tab == "all") {
                 return true;
-            }else{
+            } else {
                 return false;
+            }
+        },
+        connect() {
+            let self = this;
+            this.connectedState = 0;
+            socket = new WebSocket('ws://localhost:26369');
+            socket.onopen = (e) => {
+                console.log(e);
+                console.log('connected');
+                app.connectedState = 1;
+            }
+
+            socket.onclose = (e) => {
+                console.log(e);
+                console.log('disconnected');
+                app.connectedState = 2;
+            }
+
+            socket.onerror = (e) => {
+                console.log(e);
+                console.log('error');
+                app.connectedState = 2;
+            }
+
+            socket.onmessage = (e) => {
+                const response = JSON.parse(e.data);
+                switch (response.type) {
+                    default:
+
+                        break;
+                    case "lyrics":
+                        self.player.lyricsMediaItem = response.data;
+                        break;
+                    case "searchResults":
+                        self.search.results = response.data;
+                        self.search.state = 2;
+                        break;
+                    case "playbackStateUpdate":
+                        self.player.currentMediaItem = response.data;
+                        break;
+                }
+                console.log(e.data);
             }
         }
     },
 });
 
-var socket = new WebSocket('ws://localhost:26369');
-socket.onopen = (e) => {
-    console.log(e);
-    console.log('connected');
-}
+function xmlToJson(xml) {
 
-socket.onclose = (e) => {
-    console.log(e);
-    console.log('disconnected');
-}
+    // Create the return object
+    var obj = {};
 
-socket.onerror = (e) => {
-    console.log(e);
-    console.log('error');
-}
-
-socket.onmessage = (e) => {
-    const response = JSON.parse(e.data);
-    switch (response.type) {
-        default:
-
-            break;
-        case "searchResults":
-            app.search.results = response.data;
-            app.search.state = 2;
-            break;
-        case "playbackStateUpdate":
-            app.player.currentMediaItem = response.data;
-            break;
+    if (xml.nodeType == 1) { // element
+        // do attributes
+        if (xml.attributes.length > 0) {
+            obj["@attributes"] = {};
+            for (var j = 0; j < xml.attributes.length; j++) {
+                var attribute = xml.attributes.item(j);
+                obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+            }
+        }
+    } else if (xml.nodeType == 3) { // text
+        obj = xml.nodeValue;
     }
-    console.log(e.data);
-}
+
+    // do children
+    if (xml.hasChildNodes()) {
+        for (var i = 0; i < xml.childNodes.length; i++) {
+            var item = xml.childNodes.item(i);
+            var nodeName = item.nodeName;
+            if (typeof (obj[nodeName]) == "undefined") {
+                obj[nodeName] = xmlToJson(item);
+            } else {
+                if (typeof (obj[nodeName].push) == "undefined") {
+                    var old = obj[nodeName];
+                    obj[nodeName] = [];
+                    obj[nodeName].push(old);
+                }
+                obj[nodeName].push(xmlToJson(item));
+            }
+        }
+    }
+    return obj;
+};
+
+app.connect()

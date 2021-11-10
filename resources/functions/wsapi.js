@@ -35,8 +35,11 @@ const wsapi = {
         });
 
         ipcMain.on('wsapi-returnSearch', (event, arg) => {
-            console.log(arg);
             wsapi.returnSearch(JSON.parse(arg));
+        });
+
+        ipcMain.on('wsapi-returnLyrics', (event, arg) => {
+            wsapi.returnLyrics(JSON.parse(arg));
         });
 
         wss = new WebSocketServer({
@@ -98,6 +101,9 @@ const wsapi = {
                     case "quick-play":
                         app.win.webContents.executeJavaScript(`wsapi.quickPlay(\`${data.term}\`)`);
                         response.message = "Quick Play";
+                    break;
+                    case "get-lyrics":
+                        app.win.webContents.executeJavaScript(`wsapi.getLyrics()`);
                     break;
                     case "shuffle":
                         app.win.webContents.executeJavaScript(`wsapi.toggleShuffle()`);
@@ -200,6 +206,12 @@ const wsapi = {
     },
     updatePlaybackState(attr) {
         const response = new wsapi.standardResponse(0, attr, "OK", "playbackStateUpdate");
+        wsapi.clients.forEach(function each(client) {
+            client.send(JSON.stringify(response));
+        });
+    },
+    returnLyrics(results) {
+        const response = new wsapi.standardResponse(0, results, "OK", "lyrics");
         wsapi.clients.forEach(function each(client) {
             client.send(JSON.stringify(response));
         });

@@ -13,242 +13,300 @@
 
 <body oncontextmenu="return false;">
     <div id="app" :style="{'--artwork': getAlbumArtUrl()}">
-        <transition name="wpfade">
-            <div class="md-container md-container_panel" v-if="screen == 'player'">
-                <div class="md-body player-artwork-container">
-                    <div class="media-artwork" :class="artworkPlaying()" :style="{'--artwork': getAlbumArtUrl()}">
+        <template v-if="connectedState == 1">
+            <transition name="wpfade">
+                <div class="md-container md-container_panel" v-if="screen == 'player'">
+                    <div class="md-body player-artwork-container">
+                        <div class="media-artwork" :class="artworkPlaying()" :style="{'--artwork': getAlbumArtUrl()}">
 
+                        </div>
                     </div>
-                </div>
 
-                <div class="md-footer">
-                    <div class="row player-track-info">
-                        <div class="col nopadding">
-                            <div class="player-song-title">
-                                {{ player.currentMediaItem.name }}
+                    <div class="md-footer">
+                        <div class="row player-track-info">
+                            <div class="col nopadding">
+                                <div class="player-song-title">
+                                    {{ player.currentMediaItem.name }}
+                                </div>
+                                <div class="player-song-artist" @click="searchArtist()">
+                                    {{ player.currentMediaItem.artistName }}
+                                </div>
                             </div>
-                            <div class="player-song-artist" @click="searchArtist()">
-                                {{ player.currentMediaItem.artistName }}
+                            <div class="col-auto nopadding player-more-container" style="">
+                                <button @click="player.songActions = true;" class="player-more-button">...</button>
                             </div>
                         </div>
-                        <div class="col-auto nopadding player-more-container" style="">
-                            <button @click="player.songActions = true;" class="player-more-button">...</button>
-                        </div>
                     </div>
-                </div>
 
-                <div class="md-footer">
-                    <input type="range" min="0"
-                        :value="player.currentMediaItem.durationInMillis - player.currentMediaItem.remainingTime"
-                        :max="player.currentMediaItem.durationInMillis" class="web-slider playback-slider"
-                        @change="seekTo($event.target.value)">
-                    <div class="row nopadding player-duration-container" style="width: 90%;margin: 0 auto;">
-                        <div class="col nopadding player-duration-time" style="text-align:left">
-                            {{ parseTime(player.currentMediaItem.durationInMillis - player.currentMediaItem.remainingTime) }}
-                        </div>
-                        <div class="col nopadding player-duration-time" style="text-align:right">
-                            -{{ parseTime(player.currentMediaItem.remainingTime) }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="md-footer playback-buttons">
-                    <button class="md-btn playback-button--small" @click="repeat()">🔁</button>
-                    <button class="md-btn playback-button previous" @click="previous()"></button>
-                    <button class="md-btn playback-button pause" @click="pause()"
-                        v-if="player.currentMediaItem.status"></button>
-                    <button class="md-btn playback-button play" @click="play()" v-else></button>
-                    <button class="md-btn playback-button next" @click="next()"></button>
-                    <button class="md-btn playback-button--small" @click="shuffle()">🔀</button>
-                </div>
-
-
-                <div class="md-footer">
-                    <div class="row volume-slider-container">
-                        <div class="col-auto">
-                            <div class="player-volume-glyph decrease"></div>
-                        </div>
-                        <div class="col">
-                            <input type="range" class="web-slider volume-slider" max="1" min="0" step="0.01"
-                                @change="setVolume($event.target.value)" :value="player.currentMediaItem.volume">
-                        </div>
-                        <div class="col-auto">
-                            <div class="player-volume-glyph increase"></div>
-
+                    <div class="md-footer">
+                        <input type="range" min="0"
+                            :value="player.currentMediaItem.durationInMillis - player.currentMediaItem.remainingTime"
+                            :max="player.currentMediaItem.durationInMillis" class="web-slider playback-slider"
+                            @change="seekTo($event.target.value)">
+                        <div class="row nopadding player-duration-container" style="width: 90%;margin: 0 auto;">
+                            <div class="col nopadding player-duration-time" style="text-align:left">
+                                {{ parseTime(player.currentMediaItem.durationInMillis - player.currentMediaItem.remainingTime) }}
+                            </div>
+                            <div class="col nopadding player-duration-time" style="text-align:right">
+                                -{{ parseTime(player.currentMediaItem.remainingTime) }}
+                            </div>
                         </div>
                     </div>
 
-                </div>
+                    <div class="md-footer playback-buttons">
+                        <button class="md-btn playback-button--small repeat" @click="repeat()"></button>
+                        <button class="md-btn playback-button previous" @click="previous()"></button>
+                        <button class="md-btn playback-button pause" @click="pause()"
+                            v-if="player.currentMediaItem.status"></button>
+                        <button class="md-btn playback-button play" @click="play()" v-else></button>
+                        <button class="md-btn playback-button next" @click="next()"></button>
+                        <button class="md-btn playback-button--small shuffle" @click="shuffle()"></button>
+                    </div>
 
-                <div class="md-footer">
-                    <button class="md-btn playback-button--small lyrics"></button>
-                    <button class="md-btn playback-button--small queue" @click="quickSearch()"></button>
-                    <button class="md-btn playback-button--small search" @click="screen = 'search'"></button>
-                </div>
 
-            </div>
-        </transition>
+                    <div class="md-footer">
+                        <div class="row volume-slider-container">
+                            <div class="col-auto">
+                                <div class="player-volume-glyph decrease"></div>
+                            </div>
+                            <div class="col">
+                                <input type="range" class="web-slider volume-slider" max="1" min="0" step="0.01"
+                                    @change="setVolume($event.target.value)" :value="player.currentMediaItem.volume">
+                            </div>
+                            <div class="col-auto">
+                                <div class="player-volume-glyph increase"></div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="md-footer">
+                        <button class="md-btn playback-button--small lyrics" @click="showLyrics()"></button>
+                        <button class="md-btn playback-button--small queue" @click="quickSearch()"></button>
+                        <button class="md-btn playback-button--small search" @click="screen = 'search'"></button>
+                    </div>
+
+                </div>
+            </transition>
+            <transition name="wpfade">
+                <div class="md-container md-container_panel search-panel" v-if="screen == 'search'">
+                    <div class="md-header">
+                        <div class="row">
+                            <div class="col-auto">
+                                <button class="back-button" @click="screen = 'player'"></button>
+                            </div>
+                            <div class="col" style="display: flex;align-items: center;">
+                                <div class="col">
+                                    <input type="text" placeholder="Artists, Songs, Lyrics, and More" spellcheck="false"
+                                        v-model="search.query" @change="searchQuery()" v-on:keyup.enter="searchQuery()"
+                                        class="search-input">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="md-header search-tab-container" v-if="search.state == 2">
+                        <button class="search-tab" @click="search.tab = 'all'" :class="searchTabClass('all')">All
+                            Results</button>
+                        <button class="search-tab" @click="search.tab = 'songs'"
+                            :class="searchTabClass('songs')">Songs</button>
+                        <button class="search-tab" @click="search.tab = 'albums'"
+                            :class="searchTabClass('albums')">Albums</button>
+                        <button class="search-tab" @click="search.tab = 'artists'"
+                            :class="searchTabClass('artists')">Artists</button>
+                    </div>
+                    <div class="search-body-container">
+                        <transition name="wpfade">
+                            <div class="md-body search-body" v-if="search.state == 0">
+                                <div
+                                    style="font-size: 17px;display:flex;flex-direction: column;justify-content: center;align-items: center;">
+                                    <img src="./assets/search.svg" style="width: 40px;margin: 32px;">
+                                    Search by song, album, artist, or lyrics.
+                                </div>
+                            </div>
+                        </transition>
+                        <transition name="wpfade">
+                            <div class="md-body search-body" v-if="search.state == 1">
+                                <!-- loading state -->
+                            </div>
+                        </transition>
+                        <transition name="wpfade">
+                            <div class="md-body search-body" style="overflow-y:scroll;" v-if="search.state == 2">
+                                <template v-if="canShowSearchTab('songs')">
+                                    <div class="list-entry-header">Songs</div>
+                                    <div class="list-entry" v-for="song in search.results.songs"
+                                        @click="playMediaItemById(song.id)">
+                                        <div class="row">
+                                            <div class="col-auto flex-center">
+                                                <div class="list-entry-image" v-if="song.artwork"
+                                                    :style="{'--artwork': getAlbumArtUrlList(song.artwork.url)}">
+                                                </div>
+                                            </div>
+                                            <div class="col flex-center">
+                                                <div class="list-entry-name">
+                                                    {{ song.name }}
+                                                </div>
+                                                <div class="list-entry-artist">
+                                                    {{ song.artistName }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template v-if="canShowSearchTab('albums')">
+                                    <div class="list-entry-header">Albums</div>
+                                    <div class="list-entry" v-for="album in search.results.albums"
+                                        @click="playMediaItemById(album.id)">
+                                        <div class="row">
+                                            <div class="col-auto flex-center">
+                                                <div class="list-entry-image" v-if="album.artwork"
+                                                    :style="{'--artwork': getAlbumArtUrlList(album.artwork.url)}">
+                                                </div>
+                                            </div>
+                                            <div class="col flex-center">
+                                                <div class="list-entry-name">
+                                                    {{ album.name }}
+                                                </div>
+                                                <div class="list-entry-artist">
+                                                    {{ album.artistName }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template v-if="canShowSearchTab('artists')">
+                                    <div class="list-entry-header">Artists</div>
+                                    <div class="list-entry" v-for="artist in search.results.artists"
+                                        @click="playMediaItemById(artist.id)">
+                                        <div class="row">
+                                            <div class="col-auto flex-center">
+                                                <div class="list-entry-image artist" v-if="artist.artwork"
+                                                    :style="{'--artwork': getAlbumArtUrlList(artist.artwork.url)}">
+                                                </div>
+                                            </div>
+                                            <div class="col flex-center">
+                                                <div class="list-entry-name">
+                                                    {{ artist.name }}
+                                                </div>
+                                                <div class="list-entry-artist">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </transition>
+                    </div>
+                </div>
+            </transition>
+            <transition name="wpfade">
+                <div class="md-container md-container_panel context-menu" v-if="player.songActions">
+                    <div class="md-header">
+
+                    </div>
+                    <div class="md-body context-menu-body">
+                        <button class="context-menu-item context-menu-item--left">
+                            <div class="row">
+                                <div class="col">
+                                    Add To Library
+                                </div>
+                                <div class="col-auto">
+                                    ➕
+                                </div>
+                            </div>
+                        </button>
+                        <button class="context-menu-item context-menu-item--left">
+                            <div class="row">
+                                <div class="col">
+                                    Love
+                                </div>
+                                <div class="col-auto">
+                                    ❤️
+                                </div>
+                            </div>
+                        </button>
+                        <button class="context-menu-item context-menu-item--left">
+                            <div class="row">
+                                <div class="col">
+                                    Share
+                                </div>
+                                <div class="col-auto">
+                                    🌐
+                                </div>
+                            </div>
+                        </button>
+                        <button class="context-menu-item context-menu-item--left">
+                            <div class="row">
+                                <div class="col">
+                                    Open in {{ musicAppVariant() }}
+                                </div>
+                                <div class="col-auto">
+                                    🎵
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="md-footer">
+                        <button class="context-menu-item" @click="player.songActions = false">Cancel</button>
+                    </div>
+                </div>
+            </transition>
+            <transition name="wpfade">
+                <div class="md-container md-container_panel" v-if="screen == 'lyrics'">
+                    <div class="md-header">
+                        <div class="row">
+                            <div class="col-auto">
+                                <button class="back-button" @click="screen = 'player'"></button>
+                            </div>
+                            <div class="col" style="display: flex;align-items: center;">
+                                <div class="col">
+                                    Lyrics
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md-body" style="overflow-y: scroll;">
+                        <template v-if="player.lyrics['tt']">
+                            <div v-for="segment in player.lyrics['tt']['body']['div']">
+                                <div v-for="line in segment['p']">
+                                    <h3 class="lyric-line" :class="getLyricClass(line['@attributes']['begin'], line['@attributes']['end'])">{{ line["#text"] }}</h3>
+                                </div>
+                            </div>
+                        </template>
+                        <template>
+                            No Lyrics Available
+                        </template>
+                    </div>
+                    <div class="md-footer">
+    
+                    </div>
+                </div>
+            </transition>
+        </template>
         <transition name="wpfade">
-            <div class="md-container md-container_panel search-panel" v-if="screen == 'search'">
+            <div class="md-container md-container_panel connection-error-panel" v-if="connectedState != 1">
                 <div class="md-header">
-                    <div class="row">
-                        <div class="col-auto">
-                            <button class="back-button" @click="screen = 'player'"></button>
-                        </div>
-                        <div class="col" style="display: flex;align-items: center;">
-                            <div class="col">
-                                <input type="text" placeholder="Artists, Songs, Lyrics, and More" spellcheck="false"
-                                    v-model="search.query" @change="searchQuery()" v-on:keyup.enter="searchQuery()"
-                                    class="search-input">
-                            </div>
-                        </div>
+
+                </div>
+                <div class="md-body">
+                    <div v-if="connectedState == 0">
+                        Loading...
                     </div>
-
-                </div>
-                <div class="md-header search-tab-container" v-if="search.state == 2">
-                    <button class="search-tab" @click="search.tab = 'all'" :class="searchTabClass('all')">All
-                        Results</button>
-                    <button class="search-tab" @click="search.tab = 'songs'"
-                        :class="searchTabClass('songs')">Songs</button>
-                    <button class="search-tab" @click="search.tab = 'albums'"
-                        :class="searchTabClass('albums')">Albums</button>
-                    <button class="search-tab" @click="search.tab = 'artists'"
-                        :class="searchTabClass('artists')">Artists</button>
-                </div>
-                <div class="search-body-container">
-                    <transition name="wpfade">
-                        <div class="md-body search-body" v-if="search.state == 0">
-                            <div
-                                style="font-size: 17px;display:flex;flex-direction: column;justify-content: center;align-items: center;">
-                                <img src="./assets/search.svg" style="width: 40px;margin: 32px;">
-                                Search by song, album, artist, or lyrics.
-                            </div>
-                        </div>
-                    </transition>
-                    <transition name="wpfade">
-                        <div class="md-body search-body" v-if="search.state == 1">
-                            <!-- loading state -->
-                        </div>
-                    </transition>
-                    <transition name="wpfade">
-                        <div class="md-body search-body" style="overflow-y:scroll;" v-if="search.state == 2">
-                            <template v-if="canShowSearchTab('songs')">
-                                <div class="list-entry-header">Songs</div>
-                                <div class="list-entry" v-for="song in search.results.songs"
-                                    @click="playMediaItemById(song.id)">
-                                    <div class="row">
-                                        <div class="col-auto flex-center">
-                                            <div class="list-entry-image" v-if="song.artwork"
-                                                :style="{'--artwork': getAlbumArtUrlList(song.artwork.url)}">
-                                            </div>
-                                        </div>
-                                        <div class="col flex-center">
-                                            <div class="list-entry-name">
-                                                {{ song.name }}
-                                            </div>
-                                            <div class="list-entry-artist">
-                                                {{ song.artistName }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-                            <template v-if="canShowSearchTab('albums')">
-                                <div class="list-entry-header">Albums</div>
-                                <div class="list-entry" v-for="album in search.results.albums"
-                                    @click="playMediaItemById(album.id)">
-                                    <div class="row">
-                                        <div class="col-auto flex-center">
-                                            <div class="list-entry-image" v-if="album.artwork"
-                                                :style="{'--artwork': getAlbumArtUrlList(album.artwork.url)}">
-                                            </div>
-                                        </div>
-                                        <div class="col flex-center">
-                                            <div class="list-entry-name">
-                                                {{ album.name }}
-                                            </div>
-                                            <div class="list-entry-artist">
-                                                {{ album.artistName }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-                            <template v-if="canShowSearchTab('artists')">
-                                <div class="list-entry-header">Artists</div>
-                                <div class="list-entry" v-for="artist in search.results.artists"
-                                    @click="playMediaItemById(artist.id)">
-                                    <div class="row">
-                                        <div class="col-auto flex-center">
-                                            <div class="list-entry-image artist" v-if="artist.artwork"
-                                                :style="{'--artwork': getAlbumArtUrlList(artist.artwork.url)}">
-                                            </div>
-                                        </div>
-                                        <div class="col flex-center">
-                                            <div class="list-entry-name">
-                                                {{ artist.name }}
-                                            </div>
-                                            <div class="list-entry-artist">
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
-                    </transition>
-                </div>
-            </div>
-        </transition>
-        <transition name="wpfade">
-            <div class="md-container md-container_panel context-menu" v-if="player.songActions">
-                <div class="md-header">
-
-                </div>
-                <div class="md-body context-menu-body">
-                    <button class="context-menu-item context-menu-item--left">
-                        <div class="row">
-                            <div class="col">
-                                Add To Library
-                            </div>
-                            <div class="col-auto">
-                                ➕
-                            </div>
-                        </div>
-                    </button>
-                    <button class="context-menu-item context-menu-item--left">
-                        <div class="row">
-                            <div class="col">
-                                Love
-                            </div>
-                            <div class="col-auto">
-                                ❤️
-                            </div>
-                        </div>
-                    </button>
-                    <button class="context-menu-item context-menu-item--left">
-                        <div class="row">
-                            <div class="col">
-                                Share
-                            </div>
-                            <div class="col-auto">
-                                🌐
-                            </div>
-                        </div>
-                    </button>
-                    <button class="context-menu-item context-menu-item--left">
-                        <div class="row">
-                            <div class="col">
-                                Open in {{ musicAppVariant() }}
-                            </div>
-                            <div class="col-auto">
-                                🎵
-                            </div>
-                        </div>
-                    </button>
+                    <div v-if="connectedState == 1">
+                        Connection Inturrupted
+                        <br>
+                        <button class="md-btn md-btn-primary" @click="connect()">Retry</button>
+                    </div>
+                    <div v-if="connectedState == 2">
+                        Connection Inturrupted
+                        <br>
+                        <button class="md-btn md-btn-primary" @click="connect()">Retry</button>
+                    </div>
                 </div>
                 <div class="md-footer">
-                    <button class="context-menu-item" @click="player.songActions = false">Cancel</button>
+
                 </div>
             </div>
         </transition>

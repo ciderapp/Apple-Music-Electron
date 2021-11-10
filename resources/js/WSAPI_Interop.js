@@ -4,6 +4,13 @@ var wsapi = {
             ipcRenderer.send('wsapi-returnSearch', JSON.stringify(results))
         })
     },
+    getLyrics() {
+        MusicKit.getInstance().api.lyric(
+            MusicKit.getInstance().nowPlayingItem.id
+        ).then((results)=>{
+            ipcRenderer.send('wsapi-returnLyrics', JSON.stringify(results))
+        })
+    },
     getQueue() {
         ipcRenderer.send('wsapi-returnQueue', JSON.stringify(MusicKit.getInstance().queue._queueItems))
     },
