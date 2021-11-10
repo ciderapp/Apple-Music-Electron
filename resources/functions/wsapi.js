@@ -15,7 +15,7 @@ const wsapi = {
         this.data = data;
         this.type = type;
     },
-    port: 6969,
+    port: 26369,
     wss: null,
     clients: [],
     createId() {
@@ -40,7 +40,7 @@ const wsapi = {
         });
 
         wss = new WebSocketServer({
-            port: 6969,
+            port: 26369,
             perMessageDeflate: {
                 zlibDeflateOptions: {
                     // See zlib defaults.

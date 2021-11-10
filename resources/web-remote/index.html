@@ -69,13 +69,8 @@
                             <div class="player-volume-glyph decrease"></div>
                         </div>
                         <div class="col">
-                            <input type="range"
-                            class="web-slider volume-slider" 
-                            max="1" 
-                            min="0" 
-                            step="0.01" 
-                            @change="setVolume($event.target.value)"
-                            :value="player.currentMediaItem.volume">
+                            <input type="range" class="web-slider volume-slider" max="1" min="0" step="0.01"
+                                @change="setVolume($event.target.value)" :value="player.currentMediaItem.volume">
                         </div>
                         <div class="col-auto">
                             <div class="player-volume-glyph increase"></div>
@@ -98,53 +93,110 @@
                 <div class="md-header">
                     <div class="row">
                         <div class="col-auto">
-                            <button class="back-button" @click="screen = 'player'">Back</button>
+                            <button class="back-button" @click="screen = 'player'"></button>
                         </div>
                         <div class="col" style="display: flex;align-items: center;">
-                            Search
+                            <div class="col">
+                                <input type="text" placeholder="Artists, Songs, Lyrics, and More" spellcheck="false"
+                                    v-model="search.query" @change="searchQuery()" v-on:keyup.enter="searchQuery()"
+                                    class="search-input">
+                            </div>
                         </div>
                     </div>
-                    
+
                 </div>
-                <div class="md-header">
-                    <div class="row">
-                        <div class="col">
-                            <input type="text" placeholder="Artists, Songs, Lyrics, and More" spellcheck="false" v-model="search.query" @change="searchQuery()" v-on:keyup.enter="searchQuery()" class="search-input">
-                        </div>
-                    </div>
+                <div class="md-header search-tab-container" v-if="search.state == 2">
+                    <button class="search-tab" @click="search.tab = 'all'" :class="searchTabClass('all')">All
+                        Results</button>
+                    <button class="search-tab" @click="search.tab = 'songs'"
+                        :class="searchTabClass('songs')">Songs</button>
+                    <button class="search-tab" @click="search.tab = 'albums'"
+                        :class="searchTabClass('albums')">Albums</button>
+                    <button class="search-tab" @click="search.tab = 'artists'"
+                        :class="searchTabClass('artists')">Artists</button>
                 </div>
-                <div class="md-body" style="overflow-y:scroll;">
-                    <div class="list-entry-header">Songs</div>
-                    <div class="list-entry" v-for="song in search.results.songs" @click="playMediaItemById(song.id)">
-                        <div class="list-entry-image" v-if="song.artwork"
-                            :style="{'--artwork': getAlbumArtUrlList(song.artwork.url)}">
+                <div class="search-body-container">
+                    <transition name="wpfade">
+                        <div class="md-body search-body" v-if="search.state == 0">
+                            <div
+                                style="font-size: 17px;display:flex;flex-direction: column;justify-content: center;align-items: center;">
+                                <img src="./assets/search.svg" style="width: 40px;margin: 32px;">
+                                Search by song, album, artist, or lyrics.
+                            </div>
+                        </div>
+                    </transition>
+                    <transition name="wpfade">
+                        <div class="md-body search-body" v-if="search.state == 1">
+                            <!-- loading state -->
+                        </div>
+                    </transition>
+                    <transition name="wpfade">
+                        <div class="md-body search-body" style="overflow-y:scroll;" v-if="search.state == 2">
+                            <template v-if="canShowSearchTab('songs')">
+                                <div class="list-entry-header">Songs</div>
+                                <div class="list-entry" v-for="song in search.results.songs"
+                                    @click="playMediaItemById(song.id)">
+                                    <div class="row">
+                                        <div class="col-auto flex-center">
+                                            <div class="list-entry-image" v-if="song.artwork"
+                                                :style="{'--artwork': getAlbumArtUrlList(song.artwork.url)}">
+                                            </div>
+                                        </div>
+                                        <div class="col flex-center">
+                                            <div class="list-entry-name">
+                                                {{ song.name }}
+                                            </div>
+                                            <div class="list-entry-artist">
+                                                {{ song.artistName }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            <template v-if="canShowSearchTab('albums')">
+                                <div class="list-entry-header">Albums</div>
+                                <div class="list-entry" v-for="album in search.results.albums"
+                                    @click="playMediaItemById(album.id)">
+                                    <div class="row">
+                                        <div class="col-auto flex-center">
+                                            <div class="list-entry-image" v-if="album.artwork"
+                                                :style="{'--artwork': getAlbumArtUrlList(album.artwork.url)}">
+                                            </div>
+                                        </div>
+                                        <div class="col flex-center">
+                                            <div class="list-entry-name">
+                                                {{ album.name }}
+                                            </div>
+                                            <div class="list-entry-artist">
+                                                {{ album.artistName }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            <template v-if="canShowSearchTab('artists')">
+                                <div class="list-entry-header">Artists</div>
+                                <div class="list-entry" v-for="artist in search.results.artists"
+                                    @click="playMediaItemById(artist.id)">
+                                    <div class="row">
+                                        <div class="col-auto flex-center">
+                                            <div class="list-entry-image artist" v-if="artist.artwork"
+                                                :style="{'--artwork': getAlbumArtUrlList(artist.artwork.url)}">
+                                            </div>
+                                        </div>
+                                        <div class="col flex-center">
+                                            <div class="list-entry-name">
+                                                {{ artist.name }}
+                                            </div>
+                                            <div class="list-entry-artist">
 
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
-                        <div class="list-entry-text">
-                            {{ song.name }}
-                        </div>
-                    </div>
-                    <div class="list-entry-header">Albums</div>
-                    <div class="list-entry" v-for="album in search.results.albums" @click="playMediaItemById(album.id)">
-                        <div class="list-entry-image" v-if="album.artwork"
-                            :style="{'--artwork': getAlbumArtUrlList(album.artwork.url)}">
-
-                        </div>
-                        <div class="list-entry-text">
-                            {{ album.name }}
-                        </div>
-                    </div>
-                    <div class="list-entry-header">Artists</div>
-                    <div class="list-entry" v-for="artist in search.results.artists"
-                        @click="playMediaItemById(artist.id)">
-                        <div class="list-entry-image" v-if="artist.artwork"
-                            :style="{'--artwork': getAlbumArtUrlList(artist.artwork.url)}">
-
-                        </div>
-                        <div class="list-entry-text">
-                            {{ artist.name }}
-                        </div>
-                    </div>
+                    </transition>
                 </div>
             </div>
         </transition>

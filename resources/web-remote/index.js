@@ -10,7 +10,8 @@ var app = new Vue({
         search: {
             query: "",
             results: [],
-            loading: false
+            state: 0,
+            tab: "all"
         }
     },
     methods: {
@@ -97,6 +98,11 @@ var app = new Vue({
             this.screen = "player";
         },
         searchQuery() {
+            if (this.search.query.length == 0) {
+                this.search.state = 0;
+                return;
+            }
+            this.search.state = 1;
             socket.send(JSON.stringify({
                 "action": "search",
                 "term": this.search.query,
@@ -128,11 +134,23 @@ var app = new Vue({
         },
         getAlbumArtUrlList(url, size = 64) {
             return `url("${url.replace('{w}', size).replace('{h}', size)}")`;
+        },
+        searchTabClass(tab) {
+            if (tab == this.search.tab) {
+                return "active";
+            }
+        },
+        canShowSearchTab(tab) {
+            if (tab == this.search.tab || this.search.tab == "all") {
+                return true;
+            }else{
+                return false;
+            }
         }
     },
 });
 
-var socket = new WebSocket('ws://localhost:6969');
+var socket = new WebSocket('ws://localhost:26369');
 socket.onopen = (e) => {
     console.log(e);
     console.log('connected');
@@ -156,7 +174,8 @@ socket.onmessage = (e) => {
             break;
         case "searchResults":
             app.search.results = response.data;
-        break;
+            app.search.state = 2;
+            break;
         case "playbackStateUpdate":
             app.player.currentMediaItem = response.data;
             break;
