@@ -71,7 +71,7 @@ module.exports = {
         if (!win) return;
 
         app.storefront = app.cfg.get('general.storefront');
-        const urlBase = app.cfg.get('advanced.useBetaSite') ? 'https://beta.music.apple.com' : 'https://music.apple.com' + app.cfg.get('general.storefront'),
+        const urlBase = app.cfg.get('advanced.useBetaSite') ? 'https://beta.music.apple.com' : 'https://music.apple.com/' + app.cfg.get('general.storefront'),
             urlFallback = `https://music.apple.com/`;
 
         ipcMain.once('userAuthorized', (e, args) => {
@@ -159,13 +159,17 @@ module.exports = {
 
     LoadOneTimeFiles: function () {
         // Inject the custom stylesheet
-        app.ame.load.LoadCSS('custom-stylesheet.css')
+        app.ame.load.LoadCSS('custom-stylesheet.css')       
         app.ame.load.LoadCSS('ameframework.css')
 
         // Inject Plugin Interaction
         if (app.pluginsEnabled) {
             app.ame.load.LoadJS('pluginSystem.js', false)
         }
+        // Load this first so it doesn't stuck
+        app.ame.load.LoadJS('OpusMediaRecorder.umd.js')
+        app.ame.load.LoadJS('encoderWorker.umd.js')
+        
 
         // Lyrics
         app.ame.load.LoadJS('lyrics.js')
@@ -180,6 +184,11 @@ module.exports = {
         
         // Bulk JavaScript Functions
         app.ame.load.LoadJS('custom.js')
+
+        // Audio Manuipulation Stuff
+
+        app.ame.load.LoadJS('eq.js')
+
 
         // Window Frames
         if (app.cfg.get('visual.frameType') === 'mac') {

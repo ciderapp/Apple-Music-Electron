@@ -72,12 +72,15 @@ module.exports = () => {
             removeScrollbars: true,
             useOperatingSystemAccent: false,
             scaling: 1,
+            yton: false,
             mxmon: false,
             mxmlanguage: "en"
         },
         audio: {
             audioQuality: "auto",
-            seamlessAudioTransitions: false
+            seamlessAudioTransitions: false,
+            castingBitDepth: '16',
+            enableDLNA: false,
         },
         window: {
             appStartupBehavior: "",
