@@ -350,7 +350,7 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
 }
 
 .flex-center {
-    display:flex;
+    display: flex;
     align-items: center;
     flex-wrap: wrap;
 }
@@ -427,7 +427,7 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
 }
 
 .search-type-container {
-    display:flex;
+    display: flex;
 }
 
 .search-type-button {
@@ -547,10 +547,15 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     flex-direction: column;
 }
 
+.lyric-body {
+    -webkit-mask-image: -webkit-gradient(linear, left 95%, left bottom, from(rgba(0, 0, 0, 1)), to(rgba(0, 0, 0, 0)));
+    overflow-y: scroll;
+}
+
 .lyric-line {
     color: white;
     font-size: 28px;
-    transform:scale(0.8);
+    transform: scale(0.8);
     transform-origin: left center;
     transition: transform 0.2s var(--appleEase);
     opacity: 0.75;

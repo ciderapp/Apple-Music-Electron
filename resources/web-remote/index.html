@@ -275,7 +275,7 @@
                         <button class="context-menu-item context-menu-item--left"
                             @click="playMediaItemById(search.selected.id);clearSelectedTrack()">
                             <div class="row">
-                                <div class="col-auto flex-center" style="display:flex;align-items: center;">
+                                <div class="col-auto flex-center"  v-if="search.selected.artwork" style="display:flex;align-items: center;">
                                     <div class="list-entry-image"
                                         :style="{'--artwork': getAlbumArtUrlList(search.selected.artwork.url)}">
                                     </div>
@@ -408,7 +408,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="md-body" style="overflow-y: scroll;">
+                    <div class="md-body lyric-body">
                         <template v-if="player.lyrics['tt']">
                             <div v-for="segment in player.lyrics['tt']['body']['div']">
                                 <div v-for="line in segment['p']">
