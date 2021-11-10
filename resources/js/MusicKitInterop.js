@@ -21,6 +21,10 @@ const MusicKitInterop = {
                         document.querySelector(`#MVLyricsBox`).style.display = 'block';
                     } else {
                         document.querySelector(`.web-chrome`).setAttribute('style', 'height: 55px !important');
+                        if (nowPlayingItem["type"] !== "song"){
+                            document.querySelector(`.web-chrome__grid-container`).setAttribute('style', 'margin: 15px auto 0')
+                        } else {
+                            document.querySelector(`.web-chrome__grid-container`).setAttribute('style', 'margin: dsds');}
                         document.querySelector(`#MVLyricsBox`).style.display = 'none';
                     }
                 }
@@ -35,6 +39,10 @@ const MusicKitInterop = {
                             document.querySelector(`#MVLyricsBox`).style.display = 'block';
                         } else {
                             document.querySelector(`.web-chrome`).setAttribute('style', 'height: 55px !important');
+                            if (nowPlayingItem["type"] !== "song"){
+                                document.querySelector(`.web-chrome__grid-container`).setAttribute('style', 'margin: 15px auto 0')
+                            } else {
+                                document.querySelector(`.web-chrome__grid-container`).setAttribute('style', 'margin: dsds');}
                             document.querySelector(`#MVLyricsBox`).style.display = 'none';
                         }
                     }
