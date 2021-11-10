@@ -46,18 +46,18 @@
                         {{ parseTime(player.currentMediaItem.durationInMillis - player.currentMediaItem.remainingTime) }}
                     </div>
                     <div class="col nopadding player-duration-time" style="text-align:right">
-                        {{ parseTime(player.currentMediaItem.remainingTime) }}
+                        -{{ parseTime(player.currentMediaItem.remainingTime) }}
                     </div>
                 </div>
             </div>
 
-            <div class="md-footer">
+            <div class="md-footer playback-buttons">
                 <button class="md-btn playback-button--small" @click="repeat()">🔁</button>
-                <button class="md-btn playback-button" @click="previous()">⏮️</button>
-                <button class="md-btn playback-button" @click="pause()"
-                    v-if="player.currentMediaItem.status">⏸️</button>
-                <button class="md-btn playback-button" @click="play()" v-else>▶️</button>
-                <button class="md-btn playback-button" @click="next()">⏭️</button>
+                <button class="md-btn playback-button previous" @click="previous()"></button>
+                <button class="md-btn playback-button pause" @click="pause()"
+                    v-if="player.currentMediaItem.status"></button>
+                <button class="md-btn playback-button play" @click="play()" v-else></button>
+                <button class="md-btn playback-button next" @click="next()"></button>
                 <button class="md-btn playback-button--small" @click="shuffle()">🔀</button>
             </div>
 
@@ -68,21 +68,56 @@
 
             <div class="md-footer">
                 <button class="md-btn playback-button--small">Lyrics</button>
-                <button class="md-btn playback-button--small">Up Next</button>
-                <button class="md-btn playback-button--small" @click="quickSearch()">Search</button>
+                <button class="md-btn playback-button--small" @click="quickSearch()">Up Next</button>
+                <button class="md-btn playback-button--small" @click="screen = 'search'">Search</button>
             </div>
 
         </div>
-        <div class="md-container md-container_panel" v-if="screen == 'quickSearch'">
+        <div class="md-container md-container_panel" v-if="screen == 'search'">
             <div class="md-header">
                 <button @click="screen = 'player'">Back</button>
-                Quick Search
+                Search
             </div>
-            <div class="md-body" style="width:100%;">
-                <input type="text" class="search-input" name="" id="">
+            <div class="md-header">
+                <div class="row">
+                    <div class="col">
+                        <input type="text" v-model="search.query" class="search-input">
+                    </div>
+                    <div class="col-auto">
+                        <button class="md-btn md-btn-primary" @click="searchQuery()">Search</button>
+                    </div>
+                </div>
+            </div>
+            <div class="md-body" style="overflow-y:scroll;">
+                <div class="list-entry-header">Songs</div>
+                <div class="list-entry" v-for="song in search.results.songs" @click="playMediaItemById(song.id)">
+                    <div class="list-entry-image" v-if="song.artwork" :style="{'--artwork': getAlbumArtUrlList(song.artwork.url)}">
+
+                    </div>
+                    <div class="list-entry-text">
+                        {{ song.name }}
+                    </div>
+                </div>
+                <div class="list-entry-header">Albums</div>
+                <div class="list-entry" v-for="album in search.results.albums" @click="playMediaItemById(album.id)">
+                    <div class="list-entry-image" v-if="album.artwork" :style="{'--artwork': getAlbumArtUrlList(album.artwork.url)}">
+
+                    </div>
+                    <div class="list-entry-text">
+                        {{ album.name }}
+                    </div>
+                </div>
+                <div class="list-entry-header">Artists</div>
+                <div class="list-entry" v-for="artist in search.results.artists" @click="playMediaItemById(artist.id)">
+                    <div class="list-entry-image" v-if="artist.artwork" :style="{'--artwork': getAlbumArtUrlList(artist.artwork.url)}">
+
+                    </div>
+                    <div class="list-entry-text">
+                        {{ artist.name }}
+                    </div>
+                </div>
             </div>
             <div class="md-footer">
-                <button class="md-btn">Search</button>
             </div>
         </div>
         <div class="md-container md-container_panel context-menu" v-if="player.songActions">

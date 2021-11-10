@@ -6,6 +6,11 @@ var app = new Vue({
         player: {
             currentMediaItem: {},
             songActions: false
+        },
+        search: {
+            query: "",
+            results: [],
+            loading: false
         }
     },
     methods: {
@@ -14,7 +19,7 @@ var app = new Vue({
                 return "Apple Music";
             } else if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
                 return "Music";
-            } else {               
+            } else {
                 if (navigator.userAgent.indexOf('Mac') > 0) {
                     return 'Music';
                 } else if (navigator.userAgent.indexOf('Win') > 0) {
@@ -29,7 +34,7 @@ var app = new Vue({
                 return "android";
             } else if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
                 return "ios";
-            } else {               
+            } else {
                 if (navigator.userAgent.indexOf('Mac') > 0) {
                     return 'mac';
                 } else if (navigator.userAgent.indexOf('Win') > 0) {
@@ -40,9 +45,9 @@ var app = new Vue({
             }
         },
         artworkPlaying() {
-            if(this.player.currentMediaItem.status) {
+            if (this.player.currentMediaItem.status) {
                 return
-            }else{
+            } else {
                 return ["paused"]
             }
         },
@@ -73,9 +78,22 @@ var app = new Vue({
                 action: "previous"
             }))
         },
+        playMediaItemById(id) {
+            socket.send(JSON.stringify({
+                action: "play-mediaitem",
+                id: id
+            }))
+            this.screen = "player";
+        },
+        searchQuery() {
+            socket.send(JSON.stringify({
+                "action": "search",
+                "term": this.search.query
+            }))
+        },
         quickSearch() {
             var search = prompt("Search for a song", "")
-            if(search == null || search == "") {
+            if (search == null || search == "") {
                 return
             }
 
@@ -89,12 +107,15 @@ var app = new Vue({
             var seconds = ((value % 60000) / 1000).toFixed(0);
             return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
         },
-        getAlbumArtUrl() {
+        getAlbumArtUrl(size = 600) {
             if (this.player.currentMediaItem.artwork) {
-                return `url("${this.player.currentMediaItem.artwork.url.replace('{w}', '600').replace('{h}', '600')}")`;
+                return `url("${this.player.currentMediaItem.artwork.url.replace('{w}', size).replace('{h}', size)}")`;
             } else {
                 return "";
             }
+        },
+        getAlbumArtUrlList(url, size = 64) {
+            return `url("${url.replace('{w}', size).replace('{h}', size)}")`;
         }
     },
 });
@@ -121,6 +142,9 @@ socket.onmessage = (e) => {
         default:
 
             break;
+        case "searchResults":
+            app.search.results = response.data;
+        break;
         case "playbackStateUpdate":
             app.player.currentMediaItem = response.data;
             break;
