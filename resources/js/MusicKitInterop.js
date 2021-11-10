@@ -91,6 +91,7 @@ const MusicKitInterop = {
         attributes.startTime = Date.now();
         attributes.endTime = Math.round((attributes.playParams.id === cache.playParams.id ? (Date.now() + attributes.remainingTime) : (attributes.startTime + attributes.durationInMillis)));
         attributes.endTime = attributes.endTime ? attributes.endTime : Date.now();
+        attributes.volume = MusicKit.getInstance().volume;
         return attributes
     },
 

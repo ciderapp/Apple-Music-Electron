@@ -58,6 +58,12 @@ var app = new Vue({
                 time: parseInt(time / 1000)
             }));
         },
+        setVolume(volume) {
+            socket.send(JSON.stringify({
+                action: "volume",
+                volume: volume
+            }));
+        },
         play() {
             socket.send(JSON.stringify({
                 action: "play"
@@ -78,6 +84,11 @@ var app = new Vue({
                 action: "previous"
             }))
         },
+        searchArtist() {
+            this.search.query = this.player.currentMediaItem.artistName;
+            this.screen = "search";
+            this.searchQuery();
+        },
         playMediaItemById(id) {
             socket.send(JSON.stringify({
                 action: "play-mediaitem",
@@ -88,7 +99,8 @@ var app = new Vue({
         searchQuery() {
             socket.send(JSON.stringify({
                 "action": "search",
-                "term": this.search.query
+                "term": this.search.query,
+                "limit": 20
             }))
         },
         quickSearch() {
