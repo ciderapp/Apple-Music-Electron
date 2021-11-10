@@ -14,7 +14,7 @@ const {
     {readFile, readFileSync, writeFile, existsSync, watch} = require('fs'),
     os = require('os'),
     mdns = require('mdns-js'),
-    ssdp = require('node-ssdp-lite'),
+    Client = require('node-ssdp').Client,
     express = require('express'),
     audioClient = require('castv2-client').Client,
     MediaRendererClient = require('upnp-mediarenderer-client'),
@@ -1106,26 +1106,19 @@ const handler = {
                 });
 
                 // also do a SSDP/UPnP search
-                let ssdpBrowser = new ssdp();
-                ssdpBrowser.on('response', (msg, rinfo) => {
-                    const location = getLocation(msg);
-                    if (location != null) {
-                        getServiceDescription(location, rinfo.address);
-                    }
+                let ssdpBrowser = new Client();
+                ssdpBrowser.on('response',  (headers, statusCode, rinfo) => {
+                     var location = getLocation(headers);
+                     if (location != null) {
+                         getServiceDescription(location, rinfo.address);
+                     }
 
                 });
 
-                function getLocation(msg) {
-                    msg.replace('\r', '');
-                    const headers = msg.split('\n');
+                function getLocation(headers) {
                     let location = null;
-                    for (let i = 0; i < headers.length; i++) {
-                        if (headers[i].indexOf('LOCATION') === 0) {
-                            location = headers[i].replace('LOCATION:', '').trim();
-                        } else if (headers[i].indexOf('Location') === 0) {
-                            location = headers[i].replace('Location:', '').trim();
-                        }
-                    }
+                    if (headers["LOCATION"] != null ){location = headers["LOCATION"]}
+                    else if (headers["Location"] != null ){location = headers["Location"]}
                     return location;
                 }
 
@@ -1133,13 +1126,12 @@ const handler = {
 
                 // actual upnp devices  
                 if (app.cfg.get("audio.enableDLNA")) {
-                    let ssdpBrowser2 = new ssdp();
-                    ssdpBrowser2.on('response', (msg, rinfo) => {
-                        console.log(msg);
-                        var location = getLocation(msg);
-                        if (location != null) {
-                            getServiceDescription(location, rinfo.address);
-                        }
+                    let ssdpBrowser2 = new Client();
+                    ssdpBrowser2.on('response',  (headers, statusCode, rinfo) => {
+                         var location = getLocation(headers);
+                         if (location != null) {
+                             getServiceDescription(location, rinfo.address);
+                         }
 
                     });
                     ssdpBrowser2.search('urn:schemas-upnp-org:device:MediaRenderer:1');
