@@ -91,43 +91,44 @@
             </transition>
             <transition name="wpfade">
                 <div class="md-container md-container_panel search-panel" v-if="screen == 'search'">
-                    <div class="md-header">
-                        <div class="row">
-                            <div class="col-auto">
-                                <button class="back-button" @click="screen = 'player'"></button>
-                            </div>
-                            <div class="col" style="display: flex;align-items: center;">
-                                <div class="col">
-                                    <input type="text" placeholder="Artists, Songs, Lyrics, and More" spellcheck="false"
-                                        v-model="search.query" @change="searchQuery()" v-on:keyup.enter="searchQuery()"
-                                        class="search-input">
+                    <div class="search-header">
+                        <div class="md-header">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <button class="back-button" @click="screen = 'player'"></button>
+                                </div>
+                                <div class="col" style="display: flex;align-items: center;">
+                                    <div class="col">
+                                        <input type="text" placeholder="Artists, Songs, Lyrics, and More" spellcheck="false"
+                                            v-model="search.query" @change="searchQuery()" v-on:keyup.enter="searchQuery()"
+                                            class="search-input">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                    </div>
-                    <div class="md-header search-type-container">
-                        <button class="search-type-button" @click="search.searchType = 'applemusic';searchQuery()"
-                            :class="searchTypeClass('applemusic')" style="width:100%;">Apple Music</button>
-                        <button class="search-type-button" @click="search.searchType = 'library';searchQuery()"
-                            :class="searchTypeClass('library')" style="width:100%;">Library</button>
-                    </div>
-                    <div class="md-header search-tab-container" v-if="search.state == 2">
-                        <button class="search-tab" @click="search.tab = 'all'" :class="searchTabClass('all')">All
-                            Results</button>
-                        <button class="search-tab" @click="search.tab = 'songs'"
-                            :class="searchTabClass('songs')">Songs</button>
-                        <button class="search-tab" @click="search.tab = 'albums'"
-                            :class="searchTabClass('albums')">Albums</button>
-                        <button class="search-tab" @click="search.tab = 'artists'"
-                            :class="searchTabClass('artists')">Artists</button>
+                        <div class="md-header search-type-container">
+                            <button class="search-type-button" @click="search.searchType = 'applemusic';searchQuery()"
+                                :class="searchTypeClass('applemusic')" style="width:100%;">Apple Music</button>
+                            <button class="search-type-button" @click="search.searchType = 'library';searchQuery()"
+                                :class="searchTypeClass('library')" style="width:100%;">Library</button>
+                        </div>
+                        <div class="md-header search-tab-container" v-if="search.state == 2">
+                            <button class="search-tab" @click="search.tab = 'all'" :class="searchTabClass('all')">All
+                                Results</button>
+                            <button class="search-tab" @click="search.tab = 'songs'"
+                                :class="searchTabClass('songs')">Songs</button>
+                            <button class="search-tab" @click="search.tab = 'albums'"
+                                :class="searchTabClass('albums')">Albums</button>
+                            <button class="search-tab" @click="search.tab = 'artists'"
+                                :class="searchTabClass('artists')">Artists</button>
+                        </div>
                     </div>
                     <div class="search-body-container">
                         <transition name="wpfade">
                             <div class="md-body search-body" v-if="search.state == 0">
                                 <div
                                     style="font-size: 17px;display:flex;flex-direction: column;justify-content: center;align-items: center;">
-                                    <img src="./assets/search.svg" style="width: 40px;margin: 32px;">
+                                    <img src="./assets/search.svg" style="width: 40px;margin: 32px;opacity: 0.85">
                                     Search by song, album, artist, or lyrics.
                                 </div>
                             </div>
@@ -138,7 +139,7 @@
                             </div>
                         </transition>
                         <transition name="wpfade">
-                            <div class="md-body search-body" style="overflow-y:scroll;" v-if="search.state == 2">
+                            <div class="md-body search-body" style="overflow-y:overlay;" v-if="search.state == 2">
                                 <template v-if="canShowSearchTab('songs')">
                                     <div class="list-entry-header">Songs</div>
 
@@ -418,7 +419,7 @@
                                 </div>
                             </div>
                         </template>
-                        <template>
+                        <template v-else>
                             No Lyrics Available
                         </template>
                     </div>
