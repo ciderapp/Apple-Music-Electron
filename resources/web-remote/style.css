@@ -428,7 +428,7 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     z-index: 1;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0px 0px 0px 1px rgb(200 200 200 / 8%);
+    border-bottom: 1px solid rgb(200 200 200 / 8%);
 }
 
 .connection-error-panel {
@@ -585,12 +585,63 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     filter: blur(1px)
 }
 
+.player_top {
+    height:100%;
+}
+
 /* Small Screen */
 @media only screen and (max-height: 668px) {
     #app {
         zoom: 0.8;
     }
 }
+
+/* Big Screen */
+
+
+@media only screen and (orientation:landscape) {
+    #app {
+        max-width: 100%;
+    }
+    .player-panel {
+        display:flex;
+        flex-direction: row;
+    }
+
+    .player_top {
+        width:100%;
+    }
+
+    .player_bottom {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .media-artwork {
+        width: 45vw;
+        height: 45vw;
+        margin: 60px;
+    }
+
+    .player-song-title {
+        font-size: 2em;
+    }
+    .player-song-artist {
+        font-size: 1.25em;
+    }
+
+    .search-panel {
+    }
+
+    .md-footer {
+        width:100%;
+    }
+}
+
 
 /* Transitions */
 .wpfade-enter-active,

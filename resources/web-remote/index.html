@@ -15,77 +15,76 @@
     <div id="app" :style="{'--artwork': getAlbumArtUrl()}">
         <template v-if="connectedState == 1">
             <transition name="wpfade">
-                <div class="md-container md-container_panel" v-if="screen == 'player'">
+                <div class="md-container md-container_panel player-panel" v-if="screen == 'player'">
+                    <div class="player_top">
                     <div class="md-body player-artwork-container">
                         <div class="media-artwork" :class="artworkPlaying()" :style="{'--artwork': getAlbumArtUrl()}">
 
                         </div>
                     </div>
-
-                    <div class="md-footer">
-                        <div class="row player-track-info">
-                            <div class="col nopadding">
-                                <div class="player-song-title">
-                                    {{ player.currentMediaItem.name }}
+                    </div>
+                    <div class="player_bottom">
+                        <div class="md-footer">
+                            <div class="row player-track-info">
+                                <div class="col nopadding">
+                                    <div class="player-song-title">
+                                        {{ player.currentMediaItem.name }}
+                                    </div>
+                                    <div class="player-song-artist" @click="searchArtist()">
+                                        {{ player.currentMediaItem.artistName }}
+                                    </div>
                                 </div>
-                                <div class="player-song-artist" @click="searchArtist()">
-                                    {{ player.currentMediaItem.artistName }}
+                                <div class="col-auto nopadding player-more-container" style="">
+                                    <button @click="player.songActions = true;" class="player-more-button">...</button>
                                 </div>
                             </div>
-                            <div class="col-auto nopadding player-more-container" style="">
-                                <button @click="player.songActions = true;" class="player-more-button">...</button>
+                        </div>
+                        <div class="md-footer">
+                            <input type="range" min="0"
+                                   :value="player.currentMediaItem.durationInMillis - player.currentMediaItem.remainingTime"
+                                   :max="player.currentMediaItem.durationInMillis" class="web-slider playback-slider"
+                                   @change="seekTo($event.target.value)">
+                            <div class="row nopadding player-duration-container" style="width: 90%;margin: 0 auto;">
+                                <div class="col nopadding player-duration-time" style="text-align:left">
+                                    {{ parseTime(player.currentMediaItem.durationInMillis - player.currentMediaItem.remainingTime) }}
+                                </div>
+                                <div class="col nopadding player-duration-time" style="text-align:right">
+                                    -{{ parseTime(player.currentMediaItem.remainingTime) }}
+                                </div>
                             </div>
+                        </div>
+                        <div class="md-footer playback-buttons">
+                            <button class="md-btn playback-button--small repeat" @click="repeat()"></button>
+                            <button class="md-btn playback-button previous" @click="previous()"></button>
+                            <button class="md-btn playback-button pause" @click="pause()"
+                                    v-if="player.currentMediaItem.status"></button>
+                            <button class="md-btn playback-button play" @click="play()" v-else></button>
+                            <button class="md-btn playback-button next" @click="next()"></button>
+                            <button class="md-btn playback-button--small shuffle" @click="shuffle()"></button>
+                        </div>
+                        <div class="md-footer">
+                            <div class="row volume-slider-container">
+                                <div class="col-auto">
+                                    <div class="player-volume-glyph decrease"></div>
+                                </div>
+                                <div class="col">
+                                    <input type="range" class="web-slider volume-slider" max="1" min="0" step="0.01"
+                                           @change="setVolume($event.target.value)" :value="player.currentMediaItem.volume">
+                                </div>
+                                <div class="col-auto">
+                                    <div class="player-volume-glyph increase"></div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="md-footer">
+                            <button class="md-btn playback-button--small lyrics" @click="showLyrics()"></button>
+                            <button class="md-btn playback-button--small queue" @click="quickSearch()"></button>
+                            <button class="md-btn playback-button--small search" @click="screen = 'search'"></button>
                         </div>
                     </div>
 
-                    <div class="md-footer">
-                        <input type="range" min="0"
-                            :value="player.currentMediaItem.durationInMillis - player.currentMediaItem.remainingTime"
-                            :max="player.currentMediaItem.durationInMillis" class="web-slider playback-slider"
-                            @change="seekTo($event.target.value)">
-                        <div class="row nopadding player-duration-container" style="width: 90%;margin: 0 auto;">
-                            <div class="col nopadding player-duration-time" style="text-align:left">
-                                {{ parseTime(player.currentMediaItem.durationInMillis - player.currentMediaItem.remainingTime) }}
-                            </div>
-                            <div class="col nopadding player-duration-time" style="text-align:right">
-                                -{{ parseTime(player.currentMediaItem.remainingTime) }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="md-footer playback-buttons">
-                        <button class="md-btn playback-button--small repeat" @click="repeat()"></button>
-                        <button class="md-btn playback-button previous" @click="previous()"></button>
-                        <button class="md-btn playback-button pause" @click="pause()"
-                            v-if="player.currentMediaItem.status"></button>
-                        <button class="md-btn playback-button play" @click="play()" v-else></button>
-                        <button class="md-btn playback-button next" @click="next()"></button>
-                        <button class="md-btn playback-button--small shuffle" @click="shuffle()"></button>
-                    </div>
-
-
-                    <div class="md-footer">
-                        <div class="row volume-slider-container">
-                            <div class="col-auto">
-                                <div class="player-volume-glyph decrease"></div>
-                            </div>
-                            <div class="col">
-                                <input type="range" class="web-slider volume-slider" max="1" min="0" step="0.01"
-                                    @change="setVolume($event.target.value)" :value="player.currentMediaItem.volume">
-                            </div>
-                            <div class="col-auto">
-                                <div class="player-volume-glyph increase"></div>
-
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="md-footer">
-                        <button class="md-btn playback-button--small lyrics" @click="showLyrics()"></button>
-                        <button class="md-btn playback-button--small queue" @click="quickSearch()"></button>
-                        <button class="md-btn playback-button--small search" @click="screen = 'search'"></button>
-                    </div>
 
                 </div>
             </transition>
@@ -268,10 +267,7 @@
                 </div>
             </transition>
             <transition name="wpfade">
-                <div class="md-container md-container_panel context-menu" v-if="search.trackSelect">
-                    <div class="md-header">
-
-                    </div>
+                <div class="md-container md-container_panel context-menu" style="overflow-y:auto;" v-if="search.trackSelect">
                     <div class="md-body context-menu-body">
                         <button class="context-menu-item context-menu-item--left"
                             @click="playMediaItemById(search.selected.id);clearSelectedTrack()">

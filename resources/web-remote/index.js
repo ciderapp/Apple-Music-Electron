@@ -20,7 +20,9 @@ var app = new Vue({
             trackSelect: false,
             selected: {}
         },
-        connectedState: 0
+        connectedState: 0,
+        url: window.location.hostname,
+        // url: "localhost",
     },
     methods: {
         musicAppVariant() {
@@ -231,7 +233,7 @@ var app = new Vue({
         connect() {
             let self = this;
             this.connectedState = 0;
-            socket = new WebSocket(`ws://${window.location.hostname}:26369`);
+            socket = new WebSocket(`ws://${this.url}:26369`);
             socket.onopen = (e) => {
                 console.log(e);
                 console.log('connected');
