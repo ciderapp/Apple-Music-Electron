@@ -231,7 +231,7 @@ var app = new Vue({
         connect() {
             let self = this;
             this.connectedState = 0;
-            socket = new WebSocket('ws://localhost:26369');
+            socket = new WebSocket(`ws://${window.location.hostname}:26369`);
             socket.onopen = (e) => {
                 console.log(e);
                 console.log('connected');
