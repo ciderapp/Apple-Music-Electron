@@ -58,7 +58,7 @@ const MusicKitInterop = {
         });
 
         /** wsapi */
-        MusicKit.getInstance().addEventListener(MusicKit.Events.playbackProgressDidChange, () => {
+        MusicKit.getInstance().addEventListener(MusicKit.Events.playbackTimeDidChange, () => {
             ipcRenderer.send('wsapi-updatePlaybackState', self.getAttributes());
         });
         /** wsapi */
