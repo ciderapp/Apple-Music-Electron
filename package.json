@@ -132,8 +132,7 @@
     "mac": {
       "icon": "./resources/icons/icon.icns",
       "category": "public.app-category.music",
-      "darkModeSupport": true,
-      "entitlements" : "./macosbuild.plist"
+      "darkModeSupport": true
     },
     "extraResources": [
       {
