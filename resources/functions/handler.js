@@ -200,8 +200,15 @@ const handler = {
             app.ame.load.LoadFiles();
         })
 
-        app.win.on('close', (e) => {
-            if (app.isQuiting || !app.cfg.get('window.closeButtonMinimize')) {
+        app.win.on('close', (event) => {
+            if (app.isMiniplayerActive && !app.isQuiting) {
+                ipcMain.emit("set-miniplayer", false);
+                event.preventDefault()
+            } else if ((app.cfg.get('window.closeButtonMinimize') || process.platform === "darwin") && !app.isQuiting) {
+                app.win.hide()
+                app.ame.win.SetContextMenu(false)
+                event.preventDefault()
+            } else {
                 app.win.destroy()
                 if (app.lyrics.mxmWin) {
                     app.lyrics.mxmWin.destroy();
@@ -211,15 +218,6 @@ const handler = {
                 }
                 if (app.lyrics.ytWin) {
                     app.lyrics.ytWin.destroy();
-                }
-            } else {
-                if (app.isMiniplayerActive) {
-                    ipcMain.emit("set-miniplayer", false);
-                    e.preventDefault()
-                } else if (app.cfg.get('window.closeButtonMinimize') || process.platform === "darwin") {
-                    app.win.hide()
-                    app.ame.win.SetContextMenu(false)
-                    e.preventDefault()
                 }
             }
         })
