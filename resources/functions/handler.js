@@ -368,6 +368,16 @@ const handler = {
             }
         })
 
+        // DiscordRPC
+        handledConfigs.push('general.discordRPC', 'general.discordClearActivityOnPause');
+        app.cfg.onDidChange('general.discordRPC', (newValue, _oldValue) => {
+            if (newValue && !app.discord.isConnected) {
+                app.ame.discord.connect();
+            } else {
+                app.ame.discord.disconnect();
+            }
+        })
+
 
         // IncognitoMode Changes
         handledConfigs.push('general.incognitoMode');

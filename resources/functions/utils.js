@@ -385,14 +385,8 @@ const Utils = {
         previousTrack: nativeImage.createFromPath(join(trayIconDir, 'previous.png')).resize({width: 32, height: 32}),
         inactive: {
             play: nativeImage.createFromPath(join(trayIconDir, 'play-inactive.png')).resize({width: 32, height: 32}),
-            nextTrack: nativeImage.createFromPath(join(trayIconDir, 'next-inactive.png')).resize({
-                width: 32,
-                height: 32
-            }),
-            previousTrack: nativeImage.createFromPath(join(trayIconDir, 'previous-inactive.png')).resize({
-                width: 32,
-                height: 32
-            }),
+            nextTrack: nativeImage.createFromPath(join(trayIconDir, 'next-inactive.png')).resize({width: 32, height: 32}),
+            previousTrack: nativeImage.createFromPath(join(trayIconDir, 'previous-inactive.png')).resize({width: 32, height: 32}),
         }
     }
 }
