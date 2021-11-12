@@ -164,7 +164,7 @@ module.exports = {
     SetButtons: () => {
 
         if (process.platform === 'win32') { // Set the Windows Thumbnail Toolbar Buttons
-            if (app.media.playParams.id === 'no-id-found') {
+            if (app.media.playParams.id !== 'no-id-found') {
                 app.win.setThumbarButtons([
                     {
                         tooltip: 'Previous',
