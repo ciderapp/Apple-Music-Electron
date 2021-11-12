@@ -1,4 +1,56 @@
 var _tests = {
+    remoteUI() {
+        AMJavaScript.getRequest("ameres://html/itunes_remote.html", (content)=>{
+            var vm = new Vue({
+                data: {
+                    passcode: {
+                        0: "",
+                        1: "",
+                        2: "",
+                        3: ""
+                    },
+                    state: "pin"
+                },
+                methods: {
+                    close() {
+                        modal.close()
+                    },
+                    jumpToNum(num) {
+                        document.querySelector(`#passcode-num-${num}`).focus()
+                        document.querySelector(`#passcode-num-${num}`).select()
+                    },
+                    retry() {
+                        this.passcode = {0:"",1:"",2:"",3:""}
+                        this.state = "pin"
+                    },
+                    connect() {
+                        let self = this
+                        this.state = "connecting"
+                        setTimeout(()=>{
+                            self.state = "success"
+                        }, 2000)
+                    }
+                }
+
+            })
+            var modal = new AMEModal({
+                content: content,
+                CloseButton: false,
+                Dismissible: false,
+                Style: {
+                    maxWidth: "700px",
+                    maxHeight: "400px"
+                },
+                OnCreate() {
+                    vm.$mount("#itunes-remote-vue")
+                    vm.jumpToNum(0)
+                },
+                OnClose() {
+                    _vues.destroy(vm)
+                }
+            })
+        })
+    },
     usermenuinit() {
         // MOVE ME ONCE IMPLEMENTED!
 
