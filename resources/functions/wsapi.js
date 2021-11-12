@@ -109,6 +109,14 @@ const wsapi = {
                             version: data.version
                         }
                         break;
+                    case "play-next":
+                        app.win.webContents.executeJavaScript(`wsapi.playNext(\`${data.type}\`,\`${data.id}\`)`);
+                        response.message = "Play Next";
+                        break;
+                    case "play-later":
+                        app.win.webContents.executeJavaScript(`wsapi.playLater(\`${data.type}\`,\`${data.id}\`)`);
+                        response.message = "Play Later";
+                        break;
                     case "quick-play":
                         app.win.webContents.executeJavaScript(`wsapi.quickPlay(\`${data.term}\`)`);
                         response.message = "Quick Play";
@@ -262,7 +270,7 @@ const wsapi = {
         });
     },
     returnQueue(queue) {
-        const response = new wsapi.standardResponse(0, queue, "OK", "returnQueue");
+        const response = new wsapi.standardResponse(0, queue, "OK", "queue");
         wsapi.clients.forEach(function each(client) {
             client.send(JSON.stringify(response));
         });

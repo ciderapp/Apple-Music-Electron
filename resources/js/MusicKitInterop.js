@@ -80,9 +80,10 @@ const MusicKitInterop = {
     },
 
     getAttributes: function () {
-        const nowPlayingItem = MusicKit.getInstance().nowPlayingItem;
-        const isPlayingExport = MusicKit.getInstance().isPlaying;
-        const remainingTimeExport = MusicKit.getInstance().currentPlaybackTimeRemaining;
+        const mk = MusicKit.getInstance();
+        const nowPlayingItem = mk.nowPlayingItem;
+        const isPlayingExport = mk.isPlaying;
+        const remainingTimeExport = mk.currentPlaybackTimeRemaining;
         const attributes = (nowPlayingItem != null ? nowPlayingItem.attributes : {});
 
         attributes.status = isPlayingExport ? isPlayingExport : false;
@@ -99,7 +100,9 @@ const MusicKitInterop = {
         attributes.startTime = Date.now();
         attributes.endTime = Math.round((attributes.playParams.id === cache.playParams.id ? (Date.now() + attributes.remainingTime) : (attributes.startTime + attributes.durationInMillis)));
         attributes.endTime = attributes.endTime ? attributes.endTime : Date.now();
-        attributes.volume = MusicKit.getInstance().volume;
+        attributes.volume = mk.volume;
+        attributes.shuffleMode = mk.shuffleMode;
+        attributes.repeatMode = mk.repeatMode;
         return attributes
     },
 

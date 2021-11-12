@@ -17,7 +17,20 @@ var wsapi = {
         })
     },
     getQueue() {
-        ipcRenderer.send('wsapi-returnQueue', JSON.stringify(MusicKit.getInstance().queue._queueItems))
+        ipcRenderer.send('wsapi-returnQueue', JSON.stringify(MusicKit.getInstance().queue))
+    },
+    playNext(type, id) {
+        var request = {}
+        request[type] = id
+        MusicKit.getInstance().playNext(request)
+    },
+    playLater(type, id) {
+        var request = {}
+        request[type] = id
+        MusicKit.getInstance().playLater(request)
+    },
+    love() {
+
     },
     playTrackById(id) {
         MusicKit.getInstance().setQueue({ song: id }).then(function (queue) {

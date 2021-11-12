@@ -18,7 +18,8 @@ var app = new Vue({
             tab: "all",
             searchType: "applemusic",
             trackSelect: false,
-            selected: {}
+            selected: {},
+            queue: {}
         },
         connectedState: 0,
         url: window.location.hostname,
@@ -75,6 +76,11 @@ var app = new Vue({
                 volume: volume
             }));
         },
+        getQueue() {
+            socket.send(JSON.stringify({
+                action: "get-queue"
+            }))
+        },
         play() {
             socket.send(JSON.stringify({
                 action: "play"
@@ -117,6 +123,20 @@ var app = new Vue({
                 id: id
             }))
             this.screen = "player";
+        },
+        playNext(type, id) {
+            socket.send(JSON.stringify({
+                action: "play-next",
+                type: type,
+                id: id
+            }))
+        },
+        playLater(type, id) {
+            socket.send(JSON.stringify({
+                action: "play-later",
+                type: type,
+                id: id
+            }))
         },
         searchQuery() {
             if (this.search.query.length == 0) {
@@ -206,11 +226,14 @@ var app = new Vue({
                 return "active";
             }
         },
+        showQueue() {
+            this.getQueue()
+            this.screen = "queue"
+        },
         showLyrics() {
             socket.send(JSON.stringify({
                 action: "get-lyrics",
             }))
-            this.parseLyrics()
             this.screen = "lyrics"
         },
         parseLyrics() {
@@ -233,6 +256,9 @@ var app = new Vue({
         connect() {
             let self = this;
             this.connectedState = 0;
+            if(this.url === "") {
+                this.url = prompt("Host IP", "localhost")
+            }
             socket = new WebSocket(`ws://${this.url}:26369`);
             socket.onopen = (e) => {
                 console.log(e);
@@ -258,8 +284,14 @@ var app = new Vue({
                     default:
 
                         break;
+                    case "queue":
+                        self.player.queue = response.data;
+                        self.$forceUpdate()
+                        break;
                     case "lyrics":
                         self.player.lyricsMediaItem = response.data;
+                        self.parseLyrics()
+                        self.$forceUpdate()
                         break;
                     case "searchResultsLibrary":
                         self.search.results = response.data;
