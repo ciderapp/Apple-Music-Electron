@@ -58,7 +58,7 @@
     "electron-builder": "^22.13.1",
     "electron-webpack": "^2.8.2",
     "musickit-typescript": "^1.2.4",
-    "webpack": "~5.62.1"
+    "webpack": "~5.63.0"
   },
   "fileAssociations": [
     {
@@ -133,6 +133,7 @@
     "mac": {
       "icon": "./resources/icons/icon.icns",
       "category": "public.app-category.music",
+      "entitlements": "resources/entitlements.mac.plist",
       "darkModeSupport": true
     },
     "extraResources": [
