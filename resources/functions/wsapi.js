@@ -10,7 +10,8 @@ const express = require('express');
 const router = express.Router();
 const {
     ipcMain,
-    app
+    app,
+    BrowserWindow
 } = require('electron');
 
 const wsapi = {
@@ -219,6 +220,22 @@ const wsapi = {
     },
     sendToClient(id) {
         // replace the clients.forEach with a filter to find the client that requested
+    },
+    win: null,
+    inAppUI() {
+        // create a browserwindow and load "localhost:8090"
+        this.win = new BrowserWindow({
+            width: 800,
+            height: 600,
+            webPreferences: {
+                nodeIntegration: true
+            }
+        });
+        this.win.loadURL(`http://localhost:${this.webRemotePort}`);
+        this.win.show()
+        this.win.on('closed', () => {
+            this.win = null;
+        });
     },
     updatePlaybackState(attr) {
         const response = new wsapi.standardResponse(0, attr, "OK", "playbackStateUpdate");

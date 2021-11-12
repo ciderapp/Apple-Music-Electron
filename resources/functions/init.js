@@ -185,6 +185,10 @@ const init = {
         app.isMiniplayerActive = false;
         app.injectedCSS = {}
         app.media = {status: false, playParams: {id: 'no-id-found'}};
+        
+        /** wsapi */
+        // app.ame.wsapi.inAppUI()
+        /** wsapi */
     },
 
     TrayInit: () => {
