@@ -9,7 +9,8 @@ var app = new Vue({
             currentMediaItem: {},
             songActions: false,
             lyrics: {},
-            lyricsMediaItem: {}
+            lyricsMediaItem: {},
+            userInteraction: false
         },
         search: {
             query: "",
@@ -19,7 +20,7 @@ var app = new Vue({
             searchType: "applemusic",
             trackSelect: false,
             selected: {},
-            queue: {}
+            queue: {},
         },
         connectedState: 0,
         url: window.location.hostname,
@@ -64,7 +65,6 @@ var app = new Vue({
             }
         },
         seekTo(time) {
-            console.log(time / 1000)
             socket.send(JSON.stringify({
                 action: "seek",
                 time: parseInt(time / 1000)
@@ -191,13 +191,11 @@ var app = new Vue({
             var currentTime = parseFloat(this.hmsToSecondsOnly(this.parseTime(this.player.currentMediaItem.durationInMillis - this.player.currentMediaItem.remainingTime)));
             start = parseFloat(this.hmsToSecondsOnly(start))
             end = parseFloat(this.hmsToSecondsOnly(end))
-
-            console.log(`current: ${currentTime}\nstart: ${start}\nend: ${end}`);
             // check if currenttime is between start and end
             if (currentTime >= start && currentTime <= end) {
                 setTimeout(()=>{
                     if(document.querySelector(".lyric-line.active")) {
-                        document.querySelector(".lyric-line.active").scrollIntoView({behavior: "smooth"})
+                        document.querySelector(".lyric-line.active").scrollIntoView({behavior: "smooth", block: "center"})
                     }
                 }, 200)
                 return "active"
@@ -229,6 +227,16 @@ var app = new Vue({
         showQueue() {
             this.getQueue()
             this.screen = "queue"
+        },
+        repeat() {
+            socket.send(JSON.stringify({
+                action: "repeat"
+            }))
+        },
+        shuffle() {
+            socket.send(JSON.stringify({
+                action: "shuffle"
+            }))
         },
         showLyrics() {
             socket.send(JSON.stringify({
@@ -264,6 +272,8 @@ var app = new Vue({
                 console.log(e);
                 console.log('connected');
                 app.connectedState = 1;
+                self.screen = "player"
+                self.clearSelectedTrack()
             }
 
             socket.onclose = (e) => {
@@ -302,10 +312,12 @@ var app = new Vue({
                         self.search.state = 2;
                         break;
                     case "playbackStateUpdate":
-                        self.player.currentMediaItem = response.data;
+                        if(!self.player.userInteraction) {
+                            self.player.currentMediaItem = response.data;
+                        }
                         break;
                 }
-                console.log(e.data);
+                // console.log(e.data);
             }
         }
     },

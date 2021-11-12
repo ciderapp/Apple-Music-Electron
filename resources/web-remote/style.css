@@ -213,6 +213,10 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     box-shadow: unset;
 }
 
+.playback-button--small.active {
+   background-color: rgb(200 200 200 / 10%);
+}
+
 .playback-button--small.search {
     background-image: url("./assets/search.svg");
 }
@@ -231,6 +235,10 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
 
 .playback-button--small.repeat {
     background-image: url("./assets/repeat.svg");
+}
+
+.playback-button--small.repeat.repeatOne {
+    background-color: var(--keyColor);
 }
 
 .playback-button.pause {

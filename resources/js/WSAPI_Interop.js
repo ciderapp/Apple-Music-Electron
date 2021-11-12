@@ -49,6 +49,12 @@ var wsapi = {
         MusicKit.getInstance().shuffleMode = MusicKit.getInstance().shuffleMode === 0 ? 1 : 0
     },
     toggleRepeat() {
-        MusicKit.getInstance().repeatMode = MusicKit.getInstance().repeatMode === 0 ? 1 : 0
+        if(MusicKit.getInstance().repeatMode == 0) {
+            MusicKit.getInstance().repeatMode = 2
+        }else if(MusicKit.getInstance().repeatMode == 2){
+            MusicKit.getInstance().repeatMode = 1
+        }else{
+            MusicKit.getInstance().repeatMode = 0
+        }
     }
 }
