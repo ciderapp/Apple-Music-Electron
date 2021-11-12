@@ -473,7 +473,7 @@
                 <div class="md-body lyric-body">
                     <template v-if="player.lyrics['tt']">
                         <div v-for="segment in player.lyrics['tt']['body']['div']">
-                            <div v-for="line in segment['p']">
+                            <div v-for="line in segment['p']" v-if="line['@attributes']">
                                 <h3 class="lyric-line"
                                     :class="getLyricClass(line['@attributes']['begin'], line['@attributes']['end'])">
                                     {{ line["#text"] }}</h3>
