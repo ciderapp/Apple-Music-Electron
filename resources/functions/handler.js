@@ -820,6 +820,7 @@ const handler = {
 
         ipcMain.on('LyricsMXMFailed', function (_event, _data) {
             app.win.send('backuplyrics', '');
+            console.log("mxm failed");
         });
 
         ipcMain.on('LyricsYTFailed', function (_event, _data) {

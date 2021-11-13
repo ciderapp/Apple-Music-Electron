@@ -353,10 +353,16 @@ try {
                                 try {
                                     const ttmlLyrics = response["ttml"];
                                     let lyrics = "";
+                                    let synced = true;
                                     const parser = new DOMParser();
                                     const doc = parser.parseFromString(ttmlLyrics, "text/xml");
+                                    console.log('sdx',doc.getElementsByTagName('tt')[0].getAttribute("itunes:timing") === "None");
+                                    if (doc.getElementsByTagName('tt')[0].getAttribute("itunes:timing") === "None"){
+                                      synced = false;
+                                    }
                                     const lyricsLines = doc.getElementsByTagName('p');
                                     const endTime = [0];
+                                    if (synced) {
                                     try {
                                         for (let element of lyricsLines) {
                                             rawTime = element.getAttribute('begin').match(/(\d+:)?(\d+:)?(\d+)(\.\d+)?/);
@@ -391,6 +397,19 @@ try {
                                             lrcTime = minutes + seconds + milliseconds;
                                             lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
                                         }
+                                    }}
+                                    else {
+                                        try{
+                                        var body = doc.getElementsByTagName('body')[0].innerHTML;
+                                        if (document.getElementById("lyricer")) {
+                                            var u = document.createElement('div');
+                                            u.id = "unsynced";
+                                            u.innerHTML = body;
+                                            if (!document.getElementById("unsynced")){
+                                            document.getElementById("lyricer").appendChild(u);} else {console.log('duped')}
+                                        }
+                                        } catch(e){}
+                                        
                                     }
                                     let artworkURL = ((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artworkURL : '').replace("{w}", 256).replace("{h}", 256);
                                     if (artworkURL == null) {
@@ -979,6 +998,7 @@ try {
                 const buttonPath = (preferences.visual.frameType === 'mac-right' ? '//*[@id="web-main"]/div[4]/div/div[3]/div[3]/button' : '//*[@id="web-main"]/div[3]/div/div[3]/div[3]/button');
                 if (GetXPath(buttonPath)) {
                     GetXPath(buttonPath).addEventListener('click', function () {
+                        try {
                         if (document.querySelector('.context-menu__option--app-settings')) {
                             if (preferences.advanced.verboseLogging) console.log("[settingsInit] Preventing second button.");
                             return;
@@ -1040,7 +1060,7 @@ try {
                             });
                             /** End plugin menu items */
                         }
-                    });
+                    } catch (e) {}});
                 }
 
                 /* Scroll Volume */
