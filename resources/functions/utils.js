@@ -114,13 +114,7 @@ const Utils = {
             console.verbose(`[fetchTransparencyOptions] Vibrancy not created. Required options not met. (transparencyEffect: ${app.cfg.get('visual.transparencyEffect')} | isVibrancySupported: ${Utils.isVibrancySupported()})`);
             app.transparency = false;
             return false
-        }
-        
-        if(process.platform === "win32" && app.cfg.get('visual.transparencyEffect') == "mica") {
-            return false
-        }
-
-        if(process.platform === "win32" && app.cfg.get('visual.transparencyEffect') == "mica") {
+        } else if (process.platform === "win32" && app.cfg.get('visual.transparencyEffect') === "mica") {
             return false
         }
 
@@ -385,8 +379,14 @@ const Utils = {
         previousTrack: nativeImage.createFromPath(join(trayIconDir, 'previous.png')).resize({width: 32, height: 32}),
         inactive: {
             play: nativeImage.createFromPath(join(trayIconDir, 'play-inactive.png')).resize({width: 32, height: 32}),
-            nextTrack: nativeImage.createFromPath(join(trayIconDir, 'next-inactive.png')).resize({width: 32, height: 32}),
-            previousTrack: nativeImage.createFromPath(join(trayIconDir, 'previous-inactive.png')).resize({width: 32, height: 32}),
+            nextTrack: nativeImage.createFromPath(join(trayIconDir, 'next-inactive.png')).resize({
+                width: 32,
+                height: 32
+            }),
+            previousTrack: nativeImage.createFromPath(join(trayIconDir, 'previous-inactive.png')).resize({
+                width: 32,
+                height: 32
+            }),
         }
     }
 }

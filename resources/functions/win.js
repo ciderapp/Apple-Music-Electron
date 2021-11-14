@@ -333,12 +333,12 @@ module.exports = {
         // Fetch the transparency options
         const transparencyOptions = app.ame.utils.fetchTransparencyOptions()
 
-        if (process.platform === 'darwin' && !app.cfg.get('visual.frameType')) { // macOS Frame
+        if (process.platform === 'darwin' && !app.cfg.get('visual.frameType')) { // macOS Frame and transparency
             options.titleBarStyle = 'hidden'
             options.titleBarOverlay = true
             options.frame = true
             options.trafficLightPosition = {x: 20, y: 20}
-            options.transparent = (!!(app.transparency && transparencyOptions))
+            options.transparent = (app.transparency && transparencyOptions)
         }
 
         // Create the Browser Window
