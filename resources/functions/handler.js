@@ -953,7 +953,8 @@ const handler = {
         audioserver.get('/', playData.bind(this));
 
         function playData(req, res) {
-            headerSent = false;
+            try{if(app.cfg.get('audio.castingBitDepth') == "24")
+            headerSent = false;} catch (e){}
             console.log("Device requested: /");
             req.connection.setTimeout(Number.MAX_SAFE_INTEGER);
             requests.push({req: req, res: res});
@@ -981,7 +982,8 @@ const handler = {
         function playData2(req, res) {
             console.log("Device requested: /a.wav");
             req.connection.setTimeout(Number.MAX_SAFE_INTEGER);
-            headerSent = false;
+            try{if(app.cfg.get('audio.castingBitDepth') == "24")
+            headerSent = false;} catch (e){}
             res.setHeader('Accept-Ranges', 'bytes')
             res.setHeader('Connection', 'keep-alive')
             res.setHeader('Content-Type', 'audio/wav')
