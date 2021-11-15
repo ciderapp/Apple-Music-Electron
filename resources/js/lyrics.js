@@ -15,6 +15,9 @@
         self.currentLine = 0;
 
         const container = document.getElementById(self.divID);
+        if(!container) {
+            return;
+        }
         container.innerHTML = "";
         const ul = document.createElement("ul");
         container.appendChild(ul);
@@ -171,6 +174,9 @@
         /* set html and move to start*/
         setHtml(this);
         this.move(0);
+        if(typeof _lyrics !== "undefined") {
+            _lyrics.setLyrics(this.rangeLrc);
+        }
     };
 
     Lyricer.prototype.move = function (time) {
