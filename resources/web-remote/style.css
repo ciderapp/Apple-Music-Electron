@@ -574,6 +574,9 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
 .lyric-body {
     -webkit-mask-image: -webkit-gradient(linear, left 95%, left bottom, from(rgba(0, 0, 0, 1)), to(rgba(0, 0, 0, 0)));
     overflow-y: scroll;
+    overflow-x: hidden;
+    display:flex;
+    flex-flow: column;
 }
 
 .lyric-line {
@@ -592,6 +595,24 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     margin-right: 0px;
 }
 
+.lyric-line:hover {
+    cursor: pointer;
+}
+
+.lyric-line:hover::after {
+    content: ' ';
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: scale(1.06);
+    background: rgba(200, 200, 200, 0.1);
+    pointer-events: none;
+    border-radius: 10px;
+    -webkit-backface-visibility: hidden;
+}
+
 .lyric-line.active {
     --bgSpeed: 1s;
     opacity: 1;
@@ -603,6 +624,41 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
 .lyric-line:not(.active) {
     filter: blur(1px)
 }
+
+.lyricWaiting {
+    margin-top: 8px;
+    display: none;
+}
+
+.lyric-line.active .lyricWaiting {
+    display: inline-flex;
+    animation: lyricWaitingLine 6s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+}
+
+
+.lyric-line.active .lyricWaiting > div {
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 50%;
+    margin: 3px;
+}
+
+@keyframes lyricWaitingLine {
+    0% {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+}
+
 
 .lyric-line2:before {
     background: var(--keyColor);

@@ -98,10 +98,13 @@ var app = new Vue({
                 return ["paused"]
             }
         },
-        seekTo(time) {
+        seekTo(time, adjust = true) {
+            if(adjust) {
+                time = parseInt(time / 1000)
+            }
             socket.send(JSON.stringify({
                 action: "seek",
-                time: parseInt(time / 1000)
+                time: time
             }));
         },
         setVolume(volume) {
@@ -247,8 +250,6 @@ var app = new Vue({
         },
         getLyricClass(start, end) {
             var currentTime = this.getCurrentTime();
-            start = parseFloat(this.hmsToSecondsOnly(start))
-            end = parseFloat(this.hmsToSecondsOnly(end))
             // check if currenttime is between start and end
             if (currentTime >= start && currentTime <= end) {
                 setTimeout(()=>{
@@ -363,8 +364,7 @@ var app = new Vue({
                         self.$forceUpdate()
                         break;
                     case "lyrics":
-                        self.player.lyricsMediaItem = response.data;
-                        self.parseLyrics()
+                        self.player.lyrics = response.data;
                         self.$forceUpdate()
                         break;
                     case "searchResultsLibrary":

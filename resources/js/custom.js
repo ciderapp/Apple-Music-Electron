@@ -1168,6 +1168,14 @@ try {
 
                 /* Create the Lyrics Button */
                 _lyrics.CreateButton();
+
+                if(typeof wsapi !== "undefined") {
+                    _lyrics.onchange((lyrics)=>{
+                        ipcRenderer.send('wsapi-returnLyrics', JSON.stringify(lyrics));
+                    });
+                }else{
+                    console.warn("WSAPI not found");
+                }
             }
         };
 

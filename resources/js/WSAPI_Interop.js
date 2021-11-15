@@ -1,4 +1,4 @@
-var wsapi = {
+const wsapi = {
     search(term, limit) {
         MusicKit.getInstance().api.search(term, {limit: limit, types: 'songs,artists,albums'}).then((results)=>{
             ipcRenderer.send('wsapi-returnSearch', JSON.stringify(results))
@@ -10,11 +10,7 @@ var wsapi = {
         })
     },
     getLyrics() {
-        MusicKit.getInstance().api.lyric(
-            MusicKit.getInstance().nowPlayingItem.id
-        ).then((results)=>{
-            ipcRenderer.send('wsapi-returnLyrics', JSON.stringify(results))
-        })
+        _lyrics.GetLyrics(1, false)
     },
     getQueue() {
         ipcRenderer.send('wsapi-returnQueue', JSON.stringify(MusicKit.getInstance().queue))
