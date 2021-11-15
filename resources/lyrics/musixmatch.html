@@ -90,7 +90,7 @@
 				// 	return '';
 				// }
 
-					if (lrcfile == "" || id == ''){
+					if (lrcfile == "" ){
 						// track not found 
 			            console.log('track not found');
 						prevlyrics = [track,artist,'','',''];
@@ -126,6 +126,8 @@
 						if(lrcfile != null && lrcfile != ''){
 							// load translation
 							getMXMTrans(id, lang, token);
+						} else {
+						    ipcRenderer.send('LyricsMXMFailed','');
 						}
 		        } 
 	        } catch(e) {

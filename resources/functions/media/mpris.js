@@ -44,27 +44,23 @@ module.exports = {
 
     stateHandler: function () {
         app.mpris.on('playpause', async () => {
-            if (app.mpris.playbackStatus === 'Playing') {
-                await app.win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
-            } else {
-                await app.win.webContents.executeJavaScript('MusicKit.getInstance().play()')
-            }
+            app.win.webContents.executeJavaScript('MusicKitInterop.pausePlay()').catch(err => console.error(err))
         });
 
         app.mpris.on('play', async () => {
-            await app.win.webContents.executeJavaScript('MusicKit.getInstance().play()')
+            app.win.webContents.executeJavaScript('MusicKitInterop.pausePlay()').catch(err => console.error(err))
         });
 
         app.mpris.on('pause', async () => {
-            await app.win.webContents.executeJavaScript('MusicKit.getInstance().pause()')
+            app.win.webContents.executeJavaScript('MusicKitInterop.pausePlay()').catch(err => console.error(err))
         });
 
         app.mpris.on('next', async () => {
-            await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToNextItem()')
+            app.win.webContents.executeJavaScript('MusicKitInterop.nextTrack()').catch(err => console.error(err))
         });
 
         app.mpris.on('previous', async () => {
-            await app.win.webContents.executeJavaScript('MusicKit.getInstance().skipToPreviousItem()')
+            app.win.webContents.executeJavaScript('MusicKitInterop.previousTrack()').catch(err => console.error(err))
         });
     },
 

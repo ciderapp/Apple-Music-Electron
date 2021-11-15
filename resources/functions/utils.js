@@ -114,13 +114,7 @@ const Utils = {
             console.verbose(`[fetchTransparencyOptions] Vibrancy not created. Required options not met. (transparencyEffect: ${app.cfg.get('visual.transparencyEffect')} | isVibrancySupported: ${Utils.isVibrancySupported()})`);
             app.transparency = false;
             return false
-        }
-        
-        if(process.platform === "win32" && app.cfg.get('visual.transparencyEffect') == "mica") {
-            return false
-        }
-
-        if(process.platform === "win32" && app.cfg.get('visual.transparencyEffect') == "mica") {
+        } else if (process.platform === "win32" && app.cfg.get('visual.transparencyEffect') === "mica") {
             return false
         }
 

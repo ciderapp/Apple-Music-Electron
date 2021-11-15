@@ -368,6 +368,16 @@ const handler = {
             }
         })
 
+        // DiscordRPC
+        handledConfigs.push('general.discordRPC', 'general.discordClearActivityOnPause');
+        app.cfg.onDidChange('general.discordRPC', (newValue, _oldValue) => {
+            if (newValue && !app.discord.isConnected) {
+                app.ame.discord.connect();
+            } else {
+                app.ame.discord.disconnect();
+            }
+        })
+
 
         // IncognitoMode Changes
         handledConfigs.push('general.incognitoMode');
@@ -820,6 +830,7 @@ const handler = {
 
         ipcMain.on('LyricsMXMFailed', function (_event, _data) {
             app.win.send('backuplyrics', '');
+            console.log("mxm failed");
         });
 
         ipcMain.on('LyricsYTFailed', function (_event, _data) {
@@ -952,7 +963,8 @@ const handler = {
         audioserver.get('/', playData.bind(this));
 
         function playData(req, res) {
-            headerSent = false;
+            try{if(app.cfg.get('audio.castingBitDepth') == "24")
+            headerSent = false;} catch (e){}
             console.log("Device requested: /");
             req.connection.setTimeout(Number.MAX_SAFE_INTEGER);
             requests.push({req: req, res: res});
@@ -980,7 +992,8 @@ const handler = {
         function playData2(req, res) {
             console.log("Device requested: /a.wav");
             req.connection.setTimeout(Number.MAX_SAFE_INTEGER);
-            headerSent = false;
+            try{if(app.cfg.get('audio.castingBitDepth') == "24")
+            headerSent = false;} catch (e){}
             res.setHeader('Accept-Ranges', 'bytes')
             res.setHeader('Connection', 'keep-alive')
             res.setHeader('Content-Type', 'audio/wav')

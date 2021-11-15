@@ -38,9 +38,12 @@ module.exports = {
 
     disconnect: function () {
         if (!app.cfg.get('general.discordRPC') || !app.discord.isConnected) return;
-        console.verbose('[DiscordRPC][disconnect] Disconnecting from discord.')
+
         try {
-            app.discord.destroy().catch((e) => console.error(`[DiscordRPC][disconnect] ${e}`));
+            app.discord.destroy().then(() => {
+                app.discord.isConnected = false;
+                console.verbose('[DiscordRPC][disconnect] Disconnected from discord.')
+            }).catch((e) => console.error(`[DiscordRPC][disconnect] ${e}`));
         } catch (err) {
             console.error(err)
         }
