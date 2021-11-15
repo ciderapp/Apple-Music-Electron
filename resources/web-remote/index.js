@@ -10,6 +10,12 @@ var app = new Vue({
             songActions: false,
             lyrics: {},
             lyricsMediaItem: {},
+            lyricsDebug: {
+                current: 0,
+                start: 0,
+                end: 0
+            },
+            lowerPanelState: "controls",
             userInteraction: false
         },
         search: {
@@ -27,6 +33,10 @@ var app = new Vue({
         // url: "localhost",
     },
     methods: {
+        resetPlayerUI () {
+            this.player.lowerPanelState = "controls";
+            this.screen = "player";
+        },
         musicAppVariant() {
             if (navigator.userAgent.match(/Android/i)) {
                 return "Apple Music";
@@ -39,6 +49,30 @@ var app = new Vue({
                     return 'Apple Music Electron';
                 } else {
                     return 'Apple Music Electron';
+                }
+            }
+        },
+        checkOrientation () {
+            // check orientation of device
+            if (window.innerHeight > window.innerWidth) {
+                return 'portrait'
+            } else {
+                return 'landscape';
+            }
+        },
+        checkPlatformMD() {
+            // check if platfom is desktop or mobile
+            if (navigator.userAgent.match(/Android/i)) {
+                return "mobile";
+            } else if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+                return "mobile";
+            } else {
+                if (navigator.userAgent.indexOf('Mac') > 0) {
+                    return 'desktop';
+                } else if (navigator.userAgent.indexOf('Win') > 0) {
+                    return 'desktop';
+                } else {
+                    return 'desktop';
                 }
             }
         },
@@ -187,8 +221,32 @@ var app = new Vue({
 
             return s;
         },
+        getCurrentTime() {
+            return parseFloat(this.hmsToSecondsOnly(this.parseTime(this.player.currentMediaItem.durationInMillis - this.player.currentMediaItem.remainingTime)));
+        },
+        percentage(partial, full) {
+            return (100 * partial) / full
+        },
+        getLyricBGStyle(start, end) {
+            var currentTime = this.getCurrentTime();
+            var duration = this.player.currentMediaItem.durationInMillis
+            var start2 = this.hmsToSecondsOnly(start)
+            var end2 = this.hmsToSecondsOnly(end)
+            var currentProgress = ((100 * (currentTime)) / (end2))
+            // check if currenttime is between start and end
+            this.player.lyricsDebug.start = start2
+            this.player.lyricsDebug.end = end2
+            this.player.lyricsDebug.current = currentTime
+            if (currentTime >= start2 && currentTime <= end2) {
+                return {
+                    "--bgSpeed": `${(end2 - start2)}s`
+                }
+            } else {
+                return {}
+            }
+        },
         getLyricClass(start, end) {
-            var currentTime = parseFloat(this.hmsToSecondsOnly(this.parseTime(this.player.currentMediaItem.durationInMillis - this.player.currentMediaItem.remainingTime)));
+            var currentTime = this.getCurrentTime();
             start = parseFloat(this.hmsToSecondsOnly(start))
             end = parseFloat(this.hmsToSecondsOnly(end))
             // check if currenttime is between start and end
@@ -202,7 +260,6 @@ var app = new Vue({
             } else {
                 return ""
             }
-
         },
         getAlbumArtUrl(size = 600) {
             if (this.player.currentMediaItem.artwork) {
@@ -238,11 +295,18 @@ var app = new Vue({
                 action: "shuffle"
             }))
         },
-        showLyrics() {
+        getLyrics() {
             socket.send(JSON.stringify({
                 action: "get-lyrics",
             }))
+        },
+        showLyrics() {
+            this.getLyrics()
             this.screen = "lyrics"
+        },
+        showLyricsInline () {
+            this.getLyrics()
+            this.player.lowerPanelState = "lyrics"
         },
         parseLyrics() {
             var xml = this.stringToXml(this.player.lyricsMediaItem.ttml)
@@ -360,5 +424,9 @@ function xmlToJson(xml) {
     }
     return obj;
 };
+
+window.onresize = function() {
+    app.resetPlayerUI()
+}
 
 app.connect()
