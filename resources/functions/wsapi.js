@@ -204,15 +204,7 @@ const wsapi = {
                         response.message = "Status";
                         break;
                     case "get-currentmediaitem":
-                        response.data = {
-                            "id": "1",
-                            "title": "Test Title",
-                            "artist": "Test Artist",
-                            "album": "Test Album",
-                            "duration": "0",
-                            "cover": "",
-                            "url": ""
-                        };
+                        app.win.webContents.executeJavaScript(`wsapi.getPlaybackState()`);
                         break;
                 }
                 ws.send(JSON.stringify(response));

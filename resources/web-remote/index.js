@@ -377,12 +377,21 @@ var app = new Vue({
                         break;
                     case "playbackStateUpdate":
                         if(!self.player.userInteraction) {
-                            self.player.currentMediaItem = response.data;
+                            self.updatePlaybackState(response.data)
                         }
                         break;
                 }
                 // console.log(e.data);
             }
+        },
+        updatePlaybackState(mediaitem) {
+            var lyricsDisplayed = this.screen == "lyrics" || this.player.lowerPanelState == "lyrics"
+            if(this.player.currentMediaItem["isrc"] != mediaitem["isrc"]) {
+                if(lyricsDisplayed) {
+                    this.getLyrics()
+                }
+            }
+            this.player.currentMediaItem = mediaitem
         }
     },
 });

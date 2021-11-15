@@ -9,6 +9,9 @@ const wsapi = {
             ipcRenderer.send('wsapi-returnSearchLibrary', JSON.stringify(results))
         })
     },
+    getPlaybackState () {
+        ipcRenderer.send('wsapi-updatePlaybackState', MusicKitInterop.getAttributes());
+    },
     getLyrics() {
         _lyrics.GetLyrics(1, false)
     },
