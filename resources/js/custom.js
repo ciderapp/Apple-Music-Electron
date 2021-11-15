@@ -90,6 +90,17 @@ try {
     /* Lyrics Functions */
     if (typeof _lyrics == "undefined") {
         var _lyrics = {
+            current: [],
+            events: [],
+            onchange (fn = ()=>{}) {
+                this.events.push(fn)
+            },
+            setLyrics(lyrics) {
+                this.current = lyrics;
+                this.events.forEach((event)=>{
+                   event(lyrics);
+                });
+            },
             CreateButton: () => {
 
                 const mediaControlsElement = document.querySelector('.web-chrome-controls-container');
