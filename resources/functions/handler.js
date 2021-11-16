@@ -1103,7 +1103,15 @@ const handler = {
                 console.log("deviceFound (added)", host, name);
             }
         }
-
+        
+        function broadcastRemote() {
+        const myString = getIp();
+        const encoded = new Buffer(myString).toString('base64');
+        var x =  mdns.tcp('ame-lg-client');   
+        let server = mdns.createAdvertisement(x, '3839', { name: encoded });
+        server.start();
+        }
+        
         function searchForGCDevices() {
             try {
 
@@ -1169,7 +1177,7 @@ const handler = {
                     .catch(reject);
             });
         }
-
+        broadcastRemote();
         function parseServiceDescription(body, address, url) {
             const parseString = require('xml2js').parseString;
             parseString(body, (err, result) => {
