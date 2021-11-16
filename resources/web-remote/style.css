@@ -418,7 +418,15 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     font-size: 12px;
     overflow: hidden;
     width: 100%;
+}
 
+.list-entry .handle {
+    height: 100%;
+    width: 28px;
+    background:var(--keyColor);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .md-container {

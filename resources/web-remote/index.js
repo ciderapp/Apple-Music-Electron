@@ -15,8 +15,12 @@ var app = new Vue({
                 start: 0,
                 end: 0
             },
+            queue: {},
             lowerPanelState: "controls",
             userInteraction: false
+        },
+        queue: {
+            temp: []
         },
         search: {
             query: "",
@@ -33,7 +37,7 @@ var app = new Vue({
         // url: "localhost",
     },
     methods: {
-        resetPlayerUI () {
+        resetPlayerUI() {
             this.player.lowerPanelState = "controls";
             this.screen = "player";
         },
@@ -52,7 +56,7 @@ var app = new Vue({
                 }
             }
         },
-        checkOrientation () {
+        checkOrientation() {
             // check orientation of device
             if (window.innerHeight > window.innerWidth) {
                 return 'portrait'
@@ -99,7 +103,7 @@ var app = new Vue({
             }
         },
         seekTo(time, adjust = true) {
-            if(adjust) {
+            if (adjust) {
                 time = parseInt(time / 1000)
             }
             socket.send(JSON.stringify({
@@ -182,7 +186,7 @@ var app = new Vue({
             }
             this.search.state = 1;
             var actionType = "search"
-            if(this.search.searchType == "library") {
+            if (this.search.searchType == "library") {
                 actionType = "library-search"
             }
             socket.send(JSON.stringify({
@@ -252,9 +256,12 @@ var app = new Vue({
             var currentTime = this.getCurrentTime();
             // check if currenttime is between start and end
             if (currentTime >= start && currentTime <= end) {
-                setTimeout(()=>{
-                    if(document.querySelector(".lyric-line.active")) {
-                        document.querySelector(".lyric-line.active").scrollIntoView({behavior: "smooth", block: "center"})
+                setTimeout(() => {
+                    if (document.querySelector(".lyric-line.active")) {
+                        document.querySelector(".lyric-line.active").scrollIntoView({
+                            behavior: "smooth",
+                            block: "center"
+                        })
                     }
                 }, 200)
                 return "active"
@@ -282,9 +289,29 @@ var app = new Vue({
                 return "active";
             }
         },
+        getQueuePositionClass(position) {
+            if(this.player.queue["_position"] == position) {
+                return ["playing", "passed"]
+            }else if(this.player.queue["_position"] > position) {
+                return ["passed"]
+            }
+        },
         showQueue() {
-            this.getQueue()
+            this.queue.temp = this.player["queue"]["_queueItems"]
             this.screen = "queue"
+            this.getQueue()
+        },
+        queueMove(evt) {
+            console.log(evt)
+            console.log(`new: ${evt.moved.newIndex} old: ${evt.moved.oldIndex}`)
+            this.queue.temp.splice(evt.moved.newIndex, 0, this.queue.temp.splice(evt.moved.oldIndex, 1)[0])
+            socket.send(JSON.stringify({
+                action: "queue-move",
+                from: evt.moved.oldIndex,
+                to: evt.moved.newIndex
+            }))
+            this.getQueue()
+            return true
         },
         repeat() {
             socket.send(JSON.stringify({
@@ -305,7 +332,7 @@ var app = new Vue({
             this.getLyrics()
             this.screen = "lyrics"
         },
-        showLyricsInline () {
+        showLyricsInline() {
             this.getLyrics()
             this.player.lowerPanelState = "lyrics"
         },
@@ -329,7 +356,7 @@ var app = new Vue({
         connect() {
             let self = this;
             this.connectedState = 0;
-            if(this.url === "") {
+            if (this.url === "") {
                 this.url = prompt("Host IP", "localhost")
             }
             socket = new WebSocket(`ws://${this.url}:26369`);
@@ -361,7 +388,16 @@ var app = new Vue({
                         break;
                     case "queue":
                         self.player.queue = response.data;
+                        self.queue.temp = response.data["_queueItems"];
                         self.$forceUpdate()
+                        if(self.screen == "queue"){
+                            setTimeout(() => {
+                                document.querySelector(".playing").scrollIntoView({
+                                    behavior: "smooth",
+                                    block: "start"
+                                })
+                            }, 200)
+                        }
                         break;
                     case "lyrics":
                         self.player.lyrics = response.data;
@@ -370,13 +406,13 @@ var app = new Vue({
                     case "searchResultsLibrary":
                         self.search.results = response.data;
                         self.search.state = 2;
-                    break;
+                        break;
                     case "searchResults":
                         self.search.results = response.data;
                         self.search.state = 2;
                         break;
                     case "playbackStateUpdate":
-                        if(!self.player.userInteraction) {
+                        if (!self.player.userInteraction) {
                             self.updatePlaybackState(response.data)
                         }
                         break;
@@ -386,9 +422,12 @@ var app = new Vue({
         },
         updatePlaybackState(mediaitem) {
             var lyricsDisplayed = this.screen == "lyrics" || this.player.lowerPanelState == "lyrics"
-            if(this.player.currentMediaItem["isrc"] != mediaitem["isrc"]) {
-                if(lyricsDisplayed) {
+            if (this.player.currentMediaItem["isrc"] != mediaitem["isrc"]) {
+                if (lyricsDisplayed) {
                     this.getLyrics()
+                }
+                if (this.screen == "queue") {
+                    this.getQueue()
                 }
             }
             this.player.currentMediaItem = mediaitem
@@ -434,7 +473,7 @@ function xmlToJson(xml) {
     return obj;
 };
 
-window.onresize = function() {
+window.onresize = function () {
     app.resetPlayerUI()
 }
 

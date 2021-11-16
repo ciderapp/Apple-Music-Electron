@@ -172,6 +172,9 @@ const wsapi = {
                     case "musickit-library-api":
 
                         break;
+                    case "queue-move":
+                        app.win.webContents.executeJavaScript(`wsapi.moveQueueItem(${data.from},${data.to})`);
+                        break;
                     case "get-queue":
                         app.win.webContents.executeJavaScript(`wsapi.getQueue()`);
                         break;

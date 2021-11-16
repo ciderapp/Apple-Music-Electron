@@ -103,6 +103,7 @@ const MusicKitInterop = {
         attributes.volume = mk.volume;
         attributes.shuffleMode = mk.shuffleMode;
         attributes.repeatMode = mk.repeatMode;
+        attributes.autoplayEnabled = mk.autoplayEnabled;
         return attributes
     },
 

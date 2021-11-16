@@ -9,6 +9,10 @@ const wsapi = {
             ipcRenderer.send('wsapi-returnSearchLibrary', JSON.stringify(results))
         })
     },
+    moveQueueItem(oldPosition, newPosition) {
+        MusicKit.getInstance().queue._queueItems.splice(newPosition,0,MusicKit.getInstance().queue._queueItems.splice(oldPosition,1)[0])
+        MusicKit.getInstance().queue._reindex()
+    },
     getPlaybackState () {
         ipcRenderer.send('wsapi-updatePlaybackState', MusicKitInterop.getAttributes());
     },
