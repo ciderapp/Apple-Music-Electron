@@ -39,7 +39,6 @@ var app = new Vue({
     methods: {
         resetPlayerUI() {
             this.player.lowerPanelState = "controls";
-            this.screen = "player";
         },
         musicAppVariant() {
             if (navigator.userAgent.match(/Android/i)) {
