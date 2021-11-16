@@ -13,6 +13,9 @@ const wsapi = {
         MusicKit.getInstance().queue._queueItems.splice(newPosition,0,MusicKit.getInstance().queue._queueItems.splice(oldPosition,1)[0])
         MusicKit.getInstance().queue._reindex()
     },
+    setAutoplay(value) {
+        MusicKit.getInstance().autoplayEnabled = value
+    },
     getPlaybackState () {
         ipcRenderer.send('wsapi-updatePlaybackState', MusicKitInterop.getAttributes());
     },

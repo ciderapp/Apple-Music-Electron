@@ -172,6 +172,9 @@ const wsapi = {
                     case "musickit-library-api":
 
                         break;
+                    case "set-autoplay":
+                        app.win.webContents.executeJavaScript(`wsapi.setAutoplay(${data.autoplay})`);
+                        break;
                     case "queue-move":
                         app.win.webContents.executeJavaScript(`wsapi.moveQueueItem(${data.from},${data.to})`);
                         break;

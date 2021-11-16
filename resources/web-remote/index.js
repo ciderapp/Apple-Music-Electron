@@ -101,6 +101,20 @@ var app = new Vue({
                 return ["paused"]
             }
         },
+        setAutoplay(value) {
+            socket.send(JSON.stringify({
+                "action": "set-autoplay",
+                "autoplay": value
+            }));
+            this.getCurrentMediaItem()
+            if (value) {
+                setTimeout(() => {
+                    this.getQueue()
+                }, 1000)
+            }else{
+                this.getQueue()
+            }
+        },
         seekTo(time, adjust = true) {
             if (adjust) {
                 time = parseInt(time / 1000)
@@ -289,9 +303,9 @@ var app = new Vue({
             }
         },
         getQueuePositionClass(position) {
-            if(this.player.queue["_position"] == position) {
+            if (this.player.queue["_position"] == position) {
                 return ["playing", "passed"]
-            }else if(this.player.queue["_position"] > position) {
+            } else if (this.player.queue["_position"] > position) {
                 return ["passed"]
             }
         },
@@ -316,11 +330,13 @@ var app = new Vue({
             socket.send(JSON.stringify({
                 action: "repeat"
             }))
+            this.getCurrentMediaItem()
         },
         shuffle() {
             socket.send(JSON.stringify({
                 action: "shuffle"
             }))
+            this.getCurrentMediaItem()
         },
         getLyrics() {
             socket.send(JSON.stringify({
@@ -351,6 +367,11 @@ var app = new Vue({
             } else {
                 return false;
             }
+        },
+        getCurrentMediaItem() {
+            socket.send(JSON.stringify({
+                action: "get-currentmediaitem"
+            }))
         },
         connect() {
             let self = this;
@@ -389,7 +410,7 @@ var app = new Vue({
                         self.player.queue = response.data;
                         self.queue.temp = response.data["_queueItems"];
                         self.$forceUpdate()
-                        if(self.screen == "queue"){
+                        if (self.screen == "queue") {
                             setTimeout(() => {
                                 document.querySelector(".playing").scrollIntoView({
                                     behavior: "smooth",
