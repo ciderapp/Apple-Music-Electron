@@ -373,8 +373,9 @@ span.app-prefs-title {
 }
 
 /* Buttons */
-button[aria-label="My Account"], button[aria-label="Up next"], button[aria-label="Lyrics"] {
-    cursor: pointer !important;
+
+#airplayButton, #lyricsButton, button[aria-label="My Account"] {
+    cursor: pointer;
 }
 
 /* Lyrics CSS */
