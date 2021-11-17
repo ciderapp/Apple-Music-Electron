@@ -2,6 +2,14 @@
     --backButtonBar-height: 40px;
 }
 
+body[platform="Linux x86_64"], 
+body[platform="Linux"], 
+body[platform="Linux x86"],
+body[platform="Linux ARM"]
+{
+    font-family: -apple-system,BlinkMacSystemFont,"SF Pro","SF Pro Icons","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
 /* Back Button CSS */
 
 body[back-button] .playlist .songs-list__header-col, .room .songs-list__header-col {
