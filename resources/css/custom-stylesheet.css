@@ -579,12 +579,8 @@ body.no-acrylic {
     background: var(--modalBGColor);
     overflow: overlay;
     position: relative;
-    /*box-shadow: 0 2px 20px rgba(0, 0, 0, 0.24);*/
     animation: ameModalIn 0.10s var(--appleEase);
     will-change: opacity, transform;
-    -webkit-backdrop-filter: blur(60px) saturate(210%);
-    backdrop-filter: blur(60px) saturate(210%);
-    /*border: 1px solid rgba(0,0,0,0.20);*/
     box-shadow: 0 8px 40px var(--dialogShadowColor);
 }
 
@@ -607,7 +603,7 @@ body.no-acrylic {
 }
 
 
-@media (prefers-color-scheme: light) {
+/* @media (prefers-color-scheme: light) {
     .ameModal {
         background: rgb(255 255 255 / 92%);
     }
@@ -617,7 +613,7 @@ body.no-acrylic {
     .ameModal {
         background: rgb(31 31 31 / 85%);
     }
-}
+} */
 
 .ameUserMenu {
     border-radius: 6px;
