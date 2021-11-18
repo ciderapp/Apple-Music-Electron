@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/85196642/142359893-ca9647c9-4491-4718-8094-f85e2813abb8.gif" width="80%" alt="Banner"><br><br>
+  <img src="https://user-images.githubusercontent.com/85196642/142362989-ca1cb245-d9f1-4345-99fb-939171fb34ee.gif" width="80%" alt="Banner"><br><br>
   <img src="https://img.shields.io/github/release/Apple-Music-Electron/Apple-Music-Electron.svg?style=flat" alt="GitHub Releases"/>
   <img src="https://img.shields.io/github/stars/Apple-Music-Electron/Apple-Music-Electron" alt="GitHub Stars"/>
   <img src="https://img.shields.io/github/forks/Apple-Music-Electron/Apple-Music-Electron" alt="GitHub Forks"/>
