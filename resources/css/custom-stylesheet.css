@@ -563,7 +563,7 @@ body.no-acrylic {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 9999;
+    z-index: 9998;
     background: rgba(0, 0, 0, 0.45);
     display: flex;
     justify-content: center;
