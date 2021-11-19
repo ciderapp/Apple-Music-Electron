@@ -2,6 +2,14 @@
     --backButtonBar-height: 40px;
 }
 
+body[platform="Linux x86_64"], 
+body[platform="Linux"], 
+body[platform="Linux x86"],
+body[platform="Linux ARM"]
+{
+    font-family: -apple-system,BlinkMacSystemFont,"SF Pro","SF Pro Icons","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
 /* Back Button CSS */
 
 body[back-button] .playlist .songs-list__header-col, .room .songs-list__header-col {
@@ -373,8 +381,9 @@ span.app-prefs-title {
 }
 
 /* Buttons */
-button[aria-label="My Account"], button[aria-label="Up next"], button[aria-label="Lyrics"] {
-    cursor: pointer !important;
+
+#airplayButton, #lyricsButton, button[aria-label="My Account"] {
+    cursor: pointer;
 }
 
 /* Lyrics CSS */
@@ -570,12 +579,8 @@ body.no-acrylic {
     background: var(--modalBGColor);
     overflow: overlay;
     position: relative;
-    /*box-shadow: 0 2px 20px rgba(0, 0, 0, 0.24);*/
     animation: ameModalIn 0.10s var(--appleEase);
     will-change: opacity, transform;
-    -webkit-backdrop-filter: blur(60px) saturate(210%);
-    backdrop-filter: blur(60px) saturate(210%);
-    /*border: 1px solid rgba(0,0,0,0.20);*/
     box-shadow: 0 8px 40px var(--dialogShadowColor);
 }
 
@@ -598,7 +603,7 @@ body.no-acrylic {
 }
 
 
-@media (prefers-color-scheme: light) {
+/* @media (prefers-color-scheme: light) {
     .ameModal {
         background: rgb(255 255 255 / 92%);
     }
@@ -608,7 +613,7 @@ body.no-acrylic {
     .ameModal {
         background: rgb(31 31 31 / 85%);
     }
-}
+} */
 
 .ameUserMenu {
     border-radius: 6px;
