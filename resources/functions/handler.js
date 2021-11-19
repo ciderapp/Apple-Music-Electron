@@ -1108,8 +1108,75 @@ const handler = {
         const myString = getIp();
         const encoded = new Buffer(myString).toString('base64');
         var x =  mdns.tcp('ame-lg-client');   
-        let server = mdns.createAdvertisement(x, '3839', { name: encoded });
-        server.start();
+        let server2 = mdns.createAdvertisement(x, '3839', { name: encoded });
+        server2.start();
+
+        let ssdpRemoteServer = express();
+        ssdpRemoteServer.listen(3840, () => {
+        });
+        ssdpRemoteServer.get('/', (req, res) => {
+            res.header("Content-Type", "application/xml");
+            data = `<?xml version="1.0"?>
+                <root xmlns="urn:schemas-upnp-org:device-1-0">
+                    <specVersion>
+                        <major>1</major>
+                        <minor>0</minor>
+                    </specVersion>
+                    <URLBase>${'http://' + getIp()}</URLBase>
+                    <device>
+                        <deviceType>urn:schemas-upnp-org:device:MediaRenderer:1</deviceType>
+                        <!-- The friendlyName element is the best place to put 
+                            the title to display in the Physical Web Browser -->
+                        <friendlyName>AME Remote</friendlyName>
+                        <manufacturer>${encoded}</manufacturer>
+                        <manufacturerURL>http://applemusicelectron.com</manufacturerURL>
+                        <modelDescription>AME</modelDescription>
+                        <modelName>AME</modelName>
+                        <modelNumber>3.0</modelNumber>
+                        <modelURL>${'http://' + getIp()}</modelURL>
+                        <serialNumber>manufacturer's serial number</serialNumber>
+                        <UDN>uuid:75ebacfb-e890-4a21-a913-9a16858e9270</UDN>
+                        <UPC>Universal Product Code</UPC>
+                       <serviceList>
+                       <service>
+                       <serviceType>urn:schemas-upnp-org:service:AVTransport:1</serviceType>
+                       <serviceId>urn:upnp-org:serviceId:AVTransport</serviceId>
+                       <SCPDURL></SCPDURL>
+                       <controlURL></controlURL>
+                       <eventSubURL></eventSubURL>
+                       
+                       </service>
+                       </serviceList>
+                    </device>
+                </root> 
+            `
+            res.status(200).send(data); 
+        });
+
+        let SSDP = require('node-ssdp').Server
+        , server = new SSDP({
+            location : 'http://' + getIp() + ':3840',
+            allowWildcards : true,
+            adInterval : 5000,
+
+        })
+      ;
+      
+    //  server.addUSN('upnp:rootdevice');
+      server.addUSN('urn:schemas-upnp-org:device:MediaRenderer:1');
+      server.addUSN('urn:schemas-upnp-org:service:AVTransport:1');
+
+      server.start().catch(e => {
+        console.log('Failed to start server:', e)
+      })
+      .then(() => {
+        console.log('Server started.')
+      })
+      
+  
+      process.on('exit', function(){
+        server.stop() // advertise shutting down and stop listening
+      })
         }
         
         function searchForGCDevices() {
