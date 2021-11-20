@@ -1317,7 +1317,7 @@ try {
             HandleField: (element) => {
                 const field = document.getElementById(element);
                 if (!field) {
-                    console.error('[HandleField] Element Not Found');
+                    console.error('[HandleField] Element Not Found: ' + element);
                     return;
                 }
 
@@ -1431,7 +1431,6 @@ try {
                     AMSettings.HandleField('seamlessAudioTransitions');
                     AMSettings.HandleField('castingBitDepth');
                     AMSettings.HandleField('enableDLNA');
-                    AMSettings.HandleField('volume');
 
 
                     /* Window Settings */
