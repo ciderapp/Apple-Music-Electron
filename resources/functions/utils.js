@@ -224,7 +224,7 @@ const Utils = {
         const themesDir = join(app.getPath("userData"), "themes")
 
         if (!existsSync(themesDir)) {
-            mkdir(themesDir)
+            await mkdir(themesDir, {recursive: true})
         }
 
         if (existsSync(themesDir)) {
