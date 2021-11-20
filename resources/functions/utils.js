@@ -223,6 +223,10 @@ const Utils = {
         const tmpDir = join(os.tmpdir(), "ame-themes")
         const themesDir = join(app.getPath("userData"), "themes")
 
+        if (!existsSync(themesDir)) {
+            mkdir(themesDir)
+        }
+
         if (existsSync(themesDir)) {
             if (existsSync(tmpDir)) {
                 rimraf(tmpDir, [], async (err) => {
