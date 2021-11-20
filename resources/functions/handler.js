@@ -461,7 +461,11 @@ const handler = {
 
         // Update Themes
         ipcMain.handle('updateThemes', () => {
-            return app.ame.utils.updateThemes()
+            if(app.ame.utils.isGitInstalled()) {
+                return app.ame.utils.updateThemes()            
+            }else{
+                return app.ame.utils.updateThemes_fallback()
+            }
         });
 
         // Authorization (This needs to be cleaned up a bit, an alternative to reload() would be good )
