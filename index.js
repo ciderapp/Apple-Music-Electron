@@ -18,13 +18,14 @@ function CreateWindow() {
     app.win = app.ame.win.CreateBrowserWindow() // Create the BrowserWindow
 
     app.ame.handler.WindowStateHandler(); // Handling the Window
+    app.ame.handler.RendererListenerHandlers(); // Renderer Listeners
+    app.ame.handler.SettingsHandler(); // Handles updates to settings
     app.ame.handler.PlaybackStateHandler(); // Playback Change Listener
     app.ame.handler.MediaStateHandler(); // Media Change Listener
     app.ame.handler.LyricsHandler(); // Lyrics Handling
     app.ame.handler.AudioHandler(); // Exclusive Audio Stuff
     app.ame.handler.GoogleCastHandler(); // Chromecast
-    app.ame.handler.RendererListenerHandlers(); // Renderer Listeners
-    app.ame.handler.SettingsHandler(); // Handles updates to settings
+
 
     if (process.platform === 'win32' && app.transparency) { app.win.show() } // Show the window so SetThumbarButtons doesnt break
     app.ame.win.SetButtons() // Set Inactive Thumbnail Toolbar Icons or TouchBar
