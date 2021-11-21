@@ -30,6 +30,7 @@
     "electron-updater": "^4.3.9",
     "electron-window-state": "^5.0.3",
     "express": "^4.17.1",
+    "extract-zip": "^2.0.1",
     "get-port": "^5.1.1",
     "git-clone": "^0.2.0",
     "lastfmapi": "^0.1.1",

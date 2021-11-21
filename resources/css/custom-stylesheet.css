@@ -563,7 +563,7 @@ body.no-acrylic {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 9999;
+    z-index: 9998;
     background: rgba(0, 0, 0, 0.45);
     display: flex;
     justify-content: center;
@@ -601,19 +601,6 @@ body.no-acrylic {
 .ameModal-closing {
     animation: ameModalOut 0.10s var(--appleEase) forwards;
 }
-
-
-/* @media (prefers-color-scheme: light) {
-    .ameModal {
-        background: rgb(255 255 255 / 92%);
-    }
-}
-
-@media (prefers-color-scheme: dark) {
-    .ameModal {
-        background: rgb(31 31 31 / 85%);
-    }
-} */
 
 .ameUserMenu {
     border-radius: 6px;
@@ -773,6 +760,12 @@ input[type=checkbox][switch]:active::before {
 
 input[type=checkbox][switch]:checked:active::before {
     left: -1px;
+}
+
+@media (prefers-color-scheme: light) {
+    input[type=checkbox][switch] {
+        mix-blend-mode: unset;
+    }
 }
 
 /* End Switch Checkbox */
