@@ -154,7 +154,7 @@ try {
                 if (!document.querySelector('#MVLyricsBox')){
                 const lyricsMV = document.createElement("div");
                 lyricsMV.id = "MVLyricsBox";
-                lyricsMV.style.zIndex = "9999";
+                lyricsMV.style.zIndex = "999999";
                 lyricsMV.style.backgroundColor= "rgba(0,0,0,0.7)";
                 lyricsMV.style.display = "none";
                 lyricsMV.style.color = "yellow";
@@ -235,7 +235,7 @@ try {
                         });
 
                         ipcRenderer.on('backuplyricsMV', function (_event, _data) {
-                            _lyrics.GetLyrics(1, false);
+                            _lyrics.GetLyrics(1, false, false);
                         });
 
                         ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
@@ -308,7 +308,7 @@ try {
                             });
 
                             ipcRenderer.on('backuplyricsMV', function (_event, _data) {
-                                _lyrics.GetLyrics(1, false);
+                                _lyrics.GetLyrics(1, false, false);
                             });
 
                             ipcRenderer.on('ProgressTimeUpdate', function (event, data) {
@@ -340,7 +340,8 @@ try {
                 }
             }},
 
-            GetLyrics: (mode, mxmfail) => {
+            GetLyrics: (mode, mxmfail, yt) => {
+                const youtube = yt ?? true; /* please don't change this to || */
                 const musicType = (MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem["type"] ?? '' : '';
                 const trackName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.title ?? '' : '');
                 const artistName = encodeURIComponent((MusicKit.getInstance().nowPlayingItem != null) ? MusicKit.getInstance().nowPlayingItem.artistName ?? '' : '');
@@ -348,7 +349,7 @@ try {
                 const duration = encodeURIComponent(Math.round(MusicKitInterop.getAttributes()["durationInMillis"] / 1000));
                 if (trackName !== '' && !(trackName === "No Title Found" && artistName === '')) {
                      /* MusixMatch Lyrics*/
-                    if(musicType === "musicVideo" && preferences.visual.yton){
+                    if(musicType === "musicVideo" && preferences.visual.yton && youtube){
                         ipcRenderer.send('YTTranslation', trackName, artistName, preferences.visual.mxmlanguage);
                     } else/* MusixMatch Lyrics*/
                     if (!mxmfail && preferences.visual.mxmon) {
