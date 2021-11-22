@@ -93,7 +93,7 @@
 										lyrics = lyrics.concat(`[${minutes}:${secs}]lrcInstrumental` + "\r\n");
 									}
 									endTime.push(minutes2.replace(":", "") * 60 + seconds2 * 1);
-									lyrics = lyrics.concat(`[${lrcTime}]${element.textContent}` + "\r\n");
+									lyrics = lyrics.concat(`[${lrcTime}]${element.textContent.replace(/\r?\n|\r/g,' ')}` + "\r\n");
 
 								}
 								if (lyrics != "") {
