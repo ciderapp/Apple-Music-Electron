@@ -543,6 +543,13 @@ body.no-acrylic {
 
 #unsynced > div > p {
     margin-top: 10px;
+    color: var(--systemPrimary);
+    /* text-shadow: rgb(169, 169, 169) 1.5px 1.5px 1.5px; */
+    opacity: 1;
+    transform: scale(1) !important;
+    transform-origin: left center;
+    filter: blur(0px) !important;
+    transition: all .25s var(--appleEase) !important;
 }
 
 #MVLyricsBox {
