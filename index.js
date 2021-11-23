@@ -27,7 +27,7 @@ function CreateWindow() {
     app.ame.handler.GoogleCastHandler(); // Chromecast
 
 
-    if(process.platform === "win32" && app.transparency) {
+    if(process.platform === "win32") {
         app.win.show()
     }
 
