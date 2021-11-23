@@ -316,6 +316,7 @@ module.exports = {
             frame: (process.platform !== 'win32' && !(app.cfg.get('visual.frameType') === 'mac' || app.cfg.get('visual.frameType') === 'mac-right')),
             title: app.getName(),
             resizable: true,
+            show: false,
             // Enables DRM
             webPreferences: {
                 plugins: true,

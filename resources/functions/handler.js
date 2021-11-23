@@ -428,6 +428,14 @@ const handler = {
             return app.ame.utils.isAcrylicSupported();
         })
 
+        // Window Ready Signal
+        ipcMain.handle('window-ready', (event) => {
+            app.win.show()
+            app.splash.Destroy()
+            app.splash = null
+            return 1;
+        })
+
         // Electron-Store Renderer Handling for Getting Values
         ipcMain.handle('getStoreValue', (event, key, defaultValue) => {
             return (defaultValue ? app.cfg.get(key, true) : app.cfg.get(key));
@@ -652,39 +660,44 @@ const handler = {
             savedLyric: ''
         }
 
-        app.lyrics.neteaseWin = new BrowserWindow({
-            width: 1,
-            height: 1,
-            show: false,
-            autoHideMenuBar: true,
-            webPreferences: {
-                nodeIntegration: true,
-                contextIsolation: false
-            }
-        });
-        app.lyrics.mxmWin = new BrowserWindow({
-            width: 1,
-            height: 1,
-            show: false,
-            autoHideMenuBar: true,
-            webPreferences: {
-                nodeIntegration: true,
-                contextIsolation: false,
+        if(app.cfg.get("visual.mxmon")) {
+            app.lyrics.neteaseWin = new BrowserWindow({
+                width: 1,
+                height: 1,
+                show: false,
+                autoHideMenuBar: true,
+                webPreferences: {
+                    nodeIntegration: true,
+                    contextIsolation: false
+                }
+            });
+            app.lyrics.mxmWin = new BrowserWindow({
+                width: 1,
+                height: 1,
+                show: false,
+                autoHideMenuBar: true,
+                webPreferences: {
+                    nodeIntegration: true,
+                    contextIsolation: false,
 
-            },
-        });
+                },
+            });
+        }
 
-        app.lyrics.ytWin = new BrowserWindow({
-            width: 1,
-            height: 1,
-            show: false,
-            autoHideMenuBar: true,
-            webPreferences: {
-                nodeIntegration: true,
-                contextIsolation: false,
+        if(app.cfg.get("visual.yton")) {
+            app.lyrics.ytWin = new BrowserWindow({
+                width: 1,
+                height: 1,
+                show: false,
+                autoHideMenuBar: true,
+                webPreferences: {
+                    nodeIntegration: true,
+                    contextIsolation: false,
 
-            },
-        });
+                },
+            });
+        }
+
 
 
         ipcMain.on('YTTranslation', function (event, track, artist, lang) {

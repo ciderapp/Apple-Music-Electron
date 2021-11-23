@@ -991,6 +991,7 @@ try {
                     var checkForUserMenu = setInterval(function () {
                         if (document.querySelectorAll(".web-chrome-controls-container>.web-navigation__auth").length) {
                             _tests.usermenuinit();
+                            ipcRenderer.invoke("window-ready");
                             clearInterval(checkForUserMenu);
                         }
                     }, 100);
