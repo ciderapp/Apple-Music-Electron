@@ -25,8 +25,12 @@ function CreateWindow() {
     app.ame.handler.LyricsHandler(); // Lyrics Handling
     app.ame.handler.AudioHandler(); // Exclusive Audio Stuff
     app.ame.handler.GoogleCastHandler(); // Chromecast
-    
-    app.win.show()
+
+
+    if(process.platform === "win32" && app.transparency) {
+        app.win.show()
+    }
+
     if (process.platform === 'win32') {
         app.updater = require("./resources/functions/updater_win32")
     } // Show the window so SetThumbarButtons doesnt break

@@ -995,6 +995,8 @@ try {
                             clearInterval(checkForUserMenu);
                         }
                     }, 100);
+                }else{
+                    ipcRenderer.invoke("window-ready");
                 }
 
             },
