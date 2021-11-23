@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Downloading update...</title>
+</head>
+<body>
+<div class="container">
+    <div class="logo-container"><img src="ameres://icons/ame_circle.svg" class="logo"></div>
+    <div class="text-container">Downloading update...</div>
+</div>
+<style>
+    html, body {
+        background: #222;
+        overflow: hidden;
+        user-select: none;
+        font-family: "Segoe UI Variable Display", "Segoe UI", "Segoe UI Symbol", "Helvetica Neue", "Helvetica", "Arial", "sans-serif";
+        color: #eee;
+        padding: 0px;
+        margin: 0px;
+        height: 100%;
+        width: 100%;
+    }
+    body {
+        -webkit-app-region: drag;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        pointer-events: none;
+    }
+
+    .logo-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        filter: drop-shadow(0px 10px 16px rgb(100 0 0 / 25%));
+    }
+    .text-container {
+        display: flex;
+        flex-direction: column;
+        height: 100px;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+    }
+    .logo {
+        pointer-events: none;
+        width: 120px;
+        height: 120px;
+        animation: logoEffect 1s linear infinite;
+    }
+
+    /* keyframes that rotate around infinitely and seamlessly */
+    @keyframes logoEffect {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+</body>
+</html>

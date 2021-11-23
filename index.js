@@ -27,8 +27,12 @@ function CreateWindow() {
     app.ame.handler.GoogleCastHandler(); // Chromecast
 
 
-    if (process.platform === 'win32' && app.transparency) {
-        //app.win.show()
+    if(process.platform === "win32" && app.transparency) {
+        app.win.show()
+    }
+
+    if (process.platform === 'win32') {
+        app.updater = require("./resources/functions/updater_win32")
     } // Show the window so SetThumbarButtons doesnt break
     app.ame.win.SetButtons() // Set Inactive Thumbnail Toolbar Icons or TouchBar
     app.ame.win.SetApplicationMenu()

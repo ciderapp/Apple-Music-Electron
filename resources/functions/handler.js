@@ -430,9 +430,13 @@ const handler = {
 
         // Window Ready Signal
         ipcMain.handle('window-ready', (event) => {
-            app.win.show()
-            app.splash.Destroy()
-            app.splash = null
+            app.ame.utils.webAppReady()
+            return 1;
+        })
+
+        // Force Update Check
+        ipcMain.handle("force-update-check", (event)=>{
+            app.updater.checkForUpdates(true)
             return 1;
         })
 

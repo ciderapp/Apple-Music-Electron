@@ -426,6 +426,16 @@ const Utils = {
         }
     },
 
+    webAppReady() {
+        app.win.setOpacity(1)
+        app.win.show()
+        app.splash.Destroy()
+        app.splash = null
+        if(app["updater"]) {
+            app.updater.checkForUpdates()
+        }
+    },
+
     /* checkForUpdates - Checks for update using electron-updater (Part of electron-builder) */
     checkForUpdates: (manual) => {
         if (!app.isPackaged || process.env.NODE_ENV !== 'production') return;

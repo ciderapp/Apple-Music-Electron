@@ -317,6 +317,7 @@ module.exports = {
             title: app.getName(),
             resizable: true,
             show: false,
+            opacity: 0,
             // Enables DRM
             webPreferences: {
                 plugins: true,

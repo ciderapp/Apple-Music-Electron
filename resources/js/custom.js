@@ -1399,9 +1399,13 @@ try {
                         if (platform !== "win32" && platform !== "darwin") {
                             document.getElementById('useOperatingSystemAccentToggleLI').remove();
                         }
+                        if(platform !== "win32") {
+                            document.getElementById('checkForUpdatesToggle').remove();
+                        }
                     });
 
                     /* General Settings */
+                    AMSettings.HandleField('checkForUpdates');
                     AMSettings.HandleField('incognitoMode');
                     AMSettings.HandleField('playbackNotifications');
                     AMSettings.HandleField('trayTooltipSongName');
