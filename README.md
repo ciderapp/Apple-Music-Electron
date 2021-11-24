@@ -23,7 +23,8 @@
 * [**View The Releases**](https://github.com/Apple-Music-Electron/Apple-Music-Electron/releases/latest)
 
 ### Install Sources
-[![Get it from Github](https://img.shields.io/badge/Get_It_From_GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/apple-music-electron/apple-music-electron/releases/latest)
+[![Get it from Github](https://img.shields.io/badge/Get_It_From_GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/apple-music-electron/apple-music-electron/releases/latest)[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FApple-Music-Electron%2FApple-Music-Electron.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FApple-Music-Electron%2FApple-Music-Electron?ref=badge_shield)
+
 
 [![Get it from the Microsoft Store](https://img.shields.io/badge/Get_It_From_The_Microsoft_Store-100000?style=for-the-badge&logo=microsoft)](https://www.youtube.com/watch?v=dQw4w9WgXcQ) (Coming Soon)
 
@@ -53,3 +54,7 @@ for any legal concerns contact me at <a href="mailto:cryptofyre@cryptofyre.org">
 </p>
 
 <i><a name="ComingSoon">1</a> - Coming Soon</i>
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FApple-Music-Electron%2FApple-Music-Electron.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FApple-Music-Electron%2FApple-Music-Electron?ref=badge_large)
