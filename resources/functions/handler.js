@@ -891,9 +891,9 @@ const handler = {
                         channelCount: 2,
                         sampleFormat: portAudio.SampleFormat24Bit,
                         sampleRate: 48000,
-                        maxQueue: 100,
+                        maxQueue: 3,
                         deviceId: id,
-                        highwaterMark: 1024, // Use -1 or omit the deviceId to select the default device
+                        highwaterMark: 2048, // Use -1 or omit the deviceId to select the default device
                         closeOnError: false // Close the stream if an audio error is detected, if set false then just log the error
                     }
                 });
@@ -901,7 +901,7 @@ const handler = {
                 // Note that this does not strip the WAV header so a click will be heard at the beginning
                 EAstream.pipe(ao);
                 EAstream.once('data', (_data) => {
-                    ao.start();
+                    ao.start(0);
                 })
 
                 // Start piping data and start streaming
@@ -940,15 +940,60 @@ const handler = {
             });
 
             console.log(portAudio.getHostAPIs());
+            
+            // get 32f header
+            let fake32fwav = new WaveFile();
+            fake32fwav.fromScratch(2, 48000, '32f', [0, 0, 0, 0]);
+            let fake32fheader = (fake32fwav.toBuffer()).slice(0,44)
 
-            ipcMain.on('writePCM', function (event, buffer) {
-                //     writeFile(join(app.getPath('userData'), 'buffertest5.raw'), Buffer.from(buffer,'binary').slice(44),{flag: 'a+'}, function (err) {
-                //         if (err) throw err;
-                //          console.log('It\'s saved!');
-                //    });
-                // do anything with stereo pcm here
-                // buffer = Buffer.from(new Int8Array(interleave(Float32Array.from(leftpcm), Float32Array.from(rightpcm)).buffer));
-                EAstream.write(Buffer.from(buffer).slice(44));
+            var isArrayBufferSupported = (new Buffer(new Uint8Array([1]).buffer)[0] === 1);
+
+            var arrayBufferToBuffer = isArrayBufferSupported ? arrayBufferToBufferAsArgument : arrayBufferToBufferCycle;
+            
+            function arrayBufferToBufferAsArgument(ab) {
+              return new Buffer(ab);
+            }
+            
+            function arrayBufferToBufferCycle(ab) {
+              var buffer = new Buffer(ab.byteLength);
+              var view = new Uint8Array(ab);
+              for (var i = 0; i < buffer.length; ++i) {
+                  buffer[i] = view[i];
+              }
+              return buffer;
+            }
+            
+            ipcMain.on('writePCM', function (event, leftpcm, rightpcm, lengthx) {
+                    var channelBuffers = [Float32Array.from(leftpcm), Float32Array.from(rightpcm)];
+                    const length = (channelBuffers[0]).length; // Number of frames, in other words, the length of each channelBuffers.
+        
+                    const encodedBuffer = new ArrayBuffer(length * 3 * 2);
+                    const encodedView = new DataView(encodedBuffer);
+                
+                    // Convert Float32 to Int16
+                    for (let ch = 0; ch < 2; ch++) {
+                      let channelSamples = channelBuffers[ch];
+                
+                      for (let i = 0; i < length; i++) {
+                        // Clamp value
+                        let sample = (channelSamples[i] * 8388607) | 0;
+                        if (sample > 8388607) {
+                          sample = 8388607 | 0;
+                        } else if (sample < -8388608 ) {
+                          sample = -8388608  | 0;
+                        }
+                        // Then store
+                        const offset = (i * 2 + ch) * 3;
+                        var valz = 0 | sample; 
+                        var uinx  = valz & 0xff;
+                        encodedView.setUint8(offset, uinx);
+                        var uiny  = (valz & 0xff00) >> 8;
+                        encodedView.setUint8(offset+1, uiny);
+                        var uinz  = (valz & 0xff0000) >> 16;
+                        encodedView.setUint8(offset+2, uinz);
+                      }
+                    }
+                    EAstream.write(Buffer.from(new Uint8Array(encodedBuffer).buffer));            
 
             });
 
