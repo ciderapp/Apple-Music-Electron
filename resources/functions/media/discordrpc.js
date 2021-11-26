@@ -94,6 +94,9 @@ module.exports = {
         if (!ActivityObject.largeImageText || ActivityObject.largeImageText.length < 2) {
             delete ActivityObject.largeImageText
         }
+        if (ActivityObject.details.length > 128) {
+            AcitivityObject.details = ActivityObject.details.substring(0, 125) + '...'
+        }
 
         // Clear if if needed
         if (!attributes.status) {

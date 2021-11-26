@@ -1,14 +1,34 @@
-const {app, nativeImage, nativeTheme, Notification, dialog} = require("electron"),
-    {existsSync, readFileSync, readdirSync, constants, access, writeFileSync, copyFileSync} = require("fs"),
-    {readdir, mkdir} = require("fs/promises"),
-    {join, resolve} = require("path"),
-    {autoUpdater} = require("electron-updater"),
+const {
+    app,
+    nativeImage,
+    nativeTheme,
+    Notification,
+    dialog
+} = require("electron"), {
+        existsSync,
+        readFileSync,
+        readdirSync,
+        constants,
+        access,
+        writeFileSync,
+        copyFileSync,
+        createWriteStream
+    } = require("fs"), {
+        readdir,
+        mkdir
+    } = require("fs/promises"), {
+        join,
+        resolve
+    } = require("path"), {
+        autoUpdater
+    } = require("electron-updater"),
     os = require("os"),
     rimraf = require("rimraf"),
     chmod = require("chmodr"),
     clone = require("git-clone/promise"),
     trayIconDir = (nativeTheme.shouldUseDarkColors ? join(__dirname, `../icons/media/light/`) : join(__dirname, `../icons/media/dark/`)),
-    ElectronSentry = require("@sentry/electron");
+    ElectronSentry = require("@sentry/electron"),
+    { execSync } = require("child_process");
 
 const Utils = {
 
@@ -46,7 +66,10 @@ const Utils = {
             name: null,
             author: null,
             description: null,
-            transparency: {dark: null, light: null},
+            transparency: {
+                dark: null,
+                light: null
+            },
             options: []
         };
 
@@ -164,7 +187,8 @@ const Utils = {
     fetchThemesListing: () => {
         if (!existsSync(resolve(app.getPath("userData"), "themes"))) return;
 
-        let themesFileNames = [], themesListing = {};
+        let themesFileNames = [],
+            themesListing = {};
 
 
         readdirSync(resolve(app.getPath("userData"), "themes")).forEach((value) => {
@@ -188,7 +212,8 @@ const Utils = {
     fetchPluginsListing: () => {
         if (!existsSync(resolve(app.getPath("userData"), "plugins"))) return;
 
-        let pluginsFileNames = [], pluginsListing = {};
+        let pluginsFileNames = [],
+            pluginsListing = {};
 
 
         readdirSync(resolve(app.getPath("userData"), "plugins")).forEach((value) => {
@@ -214,6 +239,102 @@ const Utils = {
         }
     },
 
+    updateThemes_fallback: async () => {
+        if (app.watcher) {
+            app.watcher.close()
+        }
+
+        var https = require('https');
+
+        const tmpDir = join(os.tmpdir(), "ame-themes")
+        const tmpDirZIP = join(tmpDir, "Apple-Music-Electron-Themes-main")
+        const themesDir = join(app.getPath("userData"), "themes")
+
+        if (!existsSync(themesDir)) {
+            await mkdir(themesDir, {
+                recursive: true
+            })
+        }
+
+        if (!existsSync(tmpDir)) {
+            await mkdir(tmpDir, {
+                recursive: true
+            })
+        }
+
+        options = {
+            host: "codeload.github.com",
+            port: 443,
+            path: "/Apple-Music-Electron/Apple-Music-Electron-Themes/zip/refs/heads/main",
+            method: 'GET',
+            rejectUnauthorized: false,
+            requestCert: true,
+            agent: false
+        };
+
+        var file = createWriteStream(join(app.getPath("userData"), "themes.zip"));
+
+        var request = await https.get(options, function (response) {
+            response.pipe(file);
+            file.on("finish", function () {
+                file.close();
+                const extract = require('extract-zip')
+                extract(join(app.getPath("userData"), "themes.zip"), {
+                    dir: tmpDir
+                }, function (err) {
+                    if (err) {
+                        console.error(err)
+                        return
+                    }
+                    request.end();
+
+                    request.on('error', function (err) {
+                        throw (err);
+                    });
+                });
+            });
+        })
+
+        const foundChanges = {};
+        const updateList = readdirSync(join(tmpDir, "Apple-Music-Electron-Themes-main"));
+
+        for (const file of updateList) {
+            if (file.split('.').pop() === 'css' && file !== "Template.css") { // Reduces listing compare down to css files
+                console.verbose(`[compareDirectories] Comparing ${file}`)
+
+                if (!existsSync(join(themesDir, file))) {
+                    copyFileSync(join(tmpDirZIP, file), join(themesDir, file))
+                    foundChanges[file] = 'added'
+                } else {
+                    const updateFile = readFileSync(join(tmpDirZIP, file));
+                    const origFile = readFileSync(join(themesDir, file));
+
+                    if (origFile.toString() !== updateFile.toString()) {
+                        writeFileSync(join(themesDir, file), updateFile)
+                        foundChanges[file] = 'updated'
+                    }
+                }
+            }
+        }
+
+        console.log(foundChanges)
+        return foundChanges
+    },
+
+    isGitInstalled: () => {
+        return false
+        try {
+            execSync('git --version', {
+                stdio: 'ignore'
+            });
+        } catch (e) {
+            console.log("Git is not installed")
+            return false;
+        }
+        console.log("Git is installed")
+        return true;
+    },
+
     /* updateThemes - Purges the themes directory and clones a fresh copy of the themes */
     updateThemes: async () => {
         if (app.watcher) {
@@ -223,6 +344,12 @@ const Utils = {
         const tmpDir = join(os.tmpdir(), "ame-themes")
         const themesDir = join(app.getPath("userData"), "themes")
 
+        if (!existsSync(themesDir)) {
+            await mkdir(themesDir, {
+                recursive: true
+            })
+        }
+
         if (existsSync(themesDir)) {
             if (existsSync(tmpDir)) {
                 rimraf(tmpDir, [], async (err) => {
@@ -230,7 +357,9 @@ const Utils = {
                     await clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', tmpDir, [], (err) => console.log(err))
                 })
             } else {
-                await mkdir(tmpDir, {recursive: true})
+                await mkdir(tmpDir, {
+                    recursive: true
+                })
                 await clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', tmpDir, [], (err) => console.log(err))
             }
 
@@ -259,9 +388,13 @@ const Utils = {
 
             return foundChanges
         } else {
-            await mkdir(tmpDir, {recursive: true})
+            await mkdir(tmpDir, {
+                recursive: true
+            })
             await clone('https://github.com/Apple-Music-Electron/Apple-Music-Electron-Themes', themesDir, [], (err) => console.log(err))
-            return {'initial': true}
+            return {
+                'initial': true
+            }
         }
 
 
@@ -287,7 +420,19 @@ const Utils = {
     /* initAnalytics - Sentry Analytics */
     initAnalytics: () => {
         if (app.cfg.get('general.analyticsEnabled') && app.isPackaged) {
-            ElectronSentry.init({dsn: "https://20e1c34b19d54dfcb8231e3ef7975240@o954055.ingest.sentry.io/5903033"});
+            ElectronSentry.init({
+                dsn: "https://20e1c34b19d54dfcb8231e3ef7975240@o954055.ingest.sentry.io/5903033"
+            });
+        }
+    },
+
+    webAppReady() {
+        app.win.setOpacity(1)
+        app.win.show()
+        app.splash.Destroy()
+        app.splash = null
+        if(app["updater"]) {
+            app.updater.checkForUpdates()
         }
     },
 
@@ -309,7 +454,10 @@ const Utils = {
         autoUpdater.on('update-not-available', () => {
             if (manual === true) {
                 let bodyVer = `You are on the latest version. (v${app.getVersion()})`
-                new Notification({title: "Apple Music", body: bodyVer}).show()
+                new Notification({
+                    title: "Apple Music",
+                    body: bodyVer
+                }).show()
             }
         })
 
@@ -331,7 +479,9 @@ const Utils = {
                 message: `Update was found and downloaded, would you like to install the update now?`,
                 details: updateInfo,
                 buttons: ['Sure', 'No']
-            }).then(({response}) => {
+            }).then(({
+                response
+            }) => {
                 if (response === 0) {
                     const isSilent = true;
                     const isForceRunAfter = true;
@@ -373,12 +523,27 @@ const Utils = {
 
     /* Media-associated Icons (Used for Thumbar and TouchBar) */
     icons: {
-        pause: nativeImage.createFromPath(join(trayIconDir, 'pause.png')).resize({width: 32, height: 32}),
-        play: nativeImage.createFromPath(join(trayIconDir, 'play.png')).resize({width: 32, height: 32}),
-        nextTrack: nativeImage.createFromPath(join(trayIconDir, 'next.png')).resize({width: 32, height: 32}),
-        previousTrack: nativeImage.createFromPath(join(trayIconDir, 'previous.png')).resize({width: 32, height: 32}),
+        pause: nativeImage.createFromPath(join(trayIconDir, 'pause.png')).resize({
+            width: 32,
+            height: 32
+        }),
+        play: nativeImage.createFromPath(join(trayIconDir, 'play.png')).resize({
+            width: 32,
+            height: 32
+        }),
+        nextTrack: nativeImage.createFromPath(join(trayIconDir, 'next.png')).resize({
+            width: 32,
+            height: 32
+        }),
+        previousTrack: nativeImage.createFromPath(join(trayIconDir, 'previous.png')).resize({
+            width: 32,
+            height: 32
+        }),
         inactive: {
-            play: nativeImage.createFromPath(join(trayIconDir, 'play-inactive.png')).resize({width: 32, height: 32}),
+            play: nativeImage.createFromPath(join(trayIconDir, 'play-inactive.png')).resize({
+                width: 32,
+                height: 32
+            }),
             nextTrack: nativeImage.createFromPath(join(trayIconDir, 'next-inactive.png')).resize({
                 width: 32,
                 height: 32
