@@ -8,6 +8,7 @@ const path = require('path');
 const port = process.argv[2] || 9000;
 const express = require('express');
 const router = express.Router();
+const getPort = require('get-port');
 const {
     ipcMain,
     app,
@@ -32,7 +33,7 @@ const wsapi = {
             return v.toString(16);
         });
     },
-    InitWebSockets() {
+    async InitWebSockets () {
         ipcMain.on('wsapi-updatePlaybackState', (event, arg) => {
             wsapi.updatePlaybackState(arg);
         })
@@ -52,9 +53,9 @@ const wsapi = {
         ipcMain.on('wsapi-returnLyrics', (event, arg) => {
             wsapi.returnLyrics(JSON.parse(arg));
         });
-
+        var safeport = await getPort({port : 26369});
         wss = new WebSocketServer({
-            port: 26369,
+            port: safeport,
             perMessageDeflate: {
                 zlibDeflateOptions: {
                     // See zlib defaults.
@@ -75,10 +76,11 @@ const wsapi = {
                 // should not be compressed if context takeover is disabled.
             }
         })
-
+        console.log(`WebSocketServer started on port: ${safeport}`);
+ 
         const defaultResponse = new wsapi.standardResponse(0, {}, "OK");
 
-        console.log(`WebSocketServer started on port: ${this.port}`);
+        
         wss.on('connection', function connection(ws) {
             ws.id = wsapi.createId();
             console.log(`Client ${ws.id} connected`)
@@ -272,9 +274,10 @@ const wsapi = {
         wsapi.clients.forEach(function each(client) {
             client.send(JSON.stringify(response));
         });
-    },
+    },   
     webRemotePort: 8090,
-    InitWebServer() {
+    async InitWebServer() {
+        const webRemotePort = await getPort({port : wsapi.webRemotePort});
         // Web Remote
         // express server that will serve static files in the "../web-remote" folder
         const webapp = express();
@@ -283,8 +286,8 @@ const wsapi = {
         webapp.get('/', function (req, res) {
             res.sendFile(path.join(webRemotePath, 'index.html'));
         });
-        webapp.listen(wsapi.webRemotePort, function () {
-            console.log(`Web Remote listening on port ${wsapi.webRemotePort}`);
+        webapp.listen(webRemotePort, function () {
+            console.log(`Web Remote listening on port ${webRemotePort}`);
         });
     }
 }
