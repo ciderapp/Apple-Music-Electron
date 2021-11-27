@@ -521,6 +521,14 @@ body.no-acrylic {
     margin: 3px;
 }
 
+@keyframes dotOpacity {
+    0% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 @keyframes lyricWaitingLine {
     0% {
         opacity: 0;
