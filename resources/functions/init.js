@@ -139,7 +139,12 @@ const init = {
             console.verbose('[ThemeInstallation] Themes Directory Exists. Running Permission Check.')
             app.ame.utils.permissionsCheck(themesPath, 'README.md')
         } else {
-            app.ame.utils.updateThemes().catch(err => console.error(err))
+            if(app.ame.utils.isGitInstalled()) {
+                app.ame.utils.updateThemes().catch(err => console.error(err))         
+            }else{
+                app.ame.utils.updateThemes_fallback().catch(err => console.error(err))
+            }
+            
         }
 
         // Save all the file names to array and log it
