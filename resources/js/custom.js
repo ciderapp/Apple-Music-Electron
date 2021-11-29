@@ -659,11 +659,6 @@ try {
                     console.log("Mica is already active");
                     return;
                 }
-                if (this.lastTheme !== "winui") {
-                    if (confirm("This feature currently requires the Eleven theme, enable now?")) {
-                        this.loadTheme("winui");
-                    }
-                }
                 this.micaActive = true;
                 var micaDOM = document.createElement("div");
                 micaDOM.classList.add("micaBackground");
