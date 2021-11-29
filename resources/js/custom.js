@@ -822,6 +822,11 @@ try {
         };
     }
 
+    /* Notification shit */
+    if (typeof AMNotification == "undefined") {
+        var AMNotification = false;
+    }
+
     /* Bulk AME JavaScript Functions */
     if (typeof AMJavaScript == "undefined") {
         var AMJavaScript = {
@@ -837,6 +842,20 @@ try {
                 xhttp.open("GET", url, true);
                 xhttp.send();
             },
+            CreateNotification: (notification) => {
+                if (AMNotification) {
+                    AMNotification.close()
+                }
+
+                AMNotification = new Notification(notification.title, {
+                    body: notification.body,
+                    icon: notification.icon
+                });
+
+                AMNotification.addListener('action', (_event) => {
+                    MusicKitInterop.nextTrack();
+                });
+            },
             LoadCustomStartup: async () => {
                 const preferences = ipcRenderer.sendSync('getStore');
 
@@ -850,6 +869,10 @@ try {
                     })
                 }
                 /** End Plugins */
+
+                ipcRenderer.on('notification', (event, notification) => {
+                    AMJavaScript.CreateNotification(notification);
+                });
 
                 /** Expose platform to CSS */
                 document.body.setAttribute("platform", navigator.platform);
