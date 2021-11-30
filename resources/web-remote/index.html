@@ -475,15 +475,15 @@
                             </div>
                             <div class="col-auto">
                                 <button 
-                                class="md-btn playback-button--small"
+                                class="md-btn playback-button--small autoplay"
                                 v-if="!player.currentMediaItem.autoplayEnabled"
                                 @click="setAutoplay(true)"
-                                >♾️</button>
+                                ></button>
                                 <button 
-                                class="md-btn playback-button--small active"
+                                class="md-btn playback-button--small autoplay activeColor"
                                 v-else
                                 @click="setAutoplay(false)"
-                                >♾️</button>
+                                ></button>
                             </div>
                         </div>
                     </div>
@@ -501,9 +501,6 @@
                                     <div class="row" style="width:100%;">
                                         <div class="col-auto">
                                             <div class="handle">
-                                                ⬆️
-                                                <br>
-                                                ⬇️
                                             </div>
                                         </div>
                                         <div class="col-auto flex-center">
@@ -535,7 +532,7 @@
             <transition name="wpfade">
                 <div class="md-container md-container_panel" v-if="screen == 'lyrics'">
                     <div class="md-header">
-                        <div class="list-entry">
+                        <div class="list-entry" @click="screen = 'player'">
                             <div class="row">
                                 <div class="col-auto flex-center">
                                     <div class="list-entry-image" :style="{'--artwork': getAlbumArtUrl()}">

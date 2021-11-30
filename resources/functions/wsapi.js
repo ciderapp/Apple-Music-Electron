@@ -50,6 +50,14 @@ const wsapi = {
             wsapi.returnSearchLibrary(JSON.parse(arg));
         });
 
+        ipcMain.on('wsapi-returnDynamic', (event, arg, type) => {
+            wsapi.returnDynamic(JSON.parse(arg), type);
+        });
+
+        ipcMain.on('wsapi-returnMusicKitApi', (event, arg, method) => {
+            wsapi.returnMusicKitApi(JSON.parse(arg), method);
+        });
+
         ipcMain.on('wsapi-returnLyrics', (event, arg) => {
             wsapi.returnLyrics(JSON.parse(arg));
         });
@@ -169,10 +177,9 @@ const wsapi = {
                         response.message = "Previous";
                         break;
                     case "musickit-api":
-
+                        app.win.webContents.executeJavaScript(`wsapi.musickitApi(\`${data.method}\`, \`${data.id}\`, ${JSON.stringify(data.params)})`);
                         break;
                     case "musickit-library-api":
-
                         break;
                     case "set-autoplay":
                         app.win.webContents.executeJavaScript(`wsapi.setAutoplay(${data.autoplay})`);
@@ -247,6 +254,18 @@ const wsapi = {
     },
     updatePlaybackState(attr) {
         const response = new wsapi.standardResponse(0, attr, "OK", "playbackStateUpdate");
+        wsapi.clients.forEach(function each(client) {
+            client.send(JSON.stringify(response));
+        });
+    },
+    returnMusicKitApi(results, method) {
+        const response = new wsapi.standardResponse(0, results, "OK", method);
+        wsapi.clients.forEach(function each(client) {
+            client.send(JSON.stringify(response));
+        });
+    },
+    returnDynamic(results, type) {
+        const response = new wsapi.standardResponse(0, results, "OK", type);
         wsapi.clients.forEach(function each(client) {
             client.send(JSON.stringify(response));
         });

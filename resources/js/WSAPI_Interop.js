@@ -16,6 +16,14 @@ const wsapi = {
     setAutoplay(value) {
         MusicKit.getInstance().autoplayEnabled = value
     },
+    returnDynamic(data, type) {
+        ipcRenderer.send('wsapi-returnDynamic', JSON.stringify(data), type)
+    },
+    musickitApi(method, id, params) {
+        MusicKit.getInstance().api[method](id, params).then((results)=>{
+            ipcRenderer.send('wsapi-returnMusicKitApi', JSON.stringify(results), method)
+        })
+    },
     getPlaybackState () {
         ipcRenderer.send('wsapi-updatePlaybackState', MusicKitInterop.getAttributes());
     },

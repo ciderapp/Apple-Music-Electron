@@ -218,6 +218,10 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     background-color: rgb(200 200 200 / 10%);
 }
 
+.playback-button--small.activeColor {
+    background-color: var(--keyColor);
+}
+
 .playback-button--small.search {
     background-image: url("./assets/search.svg");
 }
@@ -228,6 +232,10 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
 
 .playback-button--small.lyrics {
     background-image: url("./assets/quote-right.svg");
+}
+
+.playback-button--small.autoplay {
+    background-image: url("./assets/infinity.svg");
 }
 
 .playback-button--small.shuffle {
@@ -424,10 +432,12 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
 .list-entry .handle {
     height: 100%;
     width: 28px;
-    background:var(--keyColor);
     display: flex;
     justify-content: center;
     align-items: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url('./assets/Grabber.svg');
 }
 
 .md-container {

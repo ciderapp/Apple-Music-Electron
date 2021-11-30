@@ -37,6 +37,16 @@ var app = new Vue({
         // url: "localhost",
     },
     methods: {
+        musicKitAPI(method, id, params) {
+            socket.send(
+                JSON.stringify({
+                    action: "musickit-api",
+                    method: method,
+                    id: id,
+                    params: params
+                })
+            )
+        },
         resetPlayerUI() {
             this.player.lowerPanelState = "controls";
         },
@@ -111,7 +121,7 @@ var app = new Vue({
                 setTimeout(() => {
                     this.getQueue()
                 }, 1000)
-            }else{
+            } else {
                 this.getQueue()
             }
         },
@@ -404,7 +414,7 @@ var app = new Vue({
                 const response = JSON.parse(e.data);
                 switch (response.type) {
                     default:
-
+                        console.log(response);
                         break;
                     case "queue":
                         self.player.queue = response.data;
