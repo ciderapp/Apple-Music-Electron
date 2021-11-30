@@ -259,7 +259,7 @@ const wsapi = {
         });
     },
     returnMusicKitApi(results, method) {
-        const response = new wsapi.standardResponse(0, results, "OK", method);
+        const response = new wsapi.standardResponse(0, results, "OK", `musickitapi.${method}`);
         wsapi.clients.forEach(function each(client) {
             client.send(JSON.stringify(response));
         });

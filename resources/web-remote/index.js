@@ -22,6 +22,12 @@ var app = new Vue({
         queue: {
             temp: []
         },
+        artistPage: {
+            data: {}
+        },
+        albumPage: {
+            data: {}
+        },
         search: {
             query: "",
             results: [],
@@ -319,6 +325,10 @@ var app = new Vue({
                 return ["passed"]
             }
         },
+        showAlbum(id) {
+            this.screen = "album-page"
+            this.musicKitAPI("album", id, {})
+        },
         showQueue() {
             this.queue.temp = this.player["queue"]["_queueItems"]
             this.screen = "queue"
@@ -415,6 +425,16 @@ var app = new Vue({
                 switch (response.type) {
                     default:
                         console.log(response);
+                        break;
+                    case "musickitapi.album":
+                        if(self.screen == "album-page") {
+                            self.albumPage.data = response.data
+                        }
+                        break;
+                    case "musickitapi.artist":
+                        if(self.screen == "artist-page") {
+                            self.artistPage.data = response.data
+                        }
                         break;
                     case "queue":
                         self.player.queue = response.data;
