@@ -386,6 +386,8 @@ var _tests = {
                             seamlessAudioTransitions: true,
                             castingBitDepth: '16',
                             enableDLNA: false,
+                            enableExclusiveAudio : false,
+                            exclusiveOutput : "-1"
                         },
                         window: {
                             closeButtonMinimize: true
@@ -414,6 +416,15 @@ var _tests = {
                         ipcRenderer.invoke("getStoreValue", "audio.enableDLNA").then((result) => {
                             self.prefs.audio.enableDLNA = result
                         })
+
+                        ipcRenderer.invoke("getStoreValue", "audio.enableExclusiveAudio").then((result) => {
+                            self.prefs.audio.enableExclusiveAudio = result
+                        })
+
+                        ipcRenderer.invoke("getStoreValue", "audio.exclusiveOutput").then((result) => {
+                            self.prefs.audio.exclusiveOutput = result
+                        })
+
 
                         ipcRenderer.invoke("getStoreValue", "general.storefront").then((result) => {
                             self.prefs.general.storefront = result
@@ -466,6 +477,9 @@ var _tests = {
                         ipcRenderer.invoke("setStoreValue", "audio.seamlessAudioTransitions", self.prefs.audio.seamlessAudioTransitions)
                         ipcRenderer.invoke("setStoreValue", "audio.castingBitDepth", self.prefs.audio.castingBitDepth)
                         ipcRenderer.invoke("setStoreValue", "audio.enableDLNA", self.prefs.audio.enableDLNA)
+                        ipcRenderer.invoke("setStoreValue", "audio.enableExclusiveAudio",self.prefs.audio.enableExclusiveAudio)
+                        ipcRenderer.invoke("setStoreValue", "audio.exclusiveOutput",self.prefs.audio.exclusiveOutput)
+
                         ipcRenderer.invoke("setStoreValue", "general.storefront", self.prefs.general.storefront)
                         ipcRenderer.invoke("setStoreValue", "general.discordRPC", self.prefs.general.discordRPC)
                         ipcRenderer.invoke("setStoreValue", "general.analyticsEnabled", self.prefs.general.analyticsEnabled)

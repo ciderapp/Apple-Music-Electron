@@ -82,6 +82,8 @@ module.exports = () => {
             seamlessAudioTransitions: false,
             castingBitDepth: '16',
             enableDLNA: false,
+            enableExclusiveAudio : false,
+            exclusiveOutput : "-1"
         },
         window: {
             appStartupBehavior: "",

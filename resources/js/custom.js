@@ -1351,6 +1351,21 @@ try {
                 }
             },
 
+            updateAudioOutputs: async () => {
+                try{
+                let result = await ipcRenderer.invoke('getAudioDevices');
+                console.log(result);
+                let themesListingHTML = `<option value='-1'>Default</option>`;
+
+                for (const output of result) {
+                    themesListingHTML = themesListingHTML + `\n<option value="${output.id}">${output.name}</option>`;
+                }
+                document.getElementById('exclusiveOutput').innerHTML = themesListingHTML;
+                document.getElementById("exclusiveOutput").value = preferences.audio.exclusiveOutput ?? -1;
+                console.warn('[Custom][AudioOutputs] List Updated!');
+                } catch(e) {}
+            },
+
             copyLogFile: () => {
                 const returnValue = ipcRenderer.sendSync('copyLogFile');
                 document.querySelector('#copyLogFile').innerHTML = (returnValue ? 'Copied to Clipboard' : 'Copy Failed');
@@ -1431,7 +1446,7 @@ try {
                     }
 
                     AMSettings.themes.updateThemesListing(AM.themesListing);
-
+                    AMSettings.updateAudioOutputs();
                     /* Adjust Preferences Menu if Acrylic is not Supported */
                     if (AM.acrylicSupported) {
                         document.getElementById('transparencyEffect').innerHTML = document.getElementById('transparencyEffect').innerHTML + "\n<option value='acrylic'>Acrylic (W10 1809+)</option>";
@@ -1487,7 +1502,8 @@ try {
                     AMSettings.HandleField('seamlessAudioTransitions');
                     AMSettings.HandleField('castingBitDepth');
                     AMSettings.HandleField('enableDLNA');
-
+                    AMSettings.HandleField('exclusiveOutput');
+                    AMSettings.HandleField('enableExclusiveAudio');
 
                     /* Window Settings */
                     AMSettings.HandleField('appStartupBehavior');

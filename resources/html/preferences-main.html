@@ -638,6 +638,27 @@
                     number of them don't support live radio (e.g LG TVs).
                 </span>
             </li>
+            <li class="app-prefs-toggle">
+                <span class="typography-title-3-tall">Enable Exclusive Audio (BUGGY/ EXPERIMENTAL/ WINDOWS ONLY)</span>
+                <label class="toggle-element list-element">
+                    <input checked id="enableExclusiveAudio" type="checkbox">
+                    <span class="slider"></span>
+                </label>
+                <span class="app-prefs-help typography-title-3-tall">
+                    DON'T TURN THIS ON IF YOU DON'T KNOW WHAT IT IS!!!!
+                    DON'T USE THIS, THIS IS FOR EXPERIMENTAL PURPOSES. 
+                    APPLE MUSIC ELECTRON IS ALREADY USE WASAPI SHARED.
+                    VIDEO PLAYBACK WON'T WORK IF THIS ON. 
+                </span>
+            </li>
+            <li class="app-prefs-dropdown">
+                <label class="typography-title-3-tall" for="exclusiveOutput">Exclusive Audio output</label>
+                <select class="form-dropdown-select list-element" id="exclusiveOutput" name="castingBitDepth">
+                    <option value="-1">Default</option>
+                </select>
+                <span class="app-prefs-help typography-title-3-tall getAudioOutputs"> Selected output for exclusive audio
+                </span>
+            </li>
         </ul>
     </div>
     <div class="app-prefs-section window">
