@@ -488,28 +488,34 @@
         <transition name="wpfade">
             <div class="md-container md-container_panel" v-if="screen == 'queue'">
                 <div class="md-header">
-                    <div class="row">
-                        <div class="col-auto">
-                            <button class="back-button" @click="screen = 'player'"></button>
-                        </div>
-                        <div class="col" style="display: flex;align-items: center;">
-                            <div class="col">
-                                Queue
+                    <div class="list-entry" @click="screen = 'player'">
+                        <div class="row">
+                            <div class="col-auto flex-center">
+                                <div class="list-entry-image" :style="{'--artwork': getAlbumArtUrl()}">
+                                </div>
+                            </div>
+                            <div class="col flex-center">
+                                <div class="list-entry-name">
+                                    {{ player.currentMediaItem.name }}
+                                </div>
+                                <div class="list-entry-artist">
+                                    {{ player.currentMediaItem.artistName }}
+                                </div>
                             </div>
                         </div>
-                        <div class="col-auto">
-                            <button
-                                    class="md-btn playback-button--small autoplay"
-                                    v-if="!player.currentMediaItem.autoplayEnabled"
-                                    @click="setAutoplay(true)"
-                            ></button>
-                            <button
-                                    class="md-btn playback-button--small autoplay activeColor"
-                                    v-else
-                                    @click="setAutoplay(false)"
-                            ></button>
-                        </div>
                     </div>
+                </div>
+                <div class="md-header" style="text-align: right;padding: 5px 16px;">
+                    <button
+                            class="md-btn playback-button--small autoplay"
+                            v-if="!player.currentMediaItem.autoplayEnabled"
+                            @click="setAutoplay(true)"
+                    ></button>
+                    <button
+                            class="md-btn playback-button--small autoplay activeColor"
+                            v-else
+                            @click="setAutoplay(false)"
+                    ></button>
                 </div>
                 <div class="md-body queue-body" v-if="!player.queue['_queueItems']">
                     Empty
@@ -552,7 +558,12 @@
                     </draggable>
                 </div>
                 <div class="md-footer">
-
+                    <button class="md-btn playback-button--small lyrics" v-if="checkOrientation() == 'portrait'"
+                            @click="showLyrics()"></button>
+                    <button class="md-btn playback-button--small lyrics"
+                            v-if="checkOrientation() == 'landscape'" @click="showLyricsInline()"></button>
+                    <button class="md-btn playback-button--small queue active" @click="screen = 'player'"></button>
+                    <button class="md-btn playback-button--small search" @click="showSearch()"></button>
                 </div>
             </div>
         </transition>
