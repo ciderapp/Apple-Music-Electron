@@ -31,7 +31,7 @@ var audioWorklet = `class RecorderWorkletProcessor extends AudioWorkletProcessor
   
     constructor() {
       super();
-      this._bufferSize = 4096;
+      this._bufferSize = 131072;
       this._buffers = null;
       this._initBuffer();
     }
@@ -448,10 +448,12 @@ var AudioOutputs = {
     document.body.appendChild(backdrop);
   },
   getAudioDevices: function () {
-    ipcRenderer.send('getAudioDevices', '');
+    ipcRenderer.invoke('getAudioDevices', '');
   },
   startExclusiveAudio: async function (id) {
-
+    if(typeof(id) === 'string') {
+    id = parseInt(id, 10); 
+    }
     if (AMEx.result.source != null || MVsource != null) {
       if (EAoutputID != id) {
         EAoutputID = id;
@@ -603,4 +605,8 @@ function setIntervalX(callback, delay, repetitions) {
   }, delay);
 }
 
-AudioOutputs.init()
+AudioOutputs.init();
+var preferences = ipcRenderer.sendSync('getStore');
+if(preferences.audio.enableExclusiveAudio){
+  AudioOutputs.startExclusiveAudio(preferences.audio.exclusiveOutput);
+}

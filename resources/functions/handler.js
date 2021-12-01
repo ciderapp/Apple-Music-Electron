@@ -877,11 +877,14 @@ const handler = {
 
             console.log(portAudio.getDevices());
 
-            ipcMain.on('getAudioDevices', function (_event) {
+            ipcMain.handle('getAudioDevices', function (_event) {
+               var devices = [];
                 for (let id = 0; id < portAudio.getDevices().length; id++) {
-                    if (portAudio.getDevices()[id].maxOutputChannels > 0)
+                    if (portAudio.getDevices()[id].maxOutputChannels > 0 && portAudio.getDevices()[id].hostAPIName == "Windows WASAPI"){
                         app.win.webContents.executeJavaScript(`console.log('id:','${id}','${portAudio.getDevices()[id].name}','outputChannels:','${portAudio.getDevices()[id].maxOutputChannels}','preferedSampleRate','${portAudio.getDevices()[id].defaultSampleRate}','nativeFormats','${portAudio.getDevices()[id].hostAPIName}')`);
+                        devices.push({id : id, name : portAudio.getDevices()[id].name})}
                 }
+                return devices ;
             })
 
             ipcMain.on('enableExclusiveAudio', function (event, id) {
@@ -891,9 +894,9 @@ const handler = {
                         channelCount: 2,
                         sampleFormat: portAudio.SampleFormat24Bit,
                         sampleRate: 48000,
-                        maxQueue: 3,
+                        maxQueue: 2000,
                         deviceId: id,
-                        highwaterMark: 2048, // Use -1 or omit the deviceId to select the default device
+                        highwaterMark: 256, // Use -1 or omit the deviceId to select the default device
                         closeOnError: false // Close the stream if an audio error is detected, if set false then just log the error
                     }
                 });
