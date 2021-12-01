@@ -37,6 +37,7 @@ var app = new Vue({
             trackSelect: false,
             selected: {},
             queue: {},
+            lastPage: "search"
         },
         connectedState: 0,
         url: window.location.hostname,
@@ -187,10 +188,11 @@ var app = new Vue({
         getArtworkColor(hex) {
             return `#${hex}`
         },
-        playMediaItemById(id) {
+        playMediaItemById(id, kind = "song") {
             socket.send(JSON.stringify({
                 action: "play-mediaitem",
-                id: id
+                id: id,
+                kind: kind
             }))
             this.screen = "player";
         },
@@ -325,7 +327,27 @@ var app = new Vue({
                 return ["passed"]
             }
         },
+        showSearch(reset = false) {
+            if(reset) {
+                this.search.lastPage = "search"
+            }
+            switch(this.search.lastPage) {
+                case "search":
+                    this.screen = "search"
+                    break;
+                case "album":
+                    this.screen = "album-page"
+                    break;
+                case "artist":
+
+                    break;
+                case "playlist":
+
+                    break;
+            }
+        },
         showAlbum(id) {
+            this.search.lastPage = "album"
             this.screen = "album-page"
             this.musicKitAPI("album", id, {})
         },
@@ -357,6 +379,21 @@ var app = new Vue({
                 action: "shuffle"
             }))
             this.getCurrentMediaItem()
+        },
+        setShuffle(val) {
+            socket.send(JSON.stringify({
+                action: "shuffle",
+                shuffle: val
+            }))
+            this.getCurrentMediaItem()
+        },
+        playAlbum(id, shuffle = false) {
+            if(shuffle) {
+                this.setShuffle(true)
+            }else{
+                this.setShuffle(false)
+            }
+            this.playMediaItemById(id, 'album');
         },
         getLyrics() {
             socket.send(JSON.stringify({

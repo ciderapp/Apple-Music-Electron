@@ -137,6 +137,13 @@ const wsapi = {
                     case "shuffle":
                         app.win.webContents.executeJavaScript(`wsapi.toggleShuffle()`);
                         break;
+                    case "set-shuffle":
+                        if(data.shuffle == true) {
+                            app.win.webContents.executeJavaScript(`MusicKit.getInstance().shuffleMode = 1`);
+                        }else{
+                            app.win.webContents.executeJavaScript(`MusicKit.getInstance().shuffleMode = 0`);
+                        }
+                        break;
                     case "repeat":
                         app.win.webContents.executeJavaScript(`wsapi.toggleRepeat()`);
                         break;
@@ -209,7 +216,7 @@ const wsapi = {
                         app.win.hide()
                         break;
                     case "play-mediaitem":
-                        app.win.webContents.executeJavaScript(`wsapi.playTrackById(${data.id})`);
+                        app.win.webContents.executeJavaScript(`wsapi.playTrackById(${data.id}, \`${data.kind}\`)`);
                         response.message = "Playing track";
                         break;
                     case "get-status":

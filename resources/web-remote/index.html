@@ -145,7 +145,7 @@
                         <button class="md-btn playback-button--small lyrics"
                                 v-if="checkOrientation() == 'landscape'" @click="showLyricsInline()"></button>
                         <button class="md-btn playback-button--small queue" @click="showQueue()"></button>
-                        <button class="md-btn playback-button--small search" @click="screen = 'search'"></button>
+                        <button class="md-btn playback-button--small search" @click="showSearch()"></button>
                     </div>
                 </div>
             </div>
@@ -597,7 +597,7 @@
                 <div class="md-footer">
                     <button class="md-btn playback-button--small lyrics active" @click="screen = 'player'"></button>
                     <button class="md-btn playback-button--small queue" @click="showQueue()"></button>
-                    <button class="md-btn playback-button--small search" @click="screen = 'search'"></button>
+                    <button class="md-btn playback-button--small search" @click="showSearch()"></button>
                 </div>
             </div>
         </transition>
@@ -608,7 +608,7 @@
                 <div class="md-header">
                     <div class="row">
                         <div class="col-auto">
-                            <button class="back-button" @click="screen = 'search'"></button>
+                            <button class="back-button" @click="showSearch(true)"></button>
                         </div>
                         <div class="col" style="display: flex;align-items: center;">
                             <div class="col">
@@ -621,7 +621,6 @@
                     <div class="md-header">
                         <div class="albumpage-artwork"
                              :style="{'--artwork': getAlbumArtUrlList(albumPage.data['artwork']['url'], 300)}">
-
                         </div>
                         <div class="albumpage-album-name">
                             {{ albumPage.data["name"] }}
@@ -629,14 +628,27 @@
                         <div class="albumpage-artist-name">
                             {{ albumPage.data["artistName"] }}
                         </div>
+                        <div class="albumpage-misc-info">
+                            {{ albumPage.data.genreNames[0] }} ∙ {{ new Date(albumPage.data.releaseDate).getFullYear() }}
+                        </div>
                         <div class="row" style="margin-top: 20px;">
                             <div class="col">
-                                <button class="md-btn md-btn-primary md-btn-block" style="width:100%;">Play</button>
+                                <button class="wr-btn"
+                                        @click="playAlbum(albumPage.data.id, false)"
+                                        style="width:100%;">Play</button>
                             </div>
                             <div class="col">
-                                <button class="md-btn md-btn-block" style="width:100%;">Shuffle</button>
+                                <button class="wr-btn" style="width:100%;"
+                                        @click="playAlbum(albumPage.data.id, true)"
+                                >Shuffle</button>
                             </div>
                         </div>
+                        <div class="albumpage-album-notes" v-if="albumPage.data['editorialNotes']">
+                            <div class="notes-preview" v-html="albumPage.data['editorialNotes']['standard']">
+                            </div>
+                            <button class="notes-more">More</button>
+                        </div>
+
                     </div>
                     <div class="md-body artist-body">
                         <div class="list-entry-header">Tracks</div>
@@ -665,6 +677,20 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </transition>
+        <!-- Album Page - Editorial Notes -->
+        <transition name="wpfade">
+            <div class="md-container md-container_panel context-menu" v-if="player.songActions">
+                <div class="md-header">
+                    {{ albumPage.data["name"] }}
+                </div>
+                <div class="md-body">
+                    {{ albumPage.data['editorialNotes']["standard"] }}
+                </div>
+                <div class="md-footer">
+                    <button class="context-menu-item" @click="player.songActions = false">Cancel</button>
                 </div>
             </div>
         </transition>

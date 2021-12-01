@@ -124,6 +124,17 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     font-family: inherit;
 }
 
+.wr-btn {
+    font-family: inherit;
+    appearance: none;
+    border:0px;
+    border-radius: 6px;
+    padding: 8px;
+    font-weight: 600;
+    background: rgb(80 80 80 / 70%);
+    color: white;
+}
+
 .player-duration-time {
     opacity: 0.5;
 }
@@ -529,17 +540,58 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     background-position: center;
 }
 
+.albumpage-misc-info {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.50;
+}
+
+.albumpage-album-notes {
+    margin-top: 16px;
+    height: 60px;
+    overflow: hidden;
+    position: relative;
+}
+
+.albumpage-album-notes>.notes-preview {
+    height: 60px;
+    overflow: hidden;
+    -webkit-mask-image: -webkit-gradient(linear, left 95%, left bottom, from(rgba(0, 0, 0, 1)), to(rgba(0, 0, 0, 0)));
+}
+
+.albumpage-album-notes>.notes-more {
+    position: absolute;
+    bottom:0px;
+    right:0px;
+    appearance: none;
+    background: transparent;
+    color: white;
+    font-weight: bold;
+    font-family: inherit;
+    text-transform: uppercase;
+    height: 100%;
+    width: 100%;
+    padding: 0px;
+    border:0px;
+    display:flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+
 .albumpage-album-name {
     margin: 0 auto;
-    font-size: 18px;
+    font-size: 17px;
     width: 100%;
     text-align: center;
+    font-weight: 600;
 }
 
 .albumpage-artist-name {
     margin: 0 auto;
         width: 100%;
     text-align: center;
+    font-size: 18px;
 }
 
 .artist-header {

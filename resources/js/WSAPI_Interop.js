@@ -46,8 +46,8 @@ const wsapi = {
     love() {
 
     },
-    playTrackById(id) {
-        MusicKit.getInstance().setQueue({ song: id }).then(function (queue) {
+    playTrackById(id, kind = "song") {
+        MusicKit.getInstance().setQueue({ [kind]: id }).then(function (queue) {
             MusicKit.getInstance().play()
         })
     },
