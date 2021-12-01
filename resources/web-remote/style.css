@@ -449,6 +449,11 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     background-size: contain;
     background-repeat: no-repeat;
     background-image: url('./assets/Grabber.svg');
+    cursor: grab;
+}
+
+.list-entry .handle:active {
+    cursor: grabbing;
 }
 
 .md-container {
@@ -577,6 +582,13 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     display:flex;
     justify-content: flex-end;
     align-items: flex-end;
+}
+
+.album-page-fullnotes-body {
+    padding: 22px;
+    font-size: 17px;
+    overflow-y: scroll;
+    overflow-y: overlay;
 }
 
 .albumpage-album-name {

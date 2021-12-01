@@ -207,7 +207,10 @@
                         </div>
                     </transition>
                     <transition name="wpfade">
-                        <div class="md-body search-body" style="overflow-y:auto;" v-if="search.state == 2">
+                        <div class="md-body search-body"
+                             ref="searchBody"
+                             @scroll="searchScroll"
+                             style="overflow-y:auto;" v-if="search.state == 2">
                             <template v-if="canShowSearchTab('songs')">
                                 <div class="list-entry-header">Songs</div>
 
@@ -517,7 +520,10 @@
                             handle=".handle"
                             filter=".passed"
                             @change="queueMove">
-                        <template v-for="(song, position) in queue.temp">
+                        <template
+                                v-for="(song, position) in queue.temp"
+                                v-if="position > player.queue['_position']"
+                        >
                             <div class="list-entry" :class="getQueuePositionClass(position)">
                                 <div class="row" style="width:100%;">
                                     <div class="col-auto">
@@ -604,16 +610,11 @@
         <!-- Album Page -->
         <transition name="wpfade">
             <div class="md-container md-container_panel md-container_album" v-if="screen == 'album-page' && albumPage.data['name']"
-                 :style="{'--artwork': getAlbumArtUrlList(albumPage.data['artwork']['url'])}">
+                 >
                 <div class="md-header">
                     <div class="row">
                         <div class="col-auto">
                             <button class="back-button" @click="showSearch(true)"></button>
-                        </div>
-                        <div class="col" style="display: flex;align-items: center;">
-                            <div class="col">
-                                {{ albumPage.data["name"] }}
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -646,7 +647,7 @@
                         <div class="albumpage-album-notes" v-if="albumPage.data['editorialNotes']">
                             <div class="notes-preview" v-html="albumPage.data['editorialNotes']['standard']">
                             </div>
-                            <button class="notes-more">More</button>
+                            <button @click="albumPage.editorsNotes = true" class="notes-more">More</button>
                         </div>
 
                     </div>
@@ -682,15 +683,23 @@
         </transition>
         <!-- Album Page - Editorial Notes -->
         <transition name="wpfade">
-            <div class="md-container md-container_panel context-menu" v-if="player.songActions">
-                <div class="md-header">
+            <div class="md-container md-container_panel context-menu" v-if="albumPage.editorsNotes" style="padding-top: 42px;">
+                <div class="md-header"
+                     :style="getAlbumPalette()"
+                     style="font-size: 18px;background:var(--bgColor);color:var(--textColor1);text-align: center;border-radius: 10px 10px 0 0;border-top: 1px solid #ffffff1f;"
+                >
                     {{ albumPage.data["name"] }}
                 </div>
-                <div class="md-body">
-                    {{ albumPage.data['editorialNotes']["standard"] }}
+                <div class="md-body album-page-fullnotes-body"
+                     :style="getAlbumPalette()"
+                     style="background:var(--bgColor);color:var(--textColor1);"
+                     v-html="albumPage.data['editorialNotes']['standard']">
                 </div>
-                <div class="md-footer">
-                    <button class="context-menu-item" @click="player.songActions = false">Cancel</button>
+                <div class="md-footer"
+                     :style="getAlbumPalette()"
+                     style="background:var(--bgColor);color:var(--textColor1);"
+                >
+                    <button class="context-menu-item" @click="albumPage.editorsNotes = false">Close</button>
                 </div>
             </div>
         </transition>

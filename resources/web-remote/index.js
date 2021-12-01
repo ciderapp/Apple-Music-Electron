@@ -26,7 +26,8 @@ var app = new Vue({
             data: {}
         },
         albumPage: {
-            data: {}
+            data: {},
+            editorsNotes: false
         },
         search: {
             query: "",
@@ -37,13 +38,17 @@ var app = new Vue({
             trackSelect: false,
             selected: {},
             queue: {},
-            lastPage: "search"
+            lastPage: "search",
+            lastY: 0
         },
         connectedState: 0,
         url: window.location.hostname,
         // url: "localhost",
     },
     methods: {
+        searchScroll(e) {
+            this.search.lastY = e.target.scrollTop;
+        },
         musicKitAPI(method, id, params) {
             socket.send(
                 JSON.stringify({
@@ -382,10 +387,21 @@ var app = new Vue({
         },
         setShuffle(val) {
             socket.send(JSON.stringify({
-                action: "shuffle",
+                action: "set-shuffle",
                 shuffle: val
             }))
             this.getCurrentMediaItem()
+        },
+        getAlbumPalette() {
+            var album = this.albumPage.data
+            var palette = {
+                '--bgColor': `#${album['artwork']['bgColor']}`,
+                '--textColor1': `#${album['artwork']['textColor1']}`,
+                '--textColor2': `#${album['artwork']['textColor2']}`,
+                '--textColor3': `#${album['artwork']['textColor3']}`,
+                '--textColor4': `#${album['artwork']['textColor4']}`
+            }
+            return palette
         },
         playAlbum(id, shuffle = false) {
             if(shuffle) {
