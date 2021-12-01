@@ -553,10 +553,12 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
 }
 
 .albumpage-album-notes {
+    margin: 0 auto;
     margin-top: 16px;
     height: 60px;
     overflow: hidden;
     position: relative;
+    max-width: 300px;
 }
 
 .albumpage-album-notes>.notes-preview {
