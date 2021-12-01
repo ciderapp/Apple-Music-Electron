@@ -896,7 +896,7 @@ const handler = {
                         sampleRate: 48000,
                         maxQueue: 2000,
                         deviceId: id,
-                        highwaterMark: 256, // Use -1 or omit the deviceId to select the default device
+                        highwaterMark: 1024, // Use -1 or omit the deviceId to select the default device
                         closeOnError: false // Close the stream if an audio error is detected, if set false then just log the error
                     }
                 });
