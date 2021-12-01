@@ -561,7 +561,7 @@
                     <button class="md-btn playback-button--small lyrics" v-if="checkOrientation() == 'portrait'"
                             @click="showLyrics()"></button>
                     <button class="md-btn playback-button--small lyrics"
-                            v-if="checkOrientation() == 'landscape'" @click="showLyricsInline()"></button>
+                            v-if="checkOrientation() == 'landscape'" @click="screen = 'player';showLyricsInline()"></button>
                     <button class="md-btn playback-button--small queue active" @click="screen = 'player'"></button>
                     <button class="md-btn playback-button--small search" @click="showSearch()"></button>
                 </div>
