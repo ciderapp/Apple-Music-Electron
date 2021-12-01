@@ -182,6 +182,29 @@
     Lyricer.prototype.move = function (time) {
         for (let i = 0; i < this.totalLines; i++) {
             if (time >= this.rangeLrc[i].startTime && time < this.rangeLrc[i].endTime) {
+                if (this.rangeLrc[i].line == "lrcInstrumental"){
+                   duration = this.rangeLrc[i].endTime - this.rangeLrc[i].startTime;
+                   var u = time / duration;
+                   if (u < 0.25){
+                        document.getElementsByClassName('WaitingDot1')[0].style.opacity = 0.25 + u * (0.25/ 0.75);
+                        document.getElementsByClassName('WaitingDot2')[0].style.opacity = 0.25;
+                        document.getElementsByClassName('WaitingDot3')[0].style.opacity = 0.25;
+                   } else if (u < 0.5){
+                        document.getElementsByClassName('WaitingDot1')[0].style.opacity = 1;
+                        document.getElementsByClassName('WaitingDot2')[0].style.opacity = 0.25  + u * (0.25/ 0.75);
+                        document.getElementsByClassName('WaitingDot3')[0].style.opacity = 0.25;
+                   } else if (u < 0.75){
+                        document.getElementsByClassName('WaitingDot1')[0].style.opacity = 1;
+                        document.getElementsByClassName('WaitingDot2')[0].style.opacity = 1;
+                        document.getElementsByClassName('WaitingDot3')[0].style.opacity = 0.25  + u * (0.25/ 0.75);
+                   } else {
+                        document.getElementsByClassName('WaitingDot1')[0].style.opacity = 1;
+                        document.getElementsByClassName('WaitingDot2')[0].style.opacity = 1;
+                        document.getElementsByClassName('WaitingDot3')[0].style.opacity = 1;   
+                   }
+
+                }
+                
                 if (this.currentLine !== i) {
                     this.currentLine = i;
                     moveToLine(this, this.currentLine);

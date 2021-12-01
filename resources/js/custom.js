@@ -1,4 +1,4 @@
-
+var NonBetaButtonFix = false;
 try {
     /* Add AM Lyrics Font JP, JR */
     var headID = document.getElementsByTagName('head')[0];
@@ -1202,7 +1202,25 @@ try {
                 }else{
                     console.warn("WSAPI not found");
                 }
+            
+                /* Fix minimize, close buttons on non-beta AM */
+                try{
+                    if (document.getElementById("close") && (preferences['advanced']['useBetaSize'] != true  ||  document.URL.startsWith("https://music.apple.com")) && !NonBetaButtonFix ) {
+                    NonBetaButtonFix = true;    
+                    document.getElementById("close").addEventListener("click", function (){
+                       ipcRenderer.send("close",'');
+                    });
+                    document.getElementById("maximize").addEventListener("click", function (){
+                        ipcRenderer.send("maximize",'');
+                    });
+                    document.getElementById("minimize").addEventListener("click", function (){
+                        ipcRenderer.send("minimize",'');
+                    });
+                  }
+                } catch (e) {}
             }
+
+           
         };
 
         /* Load the Startup Files as This is the First Time its been Run */
