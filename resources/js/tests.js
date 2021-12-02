@@ -327,7 +327,8 @@ var _tests = {
                             mxmon: false,
                             yton: false,
                             mxmlanguage: "en",
-                            removeScrollbars: true
+                            removeScrollbars: true,
+                            albumartNPPLaylist: false
                         },
                         audio: {
                             audioQuality: "auto",
@@ -394,8 +395,10 @@ var _tests = {
                         ipcRenderer.invoke("getStoreValue", "visual.mxmon").then((result) => {
                             self.prefs.visual.mxmon = result
                         })
-
-
+                        ipcRenderer.invoke("getStoreValue", "visual.albumartNPPLaylist").then((result) => {
+                            self.prefs.visual.albumartNPPLaylist = result
+                        })
+                        
                         ipcRenderer.invoke("getStoreValue", "visual.yton").then((result) => {
                             self.prefs.visual.yton = result
                         })
@@ -419,6 +422,7 @@ var _tests = {
                         ipcRenderer.invoke("setStoreValue", "general.analyticsEnabled", self.prefs.general.analyticsEnabled)
                         ipcRenderer.invoke("setStoreValue", "window.closeButtonMinimize", self.prefs.window.closeButtonMinimize)
                         ipcRenderer.invoke("setStoreValue", "visual.theme", self.prefs.visual.theme)
+                        ipcRenderer.invoke("setStoreValue", "visual.albumartNPPLaylist", self.prefs.visual.albumartNPPLaylist)                       
                         ipcRenderer.invoke("setStoreValue", "visual.transparencyEffect", self.prefs.visual.transparencyEffect)
                         ipcRenderer.invoke("setStoreValue", "visual.useOperatingSystemAccent", self.prefs.visual.useOperatingSystemAccent)
                         ipcRenderer.invoke("setStoreValue", "visual.mxmon", self.prefs.visual.mxmon)

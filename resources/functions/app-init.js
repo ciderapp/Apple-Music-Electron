@@ -72,6 +72,7 @@ module.exports = () => {
             removeFooter: true,
             removeScrollbars: true,
             useOperatingSystemAccent: false,
+            albumartNPPLaylist: false,
             scaling: 1,
             yton: false,
             mxmon: false,
