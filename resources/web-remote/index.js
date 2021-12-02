@@ -49,6 +49,7 @@ var app = new Vue({
         lastPage: "player",
         connectedState: 0,
         url: window.location.hostname,
+        mode: "default",
         // url: "localhost",
     },
     methods: {
@@ -459,6 +460,19 @@ var app = new Vue({
                 action: "get-currentmediaitem"
             }))
         },
+        setStreamerOverlay() {
+            document.body.classList.add("streamer-overlay")
+        },
+        setMode(mode) {
+            switch(mode) {
+                default:
+                    this.screen = "player"
+                    break;
+                case "miniplayer":
+                    this.screen = "miniplayer"
+                    break;
+            }
+        },
         connect() {
             let self = this;
             this.connectedState = 0;
@@ -470,7 +484,11 @@ var app = new Vue({
                 console.log(e);
                 console.log('connected');
                 app.connectedState = 1;
-                self.screen = "player"
+                if(getParameterByName("mode")) {
+                    self.setMode(getParameterByName("mode"))
+                }else{
+                    self.setMode("default")
+                }
                 self.clearSelectedTrack()
             }
 
@@ -553,6 +571,16 @@ var app = new Vue({
         }
     },
 });
+
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
 
 function xmlToJson(xml) {
 
