@@ -350,10 +350,10 @@ var app = new Vue({
                     this.screen = "album-page"
                     break;
                 case "artist":
-
+                    this.screen = "artist-page"
                     break;
                 case "playlist":
-
+                    this.screen = "playlist-page"
                     break;
             }
         },
