@@ -1446,7 +1446,7 @@ try {
                     }
 
                     AMSettings.themes.updateThemesListing(AM.themesListing);
-                    AMSettings.updateAudioOutputs();
+                    /* AMSettings.updateAudioOutputs(); */
                     /* Adjust Preferences Menu if Acrylic is not Supported */
                     if (AM.acrylicSupported) {
                         document.getElementById('transparencyEffect').innerHTML = document.getElementById('transparencyEffect').innerHTML + "\n<option value='acrylic'>Acrylic (W10 1809+)</option>";
@@ -1502,8 +1502,8 @@ try {
                     AMSettings.HandleField('seamlessAudioTransitions');
                     AMSettings.HandleField('castingBitDepth');
                     AMSettings.HandleField('enableDLNA');
-                    AMSettings.HandleField('exclusiveOutput');
-                    AMSettings.HandleField('enableExclusiveAudio');
+                  /*  AMSettings.HandleField('exclusiveOutput');
+                    AMSettings.HandleField('enableExclusiveAudio'); */
 
                     /* Window Settings */
                     AMSettings.HandleField('appStartupBehavior');
