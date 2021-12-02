@@ -191,6 +191,14 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     transform: scale(0.85);
 }
 
+.lossless-badge {
+    background: rgb(150 150 150);
+    border-radius: 6px;
+    padding: 0px 6px;
+    color: rgb(30 30 30);
+    font-weight: 600;
+}
+
 .playback-slider {
     width: 90%;
 }
