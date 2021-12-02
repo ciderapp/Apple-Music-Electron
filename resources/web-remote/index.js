@@ -527,14 +527,6 @@ var app = new Vue({
                         self.player.queue = response.data;
                         self.queue.temp = response.data["_queueItems"];
                         self.$forceUpdate()
-                        if (self.screen == "queue") {
-                            setTimeout(() => {
-                                document.querySelector(".playing").scrollIntoView({
-                                    behavior: "smooth",
-                                    block: "start"
-                                })
-                            }, 200)
-                        }
                         break;
                     case "lyrics":
                         self.player.lyrics = response.data;
