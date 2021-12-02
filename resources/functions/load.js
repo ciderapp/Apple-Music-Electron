@@ -133,7 +133,7 @@ module.exports = {
 
         const BackButtonChecks = (url) => {
             if (!app.win.webContents.canGoBack()) return false
-            const backButtonBlacklist = [`*music.apple.com/*/listen-now*`, `*music.apple.com/*/browse*`, `*music.apple.com/*/radio*`, `*music.apple.com/*/search*`, `*music.apple.com/library/recently-added?l=*`, `*music.apple.com/library/albums?l=*`, `*music.apple.com/library/songs?l=*`, `*music.apple.com/library/made-for-you?l=*`, `*music.apple.com/library/recently-added`, `*music.apple.com/library/albums`, `*music.apple.com/library/made-for-you`, `*music.apple.com/library/songs*`, `*music.apple.com/library/artists/*`, `*music.apple.com/library/playlist/*`];
+            const backButtonBlacklist = [`*music.apple.com/*/listen-now*`, `*music.apple.com/*/browse*`, `*music.apple.com/*/radio*`, `*music.apple.com/*/search*`, `*music.apple.com/library/recently-added?l=*`, `*music.apple.com/library/albums?l=*`, `*music.apple.com/library/songs?l=*`, `*music.apple.com/library/made-for-you?l=*`, `*music.apple.com/library/recently-added`, `*music.apple.com/library/albums`, `*music.apple.com/library/made-for-you`, `*music.apple.com/library/songs*`, `*music.apple.com/library/artists/*`, `*music.apple.com/library/playlist/*`, `*music.apple.com/account/*`];
             let blacklistPassed = true
             backButtonBlacklist.forEach((item) => {
                 if (!blacklistPassed) return;
