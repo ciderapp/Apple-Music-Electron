@@ -1,5 +1,9 @@
 var socket;
 
+Vue.component('footer-player', {
+    template: '#footer-player'
+});
+
 // vue instance
 var app = new Vue({
     el: '#app',
@@ -23,7 +27,8 @@ var app = new Vue({
             temp: []
         },
         artistPage: {
-            data: {}
+            data: {},
+            editorsNotes: false
         },
         albumPage: {
             data: {},
@@ -41,6 +46,7 @@ var app = new Vue({
             lastPage: "search",
             lastY: 0
         },
+        lastPage: "player",
         connectedState: 0,
         url: window.location.hostname,
         // url: "localhost",
@@ -351,10 +357,18 @@ var app = new Vue({
                     break;
             }
         },
+        showArtistByName(name) {
+            this.musicKitAPI("search", name, {types: "artists"})
+        },
         showAlbum(id) {
             this.search.lastPage = "album"
             this.screen = "album-page"
             this.musicKitAPI("album", id, {})
+        },
+        showArtist(id) {
+            this.search.lastPage = "artist"
+            this.screen = "artist-page"
+            this.musicKitAPI("artist", id, {include: "songs,playlists,albums"})
         },
         showQueue() {
             this.queue.temp = this.player["queue"]["_queueItems"]
@@ -392,14 +406,13 @@ var app = new Vue({
             }))
             this.getCurrentMediaItem()
         },
-        getAlbumPalette() {
-            var album = this.albumPage.data
+        getMediaPalette(data) {
             var palette = {
-                '--bgColor': `#${album['artwork']['bgColor']}`,
-                '--textColor1': `#${album['artwork']['textColor1']}`,
-                '--textColor2': `#${album['artwork']['textColor2']}`,
-                '--textColor3': `#${album['artwork']['textColor3']}`,
-                '--textColor4': `#${album['artwork']['textColor4']}`
+                '--bgColor': `#${data['artwork']['bgColor']}`,
+                '--textColor1': `#${data['artwork']['textColor1']}`,
+                '--textColor2': `#${data['artwork']['textColor2']}`,
+                '--textColor3': `#${data['artwork']['textColor3']}`,
+                '--textColor4': `#${data['artwork']['textColor4']}`
             }
             return palette
         },
@@ -478,6 +491,9 @@ var app = new Vue({
                 switch (response.type) {
                     default:
                         console.log(response);
+                        break;
+                    case "musickitapi.search":
+                        self.showArtist(response.data["artists"][0]["id"]);
                         break;
                     case "musickitapi.album":
                         if(self.screen == "album-page") {

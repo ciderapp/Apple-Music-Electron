@@ -78,11 +78,11 @@
                 <div class="player_bottom" v-if="player.lowerPanelState == 'controls'">
                     <div class="md-footer">
                         <div class="row player-track-info">
-                            <div class="col nopadding">
-                                <div class="player-song-title">
+                            <div class="col nopadding text-overflow-elipsis">
+                                <div class="player-song-title text-overflow-elipsis">
                                     {{ player.currentMediaItem.name }}
                                 </div>
-                                <div class="player-song-artist" @click="searchArtist()">
+                                <div class="player-song-artist text-overflow-elipsis" @click="searchArtist()">
                                     {{ player.currentMediaItem.artistName }}
                                 </div>
                             </div>
@@ -256,7 +256,8 @@
                             <template v-if="canShowSearchTab('albums')">
                                 <div class="list-entry-header">Albums</div>
 
-                                <div class="list-entry" v-for="album in search.results.albums" @click="showAlbum(album.id)">
+                                <div class="list-entry" v-for="album in search.results.albums"
+                                     @click="showAlbum(album.id)">
                                     <div class="row">
                                         <div class="col-auto flex-center">
                                             <div class="list-entry-image" v-if="album.artwork"
@@ -296,7 +297,10 @@
                             <template v-if="canShowSearchTab('artists')">
                                 <div class="list-entry-header">Artists</div>
 
-                                <div class="list-entry" v-for="artist in search.results.artists">
+                                <div class="list-entry"
+                                     @click="showArtist(artist.id)"
+                                     v-for="artist in search.results.artists"
+                                >
                                     <div class="row">
                                         <div class="col-auto flex-center">
                                             <div class="list-entry-image artist" v-if="artist.artwork"
@@ -336,6 +340,7 @@
                         </div>
                     </transition>
                 </div>
+                <footer-player></footer-player>
             </div>
         </transition>
         <!-- Track Select Actions -->
@@ -471,17 +476,48 @@
         </transition>
         <!-- Artist Page -->
         <transition name="wpfade">
-            <div class="md-container md-container_panel" v-if="screen == 'artist-page'">
-                <div class="artist-header" v-if="artistPage.data['artwork']"
-                     :style="{'--artwork': getAlbumArtUrlList(artistPage.data['artwork']['url'], 600)}">
-                    {{ artistPage.data["name"] }}
-                </div>
-                <div class="album-body-container">
-                    <div class="md-body artist-body">
-                        <h2>Albums</h2>
-
+            <div class="md-container md-container_panel" v-if="screen == 'artist-page'" v-if="artistPage.data['name']">
+                <div class="md-header">
+                    <div class="row">
+                        <div class="col-auto">
+                            <button class="back-button" @click="showSearch(true)"></button>
+                        </div>
+                        <div class="col flex-center">
+                            {{ artistPage.data["name"] }}
+                        </div>
                     </div>
                 </div>
+                <div class="album-body-container" :style="getMediaPalette(artistPage.data)">
+                    <div class="artist-header" v-if="artistPage.data['artwork']"
+                         :style="getMediaPalette(artistPage.data)">
+                        <div class="artist-header-portrait"
+                             :style="{'--artwork': getAlbumArtUrlList(artistPage.data['artwork']['url'], 600)}"></div>
+                        <h2>{{ artistPage.data["name"] }}</h2>
+                    </div>
+                    <div class="md-body artist-body">
+                        <h2>Songs</h2>
+                        <div class="song-scroller-horizontal">
+                            <button v-for="song in artistPage.data['songs']" class="song-placeholder"
+                                    @click="trackSelect(song)">
+                                {{ song.name }}
+                            </button>
+                        </div>
+                        <h2>Albums</h2>
+                        <div class="mediaitem-scroller-horizontal">
+                            <button v-for="album in artistPage.data['albums']" class="album-placeholder"
+                                    @click="showAlbum(album.id)">
+                                {{ album.name }}
+                            </button>
+                        </div>
+                        <h2>Playlists</h2>
+                        <div class="mediaitem-scroller-horizontal">
+                            <button v-for="playlist in artistPage.data['playlists']" class="album-placeholder">
+                                {{ playlist.name }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <footer-player></footer-player>
             </div>
         </transition>
         <!-- Queue -->
@@ -561,7 +597,8 @@
                     <button class="md-btn playback-button--small lyrics" v-if="checkOrientation() == 'portrait'"
                             @click="showLyrics()"></button>
                     <button class="md-btn playback-button--small lyrics"
-                            v-if="checkOrientation() == 'landscape'" @click="screen = 'player';showLyricsInline()"></button>
+                            v-if="checkOrientation() == 'landscape'"
+                            @click="screen = 'player';showLyricsInline()"></button>
                     <button class="md-btn playback-button--small queue active" @click="screen = 'player'"></button>
                     <button class="md-btn playback-button--small search" @click="showSearch()"></button>
                 </div>
@@ -620,8 +657,9 @@
         </transition>
         <!-- Album Page -->
         <transition name="wpfade">
-            <div class="md-container md-container_panel md-container_album" v-if="screen == 'album-page' && albumPage.data['name']"
-                 >
+            <div class="md-container md-container_panel md-container_album"
+                 v-if="screen == 'album-page' && albumPage.data['name']"
+            >
                 <div class="md-header">
                     <div class="row">
                         <div class="col-auto">
@@ -637,22 +675,25 @@
                         <div class="albumpage-album-name">
                             {{ albumPage.data["name"] }}
                         </div>
-                        <div class="albumpage-artist-name">
+                        <div class="albumpage-artist-name" @click="showArtist(albumPage.data['artists'][0]['id'])">
                             {{ albumPage.data["artistName"] }}
                         </div>
                         <div class="albumpage-misc-info">
-                            {{ albumPage.data.genreNames[0] }} ∙ {{ new Date(albumPage.data.releaseDate).getFullYear() }}
+                            {{ albumPage.data.genreNames[0] }} ∙ {{ new Date(albumPage.data.releaseDate).getFullYear()
+                            }}
                         </div>
                         <div class="row" style="margin-top: 20px;">
                             <div class="col">
                                 <button class="wr-btn"
                                         @click="playAlbum(albumPage.data.id, false)"
-                                        style="width:100%;">Play</button>
+                                        style="width:100%;">Play
+                                </button>
                             </div>
                             <div class="col">
                                 <button class="wr-btn" style="width:100%;"
                                         @click="playAlbum(albumPage.data.id, true)"
-                                >Shuffle</button>
+                                >Shuffle
+                                </button>
                             </div>
                         </div>
                         <div class="albumpage-album-notes" v-if="albumPage.data['editorialNotes']">
@@ -690,24 +731,26 @@
                         </div>
                     </div>
                 </div>
+                <footer-player></footer-player>
             </div>
         </transition>
         <!-- Album Page - Editorial Notes -->
         <transition name="wpfade">
-            <div class="md-container md-container_panel context-menu" v-if="albumPage.editorsNotes" style="padding-top: 42px;">
+            <div class="md-container md-container_panel context-menu" v-if="albumPage.editorsNotes"
+                 style="padding-top: 42px;">
                 <div class="md-header"
-                     :style="getAlbumPalette()"
+                     :style="getMediaPalette(albumPage.data)"
                      style="font-size: 18px;background:var(--bgColor);color:var(--textColor1);text-align: center;border-radius: 10px 10px 0 0;border-top: 1px solid #ffffff1f;"
                 >
                     {{ albumPage.data["name"] }}
                 </div>
                 <div class="md-body album-page-fullnotes-body"
-                     :style="getAlbumPalette()"
+                     :style="getMediaPalette(albumPage.data)"
                      style="background:var(--bgColor);color:var(--textColor1);"
                      v-html="albumPage.data['editorialNotes']['standard']">
                 </div>
                 <div class="md-footer"
-                     :style="getAlbumPalette()"
+                     :style="getMediaPalette(albumPage.data)"
                      style="background:var(--bgColor);color:var(--textColor1);"
                 >
                     <button class="context-menu-item" @click="albumPage.editorsNotes = false">Close</button>
@@ -753,6 +796,31 @@
         </div>
     </transition>
 </div>
+
+<script type="text/x-template" id="footer-player">
+    <div class="footer-player" v-show="$parent.player.currentMediaItem['name']">
+        <div class="row" style="width:100%;margin:0px;">
+            <div class="col-auto flex-center" style="padding:0 6px;" @click="$parent.screen = 'player'">
+                <div class="list-entry-image" :style="{'--artwork': $parent.getAlbumArtUrl()}">
+                </div>
+            </div>
+            <div class="col flex-center text-overflow-elipsis" @click="$parent.screen = 'player'">
+                <div class="list-entry-name text-overflow-elipsis">
+                    {{ $parent.player.currentMediaItem.name }}
+                </div>
+                <div class="list-entry-artist text-overflow-elipsis">
+                    {{ $parent.player.currentMediaItem.artistName }}
+                </div>
+            </div>
+            <div class="col-auto">
+                <button class="md-btn playback-button pause" @click="$parent.pause()"
+                        v-if="$parent.player.currentMediaItem.status"></button>
+                <button class="md-btn playback-button play" @click="$parent.play()" v-else></button>
+            </div>
+        </div>
+    </div>
+</script>
+
 <script src="index.js?v=1"></script>
 
 </body>

@@ -2,6 +2,7 @@
 
 :root {
     --appleEase: cubic-bezier(0.42, 0, 0.58, 1);
+    --mediaItemShadow: inset 0px 0px 0px 1px rgb(200 200 200 / 16%), 0 8px 40px rgb(0 0 0 / 0.55);
     --keyColor: #fa586a;
     --keyColor-rgb: 250, 88, 106;
     --keyColor-rollover: #ff8a9c;
@@ -135,6 +136,13 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     color: white;
 }
 
+.footer-player {
+    padding: 6px;
+    display:flex;
+    border-top: 1px solid rgb(200 200 200 / 15%);
+    background: rgb(200 200 200 / 10%);
+}
+
 .player-duration-time {
     opacity: 0.5;
 }
@@ -162,7 +170,7 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     background-position: center;
     background-repeat: no-repeat;
     border-radius: 8px;
-    box-shadow: inset 0px 0px 0px 1px rgb(200 200 200 / 16%), 0 8px 40px rgb(0 0 0 / 0.55);
+    box-shadow: var(--mediaItemShadow);
     transition: transform .10s var(--appleEase);
 }
 
@@ -411,8 +419,8 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 8px;
-    box-shadow: inset 0px 0px 0px 1px rgb(200 200 200 / 16%), 0 8px 40px rgb(0 0 0 / 0.55);
+    border-radius: 4px;
+    box-shadow: var(--mediaItemShadow);
 }
 
 .list-entry-image.artist {
@@ -454,6 +462,37 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
 
 .list-entry .handle:active {
     cursor: grabbing;
+}
+
+.song-scroller-horizontal {
+    display:flex;
+    overflow-y: scroll;
+    overflow-x:hidden;
+    overflow-y: overlay;
+    width: 100%;
+    height: 200px;
+    /*! flex-flow: row; */
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.song-placeholder {
+    height: 60px;
+    width: 50%;
+    flex: 0 0 auto;
+}
+
+.mediaitem-scroller-horizontal {
+    display:flex;
+    overflow-y: hidden;
+    overflow-x:scroll;
+    overflow-x: overlay;
+    width: 100%;
+}
+.album-placeholder {
+    height: 180px;
+    width: 180px;
+    flex: 0 0 auto;
 }
 
 .md-container {
@@ -520,6 +559,13 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     height: 100%;
 }
 
+.text-overflow-elipsis {
+    min-width: 0px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 
 .album-body-container {
     position: relative;
@@ -527,6 +573,7 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     height: 100%;
     overflow-y: scroll;
     overflow-y: overlay;
+    overflow-x: hidden;
 }
 
 
@@ -538,7 +585,7 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     border-radius: 6px;
     background:black;
     margin-bottom: 18px;
-    box-shadow: inset 0px 0px 0px 1px rgb(200 200 200 / 16%), 0 8px 40px rgb(0 0 0 / 0.55);
+    box-shadow: var(--mediaItemShadow);
     background-image: var(--artwork);
     background-size: cover;
     background-repeat: no-repeat;
@@ -603,26 +650,37 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
 
 .albumpage-artist-name {
     margin: 0 auto;
-        width: 100%;
+    width: 100%;
     text-align: center;
     font-size: 18px;
+    color: var(--keyColor);
+}
+
+.albumpage-artist-name:hover {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .artist-header {
-    --artwork: url("");
-    height: 300px;
+    height: 400px;
     width: 100%;
-    background-image: var(--artwork);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    max-width: 800px;
     margin: 12px auto;
-    border-radius: 10px;
     display: flex;
     justify-content: center;
-    align-items: flex-end;
+    align-items: center;
     padding: 12px;
+    flex-direction: column;
+    background: rgb(0 0 0 / 40%);
+}
+
+.artist-header .artist-header-portrait {
+    height: 200px;
+    width: 200px;
+    background: var(--artwork);
+    background-size: contain;
+    background-repeat: no-repeat;
+    border-radius: 100%;
+    box-shadow: var(--mediaItemShadow);
 }
 
 .search-body {
@@ -847,15 +905,19 @@ input[type=range].web-slider::-webkit-slider-runnable-track {
     
     .album-body-container {
         display: flex;
+        flex-wrap: wrap;
     }
     
     .album-body-container>.md-header {
         min-width: 300px;
         flex: 0 0 auto;
+        max-width: 300px;
+        margin: 0 auto;
     }
     
     .artist-body {
         position: relative;
+        /*! flex: 0 0 auto; */
     }
 
     .player-panel {
