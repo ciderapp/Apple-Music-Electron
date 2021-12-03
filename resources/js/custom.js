@@ -883,9 +883,16 @@ try {
                     if (!document.querySelector('.media-artwork-v2__image').classList.contains('media-artwork-v2__image--fallback')) {
                         const artwork = document.querySelector('#ember13');
                         artwork.onclick = function () {
-                            ipcRenderer.send("set-miniplayer", true);
+                            if (preferences.visual.albumartNPPLaylist){
+                                try{
+                                    document.getElementById("ameNPPlaylist").click();
+                                } catch (err) {}
+                            }
+                            else{
+                            ipcRenderer.send("set-miniplayer", true);}
                         };
                         /* Picture-in-picture icon should be overlayed over artwork when mouse over */
+                        
                     }
                 });
 
@@ -916,9 +923,41 @@ try {
                 MusicKit.getInstance().addEventListener(MusicKit.Events.playbackTimeDidChange, function () {
                     ipcRenderer.send('LyricsTimeUpdate', MusicKit.getInstance().currentPlaybackTime + 0.250);
                 });
-                MusicKit.getInstance().addEventListener(MusicKit.Events.nowPlayingItemDidChange, function () {
+                MusicKit.getInstance().addEventListener(MusicKit.Events.nowPlayingItemDidChange, async function  () {
                     var EAtmpdisable = false;
                     var tempOutputID = -1;
+                    var LibraryFolder = document.querySelector('[aria-labelledby="ember10-library"]');
+                    var NowPLPLaylist ;
+                    var href ;
+                    try{
+                        try{
+                      NowPLPLaylist =  MusicKit.getInstance().nowPlayingItem._container.attributes  ; 
+                      
+                      href = (NowPLPLaylist.href.includes("/library/") ? "/library" : "") + "/" + NowPLPLaylist.playParams.kind + "/" + NowPLPLaylist.playParams.id;
+                      if (href.startsWith(`/library/album/`)){
+                        console.log("sdsss");
+                        href = href.replace(`/library/album/`, `/library/albums/`);
+                      } 
+                      } catch(e) {}
+                        
+                        if (!href) {
+                            var songinfo = await MusicKit.getInstance().api.song(MusicKit.getInstance().nowPlayingItem.id); 
+                            href = "/album/" +songinfo.albums[0].id;
+                           } 
+                    } catch (e) {}
+                    var item = 
+                    `<li role="listitem" aria-selected="false" class="typography-title-3-tall web-navigation__nav-list-item ">
+                    <a role="button" href="${ href ??"/library/recently-added"}" id="ameNPPlaylist" class="ember-view web-navigation__list-item-button button-reset web-navigation__list-item-button--playlist" aria-pressed="false" aria-controls="page-container__first-linked-element">
+                        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="web-navigation__nav-icon" aria-hidden="true"><path d="M12 20c4.376 0 8-3.631 8-8 0-4.376-3.631-8-8.008-8C7.624 4 4 7.624 4 12c0 4.369 3.631 8 8 8zm0-1.333A6.634 6.634 0 015.341 12a6.628 6.628 0 016.651-6.667A6.653 6.653 0 0118.667 12 6.636 6.636 0 0112 18.667zm-1.467-3.6l4.463-2.636a.483.483 0 000-.839L10.533 8.95c-.337-.204-.784-.047-.784.33v5.458c0 .377.416.55.784.33z" fill-rule="nonzero"></path></svg>
+                        <span class="web-navigation__nav-label">
+                            Current Playlist
+                        </span>
+                    </a>
+            </li>`; 
+                  if (!document.getElementById("ameNPPlaylist")){ 
+                  LibraryFolder.insertAdjacentHTML( 'afterbegin', item);}else { 
+                     document.getElementById("ameNPPlaylist").setAttribute("href", href ?? "/library/recently-added");}
+                        
                     try{
                         if (MusicKit.getInstance().nowPlayingItem["type"] === "musicVideo") {
                             try{
@@ -926,7 +965,7 @@ try {
                             MVsource = AMEx.context.createMediaElementSource(document.querySelector('apple-music-video-player').shadowRoot.querySelector('amp-video-player-internal').shadowRoot.querySelector('amp-video-player').shadowRoot.getElementById('apple-music-video-player'));  
                             MVsource.connect(windowAudioNode); 
                                                    }
-                           
+                                                
                         } catch(e){console.log(e);}
                         } else{
                             if (!GCOverride ) {   
@@ -1494,6 +1533,7 @@ try {
                     AMSettings.HandleField('removeAppleLogo');
                     AMSettings.HandleField('removeFooter');
                     AMSettings.HandleField('removeScrollbars');
+                    AMSettings.HandleField('albumartNPPLaylist');
                     AMSettings.HandleField('useOperatingSystemAccent');
                     AMSettings.HandleField('scaling');
 
