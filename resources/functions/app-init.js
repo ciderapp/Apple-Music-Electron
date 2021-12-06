@@ -108,10 +108,11 @@ module.exports = () => {
             showIntro = true
         },
 
-        '<=3.0.0': store => {
+        '<3.0.0': store => {
             migrationFunctions.clearElectronPrefs()
             migrationFunctions.clearCache()
         //    migrationFunctions.showDevelopmentMessage()
+
         }
     }
 

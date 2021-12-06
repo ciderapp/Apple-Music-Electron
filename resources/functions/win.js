@@ -271,30 +271,18 @@ module.exports = {
 
         console.verbose(`[CreateNotification] Notification Generating | Function Parameters: SongName: ${attributes.name} | Artist: ${attributes.artistName} | Album: ${attributes.albumName}`)
 
-        if (app.ipc.existingNotification) {
-            console.log("[CreateNotification] Existing Notification Found - Removing. ")
-            app.ipc.existingNotification.close()
-            app.ipc.existingNotification = false
-        }
-
         const NOTIFICATION_OBJECT = {
             title: attributes.name,
             body: `${attributes.artistName} - ${attributes.albumName}`,
             silent: true,
-            icon: join(__dirname, '../icons/icon.png'),
+            icon: (attributes.artwork.url.replace('/{w}x{h}bb', '/512x512bb')).replace('/2000x2000bb', '/35x35bb'),
             actions: [{
                 type: 'button',
                 text: 'Skip'
             }]
         }
 
-        app.ipc.existingNotification = new Notification(NOTIFICATION_OBJECT)
-        app.ipc.existingNotification.show()
-
-
-        app.ipc.existingNotification.addListener('action', (_event) => {
-            app.ame.utils.media.nextTrack()
-        });
+        app.win.webContents.send('notification', NOTIFICATION_OBJECT)
     },
 
     CreateBrowserWindow: () => {
