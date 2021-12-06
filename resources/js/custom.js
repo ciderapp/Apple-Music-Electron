@@ -1431,10 +1431,9 @@ try {
 
             CreateMenu: (parent) => {
                 preferences = ipcRenderer.sendSync('getStore');
-
                 AMJavaScript.getRequest("ameres://html/preferences-main.html", (content) => {
-                    document.getElementsByClassName(parent)[0].innerHTML = content;
-
+                    document.getElementsByClassName(parent)[1].querySelector(`[role="status"]`).innerHTML = content;
+                    document.getElementsByClassName(parent)[1].querySelector(`[role="status"]`).className = '';
                     if (document.querySelector('footer')) {
                         document.querySelector('.dt-footer').style.display = "block";
                         document.querySelector('.dt-footer').classList.add('app-prefs-credits');
