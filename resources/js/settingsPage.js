@@ -9,7 +9,7 @@ try {
         }
 
         if (matchRuleShort(window.location.href, '*settings*') && document.getElementsByClassName('application-preferences').length === 0) {
-            AMSettings.CreateMenu('loading-inner');
+            AMSettings.CreateMenu('commerce-full-content');
         } else if (document.getElementsByTagName('footer').length === 1) {
             document.getElementsByTagName('footer')[0].innerHTML = storedInnerHTML; /* Revert the footer */
         }
