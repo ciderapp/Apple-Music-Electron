@@ -67,7 +67,7 @@ module.exports = {
             state: `by ${attributes.artistName}`,
             startTimestamp: attributes.startTime,
             endTimestamp: attributes.endTime,
-            largeImageKey: ((app.cfg.get('general.discordRPC') === 'am-title') ? 'apple' : 'logo'),
+            largeImageKey: attributes.artwork.url.replace('{w}', '512').replace('{h}', '512') ?? ((app.cfg.get('general.discordRPC') === 'am-title') ? 'apple' : 'logo'),
             largeImageText: attributes.albumName,
             smallImageKey: (attributes.status ? 'play' : 'pause'),
             smallImageText: (attributes.status ? 'Playing': 'Paused'),
