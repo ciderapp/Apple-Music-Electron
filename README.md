@@ -25,8 +25,8 @@
 ### Install Sources
 [![Get it from Github](https://img.shields.io/badge/Get_It_From_GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/apple-music-electron/apple-music-electron/releases/latest)
 
-[![Get it from the Microsoft Store](https://img.shields.io/badge/Get_It_From_The_Microsoft_Store-100000?style=for-the-badge&logo=microsoft)](https://www.youtube.com/watch?v=dQw4w9WgXcQ) (Coming Soon)
-
+<!--[![Get it from the Microsoft Store](https://img.shields.io/badge/Get_It_From_The_Microsoft_Store-100000?style=for-the-badge&logo=microsoft)](https://www.youtube.com/watch?v=dQw4w9WgXcQ) (Coming Soon)
+-->
 [![Get it from Windows Package Manager](https://custom-icon-badges.herokuapp.com/badge/Get_It_via_Winget-100000?style=for-the-badge&logo=winstall)](https://winstall.app/apps/cryptofyre.AppleMusicElectron)
 
 [![Get it from the Snap Store](https://img.shields.io/badge/Get_It_From_The_Snap_Store-100000?style=for-the-badge&logo=snapcraft)](https://snapcraft.io/apple-music-electron)
@@ -52,4 +52,3 @@ for any legal concerns contact me at <a href="mailto:cryptofyre@cryptofyre.org">
   <img href="https://www.macstadium.com/" width="300px" src="https://user-images.githubusercontent.com/33162551/124784795-df5d4c80-df0b-11eb-99a7-dc2b1cfb81bd.png" alt="MacStadium">
 </p>
 
-<i><a name="ComingSoon">1</a> - Coming Soon</i>
