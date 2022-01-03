@@ -95,7 +95,7 @@ module.exports = {
             delete ActivityObject.largeImageText
         }
         if (ActivityObject.details.length > 128) {
-            AcitivityObject.details = ActivityObject.details.substring(0, 125) + '...'
+            ActivityObject.details = ActivityObject.details.substring(0, 125) + '...'
         }
 
         // Clear if if needed
