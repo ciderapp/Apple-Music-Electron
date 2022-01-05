@@ -16,6 +16,10 @@
   <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-macos.yml/badge.svg" alt="macOS Build Status"/>
 </p>
 
+<p align="center"> ⚠️ <b>Sunsetting soon. See <a target="_blank" href="https://github.com/ciderapp/Cider"> Cider for more info </a> ⚠️ </p>
+
+
+
 #### Links
 * [Wiki](https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki)
 * [Request Feature](https://github.com/Apple-Music-Electron/Apple-Music-Electron/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=%5BEnhancement%5D)
