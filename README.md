@@ -1,24 +1,11 @@
 <p align="center">
   <img src="https://user-images.githubusercontent.com/85196642/142362989-ca1cb245-d9f1-4345-99fb-939171fb34ee.gif" width="80%" alt="Banner"><br><br>
-  <img src="https://img.shields.io/github/release/Apple-Music-Electron/Apple-Music-Electron.svg?style=flat" alt="GitHub Releases"/>
-  <img src="https://img.shields.io/github/stars/Apple-Music-Electron/Apple-Music-Electron" alt="GitHub Stars"/>
-  <img src="https://img.shields.io/github/forks/Apple-Music-Electron/Apple-Music-Electron" alt="GitHub Forks"/>
-  <img src="https://img.shields.io/github/downloads/Apple-Music-Electron/Apple-Music-Electron/total.svg?color=23B14D" alt="GitHub Downloads"/>
-  <img src="https://badges.depfu.com/badges/121fff86821ca5a2bf9741f80b8f0a68/overview.svg" alt="Depfu Dependencies"/>
-  <a target="_blank" href="https://ko-fi.com/cryptofyre"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-B48C69" alt="Buy Me A Coffee"/></a>
-  <br>
-  <a target="_blank" href="https://discord.gg/CezHYdXHEM"><img src="https://img.shields.io/discord/843954443845238864?label=Discord&color=5865F2&logo=discord&logoColor=white&style=flat" alt="Discord"/></a>
-  <a target="_blank" href="https://twitter.com/GitCider"><img src="https://img.shields.io/twitter/follow/GitCider?label=Twitter&color=%231DA1F2&logo=twitter&style=flat" alt="Twitter"/></a>
-  <a target="_blank" href="https://reddit.com/r/applemusicelectron"><img src="https://custom-icon-badges.herokuapp.com/reddit/subreddit-subscribers/applemusicelectron?label=Reddit&color=FF5700&logo=redditnew" alt="Reddit"/></a>
-  <br><br>
-  <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-win.yml/badge.svg" alt="Windows Build Status"/>
-  <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-linux.yml/badge.svg" alt="Linux Build Status"/>
-  <img src="https://github.com/Apple-Music-Electron/Apple-Music-Electron/actions/workflows/build-analyze-macos.yml/badge.svg" alt="macOS Build Status"/>
 </p>
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/33162551/148161981-5e81b24d-3f6f-4694-a13a-6d8cdc62ca89.png" width="70%" height="40%" alt="Migration">
+</p>
 <p align="center"> ⚠️ <b>Sunsetting soon. See <a target="_blank" href="https://github.com/ciderapp/Cider"> Cider for more info </a> ⚠️ </p>
-
-
 
 #### Links
 * [Wiki](https://github.com/Apple-Music-Electron/Apple-Music-Electron/wiki)
